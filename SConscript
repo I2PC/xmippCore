@@ -103,8 +103,8 @@ def addLib(name, **kwargs):
 
 # Data
 addLib('XmippCore',
-       dirs=['src','src','src'],
-       patterns=['*.cpp','*.c','bilib/*.cc'],
+       dirs=['src','src','src','src'],
+       patterns=['*.cpp','*.c','bilib/*.cc','alglib/*.cpp'],
        libs=['fftw3', 'fftw3_threads',
              'hdf5','hdf5_cpp',
              'tiff',
@@ -113,12 +113,20 @@ addLib('XmippCore',
              'pthread'])
 
 # Python binding
-#addLib('xmippCore.so',
-#       dirs=['bindings'],
-#       patterns=['python/*.cpp'],
-#       incs=python_incdirs,
-#       libs=['python2.7', 'XmippCore'],
-#       prefix='', target='xmippCore')
+def remove_prefix(text, prefix):
+    return text[text.startswith(prefix) and len(prefix):]
+env['PYTHONINCFLAGS'] = os.environ.get('PYTHONINCFLAGS', '').split()
+if len(env["PYTHONINCFLAGS"])>0:
+    python_incdirs = [remove_prefix(os.path.expandvars(x),"-I") for x in env["PYTHONINCFLAGS"]]
+else:
+    python_incdirs = []
+
+addLib('xmippCore.so',
+       dirs=['bindings'],
+       patterns=['python/*.cpp'],
+       incs=python_incdirs,
+       libs=['python2.7', 'XmippCore'],
+       prefix='', target='xmippCore')
 
 
 #  ***********************************************************************
