@@ -51,27 +51,7 @@ env['CUDA_LIB_PATH'] = os.environ.get('CUDA_LIB_PATH', '')
 get = lambda x: os.environ.get(x, '0').lower() in ['true', 'yes', 'y', '1']
 
 gtest = get('GTEST')
-cuda = get('CUDA')
 debug = get('DEBUG')
-matlab = get('MATLAB')
-opencv = env.GetOption('opencv') and get('OPENCV')
-
-if opencv:
-    opencvLibs = ['opencv_core',
-                  # 'opencv_legacy',
-                  'opencv_imgproc',
-                  'opencv_video',
-                  'libopencv_calib3d']
-                  
-else:
-    opencvLibs = []
-
-
-
-if 'MATLAB' in os.environ:
-    # Must be removed to avoid problems in Matlab compilation.
-    del os.environ['MATLAB']
-    # Yeah, nice
 
 # Read some flags
 CYGWIN = env['PLATFORM'] == 'cygwin'
@@ -85,17 +65,13 @@ XMIPP_PATH = Dir('.').abspath
 #  *                      Xmipp C++ Libraries                            *
 #  ***********************************************************************
 
-ALL_LIBS = {'fftw3', 'tiff', 'jpeg', 'sqlite3', 'hdf5'}
-
 # Create a shortcut and customized function
 # to add the Xmipp CPP libraries
 def addLib(name, **kwargs):
-    ALL_LIBS.add(name)
     # Install all libraries in scipion/software/lib
     # COSS kwargs['installDir'] = '#software/lib'
     # Add always the xmipp path as -I for include and also xmipp/libraries
-    incs = kwargs.get('incs', []) + [join(XMIPP_PATH, 'external'),
-                                     join(XMIPP_PATH, 'libraries')]
+    incs = kwargs.get('incs', [])
     kwargs['incs'] = incs
 
     deps = kwargs.get('deps', [])
@@ -104,8 +80,7 @@ def addLib(name, **kwargs):
     # Add libraries in libs as deps if not present
     libs = kwargs.get('libs', [])
     for lib in libs:
-        if lib in ALL_LIBS and lib not in deps:
-            deps.append(lib)
+        deps.append(lib)
 
     # If pattern not provided use *.cpp as default
     patterns = kwargs.get('patterns', '*.cpp')
@@ -128,8 +103,8 @@ def addLib(name, **kwargs):
 
 # Data
 addLib('XmippCore',
-       dirs=['src'],
-       patterns=['*.cpp'],
+       dirs=['src','src','src'],
+       patterns=['*.cpp','*.c','bilib/*.cc'],
        libs=['fftw3', 'fftw3_threads',
              'hdf5','hdf5_cpp',
              'tiff',
@@ -144,14 +119,6 @@ addLib('XmippCore',
 #       incs=python_incdirs,
 #       libs=['python2.7', 'XmippCore'],
 #       prefix='', target='xmippCore')
-
-
-
-#  ***********************************************************************
-#  *                      Xmipp Programs and Tests                       *
-#  ***********************************************************************
-
-XMIPP_LIBS = ['XmippData', 'XmippRecons', 'XmippClassif']
 
 
 #  ***********************************************************************

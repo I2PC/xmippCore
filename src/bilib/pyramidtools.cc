@@ -43,10 +43,10 @@
 using namespace std;
 
 /* --- Private includes --- */
-#include "../configs.h"
-#include "../headers/messagedisplay.h"
-#include "../headers/pyramidtools.h"
-#include "../headers/pyramidfilters.h"
+#include "configs.h"
+#include "messagedisplay.h"
+#include "pyramidtools.h"
+#include "pyramidfilters.h"
 
 /* ------------------------------------------------------------------------- */
 /* Declaration of static procedures                                          */

@@ -18,12 +18,12 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include "../configs.h"
-#include "../headers/messagedisplay.h"
-#include "../headers/debug.h"
-#include "../headers/error.h"
-#include "../headers/wavelet.h"
-#include "../headers/wavelettools.h"
+#include "configs.h"
+#include "messagedisplay.h"
+#include "debug.h"
+#include "error.h"
+#include "wavelet.h"
+#include "wavelettools.h"
 
 
 /* ------------------------------------------------------------------------- */

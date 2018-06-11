@@ -18,7 +18,7 @@
 /*****************************************************************************
  *	Toolbox includes
  ****************************************************************************/
-#include	"../headers/convert.h"
+#include	"convert.h"
 #include	"getput.h"
 #include	"getputd.h"
 #include	"iirconvolve.h"

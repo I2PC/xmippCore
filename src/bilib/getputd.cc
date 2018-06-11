@@ -16,7 +16,7 @@
 /*****************************************************************************
  *	Toolbox includes
  ****************************************************************************/
-#include	"../headers/convert.h"
+#include	"convert.h"
 #include	"getputd.h"
 #include	"messagedisplay.h"
 

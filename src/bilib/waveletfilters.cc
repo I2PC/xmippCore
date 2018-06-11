@@ -35,11 +35,11 @@ Convention:
 /* ------------------------------------------------------------------------- */
 /* Declaration of extern procedures                                          */
 /* ------------------------------------------------------------------------- */
-#include "../configs.h"
+#include "configs.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "../headers/waveletfilters.h"
+#include "waveletfilters.h"
 
 /* ------------------------------------------------------------------------- */
 /* Declaration of static procedures                                          */

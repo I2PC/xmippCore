@@ -1,8 +1,8 @@
 #ifndef _CHANGEBASIS
 #define _CHANGEBASIS
 
-#include "../types/tsplinebasis.h"
-#include "../types/tboundaryconvention.h"
+#include "tsplinebasis.h"
+#include "tboundaryconvention.h"
 
 /*--------------------------------------------------------------------------*/
 /**@defgroup SplineTransform Spline transform

@@ -14,7 +14,7 @@
 /*****************************************************************************
  *	Toolbox includes
  ****************************************************************************/
-#include	"../headers/convert.h"
+#include	"convert.h"
 #include	"messagedisplay.h"
 #include	"traceline.h"
 

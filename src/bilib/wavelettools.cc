@@ -34,15 +34,15 @@ Convention		:
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "../configs.h"
-#include "../headers/messagedisplay.h"
-#include "../headers/minmax.h"
-#include "../headers/getputd.h"
-#include "../headers/getput.h"
+#include "configs.h"
+#include "messagedisplay.h"
+#include "minmax.h"
+#include "getputd.h"
+#include "getput.h"
 
-#include "../headers/wavelettools.h"
-#include "../headers/waveletfilters.h"
-#include "../headers/waveletfiltersfract.h"
+#include "wavelettools.h"
+#include "waveletfilters.h"
+#include "waveletfiltersfract.h"
 
 /* ------------------------------------------------------------------------- */
 /* Declaration of static procedures                                          */

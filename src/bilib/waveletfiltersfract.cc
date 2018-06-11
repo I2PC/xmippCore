@@ -16,10 +16,10 @@ Date         : June 1999
 #include <stdlib.h>
 #include <math.h>
 
-#include "../configs.h"
-#include "../headers/error.h"
-#include "../headers/waveletfiltersfract.h"
-#include "../headers/messagedisplay.h"
+#include "configs.h"
+#include "error.h"
+#include "waveletfiltersfract.h"
+#include "messagedisplay.h"
 
 #define EPSILON 0.000001
 

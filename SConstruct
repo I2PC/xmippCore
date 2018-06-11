@@ -140,19 +140,6 @@ os.environ['CXXFLAGS'] = cxxFlags # FIXME use only env or os.environ in the rest
 env['LINKFLAGS'] = os.environ.get('LINKFLAGS', '').split()
 
 
-for path in ['MPI_LIBDIR', 'MPI_INCLUDE', 'MPI_BINDIR']:
-    if not os.path.isdir(os.environ.get(path, '')):
-        Exit('Path to $%s (%s) should exist, but it does not. Stopping.\n'
-             'Please run "scipion config"' % (path, os.environ.get(path, '')))
-
-env['MPI_CC'] = os.environ.get('MPI_CC')
-env['MPI_CXX'] = os.environ.get('MPI_CXX')
-env['MPI_LINKERFORPROGRAMS'] = os.environ.get('MPI_LINKERFORPROGRAMS')
-env['MPI_LIB'] = os.environ.get('MPI_LIB')
-env['MPI_LIBDIR'] = os.environ['MPI_LIBDIR']
-env['MPI_INCLUDE'] = os.environ['MPI_INCLUDE']
-env['MPI_BINDIR'] = os.environ['MPI_BINDIR']
-
 xmippPath = Dir('.').abspath
 env['PACKAGE'] = {'NAME': 'xmippCore',
                   'SCONSCRIPT': xmippPath

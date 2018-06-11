@@ -22,8 +22,8 @@
 #include <stdio.h>
 
 /* --- Private includes --- */
-#include "../headers/messagedisplay.h"
-#include "../headers/pyramidfilters.h"
+#include "messagedisplay.h"
+#include "pyramidfilters.h"
 
 /* ----------------------------------------------------------------------------
 	Function: 	PyramidFilterSplinel2
