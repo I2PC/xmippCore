@@ -59,6 +59,7 @@ MACOSX = env['PLATFORM'] == 'darwin'
 MINGW = env['PLATFORM'] == 'win32'
 
 XMIPP_PATH = Dir('.').abspath
+XMIPP_BUNDLE = Dir('..').abspath
 
 
 #  ***********************************************************************
