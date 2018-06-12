@@ -24,7 +24,6 @@
  ***************************************************************************/
 
 #include "xmippmodule.h"
-#include "../../core/ctf.h"
 
 /***************************************************************/
 /*                            Image                         */
@@ -513,32 +512,6 @@ Image_readPreviewSmooth(PyObject *obj, PyObject *args, PyObject *kwargs)
     return NULL;
 }//function Image_readPreviewSmooth
 
-/* convert to psd */
-PyObject *
-Image_convertPSD(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    ImageObject *self = (ImageObject*) obj;
-
-    if (self != NULL)
-    {
-        try
-        {
-            ImageGeneric *image = self->image;
-            image->convert2Datatype(DT_Double);
-            MultidimArray<double> *in;
-            MULTIDIM_ARRAY_GENERIC(*image).getMultidimArrayPointer(in);
-            xmipp2PSD(*in, *in, true);
-
-            Py_RETURN_NONE;
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-}//function Image_convertPSD
-
 NPY_TYPES datatype2NpyType(DataType dt)
 {
     switch (dt)
@@ -654,48 +627,6 @@ Image_getData(PyObject *obj, PyObject *args, PyObject *kwargs)
     }
     return NULL;
 }//function Image_getData
-
-/* projectVolumeDouble */
-PyObject *
-Image_projectVolumeDouble(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-
-    ImageObject *self = (ImageObject*) obj;
-    ImageObject * result = NULL;
-    double rot, tilt, psi;
-
-    if (PyArg_ParseTuple(args, "ddd", &rot,&tilt,&psi))
-    {
-        try
-        {
-            // We use the following macro to release the Python Interpreter Lock (GIL)
-            // while running this C extension code and allows threads to run concurrently.
-            // See: https://docs.python.org/2.7/c-api/init.html for details.
-            Py_BEGIN_ALLOW_THREADS
-            Projection P;
-            MultidimArray<double> * pVolume;
-            self->image->data->getMultidimArrayPointer(pVolume);
-            ArrayDim aDim;
-            pVolume->getDimensions(aDim);
-            pVolume->setXmippOrigin();
-            projectVolume(*pVolume, P, aDim.xdim, aDim.ydim,rot, tilt, psi);
-            result = PyObject_New(ImageObject, &ImageType);
-            Image <double> I;
-            result->image = new ImageGeneric();
-            result->image->setDatatype(DT_Double);
-            result->image->data->setImage(MULTIDIM_ARRAY(P));
-            Py_END_ALLOW_THREADS
-            return (PyObject *)result;
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-}//function Image_projectVolumeDouble
-
-
 
 
 /* setData */
@@ -1248,43 +1179,6 @@ Image_adjustAndSubtract(PyObject *obj, PyObject *args, PyObject *kwargs)
     return (PyObject *)result;
 }//function Image_adjustAndSubtract
 
-/* Align an argument image to resemble self */
-PyObject *
-Image_align(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    ImageObject *self = (ImageObject*) obj;
-    PyObject *pimg2 = NULL;
-    ImageObject * result = PyObject_New(ImageObject, &ImageType);
-    if (self != NULL)
-    {
-        try
-        {
-            if (PyArg_ParseTuple(args, "O", &pimg2))
-            {
-                ImageObject *img2=(ImageObject *)pimg2;
-                result->image = new ImageGeneric(Image_Value(img2));
-                *result->image = *img2->image;
-
-                result->image->convert2Datatype(DT_Double);
-                MultidimArray<double> *mimg2;
-                MULTIDIM_ARRAY_GENERIC(*result->image).getMultidimArrayPointer(mimg2);
-
-                self->image->convert2Datatype(DT_Double);
-                MultidimArray<double> *mimg1;
-                MULTIDIM_ARRAY_GENERIC(*self->image).getMultidimArrayPointer(mimg1);
-
-                Matrix2D<double> M;
-                alignImagesConsideringMirrors(*mimg1, *mimg2, M, true);
-            }
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return (PyObject *)result;
-}//function Image_align
-
 /* Add two images, operator + */
 PyObject *
 Image_add(PyObject *obj1, PyObject *obj2)
@@ -1638,57 +1532,6 @@ Image_applyTransforMatScipion(PyObject *obj, PyObject *args, PyObject *kwargs)
     return NULL;
 }//operator +=
 
-PyObject *
-Image_applyCTF(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *input = NULL;
-    double Ts=1.0;
-    size_t rowId;
-    PyObject *pyReplace = Py_False;
-    bool absPhase = false;
-
-    try
-    {
-        PyArg_ParseTuple(args, "Od|kO", &input,&Ts,&rowId,&pyReplace);
-        if (input != NULL)
-        {
-                if(PyBool_Check(pyReplace))
-                    absPhase = pyReplace == Py_True;
-
-		PyObject *pyStr;
-		if (PyString_Check(input) || MetaData_Check(input))
-		{
-		    ImageObject *self = (ImageObject*) obj;
-	            ImageGeneric *image = self->image;
-	            image->convert2Datatype(DT_Double);
-	            MultidimArray<double> * pImage=NULL;
-	            MULTIDIM_ARRAY_GENERIC(*image).getMultidimArrayPointer(pImage);
-
-		    self->image->data->getMultidimArrayPointer(pImage);
-
-		    CTFDescription ctf;
-		    ctf.enable_CTF=true;
-		    ctf.enable_CTFnoise=false;
-                    if (MetaData_Check(input))
-                        ctf.readFromMetadataRow(MetaData_Value(input), rowId );
-                    else
-                       { 
-                       pyStr = PyObject_Str(input);
-                       FileName fnCTF = PyString_AsString(pyStr);
-		       ctf.read(fnCTF);
-                       }
-		    ctf.produceSideInfo();
-		    ctf.applyCTF(*pImage,Ts,absPhase);
-		    Py_RETURN_NONE;
-		}
-        }
-    }
-    catch (XmippError &xe)
-    {
-        PyErr_SetString(PyXmippError, xe.msg.c_str());
-    }
-    return NULL;
-}
 
 PyObject *
 Image_readApplyGeo(PyObject *obj, PyObject *args, PyObject *kwargs)

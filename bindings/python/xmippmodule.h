@@ -42,7 +42,6 @@
 #include "python_program.h"
 #include "python_metadata.h"
 #include "python_symmetry.h"
-#include "python_fourierprojector.h"
 
 extern PyObject * PyXmippError;
 
@@ -138,15 +137,6 @@ xmipp_Euler_direction(PyObject *obj, PyObject *args, PyObject *kwargs);
 
 PyObject *
 MetaData_activateMathExtensions(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-PyObject *
-xmipp_errorBetween2CTFs(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-PyObject *
-xmipp_errorMaxFreqCTFs(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-PyObject *
-xmipp_errorMaxFreqCTFs2D(PyObject *obj, PyObject *args, PyObject *kwargs);
 
 void addIntConstant(PyObject * dict, const char * name, const long &value);
 void addLabels(PyObject * dict);

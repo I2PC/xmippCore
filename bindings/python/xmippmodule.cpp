@@ -24,8 +24,6 @@
  ***************************************************************************/
 
 #include "xmippmodule.h"
-
-#include "../../core/ctf.h"
 #include "../../core/xmipp_image_macros.h"
 
 PyObject * PyXmippError;
@@ -801,106 +799,6 @@ xmipp_activateRegExtensions(PyObject *obj, PyObject *args, PyObject *kwargs)
     return NULL;
 }
 
-PyObject *
-xmipp_errorBetween2CTFs(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyMd1, *pyMd2;
-    double minFreq=0.05,maxFreq=0.25;
-    size_t dim=256;
-
-    if (PyArg_ParseTuple(args, "OO|idd"
-                         ,&pyMd1, &pyMd2
-                         ,&dim,&minFreq,&maxFreq))
-    {
-        try
-        {
-            if (!MetaData_Check(pyMd1))
-                PyErr_SetString(PyExc_TypeError,
-                                "Expected MetaData as first argument");
-            else if (!MetaData_Check(pyMd2))
-                PyErr_SetString(PyExc_TypeError,
-                                "Expected MetaData as second argument");
-            else
-            {
-                double error = errorBetween2CTFs(MetaData_Value(pyMd1),
-                                                 MetaData_Value(pyMd2),
-                                                 dim,
-                                                 minFreq,maxFreq);
-                return Py_BuildValue("f", error);
-            }
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-
-}
-
-PyObject *
-xmipp_errorMaxFreqCTFs(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyMd1;
-    double phaseDiffRad;
-
-    if (PyArg_ParseTuple(args, "Od", &pyMd1, &phaseDiffRad))
-    {
-        try
-        {
-            if (!MetaData_Check(pyMd1))
-                PyErr_SetString(PyExc_TypeError,
-                                "Expected MetaData as first argument");
-            else
-            {
-                double resolutionA = errorMaxFreqCTFs(MetaData_Value(pyMd1),
-                                                      phaseDiffRad
-                                                     );
-                return Py_BuildValue("f", resolutionA);
-            }
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-
-}
-
-PyObject *
-xmipp_errorMaxFreqCTFs2D(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyMd1, *pyMd2;
-
-    if (PyArg_ParseTuple(args, "OO", &pyMd1, &pyMd2))
-    {
-        try
-        {
-            if (!MetaData_Check(pyMd1))
-                PyErr_SetString(PyExc_TypeError,
-                                "Expected MetaData as first argument");
-            else if (!MetaData_Check(pyMd2))
-                PyErr_SetString(PyExc_TypeError,
-                                "Expected MetaData as second argument");
-            else
-            {
-                double resolutionA = errorMaxFreqCTFs2D(MetaData_Value(pyMd1),
-                                                        MetaData_Value(pyMd2)
-                                                       );
-                return Py_BuildValue("f", resolutionA);
-            }
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-
-}
-
-
 
 static PyMethodDef
 xmipp_methods[] =
@@ -968,8 +866,6 @@ xmipp_methods[] =
           "Read a 1 or two column list of micrographs" },
         { "substituteOriginalImages", (PyCFunction) xmipp_substituteOriginalImages, METH_VARARGS,
           "Substitute the original images into a given column of a metadata" },
-        { "fastEstimateEnhancedPSD", (PyCFunction) xmipp_fastEstimateEnhancedPSD, METH_VARARGS,
-          "Utility function to calculate PSD preview" },
         { "compareTwoMetadataFiles", (PyCFunction) xmipp_compareTwoMetadataFiles, METH_VARARGS,
           "Compare two metadata files" },
         { "dumpToFile", (PyCFunction) xmipp_dumpToFile, METH_VARARGS,
@@ -984,12 +880,6 @@ xmipp_methods[] =
           METH_VARARGS, "activate math function in metadatas" },
         { "activateRegExtensions", (PyCFunction) xmipp_activateRegExtensions,
           METH_VARARGS, "activate regular expressions in metadatas" },
-        { "errorBetween2CTFs", (PyCFunction) xmipp_errorBetween2CTFs,
-          METH_VARARGS, "difference between two metadatas" },
-        { "errorMaxFreqCTFs", (PyCFunction) xmipp_errorMaxFreqCTFs,
-          METH_VARARGS, "resolution at which CTFs phase differs more than 90��" },
-        { "errorMaxFreqCTFs2D", (PyCFunction) xmipp_errorMaxFreqCTFs2D,
-          METH_VARARGS, "resolution at which CTFs phase differs more than 90��, 2D case" },
         { NULL } /* Sentinel */
     };//xmipp_methods
 
@@ -1011,7 +901,6 @@ PyMODINIT_FUNC initxmipp(void)
     INIT_TYPE(MetaData);
     INIT_TYPE(Program);
     INIT_TYPE(SymList);
-    INIT_TYPE(FourierProjector);
 
     //Add PyXmippError
     char message[32]="xmipp.XmippError";
