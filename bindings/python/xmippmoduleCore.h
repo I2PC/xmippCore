@@ -28,8 +28,6 @@
 #define _XMIPPMODULE_H
 
 #include <Python.h>
-#include <numpy/ndarraytypes.h>
-#include <numpy/ndarrayobject.h>
 
 #include "../../core/metadata_extension.h"
 #include "../../core/xmipp_image_generic.h"

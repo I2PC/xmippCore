@@ -29,6 +29,8 @@
 
 #include "Python.h"
 #include "python_metadata.h"
+#include <numpy/ndarraytypes.h>
+#include <numpy/ndarrayobject.h>
 
 /***************************************************************/
 /*                            Image                         */

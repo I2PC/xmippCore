@@ -23,11 +23,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include "xmippmodule.h"
+#include "xmippmoduleCore.h"
 #include "../../core/xmipp_image_macros.h"
 
 PyObject * PyXmippError;
-
+#include <numpy/ndarraytypes.h>
+#include <numpy/ndarrayobject.h>
 
 /***************************************************************/
 /*                            Global methods                   */
@@ -890,7 +891,7 @@ PyMODINIT_FUNC initxmipp(void)
 {
     //Initialize module variable
     PyObject* module;
-    module = Py_InitModule3("xmipp", xmipp_methods,
+    module = Py_InitModule3("xmippCore", xmipp_methods,
                             "Xmipp module as a Python extension.");
     import_array();
 
