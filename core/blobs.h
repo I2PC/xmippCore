@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _BLOBS_HH
-#define _BLOBS_HH
+#ifndef _CORE_BLOBS_HH
+#define _CORE_BLOBS_HH
 
 #include "grids.h"
 #include "multidim_array.h"

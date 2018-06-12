@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef INTEGRATION_H
-#define INTEGRATION_H
+#ifndef CORE_INTEGRATION_H
+#define CORE_INTEGRATION_H
 
 #include <cstdlib>
 #include <cmath>

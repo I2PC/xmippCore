@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWTIFF_H_
-#define RWTIFF_H_
+#ifndef CORE_RWTIFF_H_
+#define CORE_RWTIFF_H_
 
 ///@defgroup TIFF TIFF File format
 ///@ingroup ImageFormats

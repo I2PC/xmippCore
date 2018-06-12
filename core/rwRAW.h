@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWRAW_H_
-#define RWRAW_H_
+#ifndef CORE_RWRAW_H_
+#define CORE_RWRAW_H_
 
 ///@defgroup RAW1 RAW Data type
 ///@ingroup ImageFormats

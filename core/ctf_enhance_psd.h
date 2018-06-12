@@ -22,8 +22,8 @@
  *  All comments concerning this program package may be sent to the
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
-#ifndef _PROG_ENHANCE_PSD_HH
-#  define _PROG_ENHANCE_PSD_HH
+#ifndef _CORE_PROG_ENHANCE_PSD_HH
+#  define _CORE_PROG_ENHANCE_PSD_HH
 
 #include "xmipp_program.h"
 

@@ -23,8 +23,8 @@
  *  All comments concerning this program package may be sent to the
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
-#ifndef _XMIPP_MORPHOLOGY_HH
-#define _XMIPP_MORPHOLOGY_HH
+#ifndef _CORE_XMIPP_MORPHOLOGY_HH
+#define _CORE_XMIPP_MORPHOLOGY_HH
 
 #include "multidim_array.h"
 

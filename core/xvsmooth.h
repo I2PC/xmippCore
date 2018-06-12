@@ -16,8 +16,8 @@
  *
  *****************************************************************************/
 
-#ifndef _XV_SMOOTH_H
-#define _XV_SMOOTH_H
+#ifndef _CORE_XV_SMOOTH_H
+#define _CORE_XV_SMOOTH_H
 typedef unsigned char byte;
 
 /**@addtogroup Filters

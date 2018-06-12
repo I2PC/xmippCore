@@ -12,8 +12,8 @@
  Created: 19990424  Modified: 20011030
 */
 
-#ifndef RWIMAGIC_H_
-#define RWIMAGIC_H_
+#ifndef CORE_RWIMAGIC_H_
+#define CORE_RWIMAGIC_H_
 
 ///@defgroup Imagic Imagic File format
 ///@ingroup ImageFormats

@@ -22,8 +22,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _FOURIER_FOURIER_PROJECTION_H
-#define _FOURIER_FOURIER_PROJECTION_H
+#ifndef _CORE_FOURIER_FOURIER_PROJECTION_H
+#define _CORE_FOURIER_FOURIER_PROJECTION_H
 
 #include "xmipp_image.h"
 #include "xmipp_program.h"

@@ -5,8 +5,8 @@
  *      Author: roberto
  */
 
-#ifndef METADATA_EXTENSION_H_
-#define METADATA_EXTENSION_H_
+#ifndef CORE_METADATA_EXTENSION_H_
+#define CORE_METADATA_EXTENSION_H_
 
 #include "xmipp_filename.h"
 #include "xmipp_image.h"

@@ -6,8 +6,8 @@
         Created: 19990321       Modified: 20030723
 */
 
-#ifndef RWMRC_H
-#define RWMRC_H
+#ifndef CORE_RWMRC_H
+#define CORE_RWMRC_H
 
 ///@defgroup MRC MRC File format
 ///@ingroup ImageFormats

@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _FOURIER_FILTER_HH
-#define _FOURIER_FILTER_HH
+#ifndef _CORE_FOURIER_FILTER_HH
+#define _CORE_FOURIER_FILTER_HH
 
 #include "ctf.h"
 #include "xmipp_fftw.h"

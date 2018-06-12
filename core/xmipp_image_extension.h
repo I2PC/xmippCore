@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef XMIPP_IMAGE_EXTENSION_H_
-#define XMIPP_IMAGE_EXTENSION_H_
+#ifndef CORE_XMIPP_IMAGE_EXTENSION_H_
+#define CORE_XMIPP_IMAGE_EXTENSION_H_
 
 #include "xmipp_image.h"
 

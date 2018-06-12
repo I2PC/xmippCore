@@ -23,8 +23,8 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef FFT_H
-#define FFT_H
+#ifndef CORE_FFT_H
+#define CORE_FFT_H
 
 #include <complex>
 

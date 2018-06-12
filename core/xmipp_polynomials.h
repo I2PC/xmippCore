@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef POLYNOMIALS_H_
-#define POLYNOMIALS_H_
+#ifndef CORE_POLYNOMIALS_H_
+#define CORE_POLYNOMIALS_H_
 
 #include "multidim_array.h"
 #include "matrix2d.h"

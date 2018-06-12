@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef TRANSFORMATIONS_H
-#define TRANSFORMATIONS_H
+#ifndef CORE_TRANSFORMATIONS_H
+#define CORE_TRANSFORMATIONS_H
 
 #include "bilib/tboundaryconvention.h"
 #include "bilib/kerneldiff1.h"

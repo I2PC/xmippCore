@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef FRINGEPROCESSING_H_
-#define FRINGEPROCESSING_H_
+#ifndef CORE_FRINGEPROCESSING_H_
+#define CORE_FRINGEPROCESSING_H_
 
 #include "multidim_array.h"
 #include "matrix2d.h"

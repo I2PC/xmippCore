@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef COLOR_H_
-#define COLOR_H_
+#ifndef CORE_COLOR_H_
+#define CORE_COLOR_H_
 
 #include <stdio.h>
 #include "xmipp_strings.h"

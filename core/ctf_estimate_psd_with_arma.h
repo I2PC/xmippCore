@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _PROG_SPARMA_HH
-#define _PROG_SPARMA_HH
+#ifndef _CORE_PROG_SPARMA_HH
+#define _CORE_PROG_SPARMA_HH
 #define AR          0   // To distinguish between an AR parameter or a MA
 #define MA        1   // parameter, or sigma in the output ARMAParameters matrix
 #define SIGMA       2   // returned by functions.

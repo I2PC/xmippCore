@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _ADJUST_CTF_HH
-#define _ADJUST_CTF_HH
+#ifndef _CORE_ADJUST_CTF_HH
+#define _CORE_ADJUST_CTF_HH
 
 #include "fourier_filter.h"
 #include "ctf_estimate_from_psd_base.h"

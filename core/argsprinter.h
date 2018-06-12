@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef ARGSPRINTER_H_
-#define ARGSPRINTER_H_
+#ifndef CORE_ARGSPRINTER_H_
+#define CORE_ARGSPRINTER_H_
 
 #include "argsparser.h"
 

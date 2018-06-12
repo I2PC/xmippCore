@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef XMIPP_HDF5_H_
-#define XMIPP_HDF5_H_
+#ifndef CORE_XMIPP_HDF5_H_
+#define CORE_XMIPP_HDF5_H_
 
 #include <iostream>
 #include<map>

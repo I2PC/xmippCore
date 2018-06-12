@@ -25,8 +25,8 @@
 /* ------------------------------------------------------------------------- */
 /* SYMMETRIES                                                                */
 /* ------------------------------------------------------------------------- */
-#ifndef _SYMMETRIES_HH
-#define _SYMMETRIES_HH
+#ifndef _CORE_SYMMETRIES_HH
+#define _CORE_SYMMETRIES_HH
 
 #include "matrix1d.h"
 #include "matrix2d.h"

@@ -23,8 +23,8 @@
  *  All comments concerning this program package may be sent to the
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
-#ifndef IMAGE_CONVERT_H_
-#define IMAGE_CONVERT_H_
+#ifndef CORE_IMAGE_CONVERT_H_
+#define CORE_IMAGE_CONVERT_H_
 
 #include "xmipp_program.h"
 

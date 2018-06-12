@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef MASK_H
-#define MASK_H
+#ifndef CORE_MASK_H
+#define CORE_MASK_H
 
 #include "multidim_array.h"
 #include "multidim_array_generic.h"

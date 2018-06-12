@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef __XmippFFTW_H
-#define __XmippFFTW_H
+#ifndef _CORE__XmippFFTW_H
+#define _CORE__XmippFFTW_H
 
 #include <complex>
 #include "fftw3.h"

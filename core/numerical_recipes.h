@@ -25,8 +25,8 @@
 /*****************************************************************************/
 /* Variable and prototype definitions for the Numerical Core                 */
 /*****************************************************************************/
-#ifndef _NUMERICAL_HH
-#define _NUMERICAL_HH
+#ifndef CORE__NUMERICAL_HH
+#define CORE__NUMERICAL_HH
 
 #include <math.h>
 #include "xmipp_memory.h"

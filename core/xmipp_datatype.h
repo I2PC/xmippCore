@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef DATATYPE_H_
-#define DATATYPE_H_
+#ifndef CORE_DATATYPE_H_
+#define CORE_DATATYPE_H_
 
 #include <string>
 /** @defgroup Datatypes Datatypes for MultidimArrays

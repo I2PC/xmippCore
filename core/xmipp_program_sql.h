@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef PROGRAM_SQL_H_
-#define PROGRAM_SQL_H_
+#ifndef CORE_PROGRAM_SQL_H_
+#define CORE_PROGRAM_SQL_H_
 
 #include <map>
 #include "xmipp_program.h"

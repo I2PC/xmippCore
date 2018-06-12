@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWINF_H_
-#define RWINF_H_
+#ifndef CORE_RWINF_H_
+#define CORE_RWINF_H_
 
 ///@defgroup INF INF File format
 ///@ingroup ImageFormats

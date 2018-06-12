@@ -6,8 +6,8 @@
  Created: 19990410  Modified: 20010928
 */
 
-#ifndef RWSPIDER_H
-#define RWSPIDER_H
+#ifndef CORE_RWSPIDER_H
+#define CORE_RWSPIDER_H
 
 #define SPIDERSIZE 1024 // Minimum size of the SPIDER header (variable)
 ///@defgroup Spider Spider File format

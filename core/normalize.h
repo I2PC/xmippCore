@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef NORMALIZE_H
-#define NORMALIZE_H
+#ifndef CORE_NORMALIZE_H
+#define CORE_NORMALIZE_H
 
 #include "xmipp_program.h"
 #include "xmipp_image.h"

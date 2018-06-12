@@ -24,8 +24,8 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef GCC_VERSION_H
-#define GCC_VERSION_H
+#ifndef CORE_GCC_VERSION_H
+#define CORE_GCC_VERSION_H
 
 // If we do not use a GNU compiler, then set the GCC_VERSION to a very high number
 #ifdef __GNUC__

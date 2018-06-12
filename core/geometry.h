@@ -23,8 +23,8 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+#ifndef CORE_GEOMETRY_H
+#define CORE_GEOMETRY_H
 
 #include "multidim_array.h"
 #include "multidim_array_generic.h"

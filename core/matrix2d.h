@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef MATRIX2D_H_
-#define MATRIX2D_H_
+#ifndef CORE_MATRIX2D_H_
+#define CORE_MATRIX2D_H_
 
 #include <fstream>
 #include <errno.h>

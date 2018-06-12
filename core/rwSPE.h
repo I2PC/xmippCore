@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWSPE_H_
-#define RWSPE_H_
+#ifndef CORE_RWSPE_H_
+#define CORE_RWSPE_H_
 
 ///@defgroup SPE Princeton Instruments File Format
 ///@ingroup ImageFormats

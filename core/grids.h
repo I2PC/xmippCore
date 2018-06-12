@@ -26,8 +26,8 @@
 /* GRIDS                                                                     */
 /* ------------------------------------------------------------------------- */
 
-#ifndef _GRIDS_HH
-#define _GRIDS_HH
+#ifndef _CORE_GRIDS_HH
+#define _CORE_GRIDS_HH
 
 #include <vector>
 

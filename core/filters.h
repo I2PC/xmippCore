@@ -23,8 +23,8 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef FILTERS_H
-#define FILTERS_H
+#ifndef CORE_FILTERS_H
+#define CORE_FILTERS_H
 
 #define LOG2 0.693147181
 

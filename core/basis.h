@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _BASIS_HH
-#define _BASIS_HH
+#ifndef _CORE_BASIS_HH
+#define _CORE_BASIS_HH
 
 #include "blobs.h"
 #include "splines.h"

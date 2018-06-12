@@ -24,8 +24,8 @@
  ***************************************************************************/
 /* This file contains functions related to the SAMPLING Transform */
 
-#ifndef _BASICPCA_HH
-#define _BASICPCA_HH
+#ifndef _CORE_BASICPCA_HH
+#define _CORE_BASICPCA_HH
 
 #include <vector>
 #include "multidim_array.h"

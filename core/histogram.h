@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef HISTOGRAM_H
-#define HISTOGRAM_H
+#ifndef CORE_HISTOGRAM_H
+#define CORE_HISTOGRAM_H
 
 #include "multidim_array.h"
 #include "multidim_array_generic.h"

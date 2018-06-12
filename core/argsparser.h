@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef ARGSPARSER_H_
-#define ARGSPARSER_H_
+#ifndef CORE_ARGSPARSER_H_
+#define CORE_ARGSPARSER_H_
 
 //#include <cstring>
 //#include <iostream>

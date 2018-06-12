@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef XMIPP_FILENAME_H_
-#define XMIPP_FILENAME_H_
+#ifndef CORE_XMIPP_FILENAME_H_
+#define CORE_XMIPP_FILENAME_H_
 
 #include <vector>
 #include <sys/stat.h>

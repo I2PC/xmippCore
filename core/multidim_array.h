@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef MULTIDIM_ARRAY_H
-#define MULTIDIM_ARRAY_H
+#ifndef CORE_MULTIDIM_ARRAY_H
+#define CORE_MULTIDIM_ARRAY_H
 
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>

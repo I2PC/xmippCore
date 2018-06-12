@@ -27,8 +27,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef IMAGEOVER_H
-#define IMAGEOVER_H
+#ifndef CORE_IMAGEOVER_H
+#define CORE_IMAGEOVER_H
 
 #include "xmipp_image.h"
 /** @ingroup Images

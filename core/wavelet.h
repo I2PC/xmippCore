@@ -25,8 +25,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef WAVELET_H
-#define WAVELET_H
+#ifndef CORE_WAVELET_H
+#define CORE_WAVELET_H
 
 #include "multidim_array.h"
 #include "numerical_recipes.h"

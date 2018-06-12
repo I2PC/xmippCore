@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWJPEG_H_
-#define RWJPEG_H_
+#ifndef CORE_RWJPEG_H_
+#define CORE_RWJPEG_H_
 
 int readJPEG(size_t select_img);
 

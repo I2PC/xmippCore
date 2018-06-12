@@ -29,8 +29,8 @@
  *  All comments concerning this program package may be sent to the
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
-#ifndef POLAR_H
-#define POLAR_H
+#ifndef CORE_POLAR_H
+#define CORE_POLAR_H
 #include "xmipp_funcs.h"
 #include "multidim_array.h"
 #include "transformations.h"

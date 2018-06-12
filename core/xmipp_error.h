@@ -23,8 +23,8 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef XMIPP_ERROR_H
-#define XMIPP_ERROR_H
+#ifndef CORE_XMIPP_ERROR_H
+#define CORE_XMIPP_ERROR_H
 
 #include <iostream>
 #include "xmipp_strings.h"

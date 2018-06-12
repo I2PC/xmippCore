@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _XMIPPMICROGRAPH_H
-#define _XMIPPMICROGRAPH_H
+#ifndef _CORE_XMIPPMICROGRAPH_H
+#define _CORE_XMIPPMICROGRAPH_H
 
 /* ************************************************************************* */
 /* INCLUDES                                                                  */

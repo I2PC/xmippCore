@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef METADATALABEL_H
-#define METADATALABEL_H
+#ifndef CORE_METADATALABEL_H
+#define CORE_METADATALABEL_H
 
 #include <map>
 #include <iostream>

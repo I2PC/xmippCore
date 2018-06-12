@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _SPLINES_HH
-#define _SPLINES_HH
+#ifndef _CORE_SPLINES_HH
+#define _CORE_SPLINES_HH
 
 #include "bilib/kernel.h"
 

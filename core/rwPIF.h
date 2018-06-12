@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWPIF_H_
-#define RWPIF_H_
+#ifndef CORE_RWPIF_H_
+#define CORE_RWPIF_H_
 
 ///defgroup PIF Portable Image Format for EM Data File format
 ///@ingroup ImageFormats

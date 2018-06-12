@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef MATRIX1D_H_
-#define MATRIX1D_H_
+#ifndef CORE_MATRIX1D_H_
+#define CORE_MATRIX1D_H_
 
 #include <stdlib.h>
 #include <cmath>

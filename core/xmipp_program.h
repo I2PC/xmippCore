@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef PROGRAM_H_
-#define PROGRAM_H_
+#ifndef CORE_PROGRAM_H_
+#define CORE_PROGRAM_H_
 
 #include "argsprinter.h"
 #include "xmipp_error.h"

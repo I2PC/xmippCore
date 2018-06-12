@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWHDF5_H_
-#define RWHDF5_H_
+#ifndef CORE_RWHDF5_H_
+#define CORE_RWHDF5_H_
 
 #include "hdf5.h"
 

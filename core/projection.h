@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef PROJECTION_H
-#define PROJECTION_H
+#ifndef CORE_PROJECTION_H
+#define CORE_PROJECTION_H
 
 #include "xmipp_image.h"
 #include "xmipp_threads.h"

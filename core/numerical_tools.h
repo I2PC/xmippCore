@@ -25,8 +25,8 @@
 /*****************************************************************************/
 /* Variable and prototype definitions for the Numerical Core                 */
 /*****************************************************************************/
-#ifndef _NUMERICAL_TOOLS_HH
-#define _NUMERICAL_TOOLS_HH
+#ifndef CORE__NUMERICAL_TOOLS_HH
+#define CORE__NUMERICAL_TOOLS_HH
 
 #include "numerical_recipes.h"
 #include "matrix1d.h"

@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWTIA_H_
-#define RWTIA_H_
+#ifndef CORE_RWTIA_H_
+#define CORE_RWTIA_H_
 
 
 ///@defgroup TIA TIA File format

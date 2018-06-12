@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWDM3_H_
-#define RWDM3_H_
+#ifndef CORE_RWDM3_H_
+#define CORE_RWDM3_H_
 
 ///@defgroup DM3 DM3 File format
 ///@ingroup ImageFormats

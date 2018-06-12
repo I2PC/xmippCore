@@ -23,8 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef IMAGE_BASE_H_
-#define IMAGE_BASE_H_
+#ifndef CORE_IMAGE_BASE_H_
+#define CORE_IMAGE_BASE_H_
 
 #include "xmipp_image_macros.h"
 #include "multidim_array.h"
