@@ -5693,6 +5693,87 @@ std::ostream& operator<< (std::ostream& ostrm, const MultidimArray<T>& v)
  * No check on boundaries are performed.
  */
 void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall, int y0, int x0, int yF, int xF);
+
+/** correlationIndex nD
+ * @ingroup Filters
+ */
+template <typename T>
+double correlationIndex(const MultidimArray< T >& x,
+                        const MultidimArray< T >& y,
+                        const MultidimArray< int >* mask = NULL,
+                        MultidimArray< double >* Contributions = NULL)
+{
+	SPEED_UP_tempsInt;
+
+    double retval = 0, aux;
+    double mean_x, mean_y;
+    double stddev_x, stddev_y;
+
+    long N = 0;
+
+    if (mask == NULL)
+    {
+        x.computeAvgStdev(mean_x, stddev_x);
+        y.computeAvgStdev(mean_y, stddev_y);
+    }
+    else
+    {
+        x.computeAvgStdev_within_binary_mask(*mask, mean_x,stddev_x);
+        y.computeAvgStdev_within_binary_mask(*mask, mean_y,stddev_y);
+    }
+    if (ABS(stddev_x)<XMIPP_EQUAL_ACCURACY ||
+        ABS(stddev_y)<XMIPP_EQUAL_ACCURACY)
+        return 0;
+
+    // If contributions are desired. Please, be careful interpreting individual
+    // contributions to the covariance! One pixel value afect others.
+    if (Contributions != NULL)
+    {
+        FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(x, y)
+        {
+            if (mask != NULL)
+                if (!A3D_ELEM(*mask,k, i, j))
+                    continue;
+
+            aux = (A3D_ELEM(x, k, i, j) - mean_x) * (A3D_ELEM(y, k, i, j) -
+                    mean_y);
+            A3D_ELEM(*Contributions, k, i, j) = aux;
+            retval += aux;
+            ++N;
+        }
+
+        FOR_ALL_ELEMENTS_IN_ARRAY3D(*Contributions)
+        A3D_ELEM(*Contributions, k, i, j) /= ((stddev_x * stddev_y) * N);
+    }
+    else
+    {
+        if (mask==NULL && x.sameShape(y))
+        {
+            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(x)
+                retval += DIRECT_MULTIDIM_ELEM(x, n)*DIRECT_MULTIDIM_ELEM(y, n);
+            N=MULTIDIM_SIZE(x);
+            retval-=N*mean_x*mean_y;
+        }
+        else
+        {
+            FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(x, y)
+            {
+                if (mask != NULL)
+                    if (!A3D_ELEM(*mask,k, i, j))
+                        continue;
+
+                retval += (A3D_ELEM(x, k, i, j) - mean_x) *
+                          (A3D_ELEM(y, k, i, j) - mean_y);
+                ++N;
+            }
+        }
+    }
+
+    if (N != 0)
+        return retval / ((stddev_x * stddev_y) * N);
+    else
+        return 0;
+}
 //@}
 
 // Specializations cases for complex numbers

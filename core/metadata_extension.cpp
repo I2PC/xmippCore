@@ -7,7 +7,6 @@
 #include "metadata_extension.h"
 #include "xmipp_image_extension.h"
 #include "xmipp_fftw.h"
-#include "xmipp_image_convert.h"
 
 #ifndef __linux__
 #define MAXDOUBLE __DBL_MAX__

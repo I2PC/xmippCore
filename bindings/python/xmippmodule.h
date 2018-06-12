@@ -36,9 +36,6 @@
 #include "../../core/xmipp_image_extension.h"
 #include "../../core/xmipp_color.h"
 #include "../../core/symmetries.h"
-#include "../../core/projection.h"
-#include "../../core/ctf_estimate_from_micrograph.h"
-#include "../../core/fourier_projection.h"
 
 #include "python_filename.h"
 #include "python_image.h"
@@ -128,30 +125,6 @@ bool validateInputImageString(PyObject * pyImage, PyObject *pyStrFn, FileName &f
 
 PyObject *
 xmipp_compareTwoMetadataFiles(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-/* calculate enhanced psd and return preview*/
-PyObject *
-xmipp_fastEstimateEnhancedPSD(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-/* calculate enhanced psd and return preview
-* used for protocol preprocess_particles*/
-PyObject *
-xmipp_bandPassFilter(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_gaussianFilter(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_realGaussianFilter(PyObject *obj, PyObject *args, PyObject *kwargs);
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_badPixelFilter(PyObject *obj, PyObject *args, PyObject *kwargs);
 
 /* dump metadatas to database*/
 PyObject *

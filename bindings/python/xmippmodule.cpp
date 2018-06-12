@@ -665,37 +665,6 @@ xmipp_compareTwoMetadataFiles(PyObject *obj, PyObject *args, PyObject *kwargs)
     return NULL;
 }
 
-/* calculate enhanced psd and return preview*/
-PyObject *
-xmipp_fastEstimateEnhancedPSD(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyStrFn, *pyImage;
-    //ImageObject *pyImage;
-    double downsampling;
-    int dim, Nthreads;
-    FileName fn;
-
-    if (PyArg_ParseTuple(args, "OOdii", &pyImage, &pyStrFn, &downsampling, &dim, &Nthreads))
-    {
-        try
-        {
-            if (validateInputImageString(pyImage, pyStrFn, fn))
-            {
-                MultidimArray<double> data;
-                fastEstimateEnhancedPSD(fn, downsampling, data, Nthreads);
-                selfScaleToSize(LINEAR, data, dim, dim);
-                Image_Value(pyImage).setDatatype(DT_Double);
-                Image_Value(pyImage).data->setImage(data);
-                Py_RETURN_NONE;
-            }
-        }
-        catch (XmippError &xe)
-        {
-            PyErr_SetString(PyXmippError, xe.msg.c_str());
-        }
-    }
-    return NULL;
-}
 /** Some helper macros repeated in filter functions*/
 #define FILTER_TRY()\
 try {\
@@ -719,85 +688,6 @@ Py_RETURN_NONE;\
 }} catch (XmippError &xe)\
 { PyErr_SetString(PyXmippError, xe.msg.c_str());}\
 
-
-/* calculate enhanced psd and return preview
-* used for protocol preprocess_particles*/
-PyObject *
-xmipp_bandPassFilter(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyStrFn, *pyImage;
-    double w1, w2, raised_w;
-    int dim;
-    FileName fn;
-
-    if (PyArg_ParseTuple(args, "OOdddi", &pyImage, &pyStrFn, &w1, &w2, &raised_w, &dim))
-    {
-        FILTER_TRY()
-        bandpassFilter(data, w1, w2, raised_w);
-        FILTER_CATCH()
-    }
-    return NULL;
-}
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_gaussianFilter(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyStrFn, *pyImage;
-    double freqSigma;
-    int dim;
-    FileName fn;
-
-    if (PyArg_ParseTuple(args, "OOdi", &pyImage, &pyStrFn, &freqSigma, &dim))
-    {
-        FILTER_TRY()
-        gaussianFilter(data, freqSigma);
-        FILTER_CATCH()
-    }
-    return NULL;
-}
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_realGaussianFilter(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyStrFn, *pyImage;
-    double realSigma;
-    int dim;
-    FileName fn;
-
-    if (PyArg_ParseTuple(args, "OOdi", &pyImage, &pyStrFn, &realSigma, &dim))
-    {
-        FILTER_TRY()
-        realGaussianFilter(data, realSigma);
-        FILTER_CATCH()
-    }
-    return NULL;
-}
-
-/* calculate enhanced psd and return preview
- * used for protocol preprocess_particles*/
-PyObject *
-xmipp_badPixelFilter(PyObject *obj, PyObject *args, PyObject *kwargs)
-{
-    PyObject *pyStrFn, *pyImage;
-    double factor;
-    int dim;
-    FileName fn;
-
-    if (PyArg_ParseTuple(args, "OOdi", &pyImage, &pyStrFn, &factor, &dim))
-    {
-        FILTER_TRY()
-        BadPixelFilter filter;
-        filter.type = BadPixelFilter::OUTLIER;
-        filter.factor = factor;
-        filter.apply(data);
-        FILTER_CATCH()
-    }
-    return NULL;
-}
 
 /* dump metadatas to database*/
 PyObject *
@@ -1082,14 +972,6 @@ xmipp_methods[] =
           "Utility function to calculate PSD preview" },
         { "compareTwoMetadataFiles", (PyCFunction) xmipp_compareTwoMetadataFiles, METH_VARARGS,
           "Compare two metadata files" },
-        { "bandPassFilter", (PyCFunction) xmipp_bandPassFilter, METH_VARARGS,
-          "Utility function to apply bandpass filter" },
-        { "gaussianFilter", (PyCFunction) xmipp_gaussianFilter, METH_VARARGS,
-          "Utility function to apply gaussian filter in Fourier space" },
-        { "realGaussianFilter", (PyCFunction) xmipp_realGaussianFilter, METH_VARARGS,
-          "Utility function to apply gaussian filter in Real space" },
-        { "badPixelFilter", (PyCFunction) xmipp_badPixelFilter, METH_VARARGS,
-          "Bad pixel filter" },
         { "dumpToFile", (PyCFunction) xmipp_dumpToFile, METH_VARARGS,
           "dump metadata to sqlite database" },
         { "Euler_angles2matrix", (PyCFunction) xmipp_Euler_angles2matrix, METH_VARARGS,
