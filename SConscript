@@ -103,7 +103,7 @@ def addLib(name, **kwargs):
 
 # Data
 addLib('XmippCore',
-       dirs=['src','src','src','src'],
+       dirs=['core','core','core','core'],
        patterns=['*.cpp','*.c','bilib/*.cc','alglib/*.cpp'],
        libs=['fftw3', 'fftw3_threads',
              'hdf5','hdf5_cpp',
