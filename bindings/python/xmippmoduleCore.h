@@ -24,8 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef _XMIPPMODULE_H
-#define _XMIPPMODULE_H
+#ifndef _XMIPPMODULECORE_H
+#define _XMIPPMODULECORE_H
 
 #include <Python.h>
 
