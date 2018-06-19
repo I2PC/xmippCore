@@ -101,13 +101,20 @@ def addLib(name, **kwargs):
 #       libs=['pthread']
 #       )
 
+def getHdf5Name(libdirs):
+    for dir in libdirs:
+        if os.path.exists(os.path.join(dir.strip(),"libhdf5.so")):
+            return "hdf5"
+        elif os.path.exists(os.path.join(dir.strip(),"libhdf5_serial.so")):
+            return "hdf5_serial"
+    return "hdf5"
 
 # Data
 addLib('XmippCore',
        dirs=['core','core','core','core'],
        patterns=['*.cpp','*.c','bilib/*.cc','alglib/*.cpp'],
        libs=['fftw3', 'fftw3_threads',
-             'hdf5','hdf5_cpp',
+             getHdf5Name(env['EXTERNAL_LIBDIRS']),'hdf5_cpp',
              'tiff',
              'jpeg',
              'sqlite3',
