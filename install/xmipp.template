@@ -5,7 +5,6 @@ LINKERFORPROGRAMS = g++
 CCFLAGS = -std=c99
 CXXFLAGS = -std=c++11
 LINKFLAGS = 
-GTEST = False
 DEBUG = False
 LIBDIRFLAGS = -L$SCIPION_HOME/software/lib
 INCDIRFLAGS =-I$SCIPION_HOME/software/include

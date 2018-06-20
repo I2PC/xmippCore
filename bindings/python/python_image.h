@@ -86,10 +86,6 @@ Image_readPreview(PyObject *obj, PyObject *args, PyObject *kwargs);
 PyObject *
 Image_readPreviewSmooth(PyObject *obj, PyObject *args, PyObject *kwargs);
 
-/* convert to psd */
-PyObject *
-Image_convertPSD(PyObject *obj, PyObject *args, PyObject *kwargs);
-
 /* readApplyGeo */
 PyObject *
 Image_readApplyGeo(PyObject *obj, PyObject *args, PyObject *kwargs);
