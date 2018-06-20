@@ -887,7 +887,7 @@ xmipp_methods[] =
 #define INIT_TYPE(type) if (PyType_Ready(&type##Type) < 0) return; Py_INCREF(&type##Type);\
     PyModule_AddObject(module, #type, (PyObject *) &type##Type);
 
-PyMODINIT_FUNC initxmipp(void)
+PyMODINIT_FUNC initxmippCore(void)
 {
     //Initialize module variable
     PyObject* module;
