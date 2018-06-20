@@ -103,8 +103,6 @@ PyMethodDef Image_methods[] =
           "return true if both images are equal up to precision" },
         { "readApplyGeo", (PyCFunction) Image_readApplyGeo, METH_VARARGS,
           "Read image from disk applying geometry in referring metadata" },
-        { "applyCTF", (PyCFunction) Image_applyCTF, METH_VARARGS,
-		  "Apply CTF to this image. Ts is the sampling rate of the image." },
         { "write", (PyCFunction) Image_write, METH_VARARGS,
           "Write image to disk" },
         { "getData", (PyCFunction) Image_getData, METH_VARARGS,

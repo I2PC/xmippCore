@@ -129,10 +129,6 @@ Image_mirrorY(PyObject *obj, PyObject *args, PyObject *kwargs);
 PyObject *
 Image_applyTransforMatScipion(PyObject *obj, PyObject *args, PyObject *kwargs);
 
-/* applyTransforMatScipion */
-PyObject *
-Image_applyCTF(PyObject *obj, PyObject *args, PyObject *kwargs);
-
 /* initRandom */
 PyObject *
 Image_initRandom(PyObject *obj, PyObject *args, PyObject *kwargs);
