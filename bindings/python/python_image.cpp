@@ -107,8 +107,6 @@ PyMethodDef Image_methods[] =
           "Write image to disk" },
         { "getData", (PyCFunction) Image_getData, METH_VARARGS,
           "Return NumPy array from image data" },
-        { "projectVolumeDouble", (PyCFunction) Image_projectVolumeDouble, METH_VARARGS,
-          "project a volume using Euler angles" },
 
         { "setData", (PyCFunction) Image_setData, METH_VARARGS,
           "Copy NumPy array to image data" },
