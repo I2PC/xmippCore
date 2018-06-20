@@ -154,8 +154,6 @@ PyMethodDef Image_methods[] =
           "Compute image statistics, return mean, dev, min and max" },
         { "adjustAndSubtract", (PyCFunction) Image_adjustAndSubtract, METH_VARARGS,
           "I1=I1-adjusted(I2)" },
-		{ "align", (PyCFunction) Image_align, METH_VARARGS,
-		  "aligned(I2), align I2 to resemble I1" },
 		/* Equivalent methods to inplace operations, but without creating new instances of Image */
         { "inplaceAdd", (PyCFunction) Image_inplaceAdd, METH_VARARGS,
           "Add another image to self (does not create another Image instance)" },
