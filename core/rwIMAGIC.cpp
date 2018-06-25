@@ -295,6 +295,7 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
             break;
         default:
             wDType = DT_Unknown;
+            (void)wDType; // to suppress dead assignment warning
             REPORT_ERROR(ERR_TYPE_INCORRECT, "ERROR: Unsupported data type by IMAGIC format.");
         }
     }

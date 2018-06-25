@@ -814,7 +814,6 @@ void Euler_direction2angles(Matrix1D<double> &v0,
         {
             alpha = aux_alpha;
             beta  = -1. * aux_beta;
-            error = newerror;
         }
     }/*else 1 end*/
     gamma = 0.;

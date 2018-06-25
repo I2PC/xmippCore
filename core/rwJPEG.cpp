@@ -103,7 +103,7 @@ int ImageBase::readJPEG(size_t select_img)
     /* wrap up decompression, destroy objects, free pointers and close open files */
     jpeg_finish_decompress( &cinfo );
     jpeg_destroy_decompress( &cinfo );
-    free( row_pointer[0] );
+    delete[] row_pointer[0];
 
     return 0;
 }
@@ -211,6 +211,7 @@ int ImageBase::writeJPEG(size_t select_img, bool isStack, int mode, String bitDe
 
     jpeg_finish_compress(&cinfo);
     jpeg_destroy_compress(&cinfo);
+    delete[] row_pointer[0];
 
     //    fwrite(out_buffer, cinfo.dest->next_output_byte - out_buffer,1 ,fimg);
 
