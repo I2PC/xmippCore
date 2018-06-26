@@ -164,7 +164,6 @@ void least_squares_plane_fit_All_Points(const MultidimArray<double> &Image,
     double  L = 0;
     double  denom = 0;
     int	nIterations=0;
-    double value;
     double sumjValues=0.0;
     for (int j=STARTINGX(Image); j<=FINISHINGX(Image); ++j)
     {
