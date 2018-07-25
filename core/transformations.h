@@ -102,10 +102,11 @@ void rotation2DMatrix(double ang, Matrix2D< double > &m, bool homogeneous=true);
  *
  * @code
  * // Displacement of 1 pixel to the right
- * m = translation2DMatrix(vectorR2(1, 0));
+  * resMatrix = translation2DMatrix(vectorR2(1, 0));
  * @endcode
  */
-void translation2DMatrix(const Matrix1D< double > &v, Matrix2D< double > &m,bool inverse=false);
+template<typename T>
+void translation2DMatrix(const Matrix1D<T> &translation, Matrix2D<T> &resMatrix, bool inverse=false);
 
 /** Creates a rotational matrix (4x4) for volumes around system axis
  * @ingroup GeometricalTransformations
@@ -181,10 +182,11 @@ void alignWithZ(const Matrix1D< double >& axis, Matrix2D< double > &m, bool homo
  *
  * @code
  * // Displacement of 2 pixels down
- * m = translation3DMatrix(vectorR3(0, 0, 2));
+ * resMatrix = translation3DMatrix(vectorR3(0, 0, 2));
  * @endcode
  */
-void translation3DMatrix(const Matrix1D< double >& v, Matrix2D< double > &m,bool inverse=false);
+template<typename T>
+void translation3DMatrix(const Matrix1D<T> &translation, Matrix2D<T> &resMatrix, bool inverse=false);
 
 /** Creates a scaling matrix (4x4) for volumes
  * @ingroup GeometricalTransformations
@@ -279,25 +281,25 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
  * applyGeometry(V2, A, V1);
  * @endcode
  */
-template<typename T1,typename T>
+template<typename T1,typename T, typename T2>
 void applyGeometry(int SplineDegree,
                    MultidimArray<T>& __restrict__ V2,
                    const MultidimArray<T1>& __restrict__ V1,
-                   const Matrix2D< double > &A, bool inv,
+                   const Matrix2D< T2 > &At, bool inv,
                    bool wrap, T outside = 0, MultidimArray<double> *BcoeffsPtr=NULL)
 {
 #ifndef RELEASE_MODE
     if (&V1 == (MultidimArray<T1>*)&V2)
         REPORT_ERROR(ERR_VALUE_INCORRECT,"ApplyGeometry: Input array cannot be the same as output array");
 
-    if ( V1.getDim()==2 && ((MAT_XSIZE(A) != 3) || (MAT_YSIZE(A) != 3)) )
+    if ( V1.getDim()==2 && ((MAT_XSIZE(At) != 3) || (MAT_YSIZE(At) != 3)) )
         REPORT_ERROR(ERR_MATRIX_SIZE,"ApplyGeometry: 2D transformation matrix is not 3x3");
 
-    if ( V1.getDim()==3 && ((MAT_XSIZE(A) != 4) || (MAT_YSIZE(A) != 4)) )
+    if ( V1.getDim()==3 && ((MAT_XSIZE(At) != 4) || (MAT_YSIZE(At) != 4)) )
         REPORT_ERROR(ERR_MATRIX_SIZE,"ApplyGeometry: 3D transformation matrix is not 4x4");
 #endif
 
-    if (A.isIdentity() && ( XSIZE(V2) == 0 || SAME_SHAPE3D(V1,V2) ) )
+    if (At.isIdentity() && ( XSIZE(V2) == 0 || SAME_SHAPE3D(V1,V2) ) )
     {
         typeCast(V1,V2);
         return;
@@ -311,7 +313,8 @@ void applyGeometry(int SplineDegree,
 
     MultidimArray<double> Bcoeffs;
     MultidimArray<double> *BcoeffsToUse=NULL;
-    Matrix2D<double> Ainv;
+    Matrix2D<double> A, Ainv;
+    typeCast(At, A);
     const Matrix2D<double> * Aptr=&A;
     if (!inv)
     {
