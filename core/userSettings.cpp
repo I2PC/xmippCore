@@ -26,6 +26,8 @@
 #include "userSettings.h"
 #include <iostream>
 
+std::list<UserSettings> UserSettings::storages;
+
 bool UserSettings::store() {
     std::ofstream output(path);
     if (output) {
@@ -45,7 +47,8 @@ bool UserSettings::reload() {
     std::string line;
 
     if (!file) {
-        std::cerr<<"Error opening output file "<< path <<  std::endl;
+        std::cerr<<"File "<< path << " does NOT exist yet or cannot be read."
+            << std::endl;
         return false;
     }
     while (std::getline(file, line))

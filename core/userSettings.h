@@ -32,21 +32,40 @@
 #define USERSETTINGS_H_
 
 #include <string>
+#include <algorithm>
 #include <map>
-#include <vector>
+#include <list>
 #include <fstream>
 #include <iosfwd>
 #include <sstream>
 #include <typeinfo>
+#include <mutex>
 
 class UserSettings {
 public:
     /**
      * Returns the only instance of this class
      */
-    static UserSettings& get() {
-        static UserSettings instance;
-        return instance;
+    static UserSettings& get(const std::string &path = std::string()) {
+        static std::mutex mtx;
+        auto res = find_if(storages.begin(), storages.end(),
+            [&path](const UserSettings& obj)
+            {return obj.identifier.compare(path) == 0;});
+        if (storages.end() == res) {
+            // it seems that we don't have such a storage yet
+            mtx.lock();
+            // make sure that nobody did it meanwhile
+            res = find_if(storages.begin(), storages.end(),
+                [&path](const UserSettings& obj)
+                {return obj.identifier.compare(path) == 0;});
+            if (storages.end() == res) {
+                storages.emplace_front(UserSettings(path));
+                res = storages.begin();
+            }
+            mtx.unlock();
+        }
+        // now we have to have it
+        return *res;
     }
 
     /**
@@ -105,12 +124,20 @@ public:
         }
     }
 
-protected:
-    /** Constructor, loads the data from HDD */
-    UserSettings() { reload(); };
+    UserSettings(UserSettings&&) = default;                // Move construct
 
     /** Destructor, stores the data on change */
     ~UserSettings() { if (wasChanged) store(); };
+
+protected:
+    /** Constructor, loads the data from HDD */
+    UserSettings(const std::string &path = std::string()) : wasChanged(false),
+        identifier(path), path(path) {
+        if (path.empty()) {
+            this->path = std::string(getenv("HOME")) + "/.xmipp.settings";
+        }
+        reload();
+    };
 
     /**
      * Generate full key name using the caller
@@ -127,7 +154,6 @@ protected:
 private:
     // delete copy and move constructors and assign operators
     UserSettings(UserSettings const&) = delete;           // Copy construct
-    UserSettings(UserSettings&&) = delete;                // Move construct
     UserSettings& operator=(UserSettings const&) = delete;   // Copy assign
     UserSettings& operator=(UserSettings &&) = delete;       // Move assign
 
@@ -141,7 +167,12 @@ private:
     char delim = '\t';
 
     /** Path to the file where data are stored */
-    std::string path = std::string(getenv("HOME")) + "/.xmipp.settings";
+    std::string path;
+
+    /** Unique identifier of the instance */
+    std::string identifier;
+
+    static std::list<UserSettings> storages;
 };
 
 #endif /* USERSETTINGS_H_ */
