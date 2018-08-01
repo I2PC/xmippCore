@@ -1881,6 +1881,9 @@ void lastEigs(const Matrix2D<double> &A, size_t M, Matrix1D<double> &D, Matrix2D
  */
 void eigsBetween(const Matrix2D<double> &A, size_t I1, size_t I2, Matrix1D<double> &D, Matrix2D<double> &P);
 
+/** Compute all eigenvalues, even if they are complex */
+void allEigs(const Matrix2D<double> &A, std::vector< std::complex<double> > &eigs);
+
 /** Find connected components of a graph.
  * Assuming that the matrix G represents an undirected graph (of size NxN), this function returns a vector (of size N) that indicates
  * for each element which is the number of its connected component.
