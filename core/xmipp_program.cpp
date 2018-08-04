@@ -724,7 +724,7 @@ void XmippMetadataProgram::finishProcessing()
 
 void XmippMetadataProgram::showProgress()
 {
-    if (time_bar_done % time_bar_step == 0 && allow_time_bar && verbose && !single_image)
+    if (time_bar_step>0 && time_bar_done % time_bar_step == 0 && allow_time_bar && verbose && !single_image)
         progress_bar(time_bar_done);
 }
 
