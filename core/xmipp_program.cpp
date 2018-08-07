@@ -707,7 +707,11 @@ void XmippMetadataProgram::finishProcessing()
 {
     if (allow_time_bar && verbose && !single_image)
         progress_bar(time_bar_size);
+    writeOutput();
+}
 
+void XmippMetadataProgram::writeOutput()
+{
     if (!single_image && !mdOut.isEmpty() && !fn_out.empty())
     {
         if (produces_an_output || produces_a_metadata || !oroot.empty()) // Out as independent images
@@ -756,6 +760,10 @@ void XmippMetadataProgram::setupRowOut(const FileName &fnImgIn, const MDRow &row
 void XmippMetadataProgram::wait()
 {
 	// In the serial implementation, we don't have to wait. This will be useful for MPI programs
+}
+
+void XmippMetadataProgram::checkPoint()
+{
 }
 
 void XmippMetadataProgram::run()
@@ -833,6 +841,7 @@ void XmippMetadataProgram::run()
         if (each_image_produces_an_output || produces_a_metadata)
             mdOut.addRow(rowOut);
 
+        checkPoint();
         showProgress();
     }
     wait();

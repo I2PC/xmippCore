@@ -367,6 +367,7 @@ protected:
      */
     virtual void startProcessing();
     virtual void finishProcessing();
+    virtual void writeOutput(); // maybe used by checkpoint
     virtual void showProgress();
     /** This method will be used to distribute the images to process
      * it will set the objectId and objectIndexto read from input metadata
@@ -417,6 +418,9 @@ public:
 
     /// Wait for the distributor to finish
     virtual void wait();
+
+    /// For very long programs, it may be needed to write checkpoints
+    virtual void checkPoint();
 
     /// Run over all images
     virtual void run();
