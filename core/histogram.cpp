@@ -308,7 +308,7 @@ double CDF::getProbability(double xi)
 				else
 					iLeft=iMiddle;
 			}
-			std::cout << "It should never reach here" << std::endl;
+			// std::cout << "It should never reach here" << std::endl;
 		}
 	}
 }
