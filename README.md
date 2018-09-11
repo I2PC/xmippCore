@@ -8,7 +8,7 @@ However, if you still want to install **only** the XmippCore software, follow:
 ```
 mkdir <xmipp-bundle>  # if it doesn't exist yet
 cd <xmipp-bundle>
-wget https://raw.githubusercontent.com/I2PC/xmipp/master/xmipp -O xmipp
+wget https://raw.githubusercontent.com/I2PC/xmipp/devel/xmipp -O xmipp
 chmod 755 xmipp
 ./xmipp --help
 mkdir src
