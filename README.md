@@ -1,6 +1,9 @@
 # xmippCore
 
-To install Xmipp, please visit [this](https://github.com/I2PC/xmipp#xmipp). However, if you want to install only the XmippCore:
+
+**>>> To install Xmipp, please visit [this](https://github.com/I2PC/xmipp#xmipp) <<<**
+
+However, if you still want to install **only** the XmippCore software, follow:
 
 ```
 mkdir <xmipp-bundle>  # if it doesn't exist yet
