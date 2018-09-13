@@ -227,7 +227,7 @@ Matrix1D<double> getVectorParameter(FILE *fh, const char *param, int dim)
     else
     {
         retval = getVectorParameter(argcp, (const char **)argvp, ((std::string)"-" + param).c_str(), dim);
-        delete copy;
+        delete[] copy;
         return retval;
     }
     return retval;
@@ -257,7 +257,7 @@ void generateCommandLine(const std::string &command_line, int &argcp,
     if (argvp != NULL)
         delete argvp;
     if (copy != NULL)
-        delete copy;
+        delete[] copy;
 
     // Copy command line
     copy = new char[L+1];

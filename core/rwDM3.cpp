@@ -519,7 +519,7 @@ int ImageBase::readDM3(size_t select_img,bool isStack)
             dataHeaders[header->nIm].headerSize = (size_t) vValue[0];
 
             nodeID = parentID;
-            id = gotoTagDM3(header->tags, nodeID, "ImageData,Dimensions");
+            gotoTagDM3(header->tags, nodeID, "ImageData,Dimensions");
             nodeID++;
             queryNodeId.setValue(nodeID);
             id = header->tags.firstObject(queryNodeId);
