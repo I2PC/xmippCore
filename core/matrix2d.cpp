@@ -473,6 +473,21 @@ void eigsBetween(const Matrix2D<double> &A, size_t I1, size_t I2, Matrix1D<doubl
 		MAT_ELEM(P,i,j)=z(i,j);
 }
 
+void allEigs(const Matrix2D<double> &A, std::vector< std::complex<double> > &eigs)
+{
+	int N=(int)MAT_YSIZE(A);
+	alglib::real_2d_array a, vl, vr;
+	a.setcontent(N,N,MATRIX2D_ARRAY(A));
+	alglib::real_1d_array wr, wi;
+
+	bool ok=rmatrixevd(a, N, 0, wr, wi, vl, vr);
+	if (!ok)
+		REPORT_ERROR(ERR_NUMERICAL,"Could not perform eigenvector decomposition");
+	eigs.clear();
+	for (int n=0; n<N; ++n)
+		eigs.push_back(std::complex<double>(wr(n),wi(n)));
+}
+
 void connectedComponentsOfUndirectedGraph(const Matrix2D<double> &G, Matrix1D<int> &component)
 {
 	size_t N=MAT_XSIZE(G);
