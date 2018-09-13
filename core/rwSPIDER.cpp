@@ -364,10 +364,9 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
     header->nslice = Zdim;
 
     // If a transform, then the physical storage in x is only half+1
-    size_t xstore  = Xdim;
     if ( transform == Hermitian )
     {
-        xstore = (size_t)(Xdim * 0.5 + 1);
+        size_t xstore = (size_t)(Xdim * 0.5 + 1);
         header->nsam = 2*xstore;
     }
 

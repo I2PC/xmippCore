@@ -116,6 +116,7 @@ DataType ImageBase::datatypeTIFF(TIFFDirHead dHead)
         break;
     default:
         datatype = DT_Unknown;
+        (void)datatype; // to suppress dead assignment warning
         //        REPORT_ERROR(ERR_TYPE_INCORRECT,"rwTIFF: Unsupported TIFF sample format.");
         break;
     }
@@ -258,6 +259,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     unsigned int x, y;
     // Dimensions of tiles
     unsigned int tileWidth, tileLength;
+    tileWidth = tileLength = 0;
 
     for (size_t i = imgStart; i < imgEnd; ++i)
     {
@@ -384,6 +386,7 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
             break;
         default:
             wDType = DT_Unknown;
+            (void)wDType; // to suppress dead assignment warning
             REPORT_ERROR(ERR_TYPE_INCORRECT,formatString("rwTIFF: cannot write TIFF format from %s\
                          datatype.",datatype2Str(myTypeID).c_str()));
         }
@@ -405,6 +408,7 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
             break;
         default:
             wDType = DT_Unknown;
+            (void)wDType; // to suppress dead assignment warning
             REPORT_ERROR(ERR_TYPE_INCORRECT,formatString("rwTIFF: TIFF format does not support %s " \
                          "datatype.",datatype2Str(myTypeID).c_str()));
         }

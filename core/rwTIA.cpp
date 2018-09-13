@@ -193,6 +193,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
         break;
     default:
         datatype = DT_Unknown;
+       (void)datatype; // to suppress dead assignment warning
         break;
     }
 
@@ -203,6 +204,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
     if (dataMode == HEADER || (dataMode == _HEADER_ALL && _nDim > 1)) // Stop reading if not necessary
     {
         delete header;
+        delete[] dataHeaders;
         return 0;
     }
 
@@ -231,6 +233,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
     }
 
     delete header;
+    delete[] dataHeaders;
 
     if( dataMode < DATA )
         return 0;

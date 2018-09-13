@@ -825,8 +825,6 @@ void progress_bar(long rlen)
             else
                 hour = 0;
         }
-        else
-            min = 0;
 
         if (hour)
             fprintf(stderr, "\r%3.2f/%3.2f %s ", h1, h2, "hours");

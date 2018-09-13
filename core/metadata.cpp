@@ -1031,8 +1031,6 @@ void MetaData::_writeRows(std::ostream &os) const
 	size_t i=0;				// Loop counter.
 	size_t length=0;		// Loop upper bound.
 
-	bool success=true;
-
 	// Prepare statement.
 	this->initGetRow( true);
 
@@ -1356,9 +1354,8 @@ void MetaData::_readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValu
 {
     String line;
     std::stringstream ss;
-    size_t nCol = columnValues.size();
-    size_t id, n = block.end - block.loop;
-    bool	firstTime=true;
+    size_t n = block.end - block.loop;
+    bool firstTime=true;
 
     if (n==0)
         return;
