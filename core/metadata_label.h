@@ -404,6 +404,8 @@ enum MDLabel
     MDL_SIGNALCHANGE, ///< Signal change for an image
 	MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
 	MDL_SPH_DEFORMATION, ///< Deformation in voxels
+	MDL_SPH_TSNE_COEFF1D, ///tsne coefficicient in 1D
+	MDL_SPH_TSNE_COEFF2D, ///tsne coefficients in 2D
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
@@ -1863,6 +1865,8 @@ private:
         MDL::addLabel(MDL_SIGNALCHANGE, LABEL_DOUBLE, "signalChange");
         MDL::addLabel(MDL_SPH_COEFFICIENTS, LABEL_VECTOR_DOUBLE, "sphCoefficients");
         MDL::addLabel(MDL_SPH_DEFORMATION, LABEL_DOUBLE, "sphDeformation");
+        MDL::addLabel(MDL_SPH_TSNE_COEFF1D, LABEL_DOUBLE, "sphTsne1D");
+        MDL::addLabel(MDL_SPH_TSNE_COEFF2D, LABEL_VECTOR_DOUBLE, "sphTsne2D");
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
