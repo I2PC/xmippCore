@@ -87,12 +87,14 @@ void MDL::addExtraAliases()
   }
 }//close function addLabel
 
-void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace)
+void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace, MDLabelType type)
 {
     names[alias] = label;
     if (replace)
     {
       data[(int)label]->str = alias;
+      if (type != LABEL_NOTYPE)
+        data[(int)label]->type = type;
     }
 }//close function addLabel
 
