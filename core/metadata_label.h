@@ -85,6 +85,7 @@ enum MDLabel
     MDL_CLASSIFICATION_INTRACLASS_DISTANCE, ///< Average intraclass distance (double)
     MDL_CLASSIFICATION_FRC_05, ///< Digital frequency at which the FRC drops below 0.5 (double)
     MDL_COMMENT, ///< Serve to make annotations on the metadata row
+    MDL_COORD_CONSENSUS_SCORE, ///< Store a score for the coords. consensus (it will change the behavoir of the viewer)
     MDL_COST, ///< Cost for the image (double)
     MDL_COST_PERCENTILE, ///< Cost percentile for the image (double)
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
@@ -402,8 +403,8 @@ enum MDLabel
     MDL_SIGMANOISE, ///< Standard deviation of the noise in ML model
     MDL_SIGMAOFFSET, ///< Standard deviation of the offsets in ML model
     MDL_SIGNALCHANGE, ///< Signal change for an image
-	MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
-	MDL_SPH_DEFORMATION, ///< Deformation in voxels
+    MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
+    MDL_SPH_DEFORMATION, ///< Deformation in voxels
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
@@ -447,6 +448,7 @@ enum MDLabel
     MDL_Z, ///< Z component (double)
     MDL_ZCOOR, ///< Z component (int)
     MDL_ZSCORE, ///< Global Z Score (double)
+    MDL_ZSCORE_DEEPLEARNING1, ///< Z Score (double)
     MDL_ZSCORE_HISTOGRAM, ///< Z Score (double)
     MDL_ZSCORE_RESMEAN, ///< Z Score of the mean of the residuals (double)
     MDL_ZSCORE_RESVAR, ///< Z Score of the stddev of the residuals (double)
@@ -1025,27 +1027,27 @@ enum MDLabel
     BSOFT_SYMMETRY_CELL_SETTING,
     BSOFT_SYMMETRY_EQUIV_ID,
     BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ,
-	BUFFER_LABELS_START,
-	BUFFER1,
-	BUFFER2,
-	BUFFER3,
-	BUFFER4,
-	BUFFER5,
-	BUFFER6,
-	BUFFER7,
-	BUFFER8,
-	BUFFER9,
-	BUFFER10,
-	BUFFER11,
-	BUFFER12,
-	BUFFER13,
-	BUFFER14,
-	BUFFER15,
-	BUFFER16,
-	BUFFER17,
-	BUFFER18,
-	BUFFER19,
-	BUFFER20,
+    BUFFER_LABELS_START,
+    BUFFER1,
+    BUFFER2,
+    BUFFER3,
+    BUFFER4,
+    BUFFER5,
+    BUFFER6,
+    BUFFER7,
+    BUFFER8,
+    BUFFER9,
+    BUFFER10,
+    BUFFER11,
+    BUFFER12,
+    BUFFER13,
+    BUFFER14,
+    BUFFER15,
+    BUFFER16,
+    BUFFER17,
+    BUFFER18,
+    BUFFER19,
+    BUFFER20,
     MDL_LAST_LABEL  // **** NOTE ****: Do keep this label always at the end,it is here for looping purposes
 };//close enum Label
 
@@ -1459,10 +1461,12 @@ private:
         MDL::addLabelAlias(MDL_CLASSIFICATION_INTRACLASS_DISTANCE, "ClassificationIntraclassDistance");
         MDL::addLabel(MDL_COLOR, LABEL_INT, "color");
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
+        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "consensusCost");  
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
+
 
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
@@ -2527,28 +2531,27 @@ private:
         MDL::addLabel(BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ, LABEL_STRING, "symmetry_equiv.pos_as_xyz");
 
         // Buffer variables
-		MDL::addLabel(BUFFER_LABELS_START, LABEL_STRING, "BufferStart");
-		MDL::addLabel(BUFFER1, LABEL_STRING, "Buffer1");
-		MDL::addLabel(BUFFER2, LABEL_STRING, "Buffer2");
-		MDL::addLabel(BUFFER3, LABEL_STRING, "Buffer3");
-		MDL::addLabel(BUFFER4, LABEL_STRING, "Buffer4");
-		MDL::addLabel(BUFFER5, LABEL_STRING, "Buffer5");
-		MDL::addLabel(BUFFER6, LABEL_STRING, "Buffer6");
-		MDL::addLabel(BUFFER7, LABEL_STRING, "Buffer7");
-		MDL::addLabel(BUFFER8, LABEL_STRING, "Buffer8");
-		MDL::addLabel(BUFFER9, LABEL_STRING, "Buffer9");
-		MDL::addLabel(BUFFER10, LABEL_STRING, "Buffer10");
-		MDL::addLabel(BUFFER11, LABEL_STRING, "Buffer11");
-		MDL::addLabel(BUFFER12, LABEL_STRING, "Buffer12");
-		MDL::addLabel(BUFFER13, LABEL_STRING, "Buffer13");
-		MDL::addLabel(BUFFER14, LABEL_STRING, "Buffer14");
-		MDL::addLabel(BUFFER15, LABEL_STRING, "Buffer15");
-		MDL::addLabel(BUFFER16, LABEL_STRING, "Buffer16");
-		MDL::addLabel(BUFFER17, LABEL_STRING, "Buffer17");
-		MDL::addLabel(BUFFER18, LABEL_STRING, "Buffer18");
-		MDL::addLabel(BUFFER19, LABEL_STRING, "Buffer19");
-		MDL::addLabel(BUFFER20, LABEL_STRING, "Buffer20");
-
+        MDL::addLabel(BUFFER_LABELS_START, LABEL_STRING, "BufferStart");
+        MDL::addLabel(BUFFER1, LABEL_STRING, "Buffer1");
+        MDL::addLabel(BUFFER2, LABEL_STRING, "Buffer2");
+        MDL::addLabel(BUFFER3, LABEL_STRING, "Buffer3");
+        MDL::addLabel(BUFFER4, LABEL_STRING, "Buffer4");
+        MDL::addLabel(BUFFER5, LABEL_STRING, "Buffer5");
+        MDL::addLabel(BUFFER6, LABEL_STRING, "Buffer6");
+        MDL::addLabel(BUFFER7, LABEL_STRING, "Buffer7");
+        MDL::addLabel(BUFFER8, LABEL_STRING, "Buffer8");
+        MDL::addLabel(BUFFER9, LABEL_STRING, "Buffer9");
+        MDL::addLabel(BUFFER10, LABEL_STRING, "Buffer10");
+        MDL::addLabel(BUFFER11, LABEL_STRING, "Buffer11");
+        MDL::addLabel(BUFFER12, LABEL_STRING, "Buffer12");
+        MDL::addLabel(BUFFER13, LABEL_STRING, "Buffer13");
+        MDL::addLabel(BUFFER14, LABEL_STRING, "Buffer14");
+        MDL::addLabel(BUFFER15, LABEL_STRING, "Buffer15");
+        MDL::addLabel(BUFFER16, LABEL_STRING, "Buffer16");
+        MDL::addLabel(BUFFER17, LABEL_STRING, "Buffer17");
+        MDL::addLabel(BUFFER18, LABEL_STRING, "Buffer18");
+        MDL::addLabel(BUFFER19, LABEL_STRING, "Buffer19");
+        MDL::addLabel(BUFFER20, LABEL_STRING, "Buffer20");
 
         //Create an static empty header for image initialization
         MDL::emptyHeader.resetGeo();
