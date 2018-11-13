@@ -582,7 +582,7 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
         }
     }
     else // To set in the header that the file is a volume not a stack
-        header->ispg = 1;
+        header->ispg = (Zdim>1)? 1:0;
 
     //locking
     FileLock flock;
