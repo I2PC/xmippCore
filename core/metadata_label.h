@@ -1863,7 +1863,7 @@ private:
         MDL::addLabel(MDL_SCORE_BY_VAR, LABEL_DOUBLE, "scoreByVariance");
         MDL::addLabel(MDL_SCORE_BY_GINI, LABEL_DOUBLE, "scoreByGiniCoeff");
         MDL::addLabel(MDL_SCORE_BY_ZERNIKE, LABEL_VECTOR_DOUBLE, "zernikeMoments");
-		MDL::addLabel(MDL_SCORE_BY_ZSCORE, LABEL_DOUBLE, "scoreByZScore");
+		    MDL::addLabel(MDL_SCORE_BY_ZSCORE, LABEL_DOUBLE, "scoreByZScore");
 
         MDL::addLabelAlias(MDL_SCALE, "Scale");
         MDL::addLabel(MDL_SELFILE, LABEL_STRING, "selfile", TAGLABEL_METADATA);
@@ -1944,6 +1944,7 @@ private:
         MDL::addLabel(MDL_ZSCORE_SHAPE2, LABEL_DOUBLE, "zScoreShape2");
         MDL::addLabel(MDL_ZSCORE_SNR1, LABEL_DOUBLE, "zScoreSNR1");
         MDL::addLabel(MDL_ZSCORE_SNR2, LABEL_DOUBLE, "zScoreSNR2");
+        MDL::addLabel(MDL_ZSCORE_DEEPLEARNING1, LABEL_DOUBLE, "zScoreDeepLearning1");
         MDL::addLabel(MDL_ZSIZE, LABEL_SIZET, "zSize");
 
         MDL::addLabelAlias(MDL_XCOOR, "Xcoor");//3.0
