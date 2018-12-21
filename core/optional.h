@@ -22,32 +22,35 @@ template<typename T>
 class optional {
 public:
     optional() :
-            p(payload()) {
+            p(new payload()) {
     }
     ;
-    optional(const T&& t) :
-            p(payload_full(t)) {
+    optional(const T &&t) :
+            p(new payload_full(t)) {
     }
     ;
-    
+
+    ~optional() {
+        delete p;
+    }
+
     constexpr explicit operator bool() const {
-        return p.has_value;
+        return p->has_value;
     }
 
     constexpr bool has_value() const {
-        return p.has_value;
+        return p->has_value;
     }
 
     constexpr T value() const {
-        assert(p.has_value);
-        return (static_cast<const payload_full&>(p)).t;
+        assert(p->has_value);
+        return static_cast<const payload_full*>(p)->t;
     }
 
-    
 private:
 
     struct payload {
-        payload(bool has_value = false) :
+        explicit payload(bool has_value = false) :
                 has_value(has_value) {
         }
         ;
@@ -55,15 +58,15 @@ private:
     };
 
     struct payload_full: public payload {
-        explicit payload_full(const T t) :
+        explicit payload_full(const T &t) :
                 payload(true), t(std::move(t)) {
         }
         ;
-        const T t;
 
+        const T t;
     };
 
-    const payload p;
+    const payload *p;
 
 };
 // optional
