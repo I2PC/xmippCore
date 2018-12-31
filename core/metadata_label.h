@@ -241,6 +241,7 @@ enum MDLabel
     MDL_KERDENSOM_REGULARIZATION, ///< Regularization value (double)
     MDL_KERDENSOM_SIGMA, ///< Sigma value (double)
     MDL_KEYWORDS, ///< Keywords associated to this line, should be a single string block (do not use spaces as separators)
+    MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
     MDL_MAGNIFICATION, /// Magnification of microscope
@@ -378,6 +379,7 @@ enum MDLabel
     MDL_SCORE_BY_EMPTINESS, ///< Small values represent worse particles. Much larger than 1 for good particles
     MDL_SCORE_BY_ENTROPY,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_GRANULO,  ///< Feature vectors used to classify particles (vector double)
+    MDL_SCORE_BY_HISTDIST,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_LBP,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_MIRROR, ///< score by mirror (double)
     MDL_SCORE_BY_RAMP,  ///< Feature vectors used to classify particles (vector double)
@@ -1851,6 +1853,7 @@ private:
         MDL::addLabel(MDL_SCORE_BY_EMPTINESS, LABEL_DOUBLE, "scoreEmptiness");
         MDL::addLabel(MDL_SCORE_BY_ENTROPY, LABEL_VECTOR_DOUBLE, "entropyFeatures");
         MDL::addLabel(MDL_SCORE_BY_GRANULO, LABEL_VECTOR_DOUBLE, "granuloFeatures");
+        MDL::addLabel(MDL_SCORE_BY_HISTDIST, LABEL_VECTOR_DOUBLE, "histdistFeatures");
         MDL::addLabel(MDL_SCORE_BY_LBP, LABEL_VECTOR_DOUBLE, "lbpFeatures");
         MDL::addLabel(MDL_SCORE_BY_MIRROR, LABEL_DOUBLE, "scoreByMirror");
         MDL::addLabel(MDL_SCORE_BY_RAMP, LABEL_VECTOR_DOUBLE, "rampCoefficients");
