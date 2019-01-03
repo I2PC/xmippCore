@@ -30,6 +30,11 @@ public:
     }
     ;
 
+    optional(const T &t) :
+            p(new payload_full(t)) {
+    }
+    ;
+
     ~optional() {
         delete p;
     }
