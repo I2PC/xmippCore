@@ -35,8 +35,23 @@ public:
     }
     ;
 
+    optional(const optional &&o) {
+        delete p;
+        this->p = o.p;
+    }
+
+    optional& operator=(optional &&o) {
+        if (this != &o) {
+            delete p;
+            this->p = o.p;
+            o.p = nullptr;
+        }
+        return *this;
+    }
+
     ~optional() {
         delete p;
+        p = nullptr;
     }
 
     constexpr explicit operator bool() const {
@@ -71,7 +86,7 @@ private:
         const T t;
     };
 
-    const payload *p;
+    payload *p;
 
 };
 // optional
