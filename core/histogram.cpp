@@ -311,6 +311,7 @@ double CDF::getProbability(double xi)
 			// std::cout << "It should never reach here" << std::endl;
 		}
 	}
+    return 0.0;
 }
 
 /* Detectability error ----------------------------------------------------- */

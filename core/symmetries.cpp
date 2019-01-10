@@ -39,7 +39,8 @@ int SymList::readSymmetryFile(FileName fn_sym, double accuracy)
     int  fold;
     Matrix2D<double> L(4, 4), R(4, 4);
     Matrix1D<double> axis(3), shift(3);
-    int pgGroup, pgOrder;
+    int pgGroup = sym_undefined;
+    int pgOrder;
     std::vector<std::string> fileContent;
 
     //check if reserved word

@@ -203,6 +203,7 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'], patte
 
     env2 = Environment()
     env2['ENV']['PATH'] = env['ENV']['PATH']
+    env2['CXX'] = env['CXX']
 
     mpiArgs = {}
     if mpi:

@@ -183,6 +183,7 @@ int ImageBase::writeINF(size_t select_img, bool isStack, int mode, String bitDep
         break;
     default:
         wDType = DT_Unknown;
+        (void)wDType; // to suppress dead assignment warning
         REPORT_ERROR(ERR_TYPE_INCORRECT,(std::string)"ERROR: Unsupported data type by RAW format.");
     }
 

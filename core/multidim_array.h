@@ -243,26 +243,6 @@ extern String floatToString(float F, int _width, int _prec);
 #define FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(v,n,ptr) \
     for ((n)=0, (ptr)=(v).data; (n)<NZYXSIZE(v); ++(n), ++(ptr))
 
-/** For a random direct elements in the array, pointer version
- *
- * This macro is used to generate loops for the array in an easy manner. It
- * defines an internal index 'k' which goes over the slices and 'n' that
- * goes over the pixels in each slice. Each element can be accessed through
- * an external pointer called ptr.
- *
- * @code
- * T* ptr=NULL;
- * size_t n;
- * int randN;
- * FOR_RAND_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(v,n,randN,ptr)
- * {
- *     std::cout << *ptr << " ";
- * }
- * @endcode
- */
-// #define FOR_RAND_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(v,n,randN,ptr) \
-//     for ((n)=0, (ptr)=(v).data; (n)<NZYXSIZE(v); ++(n), ++(ptr))
-
 /** Access to a direct element.
  * v is the array, k is the slice (Z), i is the Y index and j is the X index.
  */

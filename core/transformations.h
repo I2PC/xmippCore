@@ -432,7 +432,7 @@ void applyGeometry(int SplineDegree,
         			globalMax++;
 
         			// Check max iteration is not higher than image.
-        			if (globalMax > XSIZE(V2))
+        			if ((globalMax >= 0) && ((size_t)globalMax > XSIZE(V2)))
         			{
         				globalMax = XSIZE(V2);
         			}
@@ -499,9 +499,9 @@ void applyGeometry(int SplineDegree,
                         int n2 = n1 + 1;
 
                         // m2 and n2 can be out by 1 so wrap must be check here
-                        if (m2 >= Xdim)
+                        if ((m2 >= 0) && ((size_t)m2 >= Xdim))
                             m2 = 0;
-                        if (n2 >= Ydim)
+                        if ((n2 >=0) && ((size_t)n2 >= Ydim))
                             n2 = 0;
 
 #ifdef DEBUG_APPLYGEO
@@ -521,15 +521,15 @@ void applyGeometry(int SplineDegree,
                         double aux2=wy_1* wx_1 ;
                         double tmp  = aux2 * DIRECT_A2D_ELEM(V1, n1, m1);
 
-                        if (wx != 0 && m2 < V1.xdim)
+                        if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
                             tmp += (wy_1-aux2) * DIRECT_A2D_ELEM(V1, n1, m2);
 
-                        if (wy != 0 && n2 < V1.ydim)
+                        if ((wy != 0) && ((n2 < 0) || ((size_t)n2 < V1.ydim)))
                         {
                             aux2=wy * wx_1;
                             tmp += aux2 * DIRECT_A2D_ELEM(V1, n2, m1);
 
-                            if (wx != 0 && m2 < V1.xdim)
+                            if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
                                 tmp += (wy-aux2) * DIRECT_A2D_ELEM(V1, n2, m2);
                         }
 
@@ -609,15 +609,15 @@ void applyGeometry(int SplineDegree,
                     	double aux2=wy_1* wx_1 ;
                     	double tmp  = aux2 * DIRECT_A2D_ELEM(V1, n1, m1);
 
-                    	if (wx != 0 && m2 < V1.xdim)
+                    	if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
                 	    	tmp += (wy_1-aux2) * DIRECT_A2D_ELEM(V1, n1, m2);
 
-                    	if (wy != 0 && n2 < V1.ydim)
+                    	if ((wy != 0) && ((n2 < 0) || ((size_t)n2 < V1.ydim)))
                     	{
                     		aux2=wy * wx_1;
                     		tmp += aux2 * DIRECT_A2D_ELEM(V1, n2, m1);
     
-                    		if (wx != 0 && m2 < V1.xdim)
+                    		if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
                     			tmp += (wy-aux2) * DIRECT_A2D_ELEM(V1, n2, m2);
                     	}
 

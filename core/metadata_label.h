@@ -87,6 +87,7 @@ enum MDLabel
     MDL_COMMENT, ///< Serve to make annotations on the metadata row
     MDL_COST, ///< Cost for the image (double)
     MDL_COST_PERCENTILE, ///< Cost percentile for the image (double)
+    MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
 
@@ -241,6 +242,7 @@ enum MDLabel
     MDL_KERDENSOM_REGULARIZATION, ///< Regularization value (double)
     MDL_KERDENSOM_SIGMA, ///< Sigma value (double)
     MDL_KEYWORDS, ///< Keywords associated to this line, should be a single string block (do not use spaces as separators)
+    MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
     MDL_MAGNIFICATION, /// Magnification of microscope
@@ -378,6 +380,7 @@ enum MDLabel
     MDL_SCORE_BY_EMPTINESS, ///< Small values represent worse particles. Much larger than 1 for good particles
     MDL_SCORE_BY_ENTROPY,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_GRANULO,  ///< Feature vectors used to classify particles (vector double)
+    MDL_SCORE_BY_HISTDIST,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_LBP,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_MIRROR, ///< score by mirror (double)
     MDL_SCORE_BY_RAMP,  ///< Feature vectors used to classify particles (vector double)
@@ -1025,7 +1028,27 @@ enum MDLabel
     BSOFT_SYMMETRY_CELL_SETTING,
     BSOFT_SYMMETRY_EQUIV_ID,
     BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ,
-
+	BUFFER_LABELS_START,
+	BUFFER1,
+	BUFFER2,
+	BUFFER3,
+	BUFFER4,
+	BUFFER5,
+	BUFFER6,
+	BUFFER7,
+	BUFFER8,
+	BUFFER9,
+	BUFFER10,
+	BUFFER11,
+	BUFFER12,
+	BUFFER13,
+	BUFFER14,
+	BUFFER15,
+	BUFFER16,
+	BUFFER17,
+	BUFFER18,
+	BUFFER19,
+	BUFFER20,
     MDL_LAST_LABEL  // **** NOTE ****: Do keep this label always at the end,it is here for looping purposes
 };//close enum Label
 
@@ -1365,7 +1388,7 @@ public:
     /** Add an alias for an existing label,
      * If replace=true, then new alias name will be used
      * as the label string for writing back to file */
-    static void addLabelAlias(MDLabel label, const String &alias, bool replace=false);
+    static void addLabelAlias(MDLabel label, const String &alias, bool replace=false, MDLabelType type=LABEL_NOTYPE);
 }
 ;//close class MLD definition
 
@@ -1441,6 +1464,7 @@ private:
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
+        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
 
@@ -1831,6 +1855,7 @@ private:
         MDL::addLabel(MDL_SCORE_BY_EMPTINESS, LABEL_DOUBLE, "scoreEmptiness");
         MDL::addLabel(MDL_SCORE_BY_ENTROPY, LABEL_VECTOR_DOUBLE, "entropyFeatures");
         MDL::addLabel(MDL_SCORE_BY_GRANULO, LABEL_VECTOR_DOUBLE, "granuloFeatures");
+        MDL::addLabel(MDL_SCORE_BY_HISTDIST, LABEL_VECTOR_DOUBLE, "histdistFeatures");
         MDL::addLabel(MDL_SCORE_BY_LBP, LABEL_VECTOR_DOUBLE, "lbpFeatures");
         MDL::addLabel(MDL_SCORE_BY_MIRROR, LABEL_DOUBLE, "scoreByMirror");
         MDL::addLabel(MDL_SCORE_BY_RAMP, LABEL_VECTOR_DOUBLE, "rampCoefficients");
@@ -2505,6 +2530,30 @@ private:
         MDL::addLabel(BSOFT_SYMMETRY_CELL_SETTING, LABEL_STRING, "symmetry.cell_setting");
         MDL::addLabel(BSOFT_SYMMETRY_EQUIV_ID, LABEL_INT, "symmetry_equiv.id");
         MDL::addLabel(BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ, LABEL_STRING, "symmetry_equiv.pos_as_xyz");
+
+        // Buffer variables
+		MDL::addLabel(BUFFER_LABELS_START, LABEL_STRING, "BufferStart");
+		MDL::addLabel(BUFFER1, LABEL_STRING, "Buffer1");
+		MDL::addLabel(BUFFER2, LABEL_STRING, "Buffer2");
+		MDL::addLabel(BUFFER3, LABEL_STRING, "Buffer3");
+		MDL::addLabel(BUFFER4, LABEL_STRING, "Buffer4");
+		MDL::addLabel(BUFFER5, LABEL_STRING, "Buffer5");
+		MDL::addLabel(BUFFER6, LABEL_STRING, "Buffer6");
+		MDL::addLabel(BUFFER7, LABEL_STRING, "Buffer7");
+		MDL::addLabel(BUFFER8, LABEL_STRING, "Buffer8");
+		MDL::addLabel(BUFFER9, LABEL_STRING, "Buffer9");
+		MDL::addLabel(BUFFER10, LABEL_STRING, "Buffer10");
+		MDL::addLabel(BUFFER11, LABEL_STRING, "Buffer11");
+		MDL::addLabel(BUFFER12, LABEL_STRING, "Buffer12");
+		MDL::addLabel(BUFFER13, LABEL_STRING, "Buffer13");
+		MDL::addLabel(BUFFER14, LABEL_STRING, "Buffer14");
+		MDL::addLabel(BUFFER15, LABEL_STRING, "Buffer15");
+		MDL::addLabel(BUFFER16, LABEL_STRING, "Buffer16");
+		MDL::addLabel(BUFFER17, LABEL_STRING, "Buffer17");
+		MDL::addLabel(BUFFER18, LABEL_STRING, "Buffer18");
+		MDL::addLabel(BUFFER19, LABEL_STRING, "Buffer19");
+		MDL::addLabel(BUFFER20, LABEL_STRING, "Buffer20");
+
 
         //Create an static empty header for image initialization
         MDL::emptyHeader.resetGeo();

@@ -754,6 +754,7 @@ void FileName::createEmptyFile(size_t size, size_t block_size)
         fwrite(buffer, sizeof(unsigned char), block_size, fd);
     fwrite(buffer, sizeof(unsigned char), size % block_size, fd);
     fclose(fd);
+    free(buffer);
 }
 
 void FileName::createEmptyFileWithGivenLength(size_t length) const
