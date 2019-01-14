@@ -1129,7 +1129,7 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
     }
 }//write
 
-/* This function will read the posible columns from the file
+/* This function will read the possible columns from the file
  * and mark as MDL_UNDEFINED those who aren't valid labels
  * or those who appears in the IgnoreLabels vector
  * also set the activeLabels (for OLD doc files)
@@ -1146,6 +1146,11 @@ void MetaData::_readColumns(std::istream& is, std::vector<MDObject*> & columnVal
             //label is not recognized, the MDValue will be created
             //with MDL_UNDEFINED, which will be ignored while reading data
             label = MDL::str2Label(token);
+
+            // Try to read undefined labels as String using the buffer approach
+            if (label == MDL_UNDEFINED)
+                label = MDL::getNewAlias(token);
+
             if (desiredLabels != NULL && !vectorContainsLabel(*desiredLabels, label))
                 label = MDL_UNDEFINED; //ignore if not present in desiredLabels
             columnValues.push_back(new MDObject(label));
@@ -1236,7 +1241,7 @@ void MetaData::_parseObject(std::istream &is, MDObject &object, size_t id)
 //#define END_OF_LINE() ((char*) memchr (iter, '\n', end-iter+1))
 #define END_OF_LINE() ((char*) memchr (iter, '\n', end-iter))
 
-/* This function will read the posible columns from the file
+/* This function will read the possible columns from the file
  * and mark as MDL_UNDEFINED those who aren't valid labels
  * or those who appears in the IgnoreLabels vector
  * also set the activeLabels (for new STAR files)
@@ -1284,12 +1289,14 @@ void MetaData::_readColumnsStar(mdBlock &block,
             ss >> s; //get the first token, the label
             label = MDL::str2Label(s);
             if (label == MDL_UNDEFINED)
-                std::cout << "WARNING: Ignoring unknown column: " + s << std::endl;
-            else
-                if (desiredLabels != NULL && !vectorContainsLabel(*desiredLabels, label))
-                    label = MDL_UNDEFINED; //ignore if not present in desiredLabels
-                else
-                    addLabel(label);
+                label = MDL::getNewAlias(s);
+
+            if (desiredLabels != NULL && !vectorContainsLabel(*desiredLabels, label))
+                label = MDL_UNDEFINED; //ignore if not present in desiredLabels
+
+            if (label != MDL_UNDEFINED)
+                addLabel(label);
+
             if (addColumns)
             {
                 MDObject * _mdObject = new MDObject(label);
@@ -1619,31 +1626,33 @@ void MetaData::readStar(const FileName &filename,
     if (line.find(FileNameVersion) != String::npos ||
         extFile == "xmd" || extFile == "star")
     {
-        oldFormat=false;
-
-        // Read comment
-        //        is.ignore(256,'#');//format line
-        is.ignore(256,'\n');//skip first line
+        oldFormat = false;
         _comment.clear();
-        bool addspace=false;
-        while(1)
+
+        // Skip comment parsing if we found the data key in the first line
+        if (line.find("data_") != 0)
         {
-            getline(is, line);
-            trim(line);
-            if (line[0]=='#')
-            {
-                line[0]=' ';
+            // Read comment
+            //        is.ignore(256,'#');//format line
+            is.ignore(256, '\n');//skip first line
+            bool addspace = false;
+            while (1) {
+                getline(is, line);
                 trim(line);
-                if (addspace)
-                    _comment += " " + line;
-                else
-                    _comment += line;
-                addspace = true;
+                if (line[0] == '#')
+                {
+                    line[0] = ' ';
+                    trim(line);
+                    if (addspace)
+                        _comment += " " + line;
+                    else
+                        _comment += line;
+                    addspace = true;
+                } else
+                    break;
             }
-            else
-                break;
+            setComment(_comment);
         }
-        setComment(_comment);
 
         //map file
         int fd;
@@ -1892,11 +1901,11 @@ bool MetaData::nextBlock(mdBuffer &buffer, mdBlock &block)
     if (buffer.size == 0)
         return false;
     // Search for data_ after a newline
-    block.begin = BUFFER_FIND(buffer, "\ndata_", 6);
+    block.begin = BUFFER_FIND(buffer, "data_", 5);
 
     if (block.begin) // data_ FOUND!!!
     {
-        block.begin += 6; //Shift \ndata_
+        block.begin += 5; //Shift data_
         size_t n = block.begin - buffer.begin;
         BUFFER_MOVE(buffer, n);
         //Search for the end of line
