@@ -90,6 +90,8 @@ enum MDLabel
     MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
+	MDL_CORR_DENOISE_PROJECTION, ///<Correlation between the denoised image and the projection proposed
+	MDL_CORR_DENOISE_NOISY, ///<Correlation between the denoised image and the noisy version
 
     MDL_CRYSTAL_CELLX, ///< Cell location for crystals
     MDL_CRYSTAL_CELLY, ///< Cell location for crystals
@@ -1467,6 +1469,8 @@ private:
         MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
+        MDL::addLabel(MDL_CORR_DENOISE_PROJECTION, LABEL_DOUBLE, "corrDenoiseProjection");
+        MDL::addLabel(MDL_CORR_DENOISE_NOISY, LABEL_DOUBLE, "corrDenoiseNoisy");
 
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
