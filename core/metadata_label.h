@@ -87,7 +87,6 @@ enum MDLabel
     MDL_COMMENT, ///< Serve to make annotations on the metadata row
     MDL_COST, ///< Cost for the image (double)
     MDL_COST_PERCENTILE, ///< Cost percentile for the image (double)
-    MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
 
@@ -1464,7 +1463,6 @@ private:
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
-        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
 
