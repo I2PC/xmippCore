@@ -11,7 +11,7 @@ cd <xmipp-bundle>
 wget https://raw.githubusercontent.com/I2PC/xmipp/devel/xmipp -O xmipp
 chmod 755 xmipp
 ./xmipp --help
-mkdir src
+mkdir src             # if not there yet
 cd src
 git clone https://github.com/I2PC/xmippCore/
 cd - 
