@@ -90,6 +90,8 @@ enum MDLabel
     MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
+    MDL_CORR_DENOISED_PROJECTION, ///<Correlation between the denoised image and the projection proposed
+    MDL_CORR_DENOISED_NOISY, ///<Correlation between the denoised image and the noisy version
 
     MDL_CRYSTAL_CELLX, ///< Cell location for crystals
     MDL_CRYSTAL_CELLY, ///< Cell location for crystals
@@ -167,9 +169,9 @@ enum MDLabel
     MDL_CTF_BG_GAUSSIAN2_CU, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN2_CV, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN2_ANGLE, ///< CTF Background parameter
-	MDL_CTF_BG_R1, ///< CTF Background polynomial parameter
-	MDL_CTF_BG_R2, ///< CTF Background polynomial parameter
-	MDL_CTF_BG_R3, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R1, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R2, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R3, ///< CTF Background polynomial parameter
     MDL_CTF_CRIT_NONASTIGMATICVALIDITY, ///< Maximum frequency (in Angstroms) at which non-astigmatic CTF correction is valid
     MDL_CTF_CRIT_PSDCORRELATION90, ///< PSD correlation at 90 degrees
     MDL_CTF_CRIT_FIRSTZERORATIO, ///< First zero ratio
@@ -193,8 +195,8 @@ enum MDLabel
     MDL_CTF_XRAY_LENS_TYPE, ///Algorithm used to generate Xray PSF
     MDL_CTF_XRAY_OUTER_ZONE_WIDTH, /// Outermost zone width of the X-ray Fresnel lens (nm)
     MDL_CTF_XRAY_ZONES_NUMBER, // Number of zones of the X-ray Fresnel lens
-	MDL_CTF_PHASE_SHIFT,	//Volta Phase Plate phase shift
-	MDL_CTF_VPP_RADIUS,    //Phase Plate radius
+    MDL_CTF_PHASE_SHIFT,	//Volta Phase Plate phase shift
+    MDL_CTF_VPP_RADIUS,    //Phase Plate radius
     MDL_CUMULATIVE_SSNR, ///<Cumulative SSNR (double)
     MDL_DATATYPE, ///< if read from file original image datatype, this is an struct defined in image
     MDL_DEFGROUP, ///< Defocus group
@@ -522,7 +524,7 @@ enum MDLabel
     RLN_IMAGE_STATS_KURT,
     RLN_IMAGE_WEIGHT,
 	
-	RLN_MASK_NAME,
+    RLN_MASK_NAME,
 	
     RLN_MATRIX_1_1,
     RLN_MATRIX_1_2,
@@ -1028,27 +1030,27 @@ enum MDLabel
     BSOFT_SYMMETRY_CELL_SETTING,
     BSOFT_SYMMETRY_EQUIV_ID,
     BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ,
-	BUFFER_LABELS_START,
-	BUFFER1,
-	BUFFER2,
-	BUFFER3,
-	BUFFER4,
-	BUFFER5,
-	BUFFER6,
-	BUFFER7,
-	BUFFER8,
-	BUFFER9,
-	BUFFER10,
-	BUFFER11,
-	BUFFER12,
-	BUFFER13,
-	BUFFER14,
-	BUFFER15,
-	BUFFER16,
-	BUFFER17,
-	BUFFER18,
-	BUFFER19,
-	BUFFER20,
+    BUFFER_LABELS_START,
+    BUFFER1,
+    BUFFER2,
+    BUFFER3,
+    BUFFER4,
+    BUFFER5,
+    BUFFER6,
+    BUFFER7,
+    BUFFER8,
+    BUFFER9,
+    BUFFER10,
+    BUFFER11,
+    BUFFER12,
+    BUFFER13,
+    BUFFER14,
+    BUFFER15,
+    BUFFER16,
+    BUFFER17,
+    BUFFER18,
+    BUFFER19,
+    BUFFER20,
     MDL_LAST_LABEL  // **** NOTE ****: Do keep this label always at the end,it is here for looping purposes
 };//close enum Label
 
@@ -1467,6 +1469,8 @@ private:
         MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
+        MDL::addLabel(MDL_CORR_DENOISED_PROJECTION, LABEL_DOUBLE, "corrDenoisedProjection");
+        MDL::addLabel(MDL_CORR_DENOISED_NOISY, LABEL_DOUBLE, "corrDenoisedNoisy");
 
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
