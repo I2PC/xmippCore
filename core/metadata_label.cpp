@@ -33,6 +33,7 @@ MDLabelData * MDL::data[MDL_LAST_LABEL+1];
 std::map<std::string, MDLabel> MDL::names;
 MDRow MDL::emptyHeader;
 MDLabelStaticInit MDL::initialization; //Just for initialization
+MDLabel MDL::bufferIndex;
 
 
 void MDL::addLabel(const MDLabel label, const MDLabelType type, const String &name, int tags)
@@ -82,21 +83,41 @@ void MDL::addExtraAliases()
           if (label != MDL_UNDEFINED)
               addLabelAlias(label, pair[1], replace);
           else
-              REPORT_ERROR(ERR_ARG_INCORRECT, formatString("Invalid label name: %s found in environment var XMIPP_EXTRA_ALIASES", pair[0].c_str()));
+              REPORT_ERROR(ERR_ARG_INCORRECT,
+                           formatString("Invalid label name: %s found in environment var XMIPP_EXTRA_ALIASES", pair[0].c_str()));
       }
   }
 }//close function addLabel
 
-void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace, MDLabelType type)
+void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace,
+                        MDLabelType type)
 {
     names[alias] = label;
     if (replace)
     {
-      data[(int)label]->str = alias;
-      if (type != LABEL_NOTYPE)
-        data[(int)label]->type = type;
+        data[(int)label]->str = alias;
+        if (type != LABEL_NOTYPE)
+            data[(int)label]->type = type;
     }
 }//close function addLabel
+
+MDLabel MDL::getNewAlias(const String &alias, MDLabelType type)
+{
+    MDLabel newLabel = MDL::bufferIndex;
+
+    if (newLabel == MDL_LAST_LABEL)
+        REPORT_ERROR(ERR_ARG_INCORRECT, "Not more buffer labels to use!!!");
+
+    addLabelAlias(newLabel, alias, true, type);
+    MDL::bufferIndex = (MDLabel)((int)newLabel + 1);
+
+    return newLabel;
+}//close function getNewAlias
+
+void MDL::resetBufferIndex()
+{
+    MDL::bufferIndex = BUFFER_01;
+} // close function resetBufferIndex
 
 void MDL::str2LabelVector(const String &labelsStr, std::vector<MDLabel> &labels)
 {
