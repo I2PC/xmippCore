@@ -992,8 +992,18 @@ public:
     MDObject(MDLabel label, const std::vector<double> &vectorValue);
     MDObject(MDLabel label, const std::vector<size_t> &vectorValueLong);
     MDObject(MDLabel label, const size_t &longintValue);
-    MDObject(MDLabel label, const float &floatValue);
-    MDObject(MDLabel label, const char * &charValue);
+
+    /**
+     * Do not use MDObject constructor with floats, use double.
+     * Floats are banned from metadata class.
+     */
+    MDObject(MDLabel label, const float &floatValue) = delete;
+
+    /**
+     * Do not use MDObject constructor with char, use string.
+     * Chars are banned from metadata class.
+     */
+    MDObject(MDLabel label, const char * &charValue) = delete;
 
     /// Destructor
     ~MDObject();
@@ -1010,7 +1020,11 @@ public:
     void  getValue(std::vector<size_t> &vv) const;
     void  getValue(size_t &lv) const;
     void  getValue(float &floatvalue) const;
-    void  getValue(char*  &charvalue) const;
+    /**
+     * Do not use getValue with char, use string.
+     * chars are banned from metadata class.
+     */
+    void  getValue(char*  &charvalue) const = delete;
 
     void  setValue(const int &iv);
     void  setValue(const double &dv);

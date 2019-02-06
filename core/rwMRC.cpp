@@ -282,17 +282,17 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
 
             // We include auto detection of MRC2000 or CCP4 style origin based on http://situs.biomachina.org/fmap.pdf
             if (header->xOrigin != 0)
-                MD[i].setValue(MDL_ORIGIN_X, -header->xOrigin);
+                MD[i].setValue(MDL_ORIGIN_X, (double)-header->xOrigin);
             else if (header->nxStart != 0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_X,aux))
                 MD[i].setValue(MDL_ORIGIN_X, -header->nxStart/aux);
 
             if (header->yOrigin !=0)
-                MD[i].setValue(MDL_ORIGIN_Y, -header->yOrigin);
+                MD[i].setValue(MDL_ORIGIN_Y, (double)-header->yOrigin);
             else if(header->nyStart !=0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_Y,aux))
                 MD[i].setValue(MDL_ORIGIN_Y, -header->nyStart/aux);
 
             if (header->zOrigin != 0)
-                MD[i].setValue(MDL_ORIGIN_Z, -header->zOrigin);
+                MD[i].setValue(MDL_ORIGIN_Z, (double)-header->zOrigin);
             else if(header->nzStart !=0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_Z,aux))
                 MD[i].setValue(MDL_ORIGIN_Z, -header->nzStart/aux);
         }

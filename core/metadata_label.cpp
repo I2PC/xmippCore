@@ -424,18 +424,6 @@ MDObject::MDObject(MDLabel label, const size_t &longintValue)
     this->data.longintValue = longintValue;
 
 }
-MDObject::MDObject(MDLabel label, const float &floatValue)
-{
-    std::cerr << "Do not use MDObject constructor with floats, use double"<< std::endl;
-    std::cerr << "Floats are banned from metadata class"<< std::endl;
-    exit(1);
-}
-MDObject::MDObject(MDLabel label, const char* &charValue)
-{
-    std::cerr << "Do not use MDObject constructor with char, use string"<< std::endl;
-    std::cerr << "chars are banned from metadata class"<< std::endl;
-    exit(1);
-}
 
 MDObject::~MDObject()
 {
@@ -491,12 +479,6 @@ void MDObject::getValue(float &floatvalue) const
     double tmp;
     getValue(tmp);
     floatvalue = (float) tmp;
-}
-void MDObject::getValue(char*  &charvalue) const
-{
-    std::cerr << "Do not use getValue with char, use string"<< std::endl;
-    std::cerr << "chars are banned from metadata class"<< std::endl;
-    exit(1);
 }
 
 void MDObject::setValue(const int &iv)
