@@ -640,6 +640,14 @@ void frc_dpr(MultidimArray< double > & m1,
  * Ydim and Xdim define the output size, mda is the MultidimArray to scale
  */
 void scaleToSizeFourier(int Zdim, int Ydim, int Xdim, MultidimArray<double> &mdaIn, MultidimArray<double> &mdaOut, int nThreads=1);
+
+/** Scale Fourier transform
+ * mdaIn and mdaOut define the sizes of the respective image, inFourier is transform to be scaled
+ */
+template<typename T>
+void scaleToSizeFourier(MultidimArray<T> &mdaIn, MultidimArray<T> &mdaOut,
+    MultidimArray<std::complex<T> > &inFourier, MultidimArray<std::complex<T> > &outFourier);
+
 void selfScaleToSizeFourier(int Zdim, int Ydim, int Xdim, MultidimArray<double> &mda, int nthreads=1);
 
 void selfScaleToSizeFourier(int Ydim, int Xdim, MultidimArray<double> &mda, int nthreads=1);
