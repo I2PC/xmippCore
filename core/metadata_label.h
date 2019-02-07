@@ -247,6 +247,7 @@ enum MDLabel
     MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
+    MDL_LOCAL_ALIGNMENT_RATING, ///< A single value representing the 'amount of shift' applied to movie
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
@@ -1558,6 +1559,7 @@ private:
         MDL::addLabel(MDL_KSTEST, LABEL_DOUBLE, "kstest");
         MDL::addLabel(MDL_LL, LABEL_DOUBLE, "logLikelihood");
         MDL::addLabelAlias(MDL_LL, "LL");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_RATING, LABEL_DOUBLE, "localAlignmentRating");
         MDL::addLabel(MDL_MACRO_CMD, LABEL_STRING, "macroCmd");
         MDL::addLabel(MDL_MACRO_CMD_ARGS, LABEL_STRING, "macroCmdArgs");
         MDL::addLabel(MDL_MAGNIFICATION, LABEL_DOUBLE, "magnification");
