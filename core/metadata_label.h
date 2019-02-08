@@ -115,6 +115,10 @@ enum MDLabel
     MDL_CONTINUOUS_SCALE_X, ///< scale x of continuous assignment
     MDL_CONTINUOUS_SCALE_Y, ///< scale y of continuous assignment
 
+	MDL_CORRELATION_IDX, ///< correlation value between a particle and its assigned projection
+	MDL_CORRELATION_MASK, ///< masked correlation value between a particle and its assigned projection inside the region with pixel values higher than the standard deviation
+	MDL_CORRELATION_WEIGHT, ///< weighted correlation value between a particle and its assigned projection taking into the difference between both images
+
     MDL_CTF_DATA_PHASE_FLIPPED, // Is the Data Phase-Flippled?
     MDL_CTF_CORRECTED, // Is the CTF corrected?
     MDL_CTF_INPUTPARAMS, ///< Parameters file for the CTF Model (std::string)
@@ -231,6 +235,9 @@ enum MDLabel
     MDL_IMAGE_REF, ///< Name of of the class image from which MDL_IMAGE is coming from
     MDL_IMAGE_RESIDUAL, ///< Name of a residual image associated to this image
     MDL_IMAGE_TILTED, ///< Name of the tilted images associated to MDL_IMAGE
+
+	MDL_IMED, ///< imed value between a particle and its assigned projection
+
     MDL_IMGMD, ///< Name of Metadata file for all images (string)
     MDL_IMAGE1, ///< Image associated to this object (std::string)
     MDL_IMAGE2, ///< Image associated to this object (std::string)
@@ -1328,6 +1335,10 @@ private:
         MDL::addLabel(MDL_CORR_DENOISED_PROJECTION, LABEL_DOUBLE, "corrDenoisedProjection");
         MDL::addLabel(MDL_CORR_DENOISED_NOISY, LABEL_DOUBLE, "corrDenoisedNoisy");
 
+        MDL::addLabel(MDL_CORRELATION_IDX, LABEL_DOUBLE, "corrIdx");
+        MDL::addLabel(MDL_CORRELATION_MASK, LABEL_DOUBLE, "corrMask");
+        MDL::addLabel(MDL_CORRELATION_WEIGHT, LABEL_DOUBLE, "corrWeight");
+
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
         MDL::addLabel(MDL_CRYSTAL_DISAPPEAR_THRE, LABEL_DOUBLE, "crystalDisthresh");
@@ -1543,6 +1554,8 @@ private:
 
         MDL::addLabelAlias(MDL_IMAGE_ORIGINAL, "original_image"); //3.0
         MDL::addLabelAlias(MDL_IMAGE_TILTED, "tilted_image"); //3.0
+
+        MDL::addLabel(MDL_IMED, LABEL_DOUBLE, "imedValue");
 
         MDL::addLabel(MDL_IMGMD, LABEL_STRING, "imageMetaData", TAGLABEL_METADATA);
         MDL::addLabel(MDL_INTSCALE, LABEL_DOUBLE, "intScale");
