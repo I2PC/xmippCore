@@ -87,8 +87,11 @@ enum MDLabel
     MDL_COMMENT, ///< Serve to make annotations on the metadata row
     MDL_COST, ///< Cost for the image (double)
     MDL_COST_PERCENTILE, ///< Cost percentile for the image (double)
+    MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
+    MDL_CORR_DENOISED_PROJECTION, ///<Correlation between the denoised image and the projection proposed
+    MDL_CORR_DENOISED_NOISY, ///<Correlation between the denoised image and the noisy version
 
     MDL_CRYSTAL_CELLX, ///< Cell location for crystals
     MDL_CRYSTAL_CELLY, ///< Cell location for crystals
@@ -166,9 +169,9 @@ enum MDLabel
     MDL_CTF_BG_GAUSSIAN2_CU, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN2_CV, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN2_ANGLE, ///< CTF Background parameter
-	MDL_CTF_BG_R1, ///< CTF Background polynomial parameter
-	MDL_CTF_BG_R2, ///< CTF Background polynomial parameter
-	MDL_CTF_BG_R3, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R1, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R2, ///< CTF Background polynomial parameter
+    MDL_CTF_BG_R3, ///< CTF Background polynomial parameter
     MDL_CTF_CRIT_NONASTIGMATICVALIDITY, ///< Maximum frequency (in Angstroms) at which non-astigmatic CTF correction is valid
     MDL_CTF_CRIT_PSDCORRELATION90, ///< PSD correlation at 90 degrees
     MDL_CTF_CRIT_FIRSTZERORATIO, ///< First zero ratio
@@ -192,8 +195,8 @@ enum MDLabel
     MDL_CTF_XRAY_LENS_TYPE, ///Algorithm used to generate Xray PSF
     MDL_CTF_XRAY_OUTER_ZONE_WIDTH, /// Outermost zone width of the X-ray Fresnel lens (nm)
     MDL_CTF_XRAY_ZONES_NUMBER, // Number of zones of the X-ray Fresnel lens
-	MDL_CTF_PHASE_SHIFT,	//Volta Phase Plate phase shift
-	MDL_CTF_VPP_RADIUS,    //Phase Plate radius
+    MDL_CTF_PHASE_SHIFT,	//Volta Phase Plate phase shift
+    MDL_CTF_VPP_RADIUS,    //Phase Plate radius
     MDL_CUMULATIVE_SSNR, ///<Cumulative SSNR (double)
     MDL_DATATYPE, ///< if read from file original image datatype, this is an struct defined in image
     MDL_DEFGROUP, ///< Defocus group
@@ -241,8 +244,10 @@ enum MDLabel
     MDL_KERDENSOM_REGULARIZATION, ///< Regularization value (double)
     MDL_KERDENSOM_SIGMA, ///< Sigma value (double)
     MDL_KEYWORDS, ///< Keywords associated to this line, should be a single string block (do not use spaces as separators)
+    MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
+    MDL_LOCAL_ALIGNMENT_RATING, ///< A single value representing the 'amount of shift' applied to movie
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
@@ -378,6 +383,7 @@ enum MDLabel
     MDL_SCORE_BY_EMPTINESS, ///< Small values represent worse particles. Much larger than 1 for good particles
     MDL_SCORE_BY_ENTROPY,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_GRANULO,  ///< Feature vectors used to classify particles (vector double)
+    MDL_SCORE_BY_HISTDIST,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_LBP,  ///< Feature vectors used to classify particles (vector double)
     MDL_SCORE_BY_MIRROR, ///< score by mirror (double)
     MDL_SCORE_BY_RAMP,  ///< Feature vectors used to classify particles (vector double)
@@ -521,7 +527,7 @@ enum MDLabel
     RLN_IMAGE_STATS_KURT,
     RLN_IMAGE_WEIGHT,
 	
-	RLN_MASK_NAME,
+    RLN_MASK_NAME,
 	
     RLN_MATRIX_1_1,
     RLN_MATRIX_1_2,
@@ -778,255 +784,107 @@ enum MDLabel
     RLN_RESOLUTION_INVPIXEL,
     RLN_SPECTRAL_IDX,
 
-    /** BSOFT labels */
-    //BSOFT_COMMENT,
-    BSOFT_ID,
-    BSOFT_PROJECT,
-    BSOFT_FIELD,
-    BSOFT_FIELD_ID,
-    BSOFT_MAP,
-    BSOFT_MAP_ID,
-    BSOFT_MAP_REFERENCE,
-    BSOFT_MAP_RECONSTRUCTION,
-    BSOFT_MAP_TRANSFORM_FILE,
-    BSOFT_MAP_POWERSPEC_FILE,
-    BSOFT_MAP_SIZE_X,
-    BSOFT_MAP_SIZE_Y,
-    BSOFT_MAP_SIZE_Z,
-    BSOFT_MAP_ORIGIN_X,
-    BSOFT_MAP_ORIGIN_Y,
-    BSOFT_MAP_ORIGIN_Z,
-    BSOFT_MAP_SCALE_X,
-    BSOFT_MAP_SCALE_Y,
-    BSOFT_MAP_SCALE_Z,
-    BSOFT_MAP_VOXEL_SIZE,
-    BSOFT_MAP_SELECT,
-    BSOFT_MAP_FOM,
-    BSOFT_MAP_MAGNIFICATION,
-    BSOFT_MAP_VIEW_X,
-    BSOFT_MAP_VIEW_Y,
-    BSOFT_MAP_VIEW_Z,
-    BSOFT_MAP_VIEW_ANGLE,
-    BSOFT_MAP_BACK_RWEIGHT,
-    BSOFT_MAP_MODEL,
-    BSOFT_MAP_SYMMETRY,
-    //BSOFT_MICROGRAPH,
-    BSOFT_MICROGRAPH_FILE,
-    BSOFT_MICROGRAPH_PARTICLE_FILE,
-    BSOFT_MICROGRAPH_FILAMENT_FILE,
-    BSOFT_MICROGRAPH_TRANSFORM_FILE,
-    BSOFT_MICROGRAPH_POWERSPEC_FILE,
-    BSOFT_MICROGRAPH_ID,
-    BSOFT_MICROGRAPH_FIELD_ID,
-    BSOFT_MICROGRAPH_NUMBER,
-    BSOFT_MICROGRAPH_SELECT,
-    BSOFT_MICROGRAPH_FOM,
-    BSOFT_MICROGRAPH_MAGNIFICATION,
-    BSOFT_MICROGRAPH_SAMPLING,
-    BSOFT_MICROGRAPH_PIXEL,
-    BSOFT_MICROGRAPH_UNITS,
-    BSOFT_MICROGRAPH_DOSE,
-    BSOFT_MICROGRAPH_ORIGIN_X,
-    BSOFT_MICROGRAPH_ORIGIN_Y,
-    BSOFT_MICROGRAPH_ORIGIN_Z,
-    BSOFT_MICROGRAPH_SCALE_X,
-    BSOFT_MICROGRAPH_SCALE_Y,
-    BSOFT_MICROGRAPH_SCALE_Z,
-    BSOFT_MICROGRAPH_TILT_AXIS,
-    BSOFT_MICROGRAPH_TILT_ANGLE,
-    BSOFT_MICROGRAPH_LEVEL_ANGLE,
-    BSOFT_MICROGRAPH_ROT_ANGLE,
-    BSOFT_MICROGRAPH_VIEW_X,
-    BSOFT_MICROGRAPH_VIEW_Y,
-    BSOFT_MICROGRAPH_VIEW_Z,
-    BSOFT_MICROGRAPH_VIEW_ANGLE,
-    BSOFT_MICROGRAPH_MATRIX_1_1,
-    BSOFT_MICROGRAPH_MATRIX_1_2,
-    BSOFT_MICROGRAPH_MATRIX_1_3,
-    BSOFT_MICROGRAPH_MATRIX_2_1,
-    BSOFT_MICROGRAPH_MATRIX_2_2,
-    BSOFT_MICROGRAPH_MATRIX_2_3,
-    BSOFT_MICROGRAPH_MATRIX_3_1,
-    BSOFT_MICROGRAPH_MATRIX_3_2,
-    BSOFT_MICROGRAPH_MATRIX_3_3,
-    BSOFT_MICROGRAPH_HVEC_X,
-    BSOFT_MICROGRAPH_HVEC_Y,
-    BSOFT_MICROGRAPH_HVEC_Z,
-    BSOFT_MICROGRAPH_KVEC_X,
-    BSOFT_MICROGRAPH_KVEC_Y,
-    BSOFT_MICROGRAPH_KVEC_Z,
-    BSOFT_MICROGRAPH_LVEC_X,
-    BSOFT_MICROGRAPH_LVEC_Y,
-    BSOFT_MICROGRAPH_LVEC_Z,
-    BSOFT_MICROGRAPH_HELIX_AXIS,
-    BSOFT_MICROGRAPH_HELIX_RISE,
-    BSOFT_MICROGRAPH_HELIX_ANGLE,
-    BSOFT_MICROGRAPH_HELIX_RADIUS,
-    BSOFT_MICROGRAPH_VOLTAGE,
-    BSOFT_MICROGRAPH_CTF_CS,
-    BSOFT_MICROGRAPH_CTF_CC,
-    BSOFT_MICROGRAPH_CTF_ALPHA,
-    BSOFT_MICROGRAPH_CTF_DE,
-    BSOFT_MICROGRAPH_CTF_AMP_CONT,
-    BSOFT_MICROGRAPH_CTF_ZERO,
-    BSOFT_MICROGRAPH_CTF_DEF_AVG,
-    BSOFT_MICROGRAPH_CTF_DEF_DEV,
-    BSOFT_MICROGRAPH_CTF_DEF_MIN,
-    BSOFT_MICROGRAPH_CTF_DEF_MAX,
-    BSOFT_MICROGRAPH_CTF_AST_ANG,
-    BSOFT_MICROGRAPH_CTF_BASELINE,
-    BSOFT_MICROGRAPH_CTF_ENVELOPE,
-    BSOFT_MICROGRAPH_BOX_RADIUS,
-    BSOFT_MICROGRAPH_BOX_RADIUS_X,
-    BSOFT_MICROGRAPH_BOX_RADIUS_Y,
-    BSOFT_MICROGRAPH_BOX_RADIUS_Z,
-    BSOFT_MICROGRAPH_BAD,
-    BSOFT_MICROGRAPH_BAD_RADIUS,
-    BSOFT_MICROGRAPH_BAD_X,
-    BSOFT_MICROGRAPH_BAD_Y,
-    BSOFT_MICROGRAPH_BAD_Z,
-    BSOFT_MICROGRAPH_MARKER_RADIUS,
-    BSOFT_MICROGRAPH_MARKER_ID,
-    BSOFT_MICROGRAPH_MARKER_X,
-    BSOFT_MICROGRAPH_MARKER_Y,
-    BSOFT_MICROGRAPH_MARKER_Z,
-    BSOFT_MICROGRAPH_MARKER_ERROR_X,
-    BSOFT_MICROGRAPH_MARKER_ERROR_Y,
-    BSOFT_MICROGRAPH_MARKER_ERROR_Z,
-    BSOFT_MICROGRAPH_MARKER_FOM,
-    BSOFT_MICROGRAPH_FILAMENT_WIDTH,
-    BSOFT_MICROGRAPH_FILNODE_RADIUS,
-    BSOFT_CTF,
-    BSOFT_CTF_VOLTAGE,
-    BSOFT_CTF_CS,
-    BSOFT_CTF_CC,
-    BSOFT_CTF_ALPHA,
-    BSOFT_CTF_DE,
-    BSOFT_CTF_AMP,
-    BSOFT_CTF_ZERO,
-    BSOFT_CTF_DEF_AVG,
-    BSOFT_CTF_DEF_DEV,
-    BSOFT_CTF_DEF_MIN,
-    BSOFT_CTF_DEF_MAX,
-    BSOFT_CTF_AST_ANG,
-    BSOFT_CTF_BASELINE,
-    BSOFT_CTF_ENVELOPE,
-    BSOFT_PARTICLE,
-    BSOFT_PARTICLE_FILE,
-    BSOFT_PARTICLE_NUMBER,
-    BSOFT_PARTICLE_ID,
-    BSOFT_PARTICLE_GROUP,
-    BSOFT_PARTICLE_MG_ID,
-    BSOFT_PARTICLE_MG_X,
-    BSOFT_PARTICLE_MG_Y,
-    BSOFT_PARTICLE_MG_Z,
-    BSOFT_PARTICLE_X,
-    BSOFT_PARTICLE_Y,
-    BSOFT_PARTICLE_Z,
-    BSOFT_PARTICLE_X_ORIGIN,
-    BSOFT_PARTICLE_Y_ORIGIN,
-    BSOFT_PARTICLE_Z_ORIGIN,
-    BSOFT_PARTICLE_ORIGIN_X,
-    BSOFT_PARTICLE_ORIGIN_Y,
-    BSOFT_PARTICLE_ORIGIN_Z,
-    BSOFT_PARTICLE_PSI,
-    BSOFT_PARTICLE_THETA,
-    BSOFT_PARTICLE_PHI,
-    BSOFT_PARTICLE_OMEGA,
-    BSOFT_PARTICLE_VIEW_X,
-    BSOFT_PARTICLE_VIEW_Y,
-    BSOFT_PARTICLE_VIEW_Z,
-    BSOFT_PARTICLE_VIEW_ANGLE,
-    BSOFT_PARTICLE_MAGNIF,
-    BSOFT_PARTICLE_DEFOCUS,
-    BSOFT_PARTICLE_DEF_DEV,
-    BSOFT_PARTICLE_AST_ANG,
-    BSOFT_PARTICLE_SELECT,
-    BSOFT_PARTICLE_FOM,
-    BSOFT_PARTICLE_FOM_CV,
-    BSOFT_PARTICLE_FOM_AVG,
-    BSOFT_PARTICLE_FOM_STD,
-    BSOFT_PARTICLE_HANDA_FOM,
-    BSOFT_PARTICLE_HANDB_FOM,
-    BSOFT_PARTICLE_CC,
-    BSOFT_PARTICLE_PFT_CC,
-    BSOFT_PARTICLE_PRJ_CC,
-    BSOFT_PARTICLE_CMP_CC,
-    BSOFT_PARTICLE_RFACTORAB,
-    BSOFT_PARTICLE_COVERAGE,
-    BSOFT_PARTICLE_BOX_SIZE,
-    BSOFT_PARTICLE_BOX_SIZE_X,
-    BSOFT_PARTICLE_BOX_SIZE_Y,
-    BSOFT_PARTICLE_BOX_SIZE_Z,
-    BSOFT_PARTICLE_BOX_RADIUS,
-    BSOFT_PARTICLE_BOX_RADIUS_X,
-    BSOFT_PARTICLE_BOX_RADIUS_Y,
-    BSOFT_PARTICLE_BOX_RADIUS_Z,
-    BSOFT_PARTICLE_BAD,
-    BSOFT_PARTICLE_BAD_RADIUS,
-    BSOFT_PARTICLE_BAD_X,
-    BSOFT_PARTICLE_BAD_Y,
-    BSOFT_PARTICLE_BAD_Z,
-    BSOFT_FILAMENT,
-    BSOFT_FILAMENT_FILE,
-    BSOFT_FILAMENT_ID,
-    BSOFT_FILAMENT_NODE,
-    BSOFT_FILAMENT_NODE_ID,
-    BSOFT_FILAMENT_NODE_X,
-    BSOFT_FILAMENT_NODE_Y,
-    BSOFT_FILAMENT_NODE_Z,
-    BSOFT_FILAMENT_WIDTH,
-    BSOFT_FILNODE_RADIUS,
-    BSOFT_ORIENT_ID,
-    BSOFT_ORIENT_ORIGIN_X,
-    BSOFT_ORIENT_ORIGIN_Y,
-    BSOFT_ORIENT_ORIGIN_Z,
-    BSOFT_ORIENT_VIEW_X,
-    BSOFT_ORIENT_VIEW_Y,
-    BSOFT_ORIENT_VIEW_Z,
-    BSOFT_ORIENT_VIEW_ANGLE,
-    BSOFT_ORIENT_FOM,
-    BSOFT_ORIENT_SELECT,
-    BSOFT_MARKER,
-    BSOFT_MARKER_RADIUS,
-    BSOFT_MARKER_ID,
-    BSOFT_MARKER_X,
-    BSOFT_MARKER_Y,
-    BSOFT_MARKER_Z,
-    BSOFT_MARKER_ERROR_X,
-    BSOFT_MARKER_ERROR_Y,
-    BSOFT_MARKER_ERROR_Z,
-    BSOFT_MARKER_IMAGE,
-    BSOFT_MARKER_RESIDUAL,
-    BSOFT_MARKER_FOM,
-    BSOFT_MARKER_SELECT,
-    BSOFT_REFLEX,
-    BSOFT_REFLEX_RADIUS,
-    BSOFT_REFLEX_X,
-    BSOFT_REFLEX_Y,
-    BSOFT_REFLEX_Z,
-    BSOFT_REFLEX_H,
-    BSOFT_REFLEX_K,
-    BSOFT_REFLEX_L,
-    BSOFT_REFLEX_AMP,
-    BSOFT_REFLEX_SIGAMP,
-    BSOFT_REFLEX_PHI,
-    BSOFT_REFLEX_SIGPHI,
-    BSOFT_REFLEX_FOM,
-    BSOFT_REFLEX_STATUS,
-    BSOFT_LAYERLINE,
-    BSOFT_LAYERLINE_NUMBER,
-    BSOFT_LAYERLINE_ORDER,
-    BSOFT_LAYERLINE_DISTANCE,
-    BSOFT_LAYERLINE_FREQ,
-    BSOFT_LAYERLINE_AMP,
-    BSOFT_LAYERLINE_FOM,
-    BSOFT_LAYERLINE_SELECT,
-    BSOFT_SYMMETRY_INT_TABLES_NUMBER,
-    BSOFT_SYMMETRY_SPACE_GROUP_NAME_H_M,
-    BSOFT_SYMMETRY_CELL_SETTING,
-    BSOFT_SYMMETRY_EQUIV_ID,
-    BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ,
+	/** Buffer labels to read generic labels */
+	BUFFER_LABELS_START,
+	BUFFER_01,
+	BUFFER_02,
+	BUFFER_03,
+	BUFFER_04,
+	BUFFER_05,
+	BUFFER_06,
+	BUFFER_07,
+	BUFFER_08,
+	BUFFER_09,
+	BUFFER_10,
+	BUFFER_11,
+	BUFFER_12,
+	BUFFER_13,
+	BUFFER_14,
+	BUFFER_15,
+	BUFFER_16,
+	BUFFER_17,
+	BUFFER_18,
+	BUFFER_19,
+	BUFFER_20,
+	BUFFER_21,
+	BUFFER_22,
+	BUFFER_23,
+	BUFFER_24,
+	BUFFER_25,
+	BUFFER_26,
+	BUFFER_27,
+	BUFFER_28,
+	BUFFER_29,
+	BUFFER_30,
+	BUFFER_31,
+	BUFFER_32,
+	BUFFER_33,
+	BUFFER_34,
+	BUFFER_35,
+	BUFFER_36,
+	BUFFER_37,
+	BUFFER_38,
+	BUFFER_39,
+	BUFFER_40,
+	BUFFER_41,
+	BUFFER_42,
+	BUFFER_43,
+	BUFFER_44,
+	BUFFER_45,
+	BUFFER_46,
+	BUFFER_47,
+	BUFFER_48,
+	BUFFER_49,
+	BUFFER_50,
+	BUFFER_51,
+	BUFFER_52,
+	BUFFER_53,
+	BUFFER_54,
+	BUFFER_55,
+	BUFFER_56,
+	BUFFER_57,
+	BUFFER_58,
+	BUFFER_59,
+	BUFFER_60,
+	BUFFER_61,
+	BUFFER_62,
+	BUFFER_63,
+	BUFFER_64,
+	BUFFER_65,
+	BUFFER_66,
+	BUFFER_67,
+	BUFFER_68,
+	BUFFER_69,
+	BUFFER_70,
+	BUFFER_71,
+	BUFFER_72,
+	BUFFER_73,
+	BUFFER_74,
+	BUFFER_75,
+	BUFFER_76,
+	BUFFER_77,
+	BUFFER_78,
+	BUFFER_79,
+	BUFFER_80,
+	BUFFER_81,
+	BUFFER_82,
+	BUFFER_83,
+	BUFFER_84,
+	BUFFER_85,
+	BUFFER_86,
+	BUFFER_87,
+	BUFFER_88,
+	BUFFER_89,
+	BUFFER_90,
+	BUFFER_91,
+	BUFFER_92,
+	BUFFER_93,
+	BUFFER_94,
+	BUFFER_95,
+	BUFFER_96,
+	BUFFER_97,
+	BUFFER_98,
+	BUFFER_99,
 
     MDL_LAST_LABEL  // **** NOTE ****: Do keep this label always at the end,it is here for looping purposes
 };//close enum Label
@@ -1137,8 +995,18 @@ public:
     MDObject(MDLabel label, const std::vector<double> &vectorValue);
     MDObject(MDLabel label, const std::vector<size_t> &vectorValueLong);
     MDObject(MDLabel label, const size_t &longintValue);
-    MDObject(MDLabel label, const float &floatValue);
-    MDObject(MDLabel label, const char * &charValue);
+
+    /**
+     * Do not use MDObject constructor with floats, use double.
+     * Floats are banned from metadata class.
+     */
+    MDObject(MDLabel label, const float &floatValue) = delete;
+
+    /**
+     * Do not use MDObject constructor with char, use string.
+     * Chars are banned from metadata class.
+     */
+    MDObject(MDLabel label, const char * &charValue) = delete;
 
     /// Destructor
     ~MDObject();
@@ -1155,7 +1023,11 @@ public:
     void  getValue(std::vector<size_t> &vv) const;
     void  getValue(size_t &lv) const;
     void  getValue(float &floatvalue) const;
-    void  getValue(char*  &charvalue) const;
+    /**
+     * Do not use getValue with char, use string.
+     * chars are banned from metadata class.
+     */
+    void  getValue(char*  &charvalue) const = delete;
 
     void  setValue(const int &iv);
     void  setValue(const double &dv);
@@ -1352,24 +1224,48 @@ public:
     static MDRow emptyHeader;
     /** @} */
 
+	/** Add an alias for an existing label.
+	 * Params:
+	 * 	label: The label id to create the alias to
+	 * 	alias: The new alternative string name (alias)
+	 * 	replace: If true, then new alias name will be used as the label
+	 * 		string for writing back to file
+	 * 	type: if provided, the label type will be replaced (only used with
+	 * 		replace=True)
+	 *
+	 * 	NOTE: Be aware that this function is not thread safe, so do not use
+	 * 	it concurrently from different threads.
+	 */
+	static void addLabelAlias(MDLabel label, const String &alias,
+							  bool replace=false, MDLabelType type=LABEL_NOTYPE);
+
+	/** Get an alias of an available BUFFER label with the provided name.
+	 * Params:
+	 * 	alias: The name to create the alias from BUFFER label
+	 * 	type: if provided, the label type will be replaced
+	 */
+	static MDLabel getNewAlias(const String &alias, MDLabelType type=LABEL_NOTYPE);
+
+	/** Reset the counter of buffer labels.
+	 * Use this function with care, since when you change the alias, the existing
+	 * metadata could change and write wrong values to file.
+	 */
+	static void resetBufferIndex();
+
 private:
     //Array of MDLabelData pointers
     static MDLabelData * data[MDL_LAST_LABEL+1];
     static std::map<std::string, MDLabel> names;
     static MDLabelStaticInit initialization; //Just for initialization
+	static MDLabel bufferIndex; // Index that will be used to return next label alias
 
     /** Add predefined labels to be used in metadata */
     static void addLabel(MDLabel label, MDLabelType type, const String &name, int tags=TAGLABEL_NOTAG);
     /** This function will read extra label alias from XMIPP_LABEL_ALIASES var environment */
     static void addExtraAliases();
     friend class MDLabelStaticInit;
-public:
-    /** Add an alias for an existing label,
-     * If replace=true, then new alias name will be used
-     * as the label string for writing back to file */
-    static void addLabelAlias(MDLabel label, const String &alias, bool replace=false);
-}
-;//close class MLD definition
+
+};//close class MLD definition
 
 
 /** Just to work as static constructor for initialize labels data.
@@ -1443,8 +1339,11 @@ private:
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
+        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
         MDL::addLabel(MDL_COUNT2, LABEL_SIZET, "count2");
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
+        MDL::addLabel(MDL_CORR_DENOISED_PROJECTION, LABEL_DOUBLE, "corrDenoisedProjection");
+        MDL::addLabel(MDL_CORR_DENOISED_NOISY, LABEL_DOUBLE, "corrDenoisedNoisy");
 
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
@@ -1676,6 +1575,7 @@ private:
         MDL::addLabel(MDL_KSTEST, LABEL_DOUBLE, "kstest");
         MDL::addLabel(MDL_LL, LABEL_DOUBLE, "logLikelihood");
         MDL::addLabelAlias(MDL_LL, "LL");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_RATING, LABEL_DOUBLE, "localAlignmentRating");
         MDL::addLabel(MDL_MACRO_CMD, LABEL_STRING, "macroCmd");
         MDL::addLabel(MDL_MACRO_CMD_ARGS, LABEL_STRING, "macroCmdArgs");
         MDL::addLabel(MDL_MAGNIFICATION, LABEL_DOUBLE, "magnification");
@@ -1833,6 +1733,7 @@ private:
         MDL::addLabel(MDL_SCORE_BY_EMPTINESS, LABEL_DOUBLE, "scoreEmptiness");
         MDL::addLabel(MDL_SCORE_BY_ENTROPY, LABEL_VECTOR_DOUBLE, "entropyFeatures");
         MDL::addLabel(MDL_SCORE_BY_GRANULO, LABEL_VECTOR_DOUBLE, "granuloFeatures");
+        MDL::addLabel(MDL_SCORE_BY_HISTDIST, LABEL_VECTOR_DOUBLE, "histdistFeatures");
         MDL::addLabel(MDL_SCORE_BY_LBP, LABEL_VECTOR_DOUBLE, "lbpFeatures");
         MDL::addLabel(MDL_SCORE_BY_MIRROR, LABEL_DOUBLE, "scoreByMirror");
         MDL::addLabel(MDL_SCORE_BY_RAMP, LABEL_VECTOR_DOUBLE, "rampCoefficients");
@@ -2258,257 +2159,106 @@ private:
         
         MDL::addLabelAlias(RLN_CTF_BFACTOR, "rlnCtfBfactor"); //Relion-2.0
 
-        // "comment" already exists in xmipp
-        // MDL::addLabel(BSOFT_COMMENT, LABEL_STRING, "comment");
-        MDL::addLabel(BSOFT_ID, LABEL_STRING, "id");
-        MDL::addLabel(BSOFT_PROJECT, LABEL_STRING, "project");
-        MDL::addLabel(BSOFT_FIELD, LABEL_STRING, "field");
-        MDL::addLabel(BSOFT_FIELD_ID, LABEL_STRING, "field.id");
-        MDL::addLabel(BSOFT_MAP, LABEL_STRING, "map.3D_reconstruction");
-        MDL::addLabel(BSOFT_MAP_ID, LABEL_STRING, "map.3D_reconstruction.id");
-        MDL::addLabel(BSOFT_MAP_REFERENCE, LABEL_STRING, "map.reference.file_name");
-        MDL::addLabel(BSOFT_MAP_RECONSTRUCTION, LABEL_STRING, "map.3D_reconstruction.file_name");
-        MDL::addLabel(BSOFT_MAP_TRANSFORM_FILE, LABEL_STRING, "map.3D_reconstruction_fourier_transform.file_name");
-        MDL::addLabel(BSOFT_MAP_POWERSPEC_FILE, LABEL_STRING, "map.3D_reconstruction_powerspectrum.file_name");
-        MDL::addLabel(BSOFT_MAP_SIZE_X, LABEL_STRING, "map.3D_reconstruction.size_x");
-        MDL::addLabel(BSOFT_MAP_SIZE_Y, LABEL_STRING, "map.3D_reconstruction.size_y");
-        MDL::addLabel(BSOFT_MAP_SIZE_Z, LABEL_STRING, "map.3D_reconstruction.size_z");
-        MDL::addLabel(BSOFT_MAP_ORIGIN_X, LABEL_STRING, "map.3D_reconstruction.origin_x");
-        MDL::addLabel(BSOFT_MAP_ORIGIN_Y, LABEL_STRING, "map.3D_reconstruction.origin_y");
-        MDL::addLabel(BSOFT_MAP_ORIGIN_Z, LABEL_STRING, "map.3D_reconstruction.origin_z");
-        MDL::addLabel(BSOFT_MAP_SCALE_X, LABEL_STRING, "map.3D_reconstruction.scale_x");
-        MDL::addLabel(BSOFT_MAP_SCALE_Y, LABEL_STRING, "map.3D_reconstruction.scale_y");
-        MDL::addLabel(BSOFT_MAP_SCALE_Z, LABEL_STRING, "map.3D_reconstruction.scale_z");
-        MDL::addLabel(BSOFT_MAP_VOXEL_SIZE, LABEL_STRING, "map.3D_reconstruction.voxel_size");
-        MDL::addLabel(BSOFT_MAP_SELECT, LABEL_STRING, "map.3D_reconstruction.select");
-        MDL::addLabel(BSOFT_MAP_FOM, LABEL_STRING, "map.3D_reconstruction.fom");
-        MDL::addLabel(BSOFT_MAP_MAGNIFICATION, LABEL_STRING, "map.magnification");
-        MDL::addLabel(BSOFT_MAP_VIEW_X, LABEL_STRING, "map.view_x");
-        MDL::addLabel(BSOFT_MAP_VIEW_Y, LABEL_STRING, "map.view_y");
-        MDL::addLabel(BSOFT_MAP_VIEW_Z, LABEL_STRING, "map.view_z");
-        MDL::addLabel(BSOFT_MAP_VIEW_ANGLE, LABEL_STRING, "map.view_angle");
-        MDL::addLabel(BSOFT_MAP_BACK_RWEIGHT, LABEL_STRING, "map.back_projection.rweight");
-        MDL::addLabel(BSOFT_MAP_MODEL, LABEL_STRING, "map.model");
-        MDL::addLabel(BSOFT_MAP_SYMMETRY, LABEL_STRING, "map.symmetry");
-        // "micrograph" label is already in xmipp.
-        //MDL::addLabel(BSOFT_MICROGRAPH, LABEL_STRING, "micrograph");
-        MDL::addLabel(BSOFT_MICROGRAPH_FILE, LABEL_STRING, "micrograph.file_name");
-        MDL::addLabel(BSOFT_MICROGRAPH_PARTICLE_FILE, LABEL_STRING, "micrograph_particle.file_name");
-        MDL::addLabel(BSOFT_MICROGRAPH_FILAMENT_FILE, LABEL_STRING, "micrograph_filament.file_name");
-        MDL::addLabel(BSOFT_MICROGRAPH_TRANSFORM_FILE, LABEL_STRING, "micrograph_fourier_transform.file_name");
-        MDL::addLabel(BSOFT_MICROGRAPH_POWERSPEC_FILE, LABEL_STRING, "micrograph_powerspectrum.file_name");
-        MDL::addLabel(BSOFT_MICROGRAPH_ID, LABEL_STRING, "micrograph.id");
-        MDL::addLabel(BSOFT_MICROGRAPH_FIELD_ID, LABEL_STRING, "micrograph.field_id");
-        MDL::addLabel(BSOFT_MICROGRAPH_NUMBER, LABEL_STRING, "micrograph.number");
-        MDL::addLabel(BSOFT_MICROGRAPH_SELECT, LABEL_STRING, "micrograph.select");
-        MDL::addLabel(BSOFT_MICROGRAPH_FOM, LABEL_STRING, "micrograph.fom");
-        MDL::addLabel(BSOFT_MICROGRAPH_MAGNIFICATION, LABEL_STRING, "micrograph.magnification");
-        MDL::addLabel(BSOFT_MICROGRAPH_SAMPLING, LABEL_STRING, "micrograph.sampling");
-        MDL::addLabel(BSOFT_MICROGRAPH_PIXEL, LABEL_STRING, "micrograph.pixel_size");
-        MDL::addLabel(BSOFT_MICROGRAPH_UNITS, LABEL_STRING, "micrograph.units");
-        MDL::addLabel(BSOFT_MICROGRAPH_DOSE, LABEL_STRING, "micrograph.electron_dose");
-        MDL::addLabel(BSOFT_MICROGRAPH_ORIGIN_X, LABEL_STRING, "micrograph.origin_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_ORIGIN_Y, LABEL_STRING, "micrograph.origin_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_ORIGIN_Z, LABEL_STRING, "micrograph.origin_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_SCALE_X, LABEL_STRING, "micrograph.scale_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_SCALE_Y, LABEL_STRING, "micrograph.scale_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_SCALE_Z, LABEL_STRING, "micrograph.scale_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_TILT_AXIS, LABEL_STRING, "micrograph.tilt_axis");
-        MDL::addLabel(BSOFT_MICROGRAPH_TILT_ANGLE, LABEL_STRING, "micrograph.tilt_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_LEVEL_ANGLE, LABEL_STRING, "micrograph.level_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_ROT_ANGLE, LABEL_STRING, "micrograph.rotation_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_VIEW_X, LABEL_STRING, "micrograph.view_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_VIEW_Y, LABEL_STRING, "micrograph.view_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_VIEW_Z, LABEL_STRING, "micrograph.view_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_VIEW_ANGLE, LABEL_STRING, "micrograph.view_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_1_1, LABEL_STRING, "micrograph.matrix_1_1");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_1_2, LABEL_STRING, "micrograph.matrix_1_2");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_1_3, LABEL_STRING, "micrograph.matrix_1_3");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_2_1, LABEL_STRING, "micrograph.matrix_2_1");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_2_2, LABEL_STRING, "micrograph.matrix_2_2");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_2_3, LABEL_STRING, "micrograph.matrix_2_3");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_3_1, LABEL_STRING, "micrograph.matrix_3_1");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_3_2, LABEL_STRING, "micrograph.matrix_3_2");
-        MDL::addLabel(BSOFT_MICROGRAPH_MATRIX_3_3, LABEL_STRING, "micrograph.matrix_3_3");
-        MDL::addLabel(BSOFT_MICROGRAPH_HVEC_X, LABEL_STRING, "micrograph.h_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_HVEC_Y, LABEL_STRING, "micrograph.h_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_HVEC_Z, LABEL_STRING, "micrograph.h_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_KVEC_X, LABEL_STRING, "micrograph.k_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_KVEC_Y, LABEL_STRING, "micrograph.k_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_KVEC_Z, LABEL_STRING, "micrograph.k_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_LVEC_X, LABEL_STRING, "micrograph.l_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_LVEC_Y, LABEL_STRING, "micrograph.l_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_LVEC_Z, LABEL_STRING, "micrograph.l_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_HELIX_AXIS, LABEL_STRING, "micrograph.helix_axis_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_HELIX_RISE, LABEL_STRING, "micrograph.helix_subunit_rise");
-        MDL::addLabel(BSOFT_MICROGRAPH_HELIX_ANGLE, LABEL_STRING, "micrograph.helix_subunit_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_HELIX_RADIUS, LABEL_STRING, "micrograph.helix_radius");
-        MDL::addLabel(BSOFT_MICROGRAPH_VOLTAGE, LABEL_STRING, "micrograph.voltage");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_CS, LABEL_STRING, "micrograph.ctf.Cs");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_CC, LABEL_STRING, "micrograph.ctf.Cc");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_ALPHA, LABEL_STRING, "micrograph.ctf.alpha");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_DE, LABEL_STRING, "micrograph.ctf.energy_spread");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_AMP_CONT, LABEL_STRING, "micrograph.ctf.amp_contrast");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_ZERO, LABEL_STRING, "micrograph.ctf.first_zero");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_DEF_AVG, LABEL_STRING, "micrograph.ctf.defocus_average");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_DEF_DEV, LABEL_STRING, "micrograph.ctf.defocus_deviation");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_DEF_MIN, LABEL_STRING, "micrograph.ctf.defocus_min");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_DEF_MAX, LABEL_STRING, "micrograph.ctf.defocus_max");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_AST_ANG, LABEL_STRING, "micrograph.ctf.astigmatism_angle");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_BASELINE, LABEL_STRING, "micrograph.ctf.baseline");
-        MDL::addLabel(BSOFT_MICROGRAPH_CTF_ENVELOPE, LABEL_STRING, "micrograph.ctf.envelope");
-        MDL::addLabel(BSOFT_MICROGRAPH_BOX_RADIUS, LABEL_STRING, "micrograph.box_radius");
-        MDL::addLabel(BSOFT_MICROGRAPH_BOX_RADIUS_X, LABEL_STRING, "micrograph.box_radius_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_BOX_RADIUS_Y, LABEL_STRING, "micrograph.box_radius_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_BOX_RADIUS_Z, LABEL_STRING, "micrograph.box_radius_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_BAD, LABEL_STRING, "micrograph.bad");
-        MDL::addLabel(BSOFT_MICROGRAPH_BAD_RADIUS, LABEL_STRING, "micrograph.bad_radius");
-        MDL::addLabel(BSOFT_MICROGRAPH_BAD_X, LABEL_STRING, "micrograph.bad_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_BAD_Y, LABEL_STRING, "micrograph.bad_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_BAD_Z, LABEL_STRING, "micrograph.bad_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_RADIUS, LABEL_STRING, "micrograph.marker_radius");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_ID, LABEL_STRING, "micrograph.marker_id");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_X, LABEL_STRING, "micrograph.marker_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_Y, LABEL_STRING, "micrograph.marker_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_Z, LABEL_STRING, "micrograph.marker_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_ERROR_X, LABEL_STRING, "micrograph.marker_error_x");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_ERROR_Y, LABEL_STRING, "micrograph.marker_error_y");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_ERROR_Z, LABEL_STRING, "micrograph.marker_error_z");
-        MDL::addLabel(BSOFT_MICROGRAPH_MARKER_FOM, LABEL_STRING, "micrograph.marker_fom");
-        MDL::addLabel(BSOFT_MICROGRAPH_FILAMENT_WIDTH, LABEL_STRING, "micrograph.filament_width");
-        MDL::addLabel(BSOFT_MICROGRAPH_FILNODE_RADIUS, LABEL_STRING, "micrograph.filament_node_radius");
-        MDL::addLabel(BSOFT_CTF, LABEL_STRING, "ctf");
-        MDL::addLabel(BSOFT_CTF_VOLTAGE, LABEL_STRING, "ctf.voltage");
-        MDL::addLabel(BSOFT_CTF_CS, LABEL_STRING, "ctf.Cs");
-        MDL::addLabel(BSOFT_CTF_CC, LABEL_STRING, "ctf.Cc");
-        MDL::addLabel(BSOFT_CTF_ALPHA, LABEL_STRING, "ctf.alpha");
-        MDL::addLabel(BSOFT_CTF_DE, LABEL_STRING, "ctf.energy_spread");
-        MDL::addLabel(BSOFT_CTF_AMP, LABEL_STRING, "ctf.amp_contrast");
-        MDL::addLabel(BSOFT_CTF_ZERO, LABEL_STRING, "ctf.first_zero");
-        MDL::addLabel(BSOFT_CTF_DEF_AVG, LABEL_STRING, "ctf.defocus_average");
-        MDL::addLabel(BSOFT_CTF_DEF_DEV, LABEL_STRING, "ctf.defocus_deviation");
-        MDL::addLabel(BSOFT_CTF_DEF_MIN, LABEL_STRING, "ctf.defocus_min");
-        MDL::addLabel(BSOFT_CTF_DEF_MAX, LABEL_STRING, "ctf.defocus_max");
-        MDL::addLabel(BSOFT_CTF_AST_ANG, LABEL_STRING, "ctf.astigmatism_angle");
-        MDL::addLabel(BSOFT_CTF_BASELINE, LABEL_STRING, "ctf.baseline");
-        MDL::addLabel(BSOFT_CTF_ENVELOPE, LABEL_STRING, "ctf.envelope");
-        MDL::addLabel(BSOFT_PARTICLE, LABEL_STRING, "particle");
-        MDL::addLabel(BSOFT_PARTICLE_FILE, LABEL_STRING, "particle.file_name");
-        MDL::addLabel(BSOFT_PARTICLE_NUMBER, LABEL_STRING, "particle.number");
-        MDL::addLabel(BSOFT_PARTICLE_ID, LABEL_STRING, "particle.id");
-        MDL::addLabel(BSOFT_PARTICLE_GROUP, LABEL_STRING, "particle.group_id");
-        MDL::addLabel(BSOFT_PARTICLE_MG_ID, LABEL_STRING, "particle.micrograph_id");
-        MDL::addLabel(BSOFT_PARTICLE_MG_X, LABEL_STRING, "particle.micrograph_x");
-        MDL::addLabel(BSOFT_PARTICLE_MG_Y, LABEL_STRING, "particle.micrograph_y");
-        MDL::addLabel(BSOFT_PARTICLE_MG_Z, LABEL_STRING, "particle.micrograph_z");
-        MDL::addLabel(BSOFT_PARTICLE_X, LABEL_STRING, "particle.x");
-        MDL::addLabel(BSOFT_PARTICLE_Y, LABEL_STRING, "particle.y");
-        MDL::addLabel(BSOFT_PARTICLE_Z, LABEL_STRING, "particle.z");
-        MDL::addLabel(BSOFT_PARTICLE_X_ORIGIN, LABEL_STRING, "particle.x_origin");
-        MDL::addLabel(BSOFT_PARTICLE_Y_ORIGIN, LABEL_STRING, "particle.y_origin");
-        MDL::addLabel(BSOFT_PARTICLE_Z_ORIGIN, LABEL_STRING, "particle.z_origin");
-        MDL::addLabel(BSOFT_PARTICLE_ORIGIN_X, LABEL_STRING, "particle.origin_x");
-        MDL::addLabel(BSOFT_PARTICLE_ORIGIN_Y, LABEL_STRING, "particle.origin_y");
-        MDL::addLabel(BSOFT_PARTICLE_ORIGIN_Z, LABEL_STRING, "particle.origin_z");
-        MDL::addLabel(BSOFT_PARTICLE_PSI, LABEL_STRING, "particle.psi");
-        MDL::addLabel(BSOFT_PARTICLE_THETA, LABEL_STRING, "particle.theta");
-        MDL::addLabel(BSOFT_PARTICLE_PHI, LABEL_STRING, "particle.phi");
-        MDL::addLabel(BSOFT_PARTICLE_OMEGA, LABEL_STRING, "particle.omega");
-        MDL::addLabel(BSOFT_PARTICLE_VIEW_X, LABEL_STRING, "particle.view_x");
-        MDL::addLabel(BSOFT_PARTICLE_VIEW_Y, LABEL_STRING, "particle.view_y");
-        MDL::addLabel(BSOFT_PARTICLE_VIEW_Z, LABEL_STRING, "particle.view_z");
-        MDL::addLabel(BSOFT_PARTICLE_VIEW_ANGLE, LABEL_STRING, "particle.view_angle");
-        MDL::addLabel(BSOFT_PARTICLE_MAGNIF, LABEL_STRING, "particle.magnification");
-        MDL::addLabel(BSOFT_PARTICLE_DEFOCUS, LABEL_STRING, "particle.defocus");
-        MDL::addLabel(BSOFT_PARTICLE_DEF_DEV, LABEL_STRING, "particle.defocus_deviation");
-        MDL::addLabel(BSOFT_PARTICLE_AST_ANG, LABEL_STRING, "particle.astigmatism_angle");
-        MDL::addLabel(BSOFT_PARTICLE_SELECT, LABEL_STRING, "particle.select");
-        MDL::addLabel(BSOFT_PARTICLE_FOM, LABEL_STRING, "particle.fom");
-        MDL::addLabel(BSOFT_PARTICLE_FOM_CV, LABEL_STRING, "particle.fom_crossvalidation");
-        MDL::addLabel(BSOFT_PARTICLE_FOM_AVG, LABEL_STRING, "particle.fom_average");
-        MDL::addLabel(BSOFT_PARTICLE_FOM_STD, LABEL_STRING, "particle.fom_stdev");
-        MDL::addLabel(BSOFT_PARTICLE_HANDA_FOM, LABEL_STRING, "particle.handa_fom");
-        MDL::addLabel(BSOFT_PARTICLE_HANDB_FOM, LABEL_STRING, "particle.handb_fom");
-        MDL::addLabel(BSOFT_PARTICLE_CC, LABEL_STRING, "particle.cc");
-        MDL::addLabel(BSOFT_PARTICLE_PFT_CC, LABEL_STRING, "particle.pft_cc");
-        MDL::addLabel(BSOFT_PARTICLE_PRJ_CC, LABEL_STRING, "particle.prj_cc");
-        MDL::addLabel(BSOFT_PARTICLE_CMP_CC, LABEL_STRING, "particle.cmp_cc");
-        MDL::addLabel(BSOFT_PARTICLE_RFACTORAB, LABEL_STRING, "particle.rfactorab");
-        MDL::addLabel(BSOFT_PARTICLE_COVERAGE, LABEL_STRING, "particle.coverage");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_SIZE, LABEL_DOUBLE, "particle.box_size");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_SIZE_X, LABEL_DOUBLE, "particle.box_size_x");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_SIZE_Y, LABEL_DOUBLE, "particle.box_size_y");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_SIZE_Z, LABEL_DOUBLE, "particle.box_size_z");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_RADIUS, LABEL_STRING, "particle.box_radius");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_RADIUS_X, LABEL_STRING, "particle.box_radius_x");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_RADIUS_Y, LABEL_STRING, "particle.box_radius_y");
-        MDL::addLabel(BSOFT_PARTICLE_BOX_RADIUS_Z, LABEL_STRING, "particle.box_radius_z");
-        MDL::addLabel(BSOFT_PARTICLE_BAD, LABEL_STRING, "particle.bad");
-        MDL::addLabel(BSOFT_PARTICLE_BAD_RADIUS, LABEL_STRING, "particle.bad_radius");
-        MDL::addLabel(BSOFT_PARTICLE_BAD_X, LABEL_STRING, "particle.bad_x");
-        MDL::addLabel(BSOFT_PARTICLE_BAD_Y, LABEL_STRING, "particle.bad_y");
-        MDL::addLabel(BSOFT_PARTICLE_BAD_Z, LABEL_STRING, "particle.bad_z");
-        MDL::addLabel(BSOFT_FILAMENT, LABEL_STRING, "filament");
-        MDL::addLabel(BSOFT_FILAMENT_FILE, LABEL_STRING, "filament.file_name");
-        MDL::addLabel(BSOFT_FILAMENT_ID, LABEL_STRING, "filament.id");
-        MDL::addLabel(BSOFT_FILAMENT_NODE, LABEL_STRING, "filament.node");
-        MDL::addLabel(BSOFT_FILAMENT_NODE_ID, LABEL_STRING, "filament.node_id");
-        MDL::addLabel(BSOFT_FILAMENT_NODE_X, LABEL_STRING, "filament.x");
-        MDL::addLabel(BSOFT_FILAMENT_NODE_Y, LABEL_STRING, "filament.y");
-        MDL::addLabel(BSOFT_FILAMENT_NODE_Z, LABEL_STRING, "filament.z");
-        MDL::addLabel(BSOFT_FILAMENT_WIDTH, LABEL_STRING, "filament.width");
-        MDL::addLabel(BSOFT_FILNODE_RADIUS, LABEL_STRING, "filament.node_radius");
-        MDL::addLabel(BSOFT_ORIENT_ID, LABEL_STRING, "orient.id");
-        MDL::addLabel(BSOFT_ORIENT_ORIGIN_X, LABEL_STRING, "orient.origin_x");
-        MDL::addLabel(BSOFT_ORIENT_ORIGIN_Y, LABEL_STRING, "orient.origin_y");
-        MDL::addLabel(BSOFT_ORIENT_ORIGIN_Z, LABEL_STRING, "orient.origin_z");
-        MDL::addLabel(BSOFT_ORIENT_VIEW_X, LABEL_STRING, "orient.view_x");
-        MDL::addLabel(BSOFT_ORIENT_VIEW_Y, LABEL_STRING, "orient.view_y");
-        MDL::addLabel(BSOFT_ORIENT_VIEW_Z, LABEL_STRING, "orient.view_z");
-        MDL::addLabel(BSOFT_ORIENT_VIEW_ANGLE, LABEL_STRING, "orient.view_angle");
-        MDL::addLabel(BSOFT_ORIENT_FOM, LABEL_STRING, "orient.fom");
-        MDL::addLabel(BSOFT_ORIENT_SELECT, LABEL_STRING, "orient.select");
-        MDL::addLabel(BSOFT_MARKER, LABEL_STRING, "marker");
-        MDL::addLabel(BSOFT_MARKER_RADIUS, LABEL_STRING, "marker.radius");
-        MDL::addLabel(BSOFT_MARKER_ID, LABEL_STRING, "marker.id");
-        MDL::addLabel(BSOFT_MARKER_X, LABEL_STRING, "marker.x");
-        MDL::addLabel(BSOFT_MARKER_Y, LABEL_STRING, "marker.y");
-        MDL::addLabel(BSOFT_MARKER_Z, LABEL_STRING, "marker.z");
-        MDL::addLabel(BSOFT_MARKER_ERROR_X, LABEL_STRING, "marker.error_x");
-        MDL::addLabel(BSOFT_MARKER_ERROR_Y, LABEL_STRING, "marker.error_y");
-        MDL::addLabel(BSOFT_MARKER_ERROR_Z, LABEL_STRING, "marker.error_z");
-        MDL::addLabel(BSOFT_MARKER_IMAGE, LABEL_STRING, "marker.image_number");
-        MDL::addLabel(BSOFT_MARKER_RESIDUAL, LABEL_STRING, "marker.residual");
-        MDL::addLabel(BSOFT_MARKER_FOM, LABEL_STRING, "marker.fom");
-        MDL::addLabel(BSOFT_MARKER_SELECT, LABEL_STRING, "marker.select");
-        MDL::addLabel(BSOFT_REFLEX, LABEL_STRING, "refln");
-        MDL::addLabel(BSOFT_REFLEX_RADIUS, LABEL_STRING, "refln.radius");
-        MDL::addLabel(BSOFT_REFLEX_X, LABEL_STRING, "refln.location_x");
-        MDL::addLabel(BSOFT_REFLEX_Y, LABEL_STRING, "refln.location_y");
-        MDL::addLabel(BSOFT_REFLEX_Z, LABEL_STRING, "refln.location_z");
-        MDL::addLabel(BSOFT_REFLEX_H, LABEL_STRING, "refln.index_h");
-        MDL::addLabel(BSOFT_REFLEX_K, LABEL_STRING, "refln.index_k");
-        MDL::addLabel(BSOFT_REFLEX_L, LABEL_STRING, "refln.index_l");
-        MDL::addLabel(BSOFT_REFLEX_AMP, LABEL_STRING, "refln.F_meas_au");
-        MDL::addLabel(BSOFT_REFLEX_SIGAMP, LABEL_STRING, "refln.F_meas_sigma_au");
-        MDL::addLabel(BSOFT_REFLEX_PHI, LABEL_STRING, "refln.phase_meas");
-        MDL::addLabel(BSOFT_REFLEX_SIGPHI, LABEL_STRING, "refln.phase_sigma");
-        MDL::addLabel(BSOFT_REFLEX_FOM, LABEL_STRING, "refln.weight");
-        MDL::addLabel(BSOFT_REFLEX_STATUS, LABEL_STRING, "refln.status");
-        MDL::addLabel(BSOFT_LAYERLINE, LABEL_STRING, "layer_line");
-        MDL::addLabel(BSOFT_LAYERLINE_NUMBER, LABEL_STRING, "layer_line.number");
-        MDL::addLabel(BSOFT_LAYERLINE_ORDER, LABEL_STRING, "layer_line.bessel_order");
-        MDL::addLabel(BSOFT_LAYERLINE_DISTANCE, LABEL_STRING, "layer_line.distance");
-        MDL::addLabel(BSOFT_LAYERLINE_FREQ, LABEL_STRING, "layer_line.frequency");
-        MDL::addLabel(BSOFT_LAYERLINE_AMP, LABEL_STRING, "layer_line.amplitude");
-        MDL::addLabel(BSOFT_LAYERLINE_FOM, LABEL_STRING, "layer_line.fom");
-        MDL::addLabel(BSOFT_LAYERLINE_SELECT, LABEL_STRING, "layer_line.select");
-
-        MDL::addLabel(BSOFT_SYMMETRY_INT_TABLES_NUMBER, LABEL_INT, "symmetry.Int_Tables_number");
-        MDL::addLabel(BSOFT_SYMMETRY_SPACE_GROUP_NAME_H_M, LABEL_STRING, "symmetry.space_group_name_H-M");
-        MDL::addLabel(BSOFT_SYMMETRY_CELL_SETTING, LABEL_STRING, "symmetry.cell_setting");
-        MDL::addLabel(BSOFT_SYMMETRY_EQUIV_ID, LABEL_INT, "symmetry_equiv.id");
-        MDL::addLabel(BSOFT_SYMMETRY_EQUIV_POS_AS_XYZ, LABEL_STRING, "symmetry_equiv.pos_as_xyz");
+		/** Buffer labels */
+		MDL::addLabel(BUFFER_01, LABEL_STRING, "buffer_01");
+		MDL::addLabel(BUFFER_02, LABEL_STRING, "buffer_02");
+		MDL::addLabel(BUFFER_03, LABEL_STRING, "buffer_03");
+		MDL::addLabel(BUFFER_04, LABEL_STRING, "buffer_04");
+		MDL::addLabel(BUFFER_05, LABEL_STRING, "buffer_05");
+		MDL::addLabel(BUFFER_06, LABEL_STRING, "buffer_06");
+		MDL::addLabel(BUFFER_07, LABEL_STRING, "buffer_07");
+		MDL::addLabel(BUFFER_08, LABEL_STRING, "buffer_08");
+		MDL::addLabel(BUFFER_09, LABEL_STRING, "buffer_09");
+		MDL::addLabel(BUFFER_10, LABEL_STRING, "buffer_10");
+		MDL::addLabel(BUFFER_11, LABEL_STRING, "buffer_11");
+		MDL::addLabel(BUFFER_12, LABEL_STRING, "buffer_12");
+		MDL::addLabel(BUFFER_13, LABEL_STRING, "buffer_13");
+		MDL::addLabel(BUFFER_14, LABEL_STRING, "buffer_14");
+		MDL::addLabel(BUFFER_15, LABEL_STRING, "buffer_15");
+		MDL::addLabel(BUFFER_16, LABEL_STRING, "buffer_16");
+		MDL::addLabel(BUFFER_17, LABEL_STRING, "buffer_17");
+		MDL::addLabel(BUFFER_18, LABEL_STRING, "buffer_18");
+		MDL::addLabel(BUFFER_19, LABEL_STRING, "buffer_19");
+		MDL::addLabel(BUFFER_20, LABEL_STRING, "buffer_20");
+		MDL::addLabel(BUFFER_21, LABEL_STRING, "buffer_21");
+		MDL::addLabel(BUFFER_22, LABEL_STRING, "buffer_22");
+		MDL::addLabel(BUFFER_23, LABEL_STRING, "buffer_23");
+		MDL::addLabel(BUFFER_24, LABEL_STRING, "buffer_24");
+		MDL::addLabel(BUFFER_25, LABEL_STRING, "buffer_25");
+		MDL::addLabel(BUFFER_26, LABEL_STRING, "buffer_26");
+		MDL::addLabel(BUFFER_27, LABEL_STRING, "buffer_27");
+		MDL::addLabel(BUFFER_28, LABEL_STRING, "buffer_28");
+		MDL::addLabel(BUFFER_29, LABEL_STRING, "buffer_29");
+		MDL::addLabel(BUFFER_30, LABEL_STRING, "buffer_30");
+		MDL::addLabel(BUFFER_31, LABEL_STRING, "buffer_31");
+		MDL::addLabel(BUFFER_32, LABEL_STRING, "buffer_32");
+		MDL::addLabel(BUFFER_33, LABEL_STRING, "buffer_33");
+		MDL::addLabel(BUFFER_34, LABEL_STRING, "buffer_34");
+		MDL::addLabel(BUFFER_35, LABEL_STRING, "buffer_35");
+		MDL::addLabel(BUFFER_36, LABEL_STRING, "buffer_36");
+		MDL::addLabel(BUFFER_37, LABEL_STRING, "buffer_37");
+		MDL::addLabel(BUFFER_38, LABEL_STRING, "buffer_38");
+		MDL::addLabel(BUFFER_39, LABEL_STRING, "buffer_39");
+		MDL::addLabel(BUFFER_40, LABEL_STRING, "buffer_40");
+		MDL::addLabel(BUFFER_41, LABEL_STRING, "buffer_41");
+		MDL::addLabel(BUFFER_42, LABEL_STRING, "buffer_42");
+		MDL::addLabel(BUFFER_43, LABEL_STRING, "buffer_43");
+		MDL::addLabel(BUFFER_44, LABEL_STRING, "buffer_44");
+		MDL::addLabel(BUFFER_45, LABEL_STRING, "buffer_45");
+		MDL::addLabel(BUFFER_46, LABEL_STRING, "buffer_46");
+		MDL::addLabel(BUFFER_47, LABEL_STRING, "buffer_47");
+		MDL::addLabel(BUFFER_48, LABEL_STRING, "buffer_48");
+		MDL::addLabel(BUFFER_49, LABEL_STRING, "buffer_49");
+		MDL::addLabel(BUFFER_50, LABEL_STRING, "buffer_50");
+		MDL::addLabel(BUFFER_51, LABEL_STRING, "buffer_51");
+		MDL::addLabel(BUFFER_52, LABEL_STRING, "buffer_52");
+		MDL::addLabel(BUFFER_53, LABEL_STRING, "buffer_53");
+		MDL::addLabel(BUFFER_54, LABEL_STRING, "buffer_54");
+		MDL::addLabel(BUFFER_55, LABEL_STRING, "buffer_55");
+		MDL::addLabel(BUFFER_56, LABEL_STRING, "buffer_56");
+		MDL::addLabel(BUFFER_57, LABEL_STRING, "buffer_57");
+		MDL::addLabel(BUFFER_58, LABEL_STRING, "buffer_58");
+		MDL::addLabel(BUFFER_59, LABEL_STRING, "buffer_59");
+		MDL::addLabel(BUFFER_60, LABEL_STRING, "buffer_60");
+		MDL::addLabel(BUFFER_61, LABEL_STRING, "buffer_61");
+		MDL::addLabel(BUFFER_62, LABEL_STRING, "buffer_62");
+		MDL::addLabel(BUFFER_63, LABEL_STRING, "buffer_63");
+		MDL::addLabel(BUFFER_64, LABEL_STRING, "buffer_64");
+		MDL::addLabel(BUFFER_65, LABEL_STRING, "buffer_65");
+		MDL::addLabel(BUFFER_66, LABEL_STRING, "buffer_66");
+		MDL::addLabel(BUFFER_67, LABEL_STRING, "buffer_67");
+		MDL::addLabel(BUFFER_68, LABEL_STRING, "buffer_68");
+		MDL::addLabel(BUFFER_69, LABEL_STRING, "buffer_69");
+		MDL::addLabel(BUFFER_70, LABEL_STRING, "buffer_70");
+		MDL::addLabel(BUFFER_71, LABEL_STRING, "buffer_71");
+		MDL::addLabel(BUFFER_72, LABEL_STRING, "buffer_72");
+		MDL::addLabel(BUFFER_73, LABEL_STRING, "buffer_73");
+		MDL::addLabel(BUFFER_74, LABEL_STRING, "buffer_74");
+		MDL::addLabel(BUFFER_75, LABEL_STRING, "buffer_75");
+		MDL::addLabel(BUFFER_76, LABEL_STRING, "buffer_76");
+		MDL::addLabel(BUFFER_77, LABEL_STRING, "buffer_77");
+		MDL::addLabel(BUFFER_78, LABEL_STRING, "buffer_78");
+		MDL::addLabel(BUFFER_79, LABEL_STRING, "buffer_79");
+		MDL::addLabel(BUFFER_80, LABEL_STRING, "buffer_80");
+		MDL::addLabel(BUFFER_81, LABEL_STRING, "buffer_81");
+		MDL::addLabel(BUFFER_82, LABEL_STRING, "buffer_82");
+		MDL::addLabel(BUFFER_83, LABEL_STRING, "buffer_83");
+		MDL::addLabel(BUFFER_84, LABEL_STRING, "buffer_84");
+		MDL::addLabel(BUFFER_85, LABEL_STRING, "buffer_85");
+		MDL::addLabel(BUFFER_86, LABEL_STRING, "buffer_86");
+		MDL::addLabel(BUFFER_87, LABEL_STRING, "buffer_87");
+		MDL::addLabel(BUFFER_88, LABEL_STRING, "buffer_88");
+		MDL::addLabel(BUFFER_89, LABEL_STRING, "buffer_89");
+		MDL::addLabel(BUFFER_90, LABEL_STRING, "buffer_90");
+		MDL::addLabel(BUFFER_91, LABEL_STRING, "buffer_91");
+		MDL::addLabel(BUFFER_92, LABEL_STRING, "buffer_92");
+		MDL::addLabel(BUFFER_93, LABEL_STRING, "buffer_93");
+		MDL::addLabel(BUFFER_94, LABEL_STRING, "buffer_94");
+		MDL::addLabel(BUFFER_95, LABEL_STRING, "buffer_95");
+		MDL::addLabel(BUFFER_96, LABEL_STRING, "buffer_96");
+		MDL::addLabel(BUFFER_97, LABEL_STRING, "buffer_97");
+		MDL::addLabel(BUFFER_98, LABEL_STRING, "buffer_98");
+		MDL::addLabel(BUFFER_99, LABEL_STRING, "buffer_99");
 
         //Create an static empty header for image initialization
         MDL::emptyHeader.resetGeo();
@@ -2518,7 +2268,7 @@ private:
         // Add user-defined label aliases for allow use Xmipp-MetaData
         // with other labels
         MDL::addExtraAliases();
-
+		MDL::bufferIndex = BUFFER_01;
     }
 
     ~MDLabelStaticInit()

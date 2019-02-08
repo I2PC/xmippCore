@@ -228,25 +228,27 @@ void rotation2DMatrix(double ang, Matrix2D< double > &result, bool homogeneous)
 }
 
 /* Translation 2D ---------------------------------------------------------- */
-void translation2DMatrix(const Matrix1D<double> &v,
-                         Matrix2D< double > &result,
+template void translation2DMatrix(const Matrix1D<float>&, Matrix2D<float>&, bool inverse);
+template void translation2DMatrix(const Matrix1D<double>&, Matrix2D<double>&, bool inverse);
+template<typename T>
+void translation2DMatrix(const Matrix1D<T> &translation,
+                         Matrix2D<T> &resMatrix,
                          bool inverse)
 {
-    if (VEC_XSIZE(v) != 2)
+    if (VEC_XSIZE(translation) != 2)
         REPORT_ERROR(ERR_MATRIX_SIZE, "Translation2D_matrix: vector is not in R2");
 
-    result.initIdentity(3);
+    resMatrix.initIdentity(3);
     if (inverse)
     {
-        dMij(result,0, 2) = -XX(v);
-        dMij(result,1, 2) = -YY(v);
+        dMij(resMatrix,0, 2) = -XX(translation);
+        dMij(resMatrix,1, 2) = -YY(translation);
     }
     else
     {
-        dMij(result,0, 2) = XX(v);
-        dMij(result,1, 2) = YY(v);
+        dMij(resMatrix,0, 2) = XX(translation);
+        dMij(resMatrix,1, 2) = YY(translation);
     }
-
 }
 
 /* Rotation 3D around the system axes -------------------------------------- */
@@ -382,23 +384,26 @@ void rotation3DMatrix(double ang, const Matrix1D<double> &axis,
 }
 
 /* Translation 3D ---------------------------------------------------------- */
-void translation3DMatrix(const Matrix1D<double> &v, Matrix2D<double> &result, bool inverse)
+template void translation3DMatrix(const Matrix1D<float> &translation, Matrix2D<float> &resMatrix, bool inverse);
+template void translation3DMatrix(const Matrix1D<double> &translation, Matrix2D<double> &resMatrix, bool inverse);
+template<typename T>
+void translation3DMatrix(const Matrix1D<T> &translation, Matrix2D<T> &resMatrix, bool inverse)
 {
-    if (VEC_XSIZE(v) != 3)
+    if (VEC_XSIZE(translation) != 3)
         REPORT_ERROR(ERR_MATRIX_SIZE, "Translation3D_matrix: vector is not in R3");
 
-    result.initIdentity(4);
+    resMatrix.initIdentity(4);
     if (inverse)
     {
-        dMij(result,0, 3) = -XX(v);
-        dMij(result,1, 3) = -YY(v);
-        dMij(result,2, 3) = -ZZ(v);
+        dMij(resMatrix,0, 3) = -XX(translation);
+        dMij(resMatrix,1, 3) = -YY(translation);
+        dMij(resMatrix,2, 3) = -ZZ(translation);
     }
     else
     {
-        dMij(result,0, 3) = XX(v);
-        dMij(result,1, 3) = YY(v);
-        dMij(result,2, 3) = ZZ(v);
+        dMij(resMatrix,0, 3) = XX(translation);
+        dMij(resMatrix,1, 3) = YY(translation);
+        dMij(resMatrix,2, 3) = ZZ(translation);
     }
 }
 
