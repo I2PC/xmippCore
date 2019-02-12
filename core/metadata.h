@@ -222,6 +222,8 @@ public:
 }
 ;//class MDRowIterator
 
+typedef std::vector<MDRow> VMetaData;
+
 /** Class to manage data files.
  *
  * The MetaData class manages all procedures related to
@@ -409,6 +411,16 @@ public:
     {
         precision = (int)pow (10,_precision);
     }
+
+    /** As Vector Metadata.
+     * This avoids many thread unsafe issues. All rows of the metadata are returned
+     * as a set of rows
+     */
+    void asVMetaData(VMetaData &vmdOut);
+
+    /** Import from Vector Metadata.
+     */
+    void fromVMetaData(VMetaData &vmdIn);
 
     /** Set to false for row format (parameter files).
      *  set to true  for column format (this is the default) (docfiles)

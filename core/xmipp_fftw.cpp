@@ -656,46 +656,52 @@ void scaleToSizeFourier(int Zdim, int Ydim, int Xdim, MultidimArray<double> &mda
     transformerMp.setReal(mdaOut);
     transformerMp.getFourierAlias(MpmemFourier);
 
-    size_t xsize = std::min(XSIZE(MmemFourier),XSIZE(MpmemFourier))*sizeof(std::complex<double>);
-    size_t yhalf = std::min(std::min((YSIZE(mdaIn)+1)/2,(YSIZE(mdaOut)+1)/2),YSIZE(mdaIn)-1);
-    size_t zhalf = std::min(std::min((ZSIZE(mdaIn)+1)/2,(ZSIZE(mdaOut)+1)/2),ZSIZE(mdaIn)-1);
+    scaleToSizeFourier(mdaIn, mdaOut, MmemFourier, MpmemFourier);
+
+    // Transform data
+    transformerMp.inverseFourierTransform();
+}
+
+template void scaleToSizeFourier<double>(MultidimArray<double> &mdaIn, MultidimArray<double> &mdaOut,
+        MultidimArray<std::complex<double> > &inFourier, MultidimArray<std::complex<double> > &outFourier);
+
+template<typename T>
+void scaleToSizeFourier(MultidimArray<T> &mdaIn, MultidimArray<T> &mdaOut,
+        MultidimArray<std::complex<T> > &inFourier, MultidimArray<std::complex<T> > &outFourier) {
+    size_t xsize = std::min(XSIZE(inFourier),XSIZE(outFourier))*sizeof(std::complex<T>);
+    size_t yhalf = std::min(std::min(YSIZE(mdaIn)/2,YSIZE(mdaOut)/2),YSIZE(mdaIn)-1);
+    size_t zhalf = std::min(std::min(ZSIZE(mdaIn)/2,ZSIZE(mdaOut)/2),ZSIZE(mdaIn)-1);
 
     size_t kp0=0;
     size_t kpF=zhalf;
     size_t ip0=0;
     size_t ipF=yhalf;
-    size_t km0=ZSIZE(MmemFourier)>=ZSIZE(MpmemFourier)?(kpF+1):(ZSIZE(MpmemFourier)-(ZSIZE(MmemFourier)-(zhalf+1)));
-    size_t kmF=ZSIZE(MpmemFourier)-1;
-    size_t im0=YSIZE(MmemFourier)>=YSIZE(MpmemFourier)?(ipF+1):(YSIZE(MpmemFourier)-(YSIZE(MmemFourier)-(yhalf+1)));
-    size_t imF=YSIZE(MpmemFourier)-1;
+    size_t km0=ZSIZE(inFourier)>=ZSIZE(outFourier)?(kpF+1):(ZSIZE(outFourier)-(ZSIZE(inFourier)-(zhalf+1)));
+    size_t kmF=ZSIZE(outFourier)-1;
+    size_t im0=YSIZE(inFourier)>=YSIZE(outFourier)?(ipF+1):(YSIZE(outFourier)-(YSIZE(inFourier)-(yhalf+1)));
+    size_t imF=YSIZE(outFourier)-1;
 
     //Init with zero
-    MpmemFourier.initZeros();
+    outFourier.initZeros();
 
     for (size_t k = kp0; k<=kpF; ++k)
     {
         for (size_t i=ip0; i<=ipF; ++i)
-        	memcpy(&dAkij(MpmemFourier,k,i,0),&dAkij(MmemFourier,k,i,0),xsize);
-        for (size_t i=im0; i<=imF; ++i)
-        {
-            size_t ip = i + YSIZE(MmemFourier)-YSIZE(MpmemFourier) ;
-        	memcpy(&dAkij(MpmemFourier,k,i,0),&dAkij(MmemFourier,k,ip,0),xsize);
+            memcpy(&dAkij(outFourier,k,i,0),&dAkij(inFourier,k,i,0),xsize);
+        for (size_t i=im0; i<=imF; ++i) {
+            size_t ip = i + YSIZE(inFourier)-YSIZE(outFourier) ;
+            memcpy(&dAkij(outFourier,k,i,0),&dAkij(inFourier,k,ip,0),xsize);
         }
     }
-    for (size_t k = km0; k<=kmF; ++k)
-    {
-        size_t kp = k + ZSIZE(MmemFourier)-ZSIZE(MpmemFourier) ;
+    for (size_t k = km0; k<=kmF; ++k) {
+        size_t kp = k + ZSIZE(inFourier)-ZSIZE(outFourier) ;
         for (size_t i=ip0; i<=ipF; ++i)
-        	memcpy(&dAkij(MpmemFourier,k,i,0),&dAkij(MmemFourier,kp,i,0),xsize);
-        for (size_t i=im0; i<=imF; ++i)
-        {
-            size_t ip = i + YSIZE(MmemFourier)-YSIZE(MpmemFourier) ;
-        	memcpy(&dAkij(MpmemFourier,k,i,0),&dAkij(MmemFourier,kp,ip,0),xsize);
+            memcpy(&dAkij(outFourier,k,i,0),&dAkij(inFourier,kp,i,0),xsize);
+        for (size_t i=im0; i<=imF; ++i) {
+            size_t ip = i + YSIZE(inFourier)-YSIZE(outFourier) ;
+            memcpy(&dAkij(outFourier,k,i,0),&dAkij(inFourier,kp,ip,0),xsize);
         }
     }
-
-    // Transform data
-    transformerMp.inverseFourierTransform();
 }
 
 void selfScaleToSizeFourier(int Zdim, int Ydim, int Xdim, MultidimArray<double> &mda, int nThreads)

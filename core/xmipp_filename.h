@@ -139,6 +139,17 @@ public:
      */
     FileName(const char* str, const String& ext): String(str + ext)
     {}
+
+    /** Constructor from root and extension
+     *
+     * None of the parameters is optional
+     *
+     * @code
+     * FileName fn_proj("g1ta00001", "xmp"); // fn_proj = "g1ta00001.xmp"
+     * @endcode
+     */
+    FileName(const String& str, const String& ext): String(str + "." + ext)
+    {}
     //@}
 
     /// @name Composing/Decomposing the filename
