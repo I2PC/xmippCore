@@ -248,6 +248,11 @@ enum MDLabel
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
     MDL_LOCAL_ALIGNMENT_RATING, ///< A single value representing the 'amount of shift' applied to movie
+    MDL_LOCAL_ALIGNMENT_AVG, ///< A single value representing the 'average shift' applied to movie
+    MDL_LOCAL_ALIGNMENT_PATCHES, ///< Two values representing number of patches used for local alignment (X, Y)
+    MDL_LOCAL_ALIGNMENT_COEFFS_X, ///< BSpline coefficient in X dim
+    MDL_LOCAL_ALIGNMENT_COEFFS_Y, ///< BSpline coefficient in Y dim
+    MDL_LOCAL_ALIGNMENT_CONTROL_POINTS, ///< Three values representing number of control points used for local alignment (X, Y, N)
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
@@ -1574,6 +1579,11 @@ private:
         MDL::addLabel(MDL_LL, LABEL_DOUBLE, "logLikelihood");
         MDL::addLabelAlias(MDL_LL, "LL");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_RATING, LABEL_DOUBLE, "localAlignmentRating");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_AVG, LABEL_DOUBLE, "localAlignmentAvg");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_PATCHES, LABEL_VECTOR_SIZET, "localAlignmentPatches");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_COEFFS_X, LABEL_VECTOR_DOUBLE, "localAlignmentCoeffsX");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_COEFFS_Y, LABEL_VECTOR_DOUBLE, "localAlignmentCoeffsY");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_CONTROL_POINTS, LABEL_VECTOR_SIZET, "localAlignmentControlPoints");
         MDL::addLabel(MDL_MACRO_CMD, LABEL_STRING, "macroCmd");
         MDL::addLabel(MDL_MACRO_CMD_ARGS, LABEL_STRING, "macroCmdArgs");
         MDL::addLabel(MDL_MAGNIFICATION, LABEL_DOUBLE, "magnification");
