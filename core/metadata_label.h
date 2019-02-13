@@ -247,7 +247,6 @@ enum MDLabel
     MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
-    MDL_LOCAL_ALIGNMENT_RATING, ///< A single value representing the 'amount of shift' applied to movie
     MDL_LOCAL_ALIGNMENT_AVG, ///< A single value representing the 'average shift' applied to movie
     MDL_LOCAL_ALIGNMENT_PATCHES, ///< Two values representing number of patches used for local alignment (X, Y)
     MDL_LOCAL_ALIGNMENT_COEFFS_X, ///< BSpline coefficient in X dim
@@ -1578,7 +1577,6 @@ private:
         MDL::addLabel(MDL_KSTEST, LABEL_DOUBLE, "kstest");
         MDL::addLabel(MDL_LL, LABEL_DOUBLE, "logLikelihood");
         MDL::addLabelAlias(MDL_LL, "LL");
-        MDL::addLabel(MDL_LOCAL_ALIGNMENT_RATING, LABEL_DOUBLE, "localAlignmentRating");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_AVG, LABEL_DOUBLE, "localAlignmentAvg");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_PATCHES, LABEL_VECTOR_SIZET, "localAlignmentPatches");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_COEFFS_X, LABEL_VECTOR_DOUBLE, "localAlignmentCoeffsX");
