@@ -851,6 +851,16 @@ char * getXmippPath()
 
 }
 
+/* Get the Xmipp source directory -------------------------------------------- */
+char * getXmippSrcPath()
+{
+    char* path = getenv("XMIPP_SRC");
+    if (path == NULL)
+        REPORT_ERROR(ERR_VALUE_EMPTY, "getXmippSrcPath::Variable XMIPP_HOME is not defined");
+    return path;
+
+}
+
 void copyImage(const FileName & source, const FileName & target)
 {
     ImageGeneric img(source);
