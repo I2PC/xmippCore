@@ -254,6 +254,7 @@ enum MDLabel
     MDL_KMEANS2D_CENTROID, ///< Centroid of a cluster for the KMEANS2D classification
     MDL_KSTEST, ///<KS-test statistics
     MDL_LL, ///< contribution of an image to log-likelihood value
+    MDL_LOCAL_ALIGNMENT_RATING, ///< A single value representing the 'amount of shift' applied to movie
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
@@ -999,8 +1000,18 @@ public:
     MDObject(MDLabel label, const std::vector<double> &vectorValue);
     MDObject(MDLabel label, const std::vector<size_t> &vectorValueLong);
     MDObject(MDLabel label, const size_t &longintValue);
-    MDObject(MDLabel label, const float &floatValue);
-    MDObject(MDLabel label, const char * &charValue);
+
+    /**
+     * Do not use MDObject constructor with floats, use double.
+     * Floats are banned from metadata class.
+     */
+    MDObject(MDLabel label, const float &floatValue) = delete;
+
+    /**
+     * Do not use MDObject constructor with char, use string.
+     * Chars are banned from metadata class.
+     */
+    MDObject(MDLabel label, const char * &charValue) = delete;
 
     /// Destructor
     ~MDObject();
@@ -1017,7 +1028,11 @@ public:
     void  getValue(std::vector<size_t> &vv) const;
     void  getValue(size_t &lv) const;
     void  getValue(float &floatvalue) const;
-    void  getValue(char*  &charvalue) const;
+    /**
+     * Do not use getValue with char, use string.
+     * chars are banned from metadata class.
+     */
+    void  getValue(char*  &charvalue) const = delete;
 
     void  setValue(const int &iv);
     void  setValue(const double &dv);
@@ -1571,6 +1586,7 @@ private:
         MDL::addLabel(MDL_KSTEST, LABEL_DOUBLE, "kstest");
         MDL::addLabel(MDL_LL, LABEL_DOUBLE, "logLikelihood");
         MDL::addLabelAlias(MDL_LL, "LL");
+        MDL::addLabel(MDL_LOCAL_ALIGNMENT_RATING, LABEL_DOUBLE, "localAlignmentRating");
         MDL::addLabel(MDL_MACRO_CMD, LABEL_STRING, "macroCmd");
         MDL::addLabel(MDL_MACRO_CMD_ARGS, LABEL_STRING, "macroCmdArgs");
         MDL::addLabel(MDL_MAGNIFICATION, LABEL_DOUBLE, "magnification");
