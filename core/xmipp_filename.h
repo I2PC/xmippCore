@@ -690,6 +690,10 @@ public:
  */
 char* getXmippPath();
 
+/** Returns the source directory of Xmipp
+ */
+char* getXmippSrcPath();
+
 /** Check if the file exists using the stat function
  */
 inline bool fileExists( const char *filename )
