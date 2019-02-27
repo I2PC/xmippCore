@@ -85,9 +85,9 @@ enum MDLabel
     MDL_CLASSIFICATION_INTRACLASS_DISTANCE, ///< Average intraclass distance (double)
     MDL_CLASSIFICATION_FRC_05, ///< Digital frequency at which the FRC drops below 0.5 (double)
     MDL_COMMENT, ///< Serve to make annotations on the metadata row
+    MDL_COORD_CONSENSUS_SCORE, ///< Store a score for the coords. consensus (it will change the behavoir of the viewer)
     MDL_COST, ///< Cost for the image (double)
     MDL_COST_PERCENTILE, ///< Cost percentile for the image (double)
-    MDL_COORD_CONSENSUS_SCORE,
     MDL_COUNT, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_COUNT2, ///< Number of elements of a type (int) [this is a genereic type do not use to transfer information to another program]
     MDL_CORR_DENOISED_PROJECTION, ///<Correlation between the denoised image and the projection proposed
@@ -420,8 +420,8 @@ enum MDLabel
     MDL_SIGMANOISE, ///< Standard deviation of the noise in ML model
     MDL_SIGMAOFFSET, ///< Standard deviation of the offsets in ML model
     MDL_SIGNALCHANGE, ///< Signal change for an image
-	MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
-	MDL_SPH_DEFORMATION, ///< Deformation in voxels
+    MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
+    MDL_SPH_DEFORMATION, ///< Deformation in voxels
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
@@ -465,6 +465,7 @@ enum MDLabel
     MDL_Z, ///< Z component (double)
     MDL_ZCOOR, ///< Z component (int)
     MDL_ZSCORE, ///< Global Z Score (double)
+    MDL_ZSCORE_DEEPLEARNING1, ///< Z Score (double)
     MDL_ZSCORE_HISTOGRAM, ///< Z Score (double)
     MDL_ZSCORE_RESMEAN, ///< Z Score of the mean of the residuals (double)
     MDL_ZSCORE_RESVAR, ///< Z Score of the stddev of the residuals (double)
@@ -895,7 +896,6 @@ enum MDLabel
 	BUFFER_97,
 	BUFFER_98,
 	BUFFER_99,
-
     MDL_LAST_LABEL  // **** NOTE ****: Do keep this label always at the end,it is here for looping purposes
 };//close enum Label
 
@@ -1347,6 +1347,7 @@ private:
         MDL::addLabelAlias(MDL_CLASSIFICATION_INTRACLASS_DISTANCE, "ClassificationIntraclassDistance");
         MDL::addLabel(MDL_COLOR, LABEL_INT, "color");
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
+        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "consensusCost");
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
         MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
@@ -1354,7 +1355,6 @@ private:
         MDL::addLabel(MDL_COUNT, LABEL_SIZET, "count");
         MDL::addLabel(MDL_CORR_DENOISED_PROJECTION, LABEL_DOUBLE, "corrDenoisedProjection");
         MDL::addLabel(MDL_CORR_DENOISED_NOISY, LABEL_DOUBLE, "corrDenoisedNoisy");
-
         MDL::addLabel(MDL_CORRELATION_IDX, LABEL_DOUBLE, "corrIdx");
         MDL::addLabel(MDL_CORRELATION_MASK, LABEL_DOUBLE, "corrMask");
         MDL::addLabel(MDL_CORRELATION_WEIGHT, LABEL_DOUBLE, "corrWeight");
@@ -1763,7 +1763,7 @@ private:
         MDL::addLabel(MDL_SCORE_BY_VAR, LABEL_DOUBLE, "scoreByVariance");
         MDL::addLabel(MDL_SCORE_BY_GINI, LABEL_DOUBLE, "scoreByGiniCoeff");
         MDL::addLabel(MDL_SCORE_BY_ZERNIKE, LABEL_VECTOR_DOUBLE, "zernikeMoments");
-		MDL::addLabel(MDL_SCORE_BY_ZSCORE, LABEL_DOUBLE, "scoreByZScore");
+		    MDL::addLabel(MDL_SCORE_BY_ZSCORE, LABEL_DOUBLE, "scoreByZScore");
 
         MDL::addLabelAlias(MDL_SCALE, "Scale");
         MDL::addLabel(MDL_SELFILE, LABEL_STRING, "selfile", TAGLABEL_METADATA);
@@ -1844,6 +1844,7 @@ private:
         MDL::addLabel(MDL_ZSCORE_SHAPE2, LABEL_DOUBLE, "zScoreShape2");
         MDL::addLabel(MDL_ZSCORE_SNR1, LABEL_DOUBLE, "zScoreSNR1");
         MDL::addLabel(MDL_ZSCORE_SNR2, LABEL_DOUBLE, "zScoreSNR2");
+        MDL::addLabel(MDL_ZSCORE_DEEPLEARNING1, LABEL_DOUBLE, "zScoreDeepLearning1");
         MDL::addLabel(MDL_ZSIZE, LABEL_SIZET, "zSize");
 
         MDL::addLabelAlias(MDL_XCOOR, "Xcoor");//3.0
@@ -1924,7 +1925,7 @@ private:
         MDL::addLabel(RLN_IMAGE_STATS_KURT, LABEL_DOUBLE, "rlnKurtosisExcessValue");
         MDL::addLabel(RLN_IMAGE_WEIGHT, LABEL_DOUBLE, "rlnImageWeight");
         
-		MDL::addLabel(RLN_MASK_NAME, LABEL_STRING, "rlnMaskName");
+		    MDL::addLabel(RLN_MASK_NAME, LABEL_STRING, "rlnMaskName");
         
         MDL::addLabel(RLN_MATRIX_1_1, LABEL_DOUBLE, "rlnMatrix_1_1");
         MDL::addLabel(RLN_MATRIX_1_2, LABEL_DOUBLE, "rlnMatrix_1_2");
@@ -2278,7 +2279,6 @@ private:
 		MDL::addLabel(BUFFER_97, LABEL_STRING, "buffer_97");
 		MDL::addLabel(BUFFER_98, LABEL_STRING, "buffer_98");
 		MDL::addLabel(BUFFER_99, LABEL_STRING, "buffer_99");
-
         //Create an static empty header for image initialization
         MDL::emptyHeader.resetGeo();
         MDL::emptyHeader.setValue(MDL_ANGLE_ROT, 0.);
