@@ -185,7 +185,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     }
 
     // Calculate x,y space dimension resolution
-    double xRes, yRes;
+    double xRes=1.0, yRes=1.0;
 
     switch (dirHead[0].resUnit)
     {
