@@ -126,6 +126,7 @@ enum ErrorType
 
     ERR_DOCFILE,            ///< Error in docfile format
 
+    ERR_GPU_MEMORY,         ///< GPU memory related issues
     ERR_GRID,               ///< Grid general error.
     ERR_GRID_SIZE,          ///< Incorrect number of GRID volumes or shapes
 
@@ -147,6 +148,8 @@ enum ErrorType
     ERR_IO_NOPATH,          ///< Environment PATH cannot be read.
     ERR_IO_LOCKED,	    	///< Error when locking/unloking a file.
     ERR_IO_SIZE,            ///< Incorrect file size.
+
+    ERR_LOGIC_ERROR,        ///< Some logical error in the pipeline
 
     ERR_MATRIX,             ///< Matrix error.
     ERR_MATRIX_DIM,         ///< Problem with matrix dimensions.
