@@ -62,9 +62,9 @@ public:
         return p->has_value;
     }
 
-    constexpr T value() const {
+    inline T& value() const {
         assert(p->has_value);
-        return static_cast<const payload_full*>(p)->t;
+        return static_cast<payload_full*>(p)->t;
     }
 
 private:
@@ -83,7 +83,7 @@ private:
         }
         ;
 
-        const T t;
+        T t;
     };
 
     payload *p;
