@@ -432,6 +432,16 @@ void FFT_magnitude(const MultidimArray< std::complex< double > > & v,
 void FFT_phase(const MultidimArray< std::complex< double > > & v,
                MultidimArray< double >& phase);
 
+/** FFT Radial average.
+ * This function computes the Fourier transform (in a relatively inefficient way),
+ * the amplitude and radial average of the input image. This is primarily meant for
+ * debugging. It also returns the Fourier transform just in case it might be useful
+ * outside.
+ * @ingroup FourierOperations
+ */
+void radial_magnitude(const MultidimArray<double> & v, MultidimArray< std::complex< double > > &V,
+                      MultidimArray< double >& radialMagnitude);
+
 /** Autocorrelation function of a Xmipp vector
  * @ingroup FourierOperations
  *
