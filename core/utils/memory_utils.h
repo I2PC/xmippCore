@@ -31,27 +31,27 @@
 namespace memoryUtils
 {
 
-    inline constexpr size_t operator""_kB(unsigned long long int bytes) {
+    inline constexpr size_t operator"" _kB(unsigned long long int bytes) {
       return 1024 * bytes;
     }
 
-    inline constexpr size_t operator""_MB(unsigned long long int bytes) {
+    inline constexpr size_t operator"" _MB(unsigned long long int bytes) {
       return 1024 * 1024 * bytes;
     }
 
-    inline constexpr size_t operator""_GB(unsigned long long int bytes) {
+    inline constexpr size_t operator"" _GB(unsigned long long int bytes) {
       return 1024 * 1024 * 1024 * bytes;
     }
 
-    inline constexpr double operator""_kB(long double bytes) {
+    inline constexpr double operator"" _kB(long double bytes) {
       return 1024. * bytes;
     }
 
-    inline constexpr double operator""_MB(long double bytes) {
+    inline constexpr double operator"" _MB(long double bytes) {
       return 1024. * 1024. * bytes;
     }
 
-    inline constexpr double operator""_GB(long double bytes) {
+    inline constexpr double operator"" _GB(long double bytes) {
       return 1024. * 1024. * 1024. * bytes;
     }
 
