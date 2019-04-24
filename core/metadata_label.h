@@ -132,6 +132,8 @@ enum MDLabel
     MDL_CTF_DEFOCUSV, ///< Defocus V (Angstroms)
     MDL_CTF_DEFOCUS_CHANGE, ///< Defocus change with respect to previous defoucs (Angstroms)
     MDL_CTF_DEFOCUS_R2, ///< Defocus coefficient of determination
+	MDL_CTF_DEFOCUS_COEFS, ///< Coefficients of the defocus adjustment plane
+	MDL_CTF_DEFOCUS_RESIDUAL, ///< Difference between the observed defocus value and the estimated defocus value
     MDL_CTF_X0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_Y0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_XF, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
@@ -1467,6 +1469,8 @@ private:
         MDL::addLabel(MDL_CTF_DEFOCUSV, LABEL_DOUBLE, "ctfDefocusV");
         MDL::addLabel(MDL_CTF_DEFOCUS_CHANGE, LABEL_DOUBLE, "ctfDefocusChange");
         MDL::addLabel(MDL_CTF_DEFOCUS_R2, LABEL_DOUBLE, "ctfDefocusR2");
+        MDL::addLabel(MDL_CTF_DEFOCUS_RESIDUAL, LABEL_DOUBLE, "ctfDefocusResidual");
+        MDL::addLabel(MDL_CTF_DEFOCUS_COEFS, LABEL_DOUBLE, "ctfDefocusCoeficients");
         MDL::addLabel(MDL_CTF_DIMENSIONS, LABEL_VECTOR_DOUBLE, "ctfDimensions");
         MDL::addLabel(MDL_CTF_DOWNSAMPLE_PERFORMED, LABEL_DOUBLE, "CtfDownsampleFactor");
         MDL::addLabel(MDL_CTF_ENERGY_LOSS, LABEL_DOUBLE, "ctfEnergyLoss");
