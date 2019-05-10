@@ -466,6 +466,7 @@ enum MDLabel
     MDL_ZCOOR, ///< Z component (int)
     MDL_ZSCORE, ///< Global Z Score (double)
     MDL_ZSCORE_DEEPLEARNING1, ///< Z Score (double)
+    MDL_GOOD_REGION_SCORE, ///< Z Score (double)
     MDL_ZSCORE_HISTOGRAM, ///< Z Score (double)
     MDL_ZSCORE_RESMEAN, ///< Z Score of the mean of the residuals (double)
     MDL_ZSCORE_RESVAR, ///< Z Score of the stddev of the residuals (double)
@@ -1845,6 +1846,7 @@ private:
         MDL::addLabel(MDL_ZSCORE_SNR1, LABEL_DOUBLE, "zScoreSNR1");
         MDL::addLabel(MDL_ZSCORE_SNR2, LABEL_DOUBLE, "zScoreSNR2");
         MDL::addLabel(MDL_ZSCORE_DEEPLEARNING1, LABEL_DOUBLE, "zScoreDeepLearning1");
+        MDL::addLabel(MDL_GOOD_REGION_SCORE, LABEL_DOUBLE, "goodRegionScore");
         MDL::addLabel(MDL_ZSIZE, LABEL_SIZET, "zSize");
 
         MDL::addLabelAlias(MDL_XCOOR, "Xcoor");//3.0
