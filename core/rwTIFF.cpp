@@ -185,27 +185,30 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     }
 
     // Calculate x,y space dimension resolution
-    double xRes, yRes;
+    double xRes=1.0, yRes=1.0;
 
-    switch (dirHead[0].resUnit)
+    if (dirHead[0].xTiffRes>0 && dirHead[0].yTiffRes>0)
     {
-    case RESUNIT_NONE:
-        {
-            xRes = yRes = -1;
-            break;
-        }
-    case RESUNIT_INCH:
-        {
-            xRes = 2.54e8/dirHead[0].xTiffRes;
-            yRes = 2.54e8/dirHead[0].yTiffRes;
-            break;
-        }
-    case RESUNIT_CENTIMETER:
-        {
-            xRes = 1e8/dirHead[0].xTiffRes;
-            yRes = 1e8/dirHead[0].yTiffRes;
-            break;
-        }
+		switch (dirHead[0].resUnit)
+		{
+		case RESUNIT_NONE:
+			{
+				xRes = yRes = -1;
+				break;
+			}
+		case RESUNIT_INCH:
+			{
+				xRes = 2.54e8/dirHead[0].xTiffRes;
+				yRes = 2.54e8/dirHead[0].yTiffRes;
+				break;
+			}
+		case RESUNIT_CENTIMETER:
+			{
+				xRes = 1e8/dirHead[0].xTiffRes;
+				yRes = 1e8/dirHead[0].yTiffRes;
+				break;
+			}
+		}
     }
 
     // cast image data to image class datatypes
@@ -443,12 +446,17 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
     dhMain.imageLength = aDim.ydim;
     dhMain.resUnit = RESUNIT_CENTIMETER;
 
-    double aux;
+    double aux=1.0;
 
     if (!MDMainHeader.empty())
     {
         dhMain.xTiffRes = (MDMainHeader.getValue(MDL_SAMPLINGRATE_X, aux)) ? (float) 1e8/aux : 0. ;
         dhMain.yTiffRes = (MDMainHeader.getValue(MDL_SAMPLINGRATE_X, aux)) ? (float) 1e8/aux : 0. ;
+    }
+    else
+    {
+    	dhMain.xTiffRes = 1.0;
+    	dhMain.yTiffRes = 1.0;
     }
 
     size_t imgStart = (mode == WRITE_APPEND)? replaceNsize : IMG_INDEX(select_img);

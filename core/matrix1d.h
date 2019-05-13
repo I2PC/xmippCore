@@ -28,8 +28,10 @@
 
 #include <stdlib.h>
 #include <cmath>
+#include <algorithm>
 #include "xmipp_funcs.h"
 #include "numerical_recipes.h"
+
 
 extern int bestPrecision(float F, int _width);
 extern std::string floatToString(float F, int _width, int _prec);
@@ -1408,6 +1410,15 @@ public:
         	stddev=0;
         else
         	stddev=sqrt(stddev);
+    }
+
+    /** Median of the vector */
+    T computeMedian() const
+    {
+    	Matrix1D<T> aux;
+    	aux=*this;
+    	std::nth_element(aux.vdata,aux.vdata+vdim/2,aux.vdata+vdim);
+    	return VEC_ELEM(aux,vdim/2);
     }
 
     /** Index for the maximum element.
