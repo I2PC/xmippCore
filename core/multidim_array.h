@@ -3410,7 +3410,8 @@ public:
      * The average, standard deviation, minimum and maximum value are
      * returned.
      */
-    void computeAvgStdev(double& avg, double& stddev) const
+    template<typename U>
+    void computeAvgStdev(U& avg, U& stddev) const
     {
         if (NZYXSIZE(*this) <= 0)
             return;
@@ -3418,14 +3419,11 @@ public:
         avg = 0;
         stddev = 0;
 
-        T* ptr=NULL;
-        size_t n;
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        for (size_t n = 0; n < nzyxdim; ++n)
         {
-            T Tval=*ptr;
-            double val=Tval;
-            avg += val;
-            stddev += val * val;
+            U v = (U)data[n];
+            avg += v;
+            stddev += v * v;
         }
 
         avg /= NZYXSIZE(*this);
@@ -3690,22 +3688,19 @@ public:
      * @endcode
      */
     // This function must be explicitly implemented outside.
-    void statisticsAdjust(double avgF, double stddevF)
+    template<typename U>
+    void statisticsAdjust(U avgF, U stddevF)
     {
-        double avg0=0.0, stddev0=0.0;
-        double a, b;
+        U avg0 = 0;
+        U stddev0 = 0;
 
         if (NZYXSIZE(*this) == 0)
             return;
 
         computeAvgStdev(avg0, stddev0);
 
-        if (stddev0 != 0)
-            a = stddevF / stddev0;
-        else
-            a = 0;
-
-        b = avgF - a * avg0;
+        U a = (stddev0 != 0) ? (stddevF / stddev0) : 0;
+        U b = avgF - a * avg0;
 
         T* ptr=&DIRECT_MULTIDIM_ELEM(*this,0);
         size_t nmax=(nzyxdim/4)*4;
@@ -5672,7 +5667,9 @@ std::ostream& operator<< (std::ostream& ostrm, const MultidimArray<T>& v)
 /** Extract piece from image.
  * No check on boundaries are performed.
  */
-void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall, int y0, int x0, int yF, int xF);
+template<typename T>
+void window2D(const MultidimArray<T> &Ibig, MultidimArray<T> &Ismall,
+        size_t y0, size_t x0, size_t yF, size_t xF);
 
 /** correlationIndex nD
  * @ingroup Filters
@@ -5769,8 +5766,6 @@ template<>
 double MultidimArray< std::complex< double > >::computeAvg() const;
 template<>
 void MultidimArray< std::complex< double > >::maxIndex(size_t &lmax, int& kmax, int& imax, int& jmax) const;
-template<>
-void MultidimArray<double>::computeAvgStdev(double& avg, double& stddev) const;
 template<>
 bool operator==(const MultidimArray< std::complex< double > >& op1,
                 const MultidimArray< std::complex< double > >& op2);
