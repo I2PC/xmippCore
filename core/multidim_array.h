@@ -3413,6 +3413,9 @@ public:
     template<typename U>
     void computeAvgStdev(U& avg, U& stddev) const
     {
+        static_assert(
+                std::is_same<double, U>::value || std::is_same<float, U>::value,
+                "U must be a floating presiont type");
         if (NZYXSIZE(*this) <= 0)
             return;
 
@@ -3691,6 +3694,9 @@ public:
     template<typename U>
     void statisticsAdjust(U avgF, U stddevF)
     {
+        static_assert(
+                std::is_same<double, U>::value || std::is_same<float, U>::value,
+                "U must be a floating presiont type");
         U avg0 = 0;
         U stddev0 = 0;
 
