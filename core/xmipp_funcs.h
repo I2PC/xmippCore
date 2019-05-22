@@ -1405,7 +1405,6 @@ public:
             power_of_2 = (T) NEXT_POWER_OF_2(m_max + 1);
         T mask = power_of_2 - 1;
         T aux_number;
-        m_max;
 
         // get a random number to set the file pointer at a random position
         in.seekg((std::streampos) FLOOR(rnd_unif(0.f, (double)(sp -
