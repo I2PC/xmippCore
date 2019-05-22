@@ -655,7 +655,6 @@ public:
             case DT_UHalfByte:
             {
                 return 0;
-                break;
             }
             case DT_UChar:
             {
@@ -663,7 +662,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_SChar:
             {
@@ -671,7 +669,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_UShort:
             {
@@ -679,7 +676,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_Short:
             {
@@ -687,7 +683,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_UInt:
             {
@@ -695,7 +690,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_Int:
             {
@@ -703,7 +697,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_Long:
             {
@@ -711,7 +704,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_Float:
             {
@@ -719,7 +711,6 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             case DT_Double:
             {
@@ -727,13 +718,11 @@ public:
                     return 1;
                 else
                     return 0;
-                break;
             }
             default:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;
                 REPORT_ERROR(ERR_TYPE_INCORRECT, " ERROR: cannot cast datatype to T");
-                break;
             }
         }
         //               int * iTemp = (int*) map;

@@ -1344,8 +1344,6 @@ public:
     {
         if(data!=NULL)
             REPORT_ERROR(ERR_MEM_NOTDEALLOC, "do not allocate space for an image if you have not deallocate it first");
-        if (nzyxdim < 0)
-            REPORT_ERROR(ERR_MEM_BADREQUEST,"coreAllocate:Cannot allocate a negative number of bytes");
 
         if (mmapOn)
             mFd = mmapFile(data, nzyxdim);
@@ -1382,9 +1380,6 @@ public:
             return;
         else if (nzyxdim > nzyxdimAlloc)
             coreDeallocate();
-
-        if (nzyxdim < 0)
-            REPORT_ERROR(ERR_MEM_BADREQUEST,"coreAllocateReuse:Cannot allocate a negative number of bytes");
 
         if (mmapOn)
             mFd = mmapFile(data, nzyxdim);
@@ -2325,7 +2320,7 @@ public:
             return;
         }
 
-        if (j < 0 || j >= xdim)
+        if (j >= xdim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS,"getCol: Matrix subscript (j) greater than matrix dimension");
 
         v.resizeNoCopy(ydim);
@@ -2347,7 +2342,7 @@ public:
         if (xdim == 0 || ydim == 0)
             REPORT_ERROR(ERR_MULTIDIM_EMPTY, "setCol: Target matrix is empty");
 
-        if (j < 0 || j>= xdim)
+        if (j>= xdim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setCol: Matrix subscript (j) out of range");
 
         if (v.xdim != ydim)
@@ -2377,7 +2372,7 @@ public:
             return;
         }
 
-        if (i < 0 || i >= ydim)
+        if (i >= ydim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "getRow: Matrix subscript (i) greater than matrix dimension");
 
         v.resizeNoCopy(xdim);
