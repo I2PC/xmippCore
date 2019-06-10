@@ -1127,7 +1127,7 @@ public:
     sumWithFile(const FileName &fn)
     {
         Image<T> aux;
-        aux.read(fn, DATA, -1, true);
+        aux.read(fn, DATA, ALL_IMAGES, true);
         (*this)() += aux();
     }
 
