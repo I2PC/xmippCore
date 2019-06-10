@@ -40,7 +40,6 @@ int readDM3(size_t img_select,bool isStack=false);
 int writeDM3(size_t img_select, bool isStack=false, int mode=WRITE_OVERWRITE)
 {
     REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM3 is not implemented.");
-    return(-1);
 }
 
 #endif /* RWDM3_H_ */

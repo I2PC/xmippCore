@@ -313,7 +313,6 @@ public:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;
                 REPORT_ERROR(ERR_TYPE_INCORRECT, " ERROR: cannot cast datatype to T");
-                break;
             }
         }
 
@@ -418,7 +417,6 @@ public:
                 std::cerr << "outputDatatype = " << datatype << std::endl;
                 REPORT_ERROR(ERR_TYPE_INCORRECT,
                              " ERROR: cannot cast T to outputDatatype");
-                break;
             }
         }
     }

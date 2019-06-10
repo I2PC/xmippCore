@@ -362,20 +362,22 @@ public:
      */
     inline double getPixel(unsigned long n, int k, int i, int j) const
     {
-#define GETVALUE(type) return NZYX_ELEM(*(MultidimArray<type>*)data->im,n,k,i,j);
+        double ret;
+#define GETVALUE(type) ret = NZYX_ELEM(*(MultidimArray<type>*)data->im,n,k,i,j);
         SWITCHDATATYPE(datatype,GETVALUE)
 #undef GETVALUE
-
+        return ret;
     }
 
     /** Get pixel value
      */
     inline double getPixel(int i, int j) const
     {
-#define GETVALUE(type) return (double) A2D_ELEM(*(MultidimArray<type>*)data->im,i,j);
+        double ret;
+#define GETVALUE(type) ret = (double) A2D_ELEM(*(MultidimArray<type>*)data->im,i,j);
         SWITCHDATATYPE(datatype,GETVALUE)
 #undef GETVALUE
-
+        return ret;
     }
 
     /** Set pixel value
