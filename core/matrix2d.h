@@ -1400,7 +1400,7 @@ public:
             return;
         }
 
-        if (i < 0 || i >= mdimy)
+        if (i >= mdimy)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "getRow: Matrix subscript (i) greater than matrix dimension");
 
         if (VEC_XSIZE(v)!=mdimx)
