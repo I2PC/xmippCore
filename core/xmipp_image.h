@@ -1219,6 +1219,11 @@ protected:
 
 private:
 
+    void setDimensions(ArrayDim &aDim) override
+    {
+        ImageBase::setDimensions(aDim);
+    }
+
     /** Read the raw data
      */
     void
