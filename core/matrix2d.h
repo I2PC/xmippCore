@@ -1400,7 +1400,7 @@ public:
             return;
         }
 
-        if (i < 0 || i >= mdimy)
+        if (i >= mdimy)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "getRow: Matrix subscript (i) greater than matrix dimension");
 
         if (VEC_XSIZE(v)!=mdimx)
@@ -1428,7 +1428,7 @@ public:
             return;
         }
 
-        if (j < 0 || j >= mdimx)
+        if (j >= mdimx)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS,"getCol: Matrix subscript (j) greater than matrix dimension");
 
         if (VEC_XSIZE(v)!=mdimy)
@@ -1452,7 +1452,7 @@ public:
         if (mdimx == 0 || mdimy == 0)
             REPORT_ERROR(ERR_MATRIX_EMPTY, "setRow: Target matrix is empty");
 
-        if (i < 0 || i >= mdimy)
+        if (i >= mdimy)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setRow: Matrix subscript (i) out of range");
 
         if (VEC_XSIZE(v) != mdimx)
@@ -1479,7 +1479,7 @@ public:
         if (mdimx == 0 || mdimy == 0)
             REPORT_ERROR(ERR_MATRIX_EMPTY, "setCol: Target matrix is empty");
 
-        if (j < 0 || j>= mdimx)
+        if (j>= mdimx)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setCol: Matrix subscript (j) out of range");
 
         if (VEC_XSIZE(v) != mdimy)
@@ -1519,7 +1519,7 @@ public:
         if (mdimx == 0 || mdimy == 0)
             REPORT_ERROR(ERR_MATRIX_EMPTY, "setCol: Target matrix is empty");
 
-        if (j < 0 || j>= mdimx)
+        if (j>= mdimx)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setCol: Matrix subscript (j) out of range");
 
         for (size_t i = 0; i < mdimy; i++)

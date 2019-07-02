@@ -301,8 +301,9 @@ void MultidimArrayBase::printShape(std::ostream& out) const
 }
 
 // Window in 2D -----------------------------------------------------------
-void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall,
-		int y0, int x0, int yF, int xF)
+template<typename T>
+void window2D(const MultidimArray<T> &Ibig, MultidimArray<T> &Ismall,
+        size_t y0, size_t x0, size_t yF, size_t xF)
 {
     Ismall.resizeNoCopy(yF - y0 + 1, xF - x0 + 1);
     STARTINGY(Ismall) = y0;
@@ -311,10 +312,13 @@ void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall,
 	FOR_ALL_ELEMENTS_IN_ARRAY2D(Ismall)
 		A2D_ELEM(Ismall, i, j) = A2D_ELEM(Ibig, i, j);
     */
-    size_t sizeToCopy=XSIZE(Ismall)*sizeof(double);
+    size_t sizeToCopy=XSIZE(Ismall)*sizeof(T);
     for (int y=y0; y<=yF; y++)
     	memcpy( &A2D_ELEM(Ismall,y,STARTINGX(Ismall)), &A2D_ELEM(Ibig,y,STARTINGX(Ismall)), sizeToCopy);
 }
+
+template void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall, size_t y0, size_t x0, size_t yF, size_t xF);
+template void window2D(const MultidimArray<float> &Ibig, MultidimArray<float> &Ismall, size_t y0, size_t x0, size_t yF, size_t xF);
 
 // Show a complex array ---------------------------------------------------
 template<>
@@ -372,55 +376,6 @@ template<>
 void MultidimArray< std::complex< double > >::maxIndex(size_t &lmax, int& kmax, int& imax, int& jmax) const
 {
     REPORT_ERROR(ERR_NOT_IMPLEMENTED,"MultidimArray::maxIndex not implemented for complex.");
-}
-
-template<>
-void MultidimArray<double>::computeAvgStdev(double& avg, double& stddev) const
-{
-    if (NZYXSIZE(*this) <= 0)
-        return;
-
-    avg = 0;
-    stddev = 0;
-
-    double* ptr=&DIRECT_MULTIDIM_ELEM(*this,0);
-    size_t nmax=(nzyxdim/4)*4;
-
-    double val;
-    for (size_t n=0; n<nmax; n+=4, ptr+=4)
-    {
-        val=*ptr;
-        avg += val;
-        stddev += val * val;
-        val=*(ptr+1);
-        avg += val;
-        stddev += val * val;
-        val=*(ptr+2);
-        avg += val;
-        stddev += val * val;
-        val=*(ptr+3);
-        avg += val;
-        stddev += val * val;
-    }
-    for (size_t n=nmax; n<nzyxdim; ++n, ptr+=1)
-    {
-        val=*ptr;
-        avg += val;
-        stddev += val * val;
-    }
-
-    avg /= NZYXSIZE(*this);
-
-    if (NZYXSIZE(*this) > 1)
-    {
-        stddev = stddev / NZYXSIZE(*this) - avg * avg;
-        stddev *= NZYXSIZE(*this) / (NZYXSIZE(*this) - 1);
-
-        // Foreseeing numerical instabilities
-        stddev = sqrt(fabs(stddev));
-    }
-    else
-        stddev = 0;
 }
 
 // void MultidimArray<double>::selfNormalizeInterval(double minPerc, double maxPerc, int Npix)

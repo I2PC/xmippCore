@@ -117,15 +117,16 @@ enum ErrorType
     ERR_ARG_BADCMDLINE,     ///< Errors on command line parameters.
     ERR_ARG_INCORRECT,      ///< Incorrect argument received.
     ERR_ARG_MISSING,        ///< Argument missing.
-    ERR_ARG_DEPENDENCE,     ///< Error with some arguments dependecies
+    ERR_ARG_DEPENDENCE,     ///< Error with some arguments dependencies
 
-    ERR_PROG_NOTDEF,        ///< Requiered function not implemented
+    ERR_PROG_NOTDEF,        ///< Required function not implemented
 
     ERR_DEBUG_TEST,         ///< Just an error for debugging purpose.
     ERR_DEBUG_IMPOSIBLE,    ///< Just for debugging, situation that can't happens
 
     ERR_DOCFILE,            ///< Error in docfile format
 
+    ERR_GPU_MEMORY,         ///< GPU memory related issues
     ERR_GRID,               ///< Grid general error.
     ERR_GRID_SIZE,          ///< Incorrect number of GRID volumes or shapes
 
@@ -147,6 +148,8 @@ enum ErrorType
     ERR_IO_NOPATH,          ///< Environment PATH cannot be read.
     ERR_IO_LOCKED,	    	///< Error when locking/unloking a file.
     ERR_IO_SIZE,            ///< Incorrect file size.
+
+    ERR_LOGIC_ERROR,        ///< Some logical error in the pipeline
 
     ERR_MATRIX,             ///< Matrix error.
     ERR_MATRIX_DIM,         ///< Problem with matrix dimensions.

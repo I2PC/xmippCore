@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:     David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,23 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef RWDM4_H_
-#define RWDM4_H_
+#include "time_utils.h"
 
-///@defgroup DM4 DM4 File format
-///@ingroup ImageFormats
-
-/** DM4 Reader
-  * @ingroup DM4
-*/
-int readDM4(size_t img_select,bool isStack=false);
-
-/** DM4 Writer
-  * @ingroup DM4
-*/
-int writeDM4(size_t img_select, bool isStack=false, int mode=WRITE_OVERWRITE)
-{
-    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM4 is not implemented.");
-}
-
-#endif /* RWDM4_H_ */
+int timeUtils::indent_counter = -1;
+bool timeUtils::isReportEnabled = true;
+std::string timeUtils::separator = " | ";

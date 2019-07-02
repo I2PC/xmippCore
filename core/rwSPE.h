@@ -41,6 +41,5 @@ int readSPE(size_t select_img,bool isStack=false);
 int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE)
 {
     REPORT_ERROR(ERR_IMG_NOWRITE, "writeSPE is not implemented.");
-    return(-1);
 }
 #endif /* RWSPE_H_ */

@@ -1405,7 +1405,6 @@ public:
             power_of_2 = (T) NEXT_POWER_OF_2(m_max + 1);
         T mask = power_of_2 - 1;
         T aux_number;
-        m_max;
 
         // get a random number to set the file pointer at a random position
         in.seekg((std::streampos) FLOOR(rnd_unif(0.f, (double)(sp -
@@ -1446,9 +1445,7 @@ private:
     {
         unsigned int* int_random_vector;
         long long MaxInteger;
-        if (sizeof(double) != sizeof(int))
-            REPORT_ERROR(ERR_TYPE_INCORRECT,
-                         "Marsaglia: I do not know how to make the double correction");
+        static_assert(sizeof(double) != sizeof(int), "I do not know how to make the double correction");
         MaxInteger = (long long) pow(2.0, sizeof(unsigned int) * 8.0);
         int_random_vector = (unsigned int*) random_vector;
         for (int hh = 0; hh < Number_of_Numbers; hh++)

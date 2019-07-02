@@ -187,7 +187,8 @@ bool compareTwoImageTolerance(const FileName &fn1, const FileName &fn2, double t
         img2.read(fn2);
     img1() -= img2();
     img1().computeStats(avg, stddev, min_val, max_val);
+   
     //return true if equal, false if different
-    return !(abs(max_val - avg) > tolerance || abs(avg - min_val) > tolerance);
+    return (fabs(avg) < tolerance && stddev < tolerance);
 }
 
