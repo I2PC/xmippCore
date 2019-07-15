@@ -115,9 +115,9 @@ enum MDLabel
     MDL_CONTINUOUS_SCALE_X, ///< scale x of continuous assignment
     MDL_CONTINUOUS_SCALE_Y, ///< scale y of continuous assignment
 
-	MDL_CORRELATION_IDX, ///< correlation value between a particle and its assigned projection
-	MDL_CORRELATION_MASK, ///< masked correlation value between a particle and its assigned projection inside the region with pixel values higher than the standard deviation
-	MDL_CORRELATION_WEIGHT, ///< weighted correlation value between a particle and its assigned projection taking into the difference between both images
+    MDL_CORRELATION_IDX, ///< correlation value between a particle and its assigned projection
+    MDL_CORRELATION_MASK, ///< masked correlation value between a particle and its assigned projection inside the region with pixel values higher than the standard deviation
+    MDL_CORRELATION_WEIGHT, ///< weighted correlation value between a particle and its assigned projection taking into the difference between both images
 
     MDL_CTF_DATA_PHASE_FLIPPED, // Is the Data Phase-Flippled?
     MDL_CTF_CORRECTED, // Is the CTF corrected?
@@ -132,8 +132,8 @@ enum MDLabel
     MDL_CTF_DEFOCUSV, ///< Defocus V (Angstroms)
     MDL_CTF_DEFOCUS_CHANGE, ///< Defocus change with respect to previous defoucs (Angstroms)
     MDL_CTF_DEFOCUS_R2, ///< Defocus coefficient of determination
-	MDL_CTF_DEFOCUS_COEFS, ///< Coefficients of the defocus adjustment plane
-	MDL_CTF_DEFOCUS_RESIDUAL, ///< Difference between the observed defocus value and the estimated defocus value
+    MDL_CTF_DEFOCUS_COEFS, ///< Coefficients of the defocus adjustment plane
+    MDL_CTF_DEFOCUS_RESIDUAL, ///< Difference between the observed defocus value and the estimated defocus value
     MDL_CTF_X0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_Y0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_XF, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
@@ -157,9 +157,9 @@ enum MDLabel
     MDL_CTF_TRANSVERSAL_DISPLACEMENT, ///< Transversal displacemente
     MDL_CTF_Q0, ///< Inelastic absorption
     MDL_CTF_K, ///< CTF gain
-	MDL_CTF_ENV_R0, ///< CTF Envelope polynomial parameter
-	MDL_CTF_ENV_R1, ///< CTF Envelope polynomial parameter
-	MDL_CTF_ENV_R2, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R0, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R1, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R2, ///< CTF Envelope polynomial parameter
     MDL_CTF_BG_GAUSSIAN_K, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN_SIGMAU, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN_SIGMAV, ///< CTF Background parameter
@@ -240,7 +240,7 @@ enum MDLabel
     MDL_IMAGE_RESIDUAL, ///< Name of a residual image associated to this image
     MDL_IMAGE_TILTED, ///< Name of the tilted images associated to MDL_IMAGE
 
-	MDL_IMED, ///< imed value between a particle and its assigned projection
+    MDL_IMED, ///< imed value between a particle and its assigned projection
 
     MDL_IMGMD, ///< Name of Metadata file for all images (string)
     MDL_IMAGE1, ///< Image associated to this object (std::string)
