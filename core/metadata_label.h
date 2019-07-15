@@ -1470,7 +1470,7 @@ private:
         MDL::addLabel(MDL_CTF_DEFOCUS_CHANGE, LABEL_DOUBLE, "ctfDefocusChange");
         MDL::addLabel(MDL_CTF_DEFOCUS_R2, LABEL_DOUBLE, "ctfDefocusR2");
         MDL::addLabel(MDL_CTF_DEFOCUS_RESIDUAL, LABEL_DOUBLE, "ctfDefocusResidual");
-        MDL::addLabel(MDL_CTF_DEFOCUS_COEFS, LABEL_DOUBLE, "ctfDefocusCoeficients");
+        MDL::addLabel(MDL_CTF_DEFOCUS_COEFS, LABEL_VECTOR_DOUBLE, "ctfDefocusCoeficients");
         MDL::addLabel(MDL_CTF_DIMENSIONS, LABEL_VECTOR_DOUBLE, "ctfDimensions");
         MDL::addLabel(MDL_CTF_DOWNSAMPLE_PERFORMED, LABEL_DOUBLE, "CtfDownsampleFactor");
         MDL::addLabel(MDL_CTF_ENERGY_LOSS, LABEL_DOUBLE, "ctfEnergyLoss");
