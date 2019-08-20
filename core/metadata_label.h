@@ -239,9 +239,7 @@ enum MDLabel
     MDL_IMAGE_REF, ///< Name of of the class image from which MDL_IMAGE is coming from
     MDL_IMAGE_RESIDUAL, ///< Name of a residual image associated to this image
     MDL_IMAGE_TILTED, ///< Name of the tilted images associated to MDL_IMAGE
-
     MDL_IMED, ///< imed value between a particle and its assigned projection
-
     MDL_IMGMD, ///< Name of Metadata file for all images (string)
     MDL_IMAGE1, ///< Image associated to this object (std::string)
     MDL_IMAGE2, ///< Image associated to this object (std::string)
