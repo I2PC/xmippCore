@@ -1197,6 +1197,18 @@ public:
         coreInit();
     }
 
+    /**
+     * Size constructor with 4D size and already allocated data.
+     */
+    MultidimArray(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, T *data) {
+        this->coreInit();
+        this->setDimensions(Xdim, Ydim, Zdim, Ndim);
+        this->data = data;
+        this->nzyxdimAlloc = this->nzyxdim;
+        this->destroyData = false;
+    }
+
+
     /** Size constructor with 4D size.
      * The Size constructor creates an array with memory associated,
      * and fills it with zeros.
@@ -1276,6 +1288,7 @@ public:
         for (size_t i = 0; i < vector.size(); i++)
             DIRECT_A1D_ELEM(*this,i) = vector[i];
     }
+
 
     /** Destructor.
      */
@@ -3416,8 +3429,8 @@ public:
 
         avg = 0;
         stddev = 0;
-
-        for (size_t n = 0; n < nzyxdim; ++n)
+        const size_t nMax = nzyxdim;
+        for (size_t n = 0; n < nMax; ++n)
         {
             U v = (U)data[n];
             avg += v;
