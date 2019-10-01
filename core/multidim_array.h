@@ -37,6 +37,7 @@
 #include "xmipp_strings.h"
 #include "matrix1d.h"
 #include "matrix2d.h"
+#include "numerical_recipes.h"
 
 extern int bestPrecision(float F, int _width);
 extern String floatToString(float F, int _width, int _prec);
@@ -706,6 +707,46 @@ typedef enum
     VIEW_X_NEG,   // Align -X axis to Z axis, rotating -90 degrees around Y axis");
     VIEW_X_POS   // Align X axis to Z axis, rotating 90 degrees around Y axis");
 } AxisView;
+
+
+template <typename T>
+class RangeAdjustClass
+{
+public:
+	const MultidimArray<T> *I;
+	const MultidimArray<T> *Iexample;
+	const MultidimArray<int> *mask;
+};
+
+template <typename T>
+double rangeAdjustOptimizeGoal(double *p, void *eprm)
+{
+	RangeAdjustClass<T> *prm=(RangeAdjustClass<T> *) eprm;
+	double retval=0.0;
+	double a=p[1];
+	double b=p[2];
+	if (b<0)
+		return 1e38;
+	double N=0;
+	if (prm->mask==NULL)
+	{
+		FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*(prm->I))
+		    retval+=std::abs(static_cast<double>(DIRECT_MULTIDIM_ELEM(*(prm->Iexample),n))
+		    		         -(a+b*static_cast<double>(DIRECT_MULTIDIM_ELEM(*(prm->I),n))));
+		N=(double)MULTIDIM_SIZE(*(prm->I));
+	}
+	else
+	{
+		FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*(prm->I))
+			if (DIRECT_MULTIDIM_ELEM(*(prm->mask),n))
+			{
+				retval+=std::abs(static_cast<double>(DIRECT_MULTIDIM_ELEM(*(prm->Iexample),n))
+						         -(a+b*static_cast<double>(DIRECT_MULTIDIM_ELEM(*(prm->I),n))));
+				N+=1.0;
+			}
+	}
+	return N>0? retval/N:1e38;
+}
 
 /** Template class for Xmipp arrays.
   * This class provides physical and logical access.
@@ -3674,6 +3715,31 @@ public:
         *ptr = static_cast< T >(a+b * static_cast< double > (*ptr));
     }
 
+    //As written this will only work for T=double
+    //nevertheless since this is used is better
+    //to use T than double or will create problem for int multidim arrays
+    void rangeAdjustOptimize(const MultidimArray<T> &example,
+                     const MultidimArray<int> *mask=NULL)
+    {
+        Matrix1D<double> p(2), steps(2);
+        steps.initConstant(1);
+        double cost;
+        int iter;
+        p(1)=1.0;
+        RangeAdjustClass<T> prm;
+        prm.I=this;
+        prm.Iexample=&example;
+        prm.mask=mask;
+		powellOptimizer(p, 1, 2, &rangeAdjustOptimizeGoal<T>, &prm, 0.01, cost, iter, steps, false);
+        double a=p(0);
+        double b=p(1);
+
+        size_t n;
+        T *ptr=NULL;
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr = static_cast< T >(a+b * static_cast< double > (*ptr));
+    }
+
     /** Adjust the average and stddev of the array to given values.
      *
      * A linear operation is performed on the values of the array such
@@ -4610,6 +4676,30 @@ public:
                 ZZ(center) += k * NZYX_ELEM(*this, n, k, i, j);
 
                 mass += NZYX_ELEM(*this, n, k, i, j);
+            }
+        }
+
+        if (mass != 0)
+            center /= mass;
+    }
+
+    /** Computes the center of mass of the nth array
+     */
+    void centerOfMass(Matrix1D< double >& center, T threshold, size_t n = 0)
+    {
+        center.initZeros(3);
+        double mass = 0;
+
+        FOR_ALL_ELEMENTS_IN_ARRAY3D(*this)
+        {
+        	T val=NZYX_ELEM(*this, n, k, i, j);
+        	if (val>threshold)
+            {
+                XX(center) += j * val;
+                YY(center) += i * val;
+                ZZ(center) += k * val;
+
+                mass += val;
             }
         }
 

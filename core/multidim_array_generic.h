@@ -401,6 +401,16 @@ public:
 #undef RANGEADJUST
     }
 
+    /**
+     *  Range adjust using an example
+     */
+    void rangeAdjustOptimize(const MultidimArrayGeneric &example, const MultidimArray<int> *mask=NULL)
+    {
+#define RANGEADJUST(type) ((MultidimArray<type>*)(im))->rangeAdjustOptimize(*(MultidimArray<type>*)(example.im),mask);
+        SWITCHDATATYPE(datatype,RANGEADJUST)
+#undef RANGEADJUST
+    }
+
     /** Assignment **/
     MultidimArrayGeneric& operator=(const MultidimArrayGeneric& input)
     {
