@@ -56,14 +56,19 @@ namespace memoryUtils
       return 1024. * 1024. * 1024. * bytes;
     }
 
+
+    inline void* page_aligned_alloc(size_t bytes) {
+        return aligned_alloc(4096, bytes);
+    }
+
     template<typename T>
     inline T* page_aligned_alloc(size_t elems, bool initToZero) {
         size_t bytes = elems * sizeof(T);
-        auto p = aligned_alloc(4096, bytes);
+        auto p = (T*)page_aligned_alloc(elems * sizeof(T));
         if (initToZero) {
             memset(p, 0, bytes);
         }
-        return (T*)p;
+        return p;
     }
 
     template<typename T>
