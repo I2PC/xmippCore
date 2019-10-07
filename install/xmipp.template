@@ -6,6 +6,6 @@ CCFLAGS = -std=c99
 CXXFLAGS = -std=c++11
 LINKFLAGS = 
 DEBUG = False
-LIBDIRFLAGS = -L$SCIPION_HOME/software/lib
-INCDIRFLAGS =-I$SCIPION_HOME/software/include
-PYTHONINCFLAGS = -I$SCIPION_HOME/software/include/python2.7 -I$SCIPION_HOME/software/lib/python2.7/site-packages -I$SCIPION_HOME/software/lib/python2.7/site-packages/numpy/core/include
+#LIBDIRFLAGS = -L$SCIPION_HOME/software/lib
+#INCDIRFLAGS =-I$SCIPION_HOME/software/include
+#PYTHONINCFLAGS = -I$SCIPION_HOME/software/include/python2.7 -I$SCIPION_HOME/software/lib/python2.7/site-packages -I$SCIPION_HOME/software/lib/python2.7/site-packages/numpy/core/include
