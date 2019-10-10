@@ -364,6 +364,10 @@ enum MDLabel
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
+    MDL_POISSON_LAMBDA_MEAN, // Poisson lambda parameter mean estimated per movie
+    MDL_POISSON_LAMBDA_STD, //Poisson lambda parameter std estimated per movie
+    MDL_POISSON_REJECTED_COUNT, //Number of times Poisson distribution was rejected per movie
+
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)
@@ -1715,6 +1719,10 @@ private:
         MDL::addLabel(MDL_REF, LABEL_INT, "ref");
         MDL::addLabelAlias(MDL_REF, "Ref");
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
+
+        MDL::addLabel(MDL_POISSON_LAMBDA_MEAN, LABEL_DOUBLE, "avgPoissonLambda");
+        MDL::addLabel(MDL_POISSON_LAMBDA_STD, LABEL_DOUBLE, "stdPoissonLambda");
+        MDL::addLabel(MDL_POISSON_REJECTED_COUNT, LABEL_INT, "countPoisson");
 
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
