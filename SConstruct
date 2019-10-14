@@ -301,7 +301,7 @@ def AddMatchingFiles(params, directory, files):
     """ Callback, adds all matching files in dir
         params[0] = pattern
         params[1] = blacklist
-        params[0] = sources
+        params[2] = sources
     """
     for filename in fnmatch.filter(files, params[0]):
         if filename not in params[1]:
@@ -313,10 +313,10 @@ def Glob(path, pattern, blacklist=[]):
     sources = []
     # os.walk(path, AddMatchingFiles, (pattern, blacklist, sources))
 
-    for d, r, f in next(os.walk(path)):
-        for file in fnmatch.filter(f, pattern):
+    for root, dirs, files in os.walk(path):
+        for file in fnmatch.filter(files, pattern):
             if file not in blacklist:
-                sources.append(os.path.join(r, file))
+                sources.append(os.path.join(dirs, file))
 
     return sources
 
