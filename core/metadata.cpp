@@ -2153,14 +2153,16 @@ void MetaData::replace(const MDLabel label, const String &oldStr, const String &
 void MetaData::randomize(const MetaData &MDin)
 {
     static bool randomized = false;
+    std::mt19937 g;
     if (!randomized)
     {
-        srand ( time(NULL) );
+        std::random_device rd;
+        g = std::mt19937(rd());
         randomized = true;
     }
     std::vector<size_t> objects;
     MDin.myMDSql->selectObjects(objects);
-    std::random_shuffle(objects.begin(), objects.end());
+    std::shuffle(objects.begin(), objects.end(), g);
     importObjects(MDin, objects);
 }
 

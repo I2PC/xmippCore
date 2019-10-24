@@ -35,6 +35,7 @@
 #include "xmipp_filename.h"
 #include "xmipp_error.h"
 #include "matrix1d.h"
+#include <random>
 
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
