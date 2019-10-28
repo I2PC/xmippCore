@@ -3542,12 +3542,8 @@ public:
             return DIRECT_MULTIDIM_ELEM(*this,0);
 
         // Initialise data
-        MultidimArray< double > temp(*this);
-
-        // Sort indexes
-        double* temp_array = MULTIDIM_ARRAY(temp)-1;
-        qcksrt(NZYXSIZE(*this), temp_array); //FIXME: Valgrind:: Invalid read of size 8: qcksrt(int, double*) (numerical_recipes.cpp:266)
-
+        MultidimArray<T> temp;
+        this->sort(temp);
 
         // Get median
         if (NZYXSIZE(*this)%2==0)
@@ -4643,23 +4639,8 @@ public:
     {
         checkDimension(1);
 
-        MultidimArray<T> temp;
-        MultidimArray< double > aux;
-
-        if (xdim == 0)
-        {
-            result.clear();
-            return;
-        }
-
-        // Initialise data
-        typeCast(*this, aux);
-
-        // Sort
-        double * aux_array = aux.adaptForNumericalRecipes1D();
-        qcksrt(xdim, aux_array);
-
-        typeCast(aux, result);
+        result = *this;
+        std::sort(result.data, result.data + result.nzyxdim);
     }
 
     /** Gives a vector with the indexes for a sorted vector
