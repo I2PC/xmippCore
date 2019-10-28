@@ -42,8 +42,6 @@ void nrerror(const char error_text[]);
 
 // Random numbers ---------------------------------------------------------
 double ran1(int *idum);                                 // Uniform random
-double gasdev(int *idum);                               // Gaussian random
-double tdev(double nu, int *idum);                      // t-student random
 
 // Cumulative distribution functions and Kolmogorov-Smirnov test
 void   ksone(double data[], int n, double(*func)(double), double * d, double * prob);  // Chapter 13.5

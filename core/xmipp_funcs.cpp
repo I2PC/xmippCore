@@ -430,40 +430,43 @@ unsigned int  randomize_random_generator()
 
 double rnd_unif()
 {
-    return ran1(&idum);
+    return rnd_unif(0.0, 1.0);
 }
 double rnd_unif(double a, double b)
 {
-    if (a == b)
-        return a;
-    else
-        return a + (b - a)*ran1(&idum);
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::uniform_real_distribution<> d{a, b};
+    return d(gen);
 }
 
 // t-distribution
 double rnd_student_t(double nu)
 {
-    return tdev(nu, &idum);
+    return rnd_student_t(nu, 0, 1);
 }
+
 double rnd_student_t(double nu, double a, double b)
 {
     if (b == 0)
         return a;
-    else
-        return b*tdev(nu, &idum) + a;
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::student_t_distribution<> d(nu);
+    return b * d(gen) + a;
 }
 
 // Gaussian distribution ...................................................
 double rnd_gaus()
 {
-    return gasdev(&idum);
+    return rnd_gaus(0.0, 1.0);
 }
 double rnd_gaus(double a, double b)
 {
-    if (b == 0)
-        return a;
-    else
-        return b*gasdev(&idum) + a;
+    std::random_device rd{};
+    std::mt19937 gen{rd()};
+    std::normal_distribution<> d{a, b};
+    return d(gen);
 }
 double gaus_within_x0(double x0, double mean, double stddev)
 {
