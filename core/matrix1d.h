@@ -1300,20 +1300,11 @@ public:
      */
     Matrix1D<T> sort() const
     {
-        Matrix1D<T> temp;
-        Matrix1D<double> aux;
-
+        Matrix1D<T> temp(*this);
         if (vdim == 0)
             return temp;
 
-        // Initialise vdata
-        typeCast(*this, aux);
-
-        // Sort
-        double * aux_array = aux.adaptForNumericalRecipes();
-        qcksrt(vdim, aux_array);
-
-        typeCast(aux, temp);
+        std::sort(temp.vdata, temp.vdata + temp.vdim);
         return temp;
     }
 

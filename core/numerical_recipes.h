@@ -31,6 +31,7 @@
 #include <math.h>
 #include "xmipp_memory.h"
 #include "xmipp_macros.h"
+#include <algorithm>
 
 //@defgroup NumericalRecipes Functions from the Numerical Recipes
 //@ingroup DataLibrary
@@ -55,7 +56,6 @@ void fourn(double data[], int nn[], int ndim, int isign);  // Complex FFT 2D,3D,
 
 // Sorting -----------------------------------------------------------------
 void indexx(int n, double arrin[], int indx[]);         // Sorting indexes
-void qcksrt(int n, double arr[]);                       // Sorting
 
 // Bessel functions --------------------------------------------------------
 double bessj0(double x);
