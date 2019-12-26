@@ -30,7 +30,8 @@ import os
 from os.path import join
 from glob import glob
 from datetime import datetime
-
+import sysconfig
+import sys
 
 Import('env')
 
@@ -128,12 +129,14 @@ if len(env["PYTHONINCFLAGS"])>0:
     python_incdirs = [remove_prefix(os.path.expandvars(x),"-I") for x in env["PYTHONINCFLAGS"]]
 else:
     python_incdirs = []
-
+pyver = sysconfig.get_config_var('VERSION')
+abiflags = getattr(sys, 'abiflags', '')
+pythonLib= 'python' + pyver + abiflags
 addLib('xmippCore.so',
        dirs=['bindings'],
        patterns=['python/*.cpp'],
        incs=python_incdirs,
-       libs=['python3.5m', 'XmippCore'],
+       libs=[pythonLib, 'XmippCore'],
        prefix='', target='xmippCore')
 
 
