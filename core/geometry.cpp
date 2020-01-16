@@ -617,11 +617,11 @@ int line_plane_intersection(const Matrix1D<double> normal_plane,
 /* ######################################################################### */
 
 /* Euler angles --> matrix ------------------------------------------------- */
-void Euler_angles2matrix(double alpha, double beta, double gamma,
-                         Matrix2D<double> &A, bool homogeneous)
+template<typename T>
+void Euler_angles2matrix(T alpha, T beta, T gamma,
+                         Matrix2D<T> &A, bool homogeneous)
 {
-    double ca, sa, cb, sb, cg, sg;
-    double cc, cs, sc, ss;
+    static_assert(std::is_floating_point<T>::value, "Only float and double are allowed as template parameters");
 
     if (homogeneous)
     {
@@ -632,14 +632,17 @@ void Euler_angles2matrix(double alpha, double beta, double gamma,
         if (MAT_XSIZE(A) != 3 || MAT_YSIZE(A) != 3)
             A.resizeNoCopy(3, 3);
 
-    sincos(DEG2RAD(alpha),&sa,&ca);
-    sincos(DEG2RAD(beta),&sb,&cb);
-    sincos(DEG2RAD(gamma),&sg,&cg);
+    T ca = std::cos(DEG2RAD(alpha));
+    T sa = std::sin(DEG2RAD(alpha));
+    T cb = std::cos(DEG2RAD(beta));
+    T sb = std::sin(DEG2RAD(beta));
+    T cg = std::cos(DEG2RAD(gamma));
+    T sg = std::sin(DEG2RAD(gamma));
 
-    cc = cb * ca;
-    cs = cb * sa;
-    sc = sb * ca;
-    ss = sb * sa;
+    T cc = cb * ca;
+    T cs = cb * sa;
+    T sc = sb * ca;
+    T ss = sb * sa;
 
     MAT_ELEM(A, 0, 0) =  cg * cc - sg * sa;
     MAT_ELEM(A, 0, 1) =  cg * cs + sg * ca;
@@ -671,38 +674,45 @@ double Euler_distanceBetweenMatrices(const Matrix2D<double> &E1,
     return retval/3.0;
 }
 
-double Euler_distanceBetweenAngleSets(double rot1, double tilt1, double psi1,
-                                      double rot2, double tilt2, double psi2,
+template<typename T>
+T Euler_distanceBetweenAngleSets(T rot1, T tilt1, T psi1,
+                                      T rot2, T tilt2, T psi2,
                                       bool only_projdir)
 {
-    Matrix2D<double> E1, E2;
+    static_assert(std::is_floating_point<T>::value, "Only float and double are allowed as template parameters");
+
+    Matrix2D<T> E1, E2;
     Euler_angles2matrix(rot1, tilt1, psi1, E1, false);
     return Euler_distanceBetweenAngleSets_fast(E1,rot2,tilt2,psi2,only_projdir,E2);
 }
 
-double Euler_distanceBetweenAngleSets_fast(const Matrix2D<double> &E1,
-        								   double rot2, double tilt2, double psi2,
-        								   bool only_projdir, Matrix2D<double> &E2)
+template<typename T>
+T Euler_distanceBetweenAngleSets_fast(const Matrix2D<T> &E1,
+        								   T rot2, T tilt2, T psi2,
+        								   bool only_projdir, Matrix2D<T> &E2)
 {
+    static_assert(std::is_floating_point<T>::value, "Only float and double are allowed as template parameters");
+
     Euler_angles2matrix(rot2, tilt2, psi2, E2, false);
-    double aux=MAT_ELEM(E1,2,0)*MAT_ELEM(E2,2,0)+
+    T aux=MAT_ELEM(E1,2,0)*MAT_ELEM(E2,2,0)+
                MAT_ELEM(E1,2,1)*MAT_ELEM(E2,2,1)+
                MAT_ELEM(E1,2,2)*MAT_ELEM(E2,2,2);
-    double axes_dist=acos(CLIP(aux, -1, 1));
+    T axes_dist=std::acos(CLIP(aux, -1, 1));
     if (!only_projdir)
     {
         for (int i = 0; i < 2; i++)
         {
-            double aux=MAT_ELEM(E1,i,0)*MAT_ELEM(E2,i,0)+
+            T aux=MAT_ELEM(E1,i,0)*MAT_ELEM(E2,i,0)+
                        MAT_ELEM(E1,i,1)*MAT_ELEM(E2,i,1)+
                        MAT_ELEM(E1,i,2)*MAT_ELEM(E2,i,2);
-            double dist=acos(CLIP(aux, -1, 1));
+            T dist=acos(CLIP(aux, -1, 1));
             axes_dist += dist;
         }
         axes_dist /= 3.0;
     }
     return RAD2DEG(axes_dist);
 }
+
 
 /* Euler direction --------------------------------------------------------- */
 void Euler_direction(double alpha, double beta, double gamma,
@@ -1229,3 +1239,14 @@ double intersection_unit_cube(
     else
         return 0;
 }
+
+// explicit instantiation
+template float Euler_distanceBetweenAngleSets<float>(
+        float rot1, float tilt1, float psi1, float rot2, float tilt2, float psi2,
+        bool only_projdir);
+template double Euler_distanceBetweenAngleSets<double>(
+        double rot1, double tilt1, double psi1, double rot2, double tilt2, double psi2,
+        bool only_projdir);
+template double Euler_distanceBetweenAngleSets_fast<double>(
+        const Matrix2D<double> &E1, double rot2, double tilt2, double psi2,
+        bool only_projdir, Matrix2D<double> &E2);
