@@ -570,7 +570,8 @@ int line_plane_intersection(const Matrix1D< double > normal_plane,
  * See http://xmipp.cnb.csic.es/twiki/bin/view/Xmipp/EulerAngles for a
  * description of the Euler angles.
  */
-void Euler_angles2matrix(double a, double b, double g, Matrix2D< double >& A,
+template<typename T>
+void Euler_angles2matrix(T a, T b, T g, Matrix2D<T>& A,
                          bool homogeneous=false);
 
 /** Euler angles --> Euler matrix.
@@ -591,17 +592,19 @@ double Euler_distanceBetweenMatrices(const Matrix2D<double> &E1,
 /** Average distance between two angle sets.
  * If the only_projdir is set, then only the projection direction is considered.
  */
-double Euler_distanceBetweenAngleSets(double rot1, double tilt1, double psi1,
-                                      double rot2, double tilt2, double psi2,
+template<typename T>
+T Euler_distanceBetweenAngleSets(T rot1, T tilt1, T psi1,
+                                      T rot2, T tilt2, T psi2,
                                       bool only_projdir);
 
 /** Average distance between two angle sets.
  * E1 must contain the Euler matrix corresponding to set1, E2 is used as
  * an auxiliary variable for storing the second Euler matrix.
  */
-double Euler_distanceBetweenAngleSets_fast(const Matrix2D<double> &E1,
-        								   double rot2, double tilt2, double psi2,
-        								   bool only_projdir, Matrix2D<double> &E2);
+template<typename T>
+T Euler_distanceBetweenAngleSets_fast(const Matrix2D<T> &E1,
+        								   T rot2, T tilt2, T psi2,
+        								   bool only_projdir, Matrix2D<T> &E2);
 
 /** Angles after compresion
  *
