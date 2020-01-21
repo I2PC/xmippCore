@@ -389,7 +389,8 @@ public:
      * It is also possible to select an specific image from stack or slice from volume.
      * This function is intended for previews of great image files as the image is not copy to memory.
      */
-    virtual int readPreview(const FileName &name, size_t Xdim, size_t Ydim=0, int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE) = 0;
+    virtual int readPreview(const FileName &name, size_t Xdim, size_t Ydim=0, int select_slice = CENTRAL_SLICE,
+                            size_t select_img = FIRST_IMAGE, char axis='Z') = 0;
 
     /** Returns an image with a lower resolution as a preview image.
       * If Zdim parameter is not passed, then all slices are rescaled.

@@ -806,17 +806,18 @@ public:
      */
     int
     readPreview(const FileName &name, size_t Xdim, size_t Ydim = 0,
-                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE)
+                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE, char axis='z')
     {
         // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
+        std::cout << "Image, readPreview0 " << name << " " << select_img << std::endl;
 
         ImageGeneric im;
         size_t imXdim, imYdim, imZdim, Zdim;
-        int err;
-        err = im.readMapped(name, select_img);
+        int err = im.readMapped(name, select_img);
         im.getDimensions(imXdim, imYdim, imZdim);
         ImageInfo imgInfo;
         im.getInfo(imgInfo);
+        std::cout << "Image, readPreview1 " << imZdim << " " << select_slice << std::endl;
 
         //Set information from image file
         setName(name);
@@ -845,16 +846,27 @@ public:
 
         if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
         {
-            MultidimArrayGeneric array(im(), select_slice - 1);
-            array.setXmippOrigin();
-
-            scaleToSize(mode, IMGMATRIX(*this), array, Xdim, Ydim);
+            std::cout << "Image, readPreview2 " << std::endl;
+            if (axis=='Z')
+            {
+                MultidimArrayGeneric array(im(), select_slice - 1);
+                array.setXmippOrigin();
+                scaleToSize(mode, IMGMATRIX(*this), array, Xdim, Ydim);
+            }
+            else
+            {
+                MultidimArray<double> slice;
+                im().getSlice(select_slice-1, slice, axis);
+                scaleToSize(mode, IMGMATRIX(*this), slice, Xdim, Ydim);
+            }
         }
         else // Otherwise, All slices or Central slice is selected
         {
+            std::cout << "Image, readPreview3 " << std::endl;
             Zdim = (select_slice == ALL_SLICES) ? imZdim : 1;
             scaleToSize(mode, IMGMATRIX(*this), im(), Xdim, Ydim, Zdim);
         }
+        std::cout << "Image, readPreview4 " << std::endl;
 
         IMGMATRIX(*this).resetOrigin();
         return err;

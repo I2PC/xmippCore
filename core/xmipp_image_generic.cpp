@@ -264,15 +264,16 @@ double getScale(ImageInfo imgInf, size_t &xdim, size_t &ydim)
     return scale;
 }
 
-int ImageGeneric::readPreview(const FileName &name, size_t xdim, size_t ydim, int select_slice, size_t select_img)
+int ImageGeneric::readPreview(const FileName &name, size_t xdim, size_t ydim, int select_slice, size_t select_img,
+    char axis)
 {
     SET_DATATYPE(name);
     double scale = getScale(imgInf, xdim, ydim);
-    //std::cerr << "DEBUG_JM: readPreview, scale: " << scale << std::endl;
+    std::cerr << "DEBUG_JM: readPreview, scale: " << scale << std::endl;
 
     if (scale < 0.1)
-      return readPreviewSmooth(name, xdim, ydim, select_slice, select_img);
-    return image->readPreview(name, xdim, ydim, select_slice, select_img);
+      return readPreviewSmooth(name, xdim, ydim, select_img);
+    return image->readPreview(name, xdim, ydim, select_slice, select_img, axis);
 }
 
 int ImageGeneric::readOrReadPreview(const FileName &name, size_t xdim, size_t ydim, int select_slice, size_t select_img,
@@ -283,7 +284,7 @@ int ImageGeneric::readOrReadPreview(const FileName &name, size_t xdim, size_t yd
     //std::cerr << "DEBUG_JM: readOrReadPreview, scale: " << scale << std::endl;
 
     if (scale < 0.1)
-      return readPreviewSmooth(name, xdim, ydim, select_slice, select_img);
+      return readPreviewSmooth(name, xdim, ydim, select_img);
     return image->readOrReadPreview(name, xdim, ydim, select_slice, select_img, !imgInf.swap && mapData);
 }
 
@@ -322,7 +323,7 @@ int ImageGeneric::readPreviewFourier(const FileName &name, size_t xdim, size_t y
     return result;
 }
 
-int ImageGeneric::readPreviewSmooth(const FileName &name, size_t xdim, size_t ydim, int select_slice, size_t select_img)
+int ImageGeneric::readPreviewSmooth(const FileName &name, size_t xdim, size_t ydim, size_t select_img)
 {
   //std::cerr << "DEBUG_JM: readPreviewSmooth" << std::endl;
     ImageGeneric ig;

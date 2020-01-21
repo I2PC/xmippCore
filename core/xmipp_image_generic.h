@@ -248,8 +248,10 @@ public:
     /* Read an image with a lower resolution as a preview image.
     * If Zdim parameter is not passed, then all slices are rescaled.
     * If Ydim is not passed, then Ydim is rescaled same factor as Xdim.
+    * Axis can be z, y or x
     */
-    int readPreview(const FileName &name, size_t Xdim, size_t Ydim = 0, int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
+    int readPreview(const FileName &name, size_t Xdim, size_t Ydim = 0, int select_slice = CENTRAL_SLICE,
+                    size_t select_img = FIRST_IMAGE, char axis='Z');
 
     /** This function allows to read the original image or a preview of it also allowing to select either
      *  a specific image from the stack or a slice from a volume.
@@ -273,7 +275,7 @@ public:
     int readPreviewFourier(const FileName &name, size_t Xdim, size_t Ydim = 0, int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
 
     /* Using xvsmooth */
-    int readPreviewSmooth(const FileName &name, size_t Xdim, size_t Ydim = 0, int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
+    int readPreviewSmooth(const FileName &name, size_t Xdim, size_t Ydim = 0, size_t select_img = FIRST_IMAGE);
 
 
     /** Write image to file.
