@@ -119,21 +119,29 @@ void string2TransformationMatrix(const String &matrixStr, Matrix2D<double> &matr
 
 }
 
-void transformationMatrix2Parameters2D(const Matrix2D<double> &A, bool &flip,
-                                       double &scale, double &shiftX,
-                                       double &shiftY, double &psi)
+template<typename T>
+void transformationMatrix2Parameters2D(const Matrix2D<T> &A, bool &flip,
+                                       T &scale, T &shiftX,
+                                       T &shiftY, T &psi)
 {
+    // FIXME DS this might not be true, but just to make sure
+    static_assert(std::is_floating_point<T>::value,
+            "Only float and double are allowed as template parameters");
     //Calculate determinant for getting flip
     flip = ((dMij(A, 0, 0) * dMij(A, 1, 1) - dMij(A, 0, 1) * dMij(A, 1, 0) ) < 0);
     int sgn = flip ? -1 : 1;
-    double cosine = sgn * dMij(A, 0, 0), sine = sgn * dMij(A, 0, 1);
-    double scale2 = cosine * cosine +  sine * sine;
+    T cosine = sgn * dMij(A, 0, 0);
+    T sine = sgn * dMij(A, 0, 1);
+    T scale2 = cosine * cosine +  sine * sine;
     scale = sqrt(scale2);
-    double invScale = 1 / scale;
+    T invScale = 1 / scale;
     shiftX = dMij(A, 0, 2) * invScale;
     shiftY = dMij(A, 1, 2) * invScale;
     psi = RAD2DEG(atan2(sine, cosine));
 }
+template void transformationMatrix2Parameters2D(const Matrix2D<float> &A, bool &flip, float &scale, float &shiftX, float &shiftY, float &psi);
+template void transformationMatrix2Parameters2D(const Matrix2D<double> &A, bool &flip, double &scale, double &shiftX, double &shiftY, double &psi);
+
 
 void transformationMatrix2Parameters3D(const Matrix2D<double> &A, bool &flip,
                                        double &scale, double &shiftX, 
@@ -200,32 +208,46 @@ void transformationMatrix2Geo(const Matrix2D<double> &A, MDRow & imageGeo)
 }
 
 /* Rotation 2D ------------------------------------------------------------- */
-void rotation2DMatrix(double ang, Matrix2D< double > &result, bool homogeneous)
+template<typename T>
+void rotation2DMatrix(T ang, Matrix2D<T> &result, bool homogeneous)
 {
-    double cosine, sine;
+    // FIXME DS this might not be true, but just to make sure
+    static_assert(std::is_floating_point<T>::value,
+            "Only float and double are allowed as template parameters");
 
-    ang = DEG2RAD(ang);
-    cosine = cos(ang);
-    sine = sin(ang);
+    T rad = DEG2RAD(ang);
+    T cosine = cos(rad);
+    T sine = sin(rad);
 
     if (homogeneous)
     {
-        if (MAT_XSIZE(result)!=3 || MAT_YSIZE(result)!=3)
-            result.resizeNoCopy(3,3);
-        dMij(result,0, 2) = 0;
-        dMij(result,1, 2) = 0;
-        dMij(result,2, 0) = 0;
-        dMij(result,2, 1) = 0;
-        dMij(result,2, 2) = 1;
+        result.resizeNoCopy(3,3); // sizes will be tested inside
+        // now we have 3x3 matrix row wise matrix
+        result.mdata[0] = cosine;
+        result.mdata[1] = sine;
+        result.mdata[2] = 0;
+
+        result.mdata[3] = -sine;
+        result.mdata[4] = cosine;
+        result.mdata[5] = 0;
+
+        result.mdata[6] = 0;
+        result.mdata[7] = 0;
+        result.mdata[8] = 1;
+    } else {
+        result.resizeNoCopy(2,2); // sizes will be tested inside
+        // now we have 2x2 matrix row wise matrix
+        result.mdata[0] = cosine;
+        result.mdata[1] = sine;
+
+        result.mdata[2] = -sine;
+        result.mdata[3] = cosine;
     }
-    else
-        if (MAT_XSIZE(result)!=2 || MAT_YSIZE(result)!=2)
-            result.resizeNoCopy(2,2);
-    dMij(result,0, 0) = cosine;
-    dMij(result,0, 1) = sine;
-    dMij(result,1, 0) = -sine;
-    dMij(result,1, 1) = cosine;
 }
+
+template void rotation2DMatrix(float ang, Matrix2D<float> &result, bool homogeneous);
+template void rotation2DMatrix(double ang, Matrix2D<double> &result, bool homogeneous);
+
 
 /* Translation 2D ---------------------------------------------------------- */
 template void translation2DMatrix(const Matrix1D<float>&, Matrix2D<float>&, bool inverse);
