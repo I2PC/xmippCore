@@ -245,7 +245,7 @@ int ImageGeneric::readOrReadMapped(const FileName &name, size_t select_img, int 
     }
 }
 
-double getScale(ImageInfo imgInf, size_t &xdim, size_t &ydim)
+double getScale(ImageInfo imgInf, size_t &, size_t &ydim)
 {
     double scale = 0;
     // If only xdim is passed, it is the higher allowable size, for any dimension

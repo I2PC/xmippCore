@@ -94,7 +94,7 @@ struct MRChead
     int mx;              //  7           unit cell size in voxels
     int my;              //  8
     int mz;              //  9    1=Image or images stack, if volume mz=nz.
-                         //              If ispg=401 then nz=number of volumes in stack * volume z dimension
+                         //              If ispg=401 then 'nz=number of volumes in stac'k * volume z dimension
                          //              mz=volume zdim
     float a;             // 10   40      cell dimensions in A
     float b;             // 11
