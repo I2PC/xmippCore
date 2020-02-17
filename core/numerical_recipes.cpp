@@ -162,7 +162,7 @@ double tdev(double nu, int *idum)
 // Kolmogorov-Smirnov test
 void ksone(double data[], int n, double(*func)(double), double * d, double * prob)
 {
-    qcksrt(n, data);
+    std::sort(data, data + n);
     double fn, ff, en, dt, fo=0.;
     en = (double)n;
     *d = 0.;
@@ -241,88 +241,6 @@ void indexx(int n, double arrin[], int indx[])
         indx[i] = indxt;
     }
 }
-
-/* Chapter 8, Section 4: Quicksort */
-#define M 7
-#define NSTACK 50
-#define FM 7875
-#define FA 211
-#define FC 1663
-
-void qcksrt(int n, double arr[])
-{
-    int l = 1, jstack = 0, j, ir, iq, i;
-    int istack[NSTACK+1];
-    long int fx = 0L;
-    double a;
-
-    ir = n;
-    for (;;)
-    {
-        if (ir - l < M)
-        {
-            for (j = l + 1;j <= ir;j++)
-            {
-                a = arr[j];
-                for (i = j - 1;arr[i] > a && i > 0;i--)
-                    arr[i+1] = arr[i];
-                arr[i+1] = a;
-            }
-            if (jstack == 0)
-                return;
-            ir = istack[jstack--];
-            l = istack[jstack--];
-        }
-        else
-        {
-            i = l;
-            j = ir;
-            fx = (fx * FA + FC) % FM;
-            iq = l + ((ir - l + 1) * fx) / FM;
-            a = arr[iq];
-            arr[iq] = arr[l];
-            for (;;)
-            {
-                while (j > 0 && a < arr[j])
-                    j--;
-                if (j <= i)
-                {
-                    arr[i] = a;
-                    break;
-                }
-                arr[i++] = arr[j];
-                while (a > arr[i] && i <= n)
-                    i++;
-                if (j <= i)
-                {
-                    arr[(i=j)] = a;
-                    break;
-                }
-                arr[j--] = arr[i];
-            }
-            if (ir - i >= i - l)
-            {
-                istack[++jstack] = i + 1;
-                istack[++jstack] = ir;
-                ir = i - 1;
-            }
-            else
-            {
-                istack[++jstack] = l;
-                istack[++jstack] = i - 1;
-                l = i + 1;
-            }
-            if (jstack > NSTACK)
-                nrerror("NSTACK too small in QCKSRT");
-        }
-    }
-}
-
-#undef M
-#undef NSTACK
-#undef FM
-#undef FA
-#undef FC
 
 /* BESSEL FUNCTIONS -------------------------------------------------------- */
 /* CO: They may not come in the numerical recipes but it is not a bad
@@ -741,37 +659,6 @@ double betacf(double a, double b, double x)
 }
 #undef ITMAX
 #undef EPS
-
-void instantiate_recipes()
-{
-    double **DD1;
-    double *D1;
-
-    double **FF1;
-    double *F1;
-
-    int **II1;
-    int *I1;
-    int i1 = 0;
-
-    char *C1;
-
-    ask_Tvector(D1, i1, i1);
-    free_Tvector(D1, i1, i1);
-    ask_Tvector(F1, i1, i1);
-    free_Tvector(F1, i1, i1);
-    ask_Tvector(I1, i1, i1);
-    free_Tvector(I1, i1, i1);
-    ask_Tvector(C1, i1, i1);
-    free_Tvector(C1, i1, i1);
-
-    ask_Tmatrix(DD1, i1, i1, i1, i1);
-    free_Tmatrix(DD1, i1, i1, i1, i1);
-    ask_Tmatrix(FF1, i1, i1, i1, i1);
-    free_Tmatrix(FF1, i1, i1, i1, i1);
-    ask_Tmatrix(II1, i1, i1, i1, i1);
-    free_Tmatrix(II1, i1, i1, i1, i1);
-}
 
 /* Optimization ------------------------------------------------------------ */
 #undef MAX
@@ -1943,63 +1830,6 @@ void svbksb(double *u, double *w, double *v, int m, int n, double *b, double *x)
         x[j] = s;
     }
     free_Tvector(tmp, 1, n);
-}
-
-/* Savitzky-Golay filter coefficients. ------------------------------------- */
-// This routine is used in Xmipp to perform Numerical Derivatives of equally spaced
-// data
-void savgol(double *c, int np, int nl, int nr, int ld, int m)
-/* Returns in c[1..np], in wrap-around order a set of Savitzky-Golay
- filter coeficients. nl is the number of leftward (past) data points used,
- while nr is the number of rightward (future) data points,
- making the total number of data points used nl +nr +1.
- ld is the order of the derivative desired (e.g., ld = 0 for smoothed function).
- m is the order of the smoothing polynomial, also equal to the highest conserved
- moment; usual values are m = 2or m = 4. */
-{
-    int imj, ipj, j, k, kk, mm, *indx;
-    double d, fac, sum, *a, *b;
-
-    if (np < nl + nr + 1 || nl < 0 || nr < 0 || ld > m || nl + nr < m)
-        nrerror("SAVGOL: bad arguments");
-    ask_Tvector(indx, 1, m + 1);
-    ask_Tvector(a, 1, (m + 1)*(m + 1));
-    ask_Tvector(b, 1, m + 1);
-    // Set up the normal equations of the desired least-squares fit.
-    for (ipj = 0;ipj <= (m << 1);ipj++)
-    {
-        sum = (ipj ? 0.0 : 1.0);
-        for (k = 1;k <= nr;k++)
-            sum += pow((double)k, (double)ipj);
-        for (k = 1;k <= nl;k++)
-            sum += pow((double) - k, (double)ipj);
-        mm = XMIPP_MIN(ipj, 2 * m - ipj);
-        for (imj = -mm;imj <= mm;imj += 2)
-            a[(1+(ipj+imj)/2)*(m+1)+1+(ipj-imj)/2] = sum;
-    }
-    // Solve them: LU decomposition.
-    ludcmp(a, m + 1, indx, &d);
-
-    for (j = 1;j <= m + 1;j++)
-        b[j] = 0.0;
-    b[ld+1] = 1.0;
-    // Right-hand side vector is unit vector, depending on which derivative we want.
-    lubksb(a, m + 1, indx, b); // Get one row of the inverse matrix.
-    for (kk = 1;kk <= np;kk++)
-        c[kk] = 0.0; // Zero the output array (it may be bigger than number of coeficients).
-    for (k = -nl;k <= nr;k++)
-    {
-        sum = b[1]; // Each Savitzky-Golay coeficient is the dot product of powers of an integer with the inverse matrix row.
-        fac = 1.0;
-        for (mm = 1;mm <= m;mm++)
-            sum += b[mm+1] * (fac *= k);
-        kk = ((np - k) % np) + 1; // Store in wrap-around order.
-        c[kk] = sum;
-    }
-
-    free_Tvector(b, 1, m + 1);
-    free_Tvector(a, 1, (m + 1)*(m + 1));
-    free_Tvector(indx, 1, m + 1);
 }
 
 // CFSQP -------------------------------------------------------------------
@@ -9248,24 +9078,6 @@ int m, n;
 
 
 // Wavelets ----------------------------------------------------------------
-void wt1(double a[], unsigned long n, int isign,
-         void(*wtstep)(double [], unsigned long, int))
-{
-    unsigned long nn;
-
-    if (n < 4)
-        return;
-    if (isign >= 0)
-    {
-        for (nn = n;nn >= 4;nn >>= 1)
-            (*wtstep)(a, nn, isign);
-    }
-    else
-    {
-        for (nn = 4;nn <= n;nn <<= 1)
-            (*wtstep)(a, nn, isign);
-    }
-}
 
 void wtn(double a[], unsigned long nn[], int ndim, int isign,
          void(*wtstep)(double [], unsigned long, int))
@@ -9634,140 +9446,4 @@ void polint(double *xa, double *ya, int n, double x, double &y, double &dy)
     }
     free_Tvector(d, 1, n);
     free_Tvector(c, 1, n);
-}
-
-/* Simulated annealing ----------------------------------------------------- */
-double amotsa(double **p, double y[], double psum[], int ndim, double pb[],
-              double *yb, double (*funk)(double []), int ihi, double *yhi, double fac,
-              double tt, int &idum)
-{
-    int j;
-    double fac1,fac2,yflu,ytry,*ptry;
-
-    ask_Tvector(ptry,1,ndim);
-    fac1=(1.0-fac)/ndim;
-    fac2=fac1-fac;
-    for (j=1;j<=ndim;j++)
-        ptry[j]=psum[j]*fac1-p[ihi][j]*fac2;
-    ytry=(*funk)(ptry);
-    if (ytry <= *yb)
-    {
-        for (j=1;j<=ndim;j++)
-            pb[j]=ptry[j];
-        *yb=ytry;
-    }
-    yflu=ytry-tt*log(ran1(&idum));
-    if (yflu < *yhi)
-    {
-        y[ihi]=ytry;
-        *yhi=yflu;
-        for (j=1;j<=ndim;j++)
-        {
-            psum[j] += ptry[j]-p[ihi][j];
-            p[ihi][j]=ptry[j];
-        }
-    }
-    free_Tvector(ptry,1,ndim);
-    return yflu;
-}
-
-void amebsa(double **p, double y[], int ndim, double pb[], double *yb,
-            double ftol, double (*funk)(double []), int *iter, double temptr)
-{
-    int i,ihi,ilo,j,m,n,mpts=ndim+1;
-    double rtol,sum,swap,yhi,ylo,ynhi,ysave,yt,ytry,*psum;
-    int idum=-1;
-
-    ask_Tvector(psum,1,ndim);
-    double tt = -temptr;
-    for (n=1;n<=ndim;n++)
-    {
-        for (sum=0.0,m=1;m<=mpts;m++)
-            sum += p[m][n];
-        psum[n]=sum;
-    }
-    for (;;)
-    {
-        ilo=1;
-        ihi=2;
-        ynhi=ylo=y[1]+tt*log(ran1(&idum));
-        yhi=y[2]+tt*log(ran1(&idum));
-        if (ylo > yhi)
-        {
-            ihi=1;
-            ilo=2;
-            ynhi=yhi;
-            yhi=ylo;
-            ylo=ynhi;
-        }
-        for (i=3;i<=mpts;i++)
-        {
-            yt=y[i]+tt*log(ran1(&idum));
-            if (yt <= ylo)
-            {
-                ilo=i;
-                ylo=yt;
-            }
-            if (yt > yhi)
-            {
-                ynhi=yhi;
-                ihi=i;
-                yhi=yt;
-            }
-            else if (yt > ynhi)
-            {
-                ynhi=yt;
-            }
-        }
-        rtol=2.0*fabs(yhi-ylo)/(fabs(yhi)+fabs(ylo));
-        if (rtol < ftol || *iter < 0)
-        {
-            swap=y[1];
-            y[1]=y[ilo];
-            y[ilo]=swap;
-            for (n=1;n<=ndim;n++)
-            {
-                swap=p[1][n];
-                p[1][n]=p[ilo][n];
-                p[ilo][n]=swap;
-            }
-            break;
-        }
-        *iter -= 2;
-        ytry=amotsa(p,y,psum,ndim,pb,yb,funk,ihi,&yhi,-1.0,tt,idum);
-        if (ytry <= ylo)
-        {
-            ytry=amotsa(p,y,psum,ndim,pb,yb,funk,ihi,&yhi,2.0,tt,idum);
-        }
-        else if (ytry >= ynhi)
-        {
-            ysave=yhi;
-            ytry=amotsa(p,y,psum,ndim,pb,yb,funk,ihi,&yhi,0.5,tt,idum);
-            if (ytry >= ysave)
-            {
-                for (i=1;i<=mpts;i++)
-                {
-                    if (i != ilo)
-                    {
-                        for (j=1;j<=ndim;j++)
-                        {
-                            psum[j]=0.5*(p[i][j]+p[ilo][j]);
-                            p[i][j]=psum[j];
-                        }
-                        y[i]=(*funk)(psum);
-                    }
-                }
-                *iter -= ndim;
-                for (n=1;n<=ndim;n++)
-                {
-                    for (sum=0.0,m=1;m<=mpts;m++)
-                        sum += p[m][n];
-                    psum[n]=sum;
-                }
-            }
-        }
-        else
-            ++(*iter);
-    }
-    free_Tvector(psum,1,ndim);
 }

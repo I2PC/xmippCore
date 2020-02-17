@@ -105,7 +105,10 @@ FourierTransformer::~FourierTransformer()
         {
         	destroyThreads();
         	planCreated = false;
-        	cleanup();
+        	// Don't call cleanup.
+        	// There might be other transformers, and this call would
+        	// invalidate it's plans
+//        	cleanup();
         }
     }
     pthread_mutex_unlock(&fftw_plan_mutex);

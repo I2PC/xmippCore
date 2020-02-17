@@ -1197,6 +1197,18 @@ public:
         coreInit();
     }
 
+    /**
+     * Size constructor with 4D size and already allocated data.
+     */
+    MultidimArray(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, T *data) {
+        this->coreInit();
+        this->setDimensions(Xdim, Ydim, Zdim, Ndim);
+        this->data = data;
+        this->nzyxdimAlloc = this->nzyxdim;
+        this->destroyData = false;
+    }
+
+
     /** Size constructor with 4D size.
      * The Size constructor creates an array with memory associated,
      * and fills it with zeros.
@@ -1276,6 +1288,7 @@ public:
         for (size_t i = 0; i < vector.size(); i++)
             DIRECT_A1D_ELEM(*this,i) = vector[i];
     }
+
 
     /** Destructor.
      */
@@ -3416,8 +3429,8 @@ public:
 
         avg = 0;
         stddev = 0;
-
-        for (size_t n = 0; n < nzyxdim; ++n)
+        const size_t nMax = nzyxdim;
+        for (size_t n = 0; n < nMax; ++n)
         {
             U v = (U)data[n];
             avg += v;
@@ -3529,12 +3542,8 @@ public:
             return DIRECT_MULTIDIM_ELEM(*this,0);
 
         // Initialise data
-        MultidimArray< double > temp(*this);
-
-        // Sort indexes
-        double* temp_array = MULTIDIM_ARRAY(temp)-1;
-        qcksrt(NZYXSIZE(*this), temp_array); //FIXME: Valgrind:: Invalid read of size 8: qcksrt(int, double*) (numerical_recipes.cpp:266)
-
+        MultidimArray<T> temp;
+        this->sort(temp);
 
         // Get median
         if (NZYXSIZE(*this)%2==0)
@@ -4630,23 +4639,8 @@ public:
     {
         checkDimension(1);
 
-        MultidimArray<T> temp;
-        MultidimArray< double > aux;
-
-        if (xdim == 0)
-        {
-            result.clear();
-            return;
-        }
-
-        // Initialise data
-        typeCast(*this, aux);
-
-        // Sort
-        double * aux_array = aux.adaptForNumericalRecipes1D();
-        qcksrt(xdim, aux_array);
-
-        typeCast(aux, result);
+        result = *this;
+        std::sort(result.data, result.data + result.nzyxdim);
     }
 
     /** Gives a vector with the indexes for a sorted vector
