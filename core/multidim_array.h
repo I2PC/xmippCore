@@ -3483,6 +3483,30 @@ public:
             stddev = 0;
     }
 
+    void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
+    {
+    	SPEED_UP_temps;
+    	MultidimArray<double> bgI = *this;
+		bgI.resize(XSIZE(mask), YSIZE(mask), ZSIZE(mask));
+    	int numElem = NZYXSIZE(bgI);
+
+        FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(mask, *this)
+        {
+            if (A3D_ELEM(mask, k, i, j) != 0)
+            {
+            	double aux = A3D_ELEM(*this, k, i, j);
+                A3D_ELEM(bgI, k, i, j) = aux;
+            }
+        }
+
+        std::cout << "Passed assignation pixels background" << std::endl;
+        bgI.resize(numElem);
+        bgI.sort(bgI);
+        // median background
+        median = bgI.computeMedian();
+
+    }
+
     /** Compute statistics within 2D region of 2D image.
      *
      * The 2D region is specified by two corners.
