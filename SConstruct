@@ -34,7 +34,12 @@ import os
 import sys
 import shutil
 from os.path import join
-from itertools import izip
+from SCons import Node, Script
+try:
+ from itertools import izip
+except:
+    izip = zip
+
 from glob import glob
 import fnmatch
 import platform
@@ -43,7 +48,7 @@ try:
     from ConfigParser import ConfigParser, ParsingError
 except ImportError:
     from configparser import ConfigParser, ParsingError  # Python 3
-    
+
 MACOSX = (platform.system() == 'Darwin')
 WINDOWS = (platform.system() == 'Windows')
 LINUX = (platform.system() == 'Linux')
@@ -78,10 +83,10 @@ if LINUX:
 elif MACOSX:
     env.AppendUnique(LIBPATH=os.environ.get('DYLD_FALLBACK_LIBRARY_PATH', ''))
 elif WINDOWS:
-    print "OS not tested yet"
-    Exit(1)
+    print("OS not tested yet")
+    sys.exit(1)
 else:
-    print "Unknown system: %s\nPlease tell the developers." % platform.system()
+    print("Unknown system: %s\nPlease tell the developers." % platform.system())
 
 
 # Python and SCons versions are fixed
@@ -101,7 +106,7 @@ else:
 def appendUnique(elist, element):
     'Add element to a list only if it doesnt previously exist'
     if element not in elist:
-        if not isinstance(element, basestring):
+        if not isinstance(element, str):
             elist.extend(element)
         else:
             elist.append(element)
@@ -266,11 +271,11 @@ def symLink(env, target, source):
         link = target[0].path
     else:
         link = target
-    if isinstance(link, basestring) and link.startswith(current):
+    if isinstance(link, str) and link.startswith(current):
         link = link.split(current)[1]
     if isinstance(sources, SCons.Node.NodeList) or isinstance(sources, list):
         sources = source[0].path
-    if isinstance(sources, basestring) and sources.startswith(current):
+    if isinstance(sources, str) and sources.startswith(current):
         sources = sources.split(current)[1]
 
     sources = os.path.relpath(sources, os.path.split(link)[0])
@@ -288,23 +293,29 @@ def symLink(env, target, source):
 
 
 def Cmd(cmd):
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 
-def AddMatchingFiles((pattern, blacklist, sources), directory, files):
-    ''' Callback, adds all matching files in dir '''
-    for filename in fnmatch.filter(files, pattern):
-        if filename not in blacklist:
-            sources.append(join(directory, filename))
+def AddMatchingFiles(params, directory, files):
+    """ Callback, adds all matching files in dir
+        params[0] = pattern
+        params[1] = blacklist
+        params[2] = sources
+    """
+    for filename in fnmatch.filter(files, params[0]):
+        if filename not in params[1]:
+            params[2].append(join(directory, filename))
 
     
 def Glob(path, pattern, blacklist=[]):
     """ Custom made globbing, walking into all subdirectories from path. """
     sources = []
-    os.path.walk(path, AddMatchingFiles, (pattern, blacklist, sources))
+    for root, dirs, files in os.walk(path):
+        for file in fnmatch.filter(files, pattern):
+            if file not in blacklist:
+                sources.append(join(root, file))
     return sources
-
 
 def CreateFileList(path, pattern, filename, root='', root2=''):
     fOut = open(filename, 'w+')
