@@ -458,15 +458,6 @@
 #define SUM_INIT(var, value) if (first_time) var = (value); else var += (value);
 #define SUM_INIT_COND(var, value, cond) if (cond) var = (value); else var += (value);
 
-/** XMIPP_ASSUME_ALIGNED(ptr, alignment)
- * Tell compiler to assume, that ptr has given alignment, even if the compiler can't prove it.
- * This serves as a performance hint, useful to allow auto-vectorization. */
-#ifdef __GNUC__
-#  define XMIPP_ASSUME_ALIGNED(ptr, alignment) (__builtin_assume_aligned(ptr, alignment))
-#else
-#  define XMIPP_ASSUME_ALIGNED(ptr, alignment) (ptr)
-#endif
-
 //@}
 //@}
 #endif
