@@ -3486,27 +3486,24 @@ public:
     void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
     {
     	SPEED_UP_temps;
-    	std::vector<double> bgI;
+    	MultidimArray<double> bgI = *this;
+		bgI.resize(XSIZE(mask), YSIZE(mask), ZSIZE(mask));
+    	int numElem = NZYXSIZE(bgI);
 
         FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(mask, *this)
         {
             if (A3D_ELEM(mask, k, i, j) != 0)
             {
             	double aux = A3D_ELEM(*this, k, i, j);
-                bgI.push_back(aux);
+                A3D_ELEM(bgI, k, i, j) = aux;
             }
         }
 
         std::cout << "Passed assignation pixels background" << std::endl;
-        std::sort(bgI.begin(), bgI.end());
-        if (bgI.size() % 2 != 0)
-        {
-            median = bgI[bgI.size() / 2];
-        }
-        else
-        {
-            median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
-        }
+        bgI.resize(numElem);
+        bgI.sort(bgI);
+        // median background
+        median = bgI.computeMedian();
 
     }
 
