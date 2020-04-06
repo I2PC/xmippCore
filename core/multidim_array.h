@@ -3462,21 +3462,21 @@ public:
         SPEED_UP_tempsInt;
         double sum1 = 0;
         double sum2 = 0;
-        double N = 0;
+        int N = 0;
 
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
+        FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(mask, *this)
         {
-            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
+            if (A3D_ELEM(mask, k, i, j) != 0)
             {
                 ++N;
-                double aux=DIRECT_MULTIDIM_ELEM(*this, n);
+                double aux=A3D_ELEM(*this, k, i, j);
                 sum1 += aux;
                 sum2 += aux*aux;
             }
         }
 
         // average and standard deviation
-        avg  = sum1 / N;
+        avg  = sum1 / (double) N;
         if (N > 1)
             stddev = sqrt(fabs(sum2 / N - avg * avg) * N / (N - 1));
         else
@@ -3488,20 +3488,26 @@ public:
     	SPEED_UP_temps;
     	std::vector<double> bgI;
 
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
+        FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(mask, *this)
         {
-            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
+            if (A3D_ELEM(mask, k, i, j) != 0)
             {
-            	double aux = DIRECT_MULTIDIM_ELEM(*this, n);
+            	double aux = A3D_ELEM(*this, k, i, j);
                 bgI.push_back(aux);
             }
         }
 
+        std::cout << "Passed assignation pixels background" << std::endl;
         std::sort(bgI.begin(), bgI.end());
         if (bgI.size() % 2 != 0)
+        {
             median = bgI[bgI.size() / 2];
+        }
         else
+        {
             median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
+        }
+
     }
 
     /** Compute statistics within 2D region of 2D image.
