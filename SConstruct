@@ -313,12 +313,13 @@ def Glob(path, pattern, blacklist=[]):
     sources = []
     # os.walk(path, AddMatchingFiles, (pattern, blacklist, sources))
 
-    sources = []
-    listOfFiles = os.listdir(path)
-    for file in fnmatch.filter(listOfFiles, pattern):
-        if file not in blacklist:
-            sources.append(join(path, file))
+    for root, dirs, files in os.walk(path):
+        for file in fnmatch.filter(files, pattern):
+            if file not in blacklist:
+                sources.append(os.path.join(dirs, file))
+
     return sources
+
 
 def CreateFileList(path, pattern, filename, root='', root2=''):
     fOut = open(filename, 'w+')
