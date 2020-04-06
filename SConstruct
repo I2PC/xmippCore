@@ -34,12 +34,7 @@ import os
 import sys
 import shutil
 from os.path import join
-from SCons import Node, Script
-try:
- from itertools import izip
-except:
-    izip = zip
-
+from itertools import izip
 from glob import glob
 import fnmatch
 import platform
@@ -83,10 +78,10 @@ if LINUX:
 elif MACOSX:
     env.AppendUnique(LIBPATH=os.environ.get('DYLD_FALLBACK_LIBRARY_PATH', ''))
 elif WINDOWS:
-    print("OS not tested yet")
-    sys.exit(1)
+    print "OS not tested yet"
+    Exit(1)
 else:
-    print("Unknown system: %s\nPlease tell the developers." % platform.system())
+    print "Unknown system: %s\nPlease tell the developers." % platform.system()
 
 
 # Python and SCons versions are fixed
@@ -106,7 +101,7 @@ else:
 def appendUnique(elist, element):
     'Add element to a list only if it doesnt previously exist'
     if element not in elist:
-        if not isinstance(element, str):
+        if not isinstance(element, basestring):
             elist.extend(element)
         else:
             elist.append(element)
@@ -271,11 +266,11 @@ def symLink(env, target, source):
         link = target[0].path
     else:
         link = target
-    if isinstance(link, str) and link.startswith(current):
+    if isinstance(link, basestring) and link.startswith(current):
         link = link.split(current)[1]
     if isinstance(sources, SCons.Node.NodeList) or isinstance(sources, list):
         sources = source[0].path
-    if isinstance(sources, str) and sources.startswith(current):
+    if isinstance(sources, basestring) and sources.startswith(current):
         sources = sources.split(current)[1]
 
     sources = os.path.relpath(sources, os.path.split(link)[0])
@@ -293,7 +288,7 @@ def symLink(env, target, source):
 
 
 def Cmd(cmd):
-    print(cmd)
+    print cmd
     os.system(cmd)
 
 
