@@ -133,7 +133,7 @@ addLib('xmippCore.so',
        dirs=['bindings'],
        patterns=['python/*.cpp'],
        incs=python_incdirs,
-       libs=['python3.5', 'XmippCore'],
+       libs=['python2.7', 'XmippCore'],
        prefix='', target='xmippCore')
 
 
