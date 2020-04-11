@@ -69,9 +69,10 @@ bool getLoopRange( double value, double min, double max, double delta, int loopL
 void string2TransformationMatrix(const String &matrixStr, Matrix2D<double> &matrix, size_t dim=4);
 
 /** Retrieve the geometry transformations from matrix for 2D. */
-void transformationMatrix2Parameters2D(const Matrix2D<double> &A, bool &flip,
-                                       double &scale, double &shiftX, double &shiftY,
-                                       double &psi);
+template<typename T>
+void transformationMatrix2Parameters2D(const Matrix2D<T> &A, bool &flip,
+                                       T &scale, T &shiftX, T &shiftY,
+                                       T &psi);
 
 /** Retrieve the geometry transformations from matrix for D. */
 void transformationMatrix2Parameters3D(const Matrix2D<double> &A, bool &flip,
@@ -92,7 +93,8 @@ void transformationMatrix2Geo(const Matrix2D<double> &A, MDRow & imageGeo);
  *  rotation2DMatrix(60,m);
  * @endcode
  */
-void rotation2DMatrix(double ang, Matrix2D< double > &m, bool homogeneous=true);
+template<typename T>
+void rotation2DMatrix(T ang, Matrix2D<T> &m, bool homogeneous=true);
 
 /** Creates a translational matrix (3x3) for images
  * @ingroup GeometricalTransformations
