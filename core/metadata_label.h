@@ -485,6 +485,10 @@ enum MDLabel
     MDL_ZSCORE_SNR2, ///< Z Score (double)
     MDL_ZSIZE, ///< Z size (int)
 
+	MDL_POLISHING_X, ///< X shift for a frame of a particle (double)
+	MDL_POLISHING_Y, ///< Y shift for a frame of a particle (double)
+	MDL_FREQ_COEFFS, ///< Frequency coeffs for every frame of a particle (vector double)
+
     /** RELION labels */
     RLN_AREA_ID, ///< ID for the area (or field of view). If one does not use (tilt) series, area would be the same as micrograph...
     RLN_AREA_NAME, ///< Name for the area (or field of view). If one does not use (tilt) series, area would be the same as micrograph...
@@ -1866,6 +1870,11 @@ private:
         MDL::addLabel(MDL_ZSCORE_DEEPLEARNING1, LABEL_DOUBLE, "zScoreDeepLearning1");
         MDL::addLabel(MDL_GOOD_REGION_SCORE, LABEL_DOUBLE, "goodRegionScore");
         MDL::addLabel(MDL_ZSIZE, LABEL_SIZET, "zSize");
+
+        MDL::addLabel(MDL_POLISHING_X, LABEL_DOUBLE, "xShiftPolishing");
+        MDL::addLabel(MDL_POLISHING_Y, LABEL_DOUBLE, "yShiftPolishing");
+        MDL::addLabel(MDL_FREQ_COEFFS, LABEL_VECTOR_DOUBLE, "freqCoeffsPolishing");
+
 
         MDL::addLabelAlias(MDL_XCOOR, "Xcoor");//3.0
         MDL::addLabelAlias(MDL_XCOOR, "<X position>");
