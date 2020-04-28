@@ -2051,7 +2051,7 @@ public:
         return A1D_ELEM(*this, i);
     }
 
-    inline T& operator[](int i) const
+    inline T& operator[](size_t i) const
      {
          return data[i];
      }
