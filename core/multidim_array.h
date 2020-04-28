@@ -3459,7 +3459,6 @@ public:
     void computeAvgStdev_within_binary_mask(const MultidimArray< int >& mask,
                                             double& avg, double& stddev) const
     {
-        SPEED_UP_tempsInt;
         double sum1 = 0;
         double sum2 = 0;
         double N = 0;
@@ -3485,7 +3484,6 @@ public:
 
     void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
     {
-    	SPEED_UP_temps;
     	std::vector<double> bgI;
 
         FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
