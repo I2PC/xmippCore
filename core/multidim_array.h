@@ -2051,7 +2051,7 @@ public:
         return A1D_ELEM(*this, i);
     }
 
-    inline T& operator[](int i) const
+    inline T& operator[](size_t i) const
      {
          return data[i];
      }
@@ -3459,7 +3459,6 @@ public:
     void computeAvgStdev_within_binary_mask(const MultidimArray< int >& mask,
                                             double& avg, double& stddev) const
     {
-        SPEED_UP_tempsInt;
         double sum1 = 0;
         double sum2 = 0;
         int N = 0;
@@ -3481,6 +3480,26 @@ public:
             stddev = sqrt(fabs(sum2 / N - avg * avg) * N / (N - 1));
         else
             stddev = 0;
+    }
+
+    void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
+    {
+    	std::vector<double> bgI;
+
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
+        {
+            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
+            {
+            	double aux = DIRECT_MULTIDIM_ELEM(*this, n);
+                bgI.push_back(aux);
+            }
+        }
+
+        std::sort(bgI.begin(), bgI.end());
+        if (bgI.size() % 2 != 0)
+            median = bgI[bgI.size() / 2];
+        else
+            median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
     }
 
     /** Compute statistics within 2D region of 2D image.
