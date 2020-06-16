@@ -28,6 +28,7 @@
 
 #include <cstddef>
 #include <stdlib.h>
+#include <cstdint>
 
 namespace memoryUtils
 {
@@ -85,6 +86,37 @@ namespace memoryUtils
     inline constexpr T GB(T bytes) {
       return  bytes / ((T)1024 * (T)1024 * (T)1024);
     }
+
+    /** Returns the current alignment of the ptr.
+     * Essentially just counts the amount of LSB zeros.
+     * Returns 2^31 for ptr == 0. */
+	inline uint32_t alignmentOf(uintptr_t ptr) {
+		for (uint32_t alignPower = 0; alignPower < 32; alignPower++) {
+			const uint32_t alignment = 1u << alignPower;
+			if ((ptr & alignment) != 0) {
+				return alignment;
+			}
+		}
+		return 1u << 31u;
+	}
+
+	/** Convenience shortcut for alignmentOf(uintptr_t). */
+	inline uint32_t alignmentOf(void * ptr) {
+		return alignmentOf((size_t) ptr);
+	}
+
+	/** Return number + N, where N is the smallest non-negative number required to make number have given alignment.
+	 * Example: align(13, 8) = 16 */
+	template<typename T>
+	inline T align(T number, uint32_t alignment) {
+		T off = number % alignment;
+		if (off == 0) {
+			return number;
+		} else {
+			return number + alignment - off;
+		}
+	}
+
 } // memoryUtils
 
 #endif /* CORE_UTILS_MEMORY_UTILS_H_ */
