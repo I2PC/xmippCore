@@ -364,6 +364,11 @@ enum MDLabel
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
+
+    MDL_POISSON_LAMBDA_MEAN, // Poisson lambda parameter mean estimated per movie
+    MDL_POISSON_LAMBDA_STD, //Poisson lambda parameter std estimated per movie
+    MDL_POISSON_REJECTED_COUNT, //Number of times Poisson distribution was rejected per movie
+
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)
@@ -480,6 +485,15 @@ enum MDLabel
     MDL_ZSCORE_SNR1, ///< Z Score (double)
     MDL_ZSCORE_SNR2, ///< Z Score (double)
     MDL_ZSIZE, ///< Z size (int)
+
+	MDL_POLISHING_X, ///< X shift for a frame of a particle (vector double)
+	MDL_POLISHING_Y, ///< Y shift for a frame of a particle (vector double)
+	MDL_POLISHING_FREQ_COEFFS_BEFORE, ///< Frequency coeffs for every frame of a particle (vector double)
+	MDL_POLISHING_FREQ_COEFFS_AFTER_NORM, ///< Frequency coeffs for every frame of a particle (vector double)
+	MDL_POLISHING_FREQ_COEFFS_AFTER_SVD, ///< Frequency coeffs for every frame of a particle (vector double)
+	MDL_POLISHING_SLOPE_CURVE, ///< Slope of the curve for polishing (double)
+	MDL_POLISHING_INTERCEPT_CURVE, ///< Intercept of the curve for polishing (double)
+	MDL_POLISHING_PROJ_STK, ///< Name of the associated (std::string)
 
     /** RELION labels */
     RLN_AREA_ID, ///< ID for the area (or field of view). If one does not use (tilt) series, area would be the same as micrograph...
@@ -1716,6 +1730,10 @@ private:
         MDL::addLabelAlias(MDL_REF, "Ref");
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
 
+        MDL::addLabel(MDL_POISSON_LAMBDA_MEAN, LABEL_DOUBLE, "avgPoissonLambda");
+        MDL::addLabel(MDL_POISSON_LAMBDA_STD, LABEL_DOUBLE, "stdPoissonLambda");
+        MDL::addLabel(MDL_POISSON_REJECTED_COUNT, LABEL_INT, "countPoisson");
+
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
         MDL::addLabel(MDL_RESOLUTION_FRC, LABEL_DOUBLE, "resolutionFRC");
@@ -1874,6 +1892,15 @@ private:
         MDL::addLabelAlias(MDL_Z, "Z"); //3.0
         MDL::addLabelAlias(MDL_ZSCORE, "Zscore"); //3.0
         MDL::addLabelAlias(MDL_ZSIZE, "Zsize"); //3.0
+
+        MDL::addLabel(MDL_POLISHING_X, LABEL_VECTOR_DOUBLE, "xShiftPolishing");
+        MDL::addLabel(MDL_POLISHING_Y, LABEL_VECTOR_DOUBLE, "yShiftPolishing");
+        MDL::addLabel(MDL_POLISHING_FREQ_COEFFS_BEFORE, LABEL_VECTOR_DOUBLE, "freqCoeffsPolishingBefore");
+        MDL::addLabel(MDL_POLISHING_FREQ_COEFFS_AFTER_NORM, LABEL_VECTOR_DOUBLE, "freqCoeffsPolishingAfterNorm");
+        MDL::addLabel(MDL_POLISHING_FREQ_COEFFS_AFTER_SVD, LABEL_VECTOR_DOUBLE, "freqCoeffsPolishingAfterSvd");
+        MDL::addLabel(MDL_POLISHING_SLOPE_CURVE, LABEL_DOUBLE, "polishingSlope");
+        MDL::addLabel(MDL_POLISHING_INTERCEPT_CURVE, LABEL_DOUBLE, "polishingIntercept");
+        MDL::addLabel(MDL_POLISHING_PROJ_STK, LABEL_STRING, "polishingProjectionStk");
 
 
         /*Relion labels */
