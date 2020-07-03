@@ -48,7 +48,7 @@ try:
     from ConfigParser import ConfigParser, ParsingError
 except ImportError:
     from configparser import ConfigParser, ParsingError  # Python 3
-
+    
 MACOSX = (platform.system() == 'Darwin')
 WINDOWS = (platform.system() == 'Windows')
 LINUX = (platform.system() == 'Linux')
@@ -316,6 +316,7 @@ def Glob(path, pattern, blacklist=[]):
             if file not in blacklist:
                 sources.append(join(root, file))
     return sources
+
 
 def CreateFileList(path, pattern, filename, root='', root2=''):
     fOut = open(filename, 'w+')
