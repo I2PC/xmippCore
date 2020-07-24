@@ -466,20 +466,20 @@ void AmplPhase2Complex(const T* _ampl,
  *
  * This function is not ported to Python.
  */
-template <typename T>
-void Complex2RealImag(const std::complex< double >* _complex,
-                      T* _real,
-                      T* _imag,
+template <typename T1, typename T2>
+void Complex2RealImag(const std::complex< T1 >* _complex,
+                      T2* _real,
+                      T2* _imag,
                       int length)
 {
-    T* aux_real = (T*) _real;
-    T* aux_imag = (T*) _imag;
-    double* aux_complex = (double*) _complex;
+    T2* aux_real = (T2*) _real;
+    T2* aux_imag = (T2*) _imag;
+    T1* aux_complex = (T1*) _complex;
 
     for (int i = 0; i < length; i++)
     {
-        *aux_real++ = (T)(*aux_complex++);
-        *aux_imag++ = (T)(*aux_complex++);
+        *aux_real++ = (T2)(*aux_complex++);
+        *aux_imag++ = (T2)(*aux_complex++);
     }
 }
 
