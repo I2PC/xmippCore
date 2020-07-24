@@ -162,9 +162,17 @@ void Half2Whole(const MultidimArray< std::complex < double > > & in,
 
 /** Conversion from complex -> real,imag
  */
-void Complex2RealImag(const MultidimArray< std::complex < double > > & in,
-                      MultidimArray< double > & real,
-                      MultidimArray< double > & imag);
+/** Convert complex -> real,imag Fourier transforms 2D. -- */
+template <typename T1, typename T2>
+void Complex2RealImag(const MultidimArray< std::complex< T1 > > & in,
+                      MultidimArray< T2 > & real,
+                      MultidimArray< T2 > & imag)
+{
+    real.resizeNoCopy(in);
+    imag.resizeNoCopy(in);
+    Complex2RealImag(MULTIDIM_ARRAY(in), MULTIDIM_ARRAY(real),
+                     MULTIDIM_ARRAY(imag), MULTIDIM_SIZE(in));
+}
 
 /** Conversion from real,imag -> complex
  */
