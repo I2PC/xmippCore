@@ -1094,11 +1094,13 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
         //write md columns in 3rd comment line of the header
         os << _szBlockName << '\n';
         os << "loop_" << '\n';
-        for (size_t i = 0; i < activeLabels.size(); i++)
+        const auto noOfLabels = activeLabels.size();
+        for (size_t i = 0; i < noOfLabels; i++)
         {
-            if (activeLabels.at(i) != MDL_STAR_COMMENT)
+            const auto &label = activeLabels.at(i);
+            if (label != MDL_STAR_COMMENT)
             {
-                os << " _" << MDL::label2Str(activeLabels.at(i)) << std::endl;
+                os << " _" << MDL::label2Str(label) << '\n';
             }
         }
         _writeRows(os);
@@ -1115,17 +1117,19 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
         if (id != BAD_OBJID)
         {
             int maxWidth=20;
-            for (size_t i = 0; i < activeLabels.size(); i++)
+            const auto noOfLabels = activeLabels.size();
+            for (size_t i = 0; i < noOfLabels; i++)
             {
-                if (activeLabels.at(i) != MDL_STAR_COMMENT)
+                const auto &label = activeLabels.at(i);
+                if (label != MDL_STAR_COMMENT)
                 {
-                    int w=MDL::label2Str(activeLabels.at(i)).length();
+                    int w=MDL::label2Str(label).length();
                     if (w>maxWidth)
                         maxWidth=w;
                 }
             }
 
-            for (size_t i = 0; i < activeLabels.size(); i++)
+            for (size_t i = 0; i < noOfLabels; i++)
             {
                 if (activeLabels[i] != MDL_STAR_COMMENT)
                 {
