@@ -286,25 +286,18 @@ bool MetaData::initGetRow( bool addWhereClause) const
 
 bool MetaData::execGetRow(MDRow &row) const
 {
-	bool success=true;
-	std::vector<MDObject> mdValues;		// Vector to store values.
+    std::vector<MDObject> mdValues;		// Vector to store values.
+	mdValues.reserve(activeLabels.size());
 
 	// Clear row.
     row.clear();
 
 	// Execute statement.
-	if (!myMDSql->getObjectsValues( activeLabels, mdValues))
-	{
-		success = false;
-	}
-	else
-	{
-		// Set values in row.
-		int i=0;
-	    for (std::vector<MDLabel>::const_iterator it = activeLabels.begin(); it != activeLabels.end(); ++it)
-	    {
-	    	row.setValue(mdValues[i]);
-	        i++;
+	bool success = myMDSql->getObjectsValues( activeLabels, mdValues);
+	if (success) {
+	    // Set values in row.
+		for (const auto &obj : mdValues) {
+	    	row.setValue(obj);
 	    }
 	}
 
