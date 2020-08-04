@@ -295,7 +295,7 @@ bool MetaData::execGetRow(MDRow &row) const
     row.clear();
 
 	// Execute statement.
-	if (!myMDSql->getObjectsValues( activeLabels, &mdValues))
+	if (!myMDSql->getObjectsValues( activeLabels, mdValues))
 	{
 		success = false;
 	}
@@ -1049,13 +1049,13 @@ void MetaData::_writeRows(std::ostream &os) const
 	this->initGetRow( true);
 
 	// Metadata objects loop.
+	std::vector<MDObject> mdValues;
     FOR_ALL_OBJECTS_IN_METADATA(*this)
     {
-        std::vector<MDObject> mdValues;
-
+        mdValues.clear();
         // Get metadata values.
         this->bindValue( __iter.objId);
-    	myMDSql->getObjectsValues( activeLabels, &mdValues);
+    	myMDSql->getObjectsValues( activeLabels, mdValues);
 
     	// Build metadata line.
     	length = activeLabels.size();

@@ -554,7 +554,7 @@ bool MDSql::initializeUpdate( std::vector<MDLabel> labels)
 }
 
 
-bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values)
+bool MDSql::getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values)
 {
 	bool ret=true;				// Return value.
 	int i=0;					// Loop counter.
@@ -562,13 +562,14 @@ bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject>
 	// Execute statement.
 	if (sqlite3_step(this->preparedStmt) == SQLITE_ROW)
 	{
-		for (i=0; i<labels.size() ;i++)
+	    const auto noOfLabels = labels.size();
+		for (i=0; i < noOfLabels; i++)
 		{
 			if (labels[i] != MDL_STAR_COMMENT)
 			{
-				MDObject value(labels[i]);
+				values.emplace_back(labels[i]);
+			    auto &value = values.back();
 				extractValue(this->preparedStmt, i, value);
-				(*values).push_back(value);
 			}
 		}
 	}
