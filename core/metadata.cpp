@@ -1067,7 +1067,7 @@ void MetaData::_writeRows(std::ostream &os) const
             }
         }
 
-        os << std::endl;
+        os << '\n';
     }
     // Finalize statement.
     myMDSql->finalizePreparedStmt();
@@ -1083,7 +1083,7 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
 {
     if(mode==MD_OVERWRITE)
         os << FileNameVersion << " * "// << (isColumnFormat ? "column" : "row")
-        << std::endl //write which type of format (column or row) and the path;
+        << '\n' //write which type of format (column or row) and the path;
         << WordWrap(comment, line_max);     //write md comment in the 2nd comment line of header
     //write data block
     String _szBlockName("data_");
@@ -1092,8 +1092,8 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
     if (_isColumnFormat)
     {
         //write md columns in 3rd comment line of the header
-        os << _szBlockName << std::endl;
-        os << "loop_" << std::endl;
+        os << _szBlockName << '\n';
+        os << "loop_" << '\n';
         for (size_t i = 0; i < activeLabels.size(); i++)
         {
             if (activeLabels.at(i) != MDL_STAR_COMMENT)
@@ -1107,7 +1107,7 @@ void MetaData::write(std::ostream &os,const String &blockName, WriteModeMetaData
     }
     else //rowFormat
     {
-        os << _szBlockName << std::endl;
+        os << _szBlockName << '\n';
 
         // Get first object. In this case (row format) there is a single object
         size_t id = firstObject();
@@ -2347,7 +2347,7 @@ void MetaData::writeXML(const FileName fn, const FileName blockname, WriteModeMe
         REPORT_ERROR(ERR_NOT_IMPLEMENTED,"XML is only implemented for overwrite mode");
     std::ofstream ofs(fn.c_str(), std::ios_base::out|std::ios_base::trunc);
     size_t size = activeLabels.size();
-    ofs <<  "<" << blockname << ">"<< std::endl;
+    ofs <<  "<" << blockname << ">"<< '\n';
     FOR_ALL_OBJECTS_IN_METADATA(*this)
     {
         ofs <<  "<ROW ";
@@ -2363,9 +2363,9 @@ void MetaData::writeXML(const FileName fn, const FileName blockname, WriteModeMe
                 ofs << "\" ";
             }
         }
-        ofs <<  " />" << std::endl;
+        ofs <<  " />" << '\n';
     }
-    ofs <<  "</" << blockname << ">"<< std::endl;
+    ofs <<  "</" << blockname << ">"<< '\n';
 }
 
 void MetaData::writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const
