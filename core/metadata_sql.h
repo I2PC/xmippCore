@@ -168,7 +168,7 @@ private:
 
     /** Get the values of several objects.
      */
-    bool getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values);
+    bool getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values);
 
     /** Get the value of an object.
      */
