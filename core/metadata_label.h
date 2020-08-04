@@ -1202,7 +1202,7 @@ public:
     static void str2LabelVector(const String &labelsStr, std::vector<MDLabel> &labels);
     static MDLabel str2Label(const String &labelName);
     /** Converts MDLabel to string */
-    static String label2Str(const MDLabel label);
+    static String label2Str(const MDLabel &label);
     /** Same as label2Str but escaping with '' to use in Sqlite. */
     static String label2StrSql(const MDLabel label);
     /** Converts MDLabel to string representing SQL column*/
@@ -1222,7 +1222,7 @@ public:
     static bool isDouble(const MDLabel label);
     static bool isVector(const MDLabel label);
     static bool isVectorLong(const MDLabel label);
-    static bool isValidLabel(const MDLabel label);
+    static bool isValidLabel(const MDLabel &label);
     static bool isValidLabel(const String &labelName);
     static MDLabelType labelType(const MDLabel label);
     static MDLabelType labelType(const String &labelName);
