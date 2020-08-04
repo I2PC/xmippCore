@@ -808,7 +808,7 @@ void MetaData::addIndex(MDLabel label) const
     labels[0]=label;
     addIndex(labels);
 }
-void MetaData::addIndex(const std::vector<MDLabel> desiredLabels) const
+void MetaData::addIndex(const std::vector<MDLabel> &desiredLabels) const
 {
 
     myMDSql->indexModify(desiredLabels, true);
@@ -821,7 +821,7 @@ void MetaData::removeIndex(MDLabel label)
     removeIndex(labels);
 }
 
-void MetaData::removeIndex(const std::vector<MDLabel> desiredLabels)
+void MetaData::removeIndex(const std::vector<MDLabel> &desiredLabels)
 {
     myMDSql->indexModify(desiredLabels, false);
 }
@@ -1843,8 +1843,8 @@ void MetaData::renameColumn(MDLabel oldLabel, MDLabel newLabel)
     renameColumn(vOldLabel,vNewLabel);
 }
 
-void MetaData::renameColumn(std::vector<MDLabel> vOldLabel,
-                            std::vector<MDLabel> vNewLabel)
+void MetaData::renameColumn(const std::vector<MDLabel> &vOldLabel,
+                            const std::vector<MDLabel> &vNewLabel)
 {
     myMDSql->renameColumn(vOldLabel,vNewLabel);
 }
