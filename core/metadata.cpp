@@ -545,6 +545,10 @@ size_t MetaData::addRow(const MDRow &row)
 
 void MetaData::addRowOpt(const MDRow &row)
 {
+    addRows({row});
+}
+
+void MetaData::addMissingLabels(const MDRow &row) {
     // find missing labels
     std::vector<MDLabel> missingLabels;
     for (int i = 0; i < row._size; ++i){
@@ -558,18 +562,43 @@ void MetaData::addRowOpt(const MDRow &row)
         myMDSql->addColumns(missingLabels);
         activeLabels.insert(activeLabels.end(), missingLabels.begin(), missingLabels.end());
     }
+}
+
+void MetaData::addRows(const std::vector<MDRow> &rows)
+{
+    const auto noOfRows = rows.size();
+    if (0 == noOfRows) {
+        return;
+    }
+    const auto &firstRow = rows.at(0);
+
+    // assuming all rows are using the same labels
+    addMissingLabels(firstRow);
+
+    // create mask of valid labels
+    std::vector<MDLabel> labels;
+    labels.reserve(firstRow._size);
+    for (int i = 0; i < firstRow._size; ++i) {
+        const MDLabel &label = firstRow.order[i];
+        if (firstRow.containsLabel(label)) {
+            labels.emplace_back(label);
+        }
+    }
+    const auto noOfLabels = labels.size();
 
     // extract values to be added
-    std::vector<const MDObject*> values;
-    values.reserve(row._size);
-    for (int i = 0; i < row._size; ++i){
-        const MDLabel &label = row.order[i];
-        if (row.containsLabel(label)) {
-            values.push_back(row.getObject(label));
+    std::vector<std::vector<const MDObject*>> records;
+    records.reserve(noOfRows);
+    for (const auto &r : rows) {
+        records.push_back(std::vector<const MDObject*>());
+        auto &vals = records.back();
+        vals.reserve(noOfLabels);
+        for (const auto &l : labels) {
+            vals.push_back(r.getObject(l));
         }
     }
     // insert values to db
-    myMDSql->insert(values);
+    myMDSql->insert(records);
 }
 
 

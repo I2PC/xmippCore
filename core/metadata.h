@@ -678,6 +678,8 @@ public:
     void 	finalizeAddRow(void);
     size_t 	addRow(const MDRow &row);
     void    addRowOpt(const MDRow &row);
+    void    addRows(const std::vector<MDRow> &rows);
+    void    addMissingLabels(const MDRow &row);
     size_t 	addRow2(const MDRow &row);
 
     /** Set label values from string representation.

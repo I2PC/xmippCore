@@ -171,6 +171,8 @@ private:
 
     bool insert(const std::vector<const MDObject*> &values);
 
+    bool insert(std::vector<std::vector<const MDObject*>> records);
+
     /** Get the values of several objects.
      */
     bool getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values);

@@ -406,8 +406,13 @@ std::string MDSql::createInsertQuery(const std::vector<const MDObject*> &values)
     return ss.str();
 }
 
-bool MDSql::insert(const std::vector<const MDObject*> &values) {
-    auto query = createInsertQuery(values);
+bool MDSql::insert(std::vector<std::vector<const MDObject*>> records) {
+    if (0 == records.size()) {
+        return true;
+    }
+    // assuming all records are the same
+    const auto &rec = records.at(0);
+    auto query = createInsertQuery(rec);
     sqlite3_stmt *stmt = nullptr;
     sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover);
     // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
@@ -415,16 +420,25 @@ bool MDSql::insert(const std::vector<const MDObject*> &values) {
     auto res = sqlCommitTrans()
             && sqlBeginTrans();
 
-    const auto len = values.size();
-    for (size_t i = 0; i < len; ++i) {
-        bindValue(stmt, i + 1, *values.at(i));
+    const auto len = rec.size();
+    for (const auto &r : records) {
+        // bind proper values
+        for (size_t i = 0; i < len; ++i) {
+            bindValue(stmt, i + 1, *r.at(i));
+        }
+        // execute
+        res = res && sqlite3_step(stmt);
+        sqlite3_clear_bindings(stmt);
+        sqlite3_reset(stmt);
     }
-    res = res && sqlite3_step(stmt);
-    sqlite3_clear_bindings(stmt);
-    sqlite3_reset(stmt);
-
+    sqlite3_finalize(stmt);
     res = res && sqlEndTrans() && sqlBeginTrans();
+
     return res;
+}
+
+bool MDSql::insert(const std::vector<const MDObject*> &values) {
+    return insert({values});
 }
 
 bool MDSql::setObjectValue(const int objId, const MDObject &value)
