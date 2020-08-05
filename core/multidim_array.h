@@ -804,7 +804,7 @@ public:
     /** Sets new 4D dimensions.
      *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
      */
-    void setDimensions(int Xdim, int Ydim, int Zdim, int Ndim);
+    void setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim);
 
     /** Sets new 4D dimensions.
      *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
