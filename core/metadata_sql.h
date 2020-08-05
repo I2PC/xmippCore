@@ -146,6 +146,10 @@ private:
      */
     bool addColumn(MDLabel column);
 
+    /** Add a new column to a metadata.
+     */
+    bool addColumns(const std::vector<MDLabel> &columns);
+
    /** Rename Column
     * SQLite itself does not support it. So some hacking is needed here
     */
@@ -162,6 +166,10 @@ private:
     /**Set the value of all objects in an specified column.
      */
     bool setObjectValue(const MDObject &value);
+
+    std::string createInsertQuery(const std::vector<const MDObject*> &values);
+
+    bool insert(const std::vector<const MDObject*> &values);
 
     /** Get the values of several objects.
      */
@@ -268,6 +276,7 @@ private:
     static bool sqlBegin();
     static void sqlEnd();
     static bool sqlBeginTrans();
+    static bool sqlEndTrans();
     static bool sqlCommitTrans();
     /** Return an unique id for each metadata
      * this function should be called once for each
@@ -277,7 +286,6 @@ private:
 
     bool dropTable();
     bool createTable(const std::vector<MDLabel> * labelsVector = NULL, bool withObjID=true);
-    bool insertValues(double a, double b);
     bool initializeSelect( bool addWhereObjId, std::vector<MDLabel> labels);
     bool initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values);
     bool initializeUpdate( std::vector<MDLabel> labels);

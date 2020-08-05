@@ -677,6 +677,7 @@ public:
     bool 	execAddRow(const MDRow &row);
     void 	finalizeAddRow(void);
     size_t 	addRow(const MDRow &row);
+    void    addRowOpt(const MDRow &row);
     size_t 	addRow2(const MDRow &row);
 
     /** Set label values from string representation.

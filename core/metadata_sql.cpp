@@ -186,6 +186,23 @@ size_t MDSql::addRow()
     return id;
 }
 
+bool MDSql::addColumns(const std::vector<MDLabel> &columns) {
+    // it seems that with columns, one cannot use data binding
+    auto query = "ALTER TABLE " + tableName(tableId) + " ADD COLUMN ";
+    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+    // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    auto res = sqlCommitTrans()
+            && sqlBeginTrans();
+
+    for (auto c : columns) {
+        auto stmt = query + MDL::label2SqlColumn(c) + ";";
+        res = res && (sqlite3_exec(db, stmt.c_str(), NULL, NULL, &errmsg) == SQLITE_OK);
+    }
+
+    res = res && sqlEndTrans() && sqlBeginTrans();
+    return res;
+}
+
 bool MDSql::addColumn(MDLabel column)
 {
     std::stringstream ss;
@@ -367,6 +384,47 @@ bool MDSql::setObjectValue(const MDObject &value)
     }
     sqlite3_finalize(stmt);
     return r;
+}
+
+std::string MDSql::createInsertQuery(const std::vector<const MDObject*> &values) {
+    std::stringstream cols;
+    std::stringstream vals;
+    const auto len = values.size();
+    for (size_t i = 0; i < len; ++i) {
+        cols << MDL::label2StrSql(values.at(i)->label);
+        vals << "?";
+        if (len != (i + 1)) {
+            cols << ", ";
+            vals << ", ";
+        }
+    }
+    std::stringstream ss;
+    ss << "INSERT INTO " << tableName(tableId)
+            << " (" << cols.str() << ")"
+            << " VALUES "
+            << " (" << vals.str() << ");";
+    return ss.str();
+}
+
+bool MDSql::insert(const std::vector<const MDObject*> &values) {
+    auto query = createInsertQuery(values);
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover);
+    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+    // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    auto res = sqlCommitTrans()
+            && sqlBeginTrans();
+
+    const auto len = values.size();
+    for (size_t i = 0; i < len; ++i) {
+        bindValue(stmt, i + 1, *values.at(i));
+    }
+    res = res && sqlite3_step(stmt);
+    sqlite3_clear_bindings(stmt);
+    sqlite3_reset(stmt);
+
+    res = res && sqlEndTrans() && sqlBeginTrans();
+    return res;
 }
 
 bool MDSql::setObjectValue(const int objId, const MDObject &value)
@@ -1399,6 +1457,16 @@ bool MDSql::sqlBeginTrans()
     if (sqlite3_exec(db, "BEGIN TRANSACTION", NULL, NULL, &errmsg) != SQLITE_OK)
     {
         std::cerr << "Couldn't begin transaction:  " << errmsg << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool MDSql::sqlEndTrans()
+{
+    if (sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &errmsg) != SQLITE_OK)
+    {
+        std::cerr << "Couldn't end transaction:  " << errmsg << std::endl;
         return false;
     }
     return true;

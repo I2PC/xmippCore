@@ -543,6 +543,35 @@ size_t MetaData::addRow(const MDRow &row)
     return id;
 }
 
+void MetaData::addRowOpt(const MDRow &row)
+{
+    // find missing labels
+    std::vector<MDLabel> missingLabels;
+    for (int i = 0; i < row._size; ++i){
+        const MDLabel &label = row.order[i];
+        if (row.containsLabel(label) && (!containsLabel(label))) {
+            missingLabels.push_back(label);
+        }
+    }
+    // add missing labels
+    if ( ! missingLabels.empty()) {
+        myMDSql->addColumns(missingLabels);
+        activeLabels.insert(activeLabels.end(), missingLabels.begin(), missingLabels.end());
+    }
+
+    // extract values to be added
+    std::vector<const MDObject*> values;
+    values.reserve(row._size);
+    for (int i = 0; i < row._size; ++i){
+        const MDLabel &label = row.order[i];
+        if (row.containsLabel(label)) {
+            values.push_back(row.getObject(label));
+        }
+    }
+    // insert values to db
+    myMDSql->insert(values);
+}
+
 
 size_t MetaData::addRow2(const MDRow &row)
 {
