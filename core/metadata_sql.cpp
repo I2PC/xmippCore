@@ -438,7 +438,7 @@ bool MDSql::insert(std::vector<std::vector<const MDObject*>> records) {
 }
 
 bool MDSql::insert(const std::vector<const MDObject*> &values) {
-    return insert({values});
+    return insert(std::vector<std::vector<const MDObject*>>{values});
 }
 
 bool MDSql::setObjectValue(const int objId, const MDObject &value)

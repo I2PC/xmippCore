@@ -772,11 +772,17 @@ int MDRow::size() const
     return _size;
 }
 
-bool MDRow::containsLabel(MDLabel label) const
-{
-    return objects[label] != NULL;
+std::vector<MDLabel> MDRow::getLabels() const {
+    std::vector<MDLabel> res;
+    res.reserve(_size);
+    for (int i = 0; i < _size; ++i){
+        const MDLabel &label = order[i];
+        if (containsLabel(label)) {
+            res.push_back(label);
+        }
+    }
+    return res;
 }
-
 
 void MDRow::addLabel(MDLabel label)
 {

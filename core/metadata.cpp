@@ -551,10 +551,10 @@ void MetaData::addRowOpt(const MDRow &row)
 void MetaData::addMissingLabels(const MDRow &row) {
     // find missing labels
     std::vector<MDLabel> missingLabels;
-    for (int i = 0; i < row._size; ++i){
-        const MDLabel &label = row.order[i];
-        if (row.containsLabel(label) && (!containsLabel(label))) {
-            missingLabels.push_back(label);
+    auto definedLabels = row.getLabels();
+    for (const auto &l : definedLabels){
+        if ( ! containsLabel(l)) {
+            missingLabels.push_back(l);
         }
     }
     // add missing labels
