@@ -72,7 +72,7 @@ void MultidimArrayBase::setXdim(int Xdim)
 /** Sets new 4D dimensions.
   *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
   */
-void MultidimArrayBase::setDimensions(int Xdim, int Ydim, int Zdim, int Ndim)
+void MultidimArrayBase::setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim)
 {
     if (((size_t)Xdim)*Ydim*Zdim*Ndim < 1)
         REPORT_ERROR(ERR_MULTIDIM_SIZE, "Dimensions' size cannot be zero nor negative.");

@@ -62,16 +62,9 @@ private:
 
     /** Write Program info to DB */
     void writeToDB();
-    /** Write protocol header information */
-    void writeToProtocol();
     /** Write bash autocomplete options */
     void writeToAutocomplete();
 
-    /** Create program GUI */
-    /** By default, a simple Tk GUI is create based on parameters definition.
-     * If an specific program implements a more specialized GUI, should redefine this function.
-     */
-    virtual void createGUI();
     /** Create Wiki for help */
     void createWiki();
 

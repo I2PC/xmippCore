@@ -166,6 +166,13 @@ public:
         im->resize(Ndim,Zdim,Ydim,Xdim,copy);
     }
 
+    /** Change the internal size, the allocated memory is the same,
+        so make sure that you are not changing the total size */
+    void setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim)
+    {
+        im->setDimensions(Xdim,Ydim,Zdim,Ndim);
+    }
+
     void resize(ArrayDim &adim, bool copy=true)
     {
         im->resize(adim, copy);
