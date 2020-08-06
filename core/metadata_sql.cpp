@@ -30,6 +30,7 @@
 #include "xmipp_threads.h"
 #include <sys/time.h>
 #include <regex.h>
+
 //#define DEBUG
 
 //This is needed for static memory allocation
@@ -670,7 +671,7 @@ std::string MDSql::createSelectQuery(size_t id, const std::vector<MDObject> &val
     return ss.str();
 }
 
-std::string MDSql::createSelectQuery(const std::vector<MDObject> &values) {
+std::string MDSql::createSelectQuery(const std::vector<MDObject> &values) const {
     std::stringstream cols;
     const auto len = values.size();
     for (size_t i = 0; i < len; ++i) {
@@ -702,7 +703,6 @@ bool MDSql::select(size_t id, std::vector<MDObject> &values) {
         extractValue(stmt, i, values.at(i));
     }
 
-    sqlite3_clear_bindings(stmt);
     sqlite3_reset(stmt);
 
     sqlite3_finalize(stmt);
@@ -1710,7 +1710,7 @@ int MDSql::bindValue(sqlite3_stmt *stmt, const int position, const MDObject &val
   }
 }
 
-void MDSql::extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut)
+void MDSql::extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut) const
 {
     switch (valueOut.type)
     {

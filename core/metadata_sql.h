@@ -60,7 +60,6 @@ enum JoinType
 };
 
 #include "metadata.h"
-
 /* return number of tables from a metadata file saved as sqlite */
 int getBlocksInMetaDataFileDB(const FileName &inFile, StringVector& blockList);
 
@@ -171,7 +170,7 @@ private:
     std::string createInsertQuery(const std::vector<const MDObject*> &values);
 
     /** Create a query for selecting multiple values from a table */
-    std::string createSelectQuery(const std::vector<MDObject> &values);
+    std::string createSelectQuery(const std::vector<MDObject> &values) const;
 
     /** Create a query for selecting multiple values from a specific row */
     std::string createSelectQuery(size_t id, const std::vector<MDObject> &values);
@@ -184,6 +183,35 @@ private:
 
     /** Select multiple values from a specific row */
     bool select(size_t id, std::vector<MDObject> &values);
+
+    template<typename T>
+    bool select(const MDLabel &label, std::vector<T> &values) const {
+        // assuming all records are the same
+        auto query = createSelectQuery({label});
+
+        sqlite3_stmt *stmt = nullptr;
+        // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+        // do our business in a clean transaction and start a new transaction after (not to break the original code)
+        auto res = sqlCommitTrans()
+                && sqlBeginTrans();
+        res = res && (SQLITE_OK == sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover));
+
+        MDObject obj(label);
+        T val;
+        // execute
+        while ((res = res && (sqlite3_step(stmt)) == SQLITE_ROW)) {
+            extractValue(stmt, 0, obj);
+            obj.getValue(val);
+            values.emplace_back(val);
+        }
+
+        sqlite3_reset(stmt);
+
+        sqlite3_finalize(stmt);
+        res = res && sqlEndTrans() && sqlBeginTrans();
+
+        return res;
+    }
 
     /** Get the values of several objects.
      */
@@ -314,7 +342,7 @@ private:
 
     bool 	bindStatement( size_t id);
     int 	bindValue(sqlite3_stmt *stmt, const int position, const MDObject &valueIn);
-    void 	extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut);
+    void 	extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut) const;
 
     static char *errmsg;
     static const char *zLeftover;

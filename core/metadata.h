@@ -632,6 +632,15 @@ public:
      */
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
 
+    /** Get all values of a column as a vector.
+     */
+    template<typename T>
+    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
+        if (!containsLabel(label))
+                return false;
+        return myMDSql->select(label, values);
+    }
+
     /** Set all values of a column as a vector.
      * The input vector must have the same size as the Metadata.
      */
