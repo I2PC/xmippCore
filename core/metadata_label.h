@@ -360,6 +360,10 @@ enum MDLabel
     MDL_DIMENSIONS_2D,  // X,Y dimensions
     MDL_PSD, ///< A Power Spectrum Density file name (std::string)
     MDL_PSD_ENHANCED, ///< A enhanced Power Spectrum Density file name (std::string)
+	MDL_QBACKGROUND, ///< Quality of the background
+	MDL_QCCREAL, ///< Quality as measured in real space
+	MDL_QFOREGROUND, ///< Quality of the foreground
+	MDL_QFOURIER, ///< Quality in Fourier
     MDL_RANDOMSEED, ///< Seed for random number generator
     MDL_REF3D, ///< 3D Class to which the image belongs (int)
     MDL_REF, ///< Class to which the image belongs (int)
@@ -1713,7 +1717,12 @@ private:
         MDL::addLabelAlias(MDL_PSD_ENHANCED, "enhancedPowerSpectrum");//3.0
         MDL::addLabel(MDL_PSD, LABEL_STRING, "psd", TAGLABEL_PSD);
         MDL::addLabelAlias(MDL_PSD, "powerSpectrum");//3.0
-        MDL::addLabel(MDL_RANDOMSEED, LABEL_INT, "randomSeed");
+
+		MDL::addLabel(MDL_QBACKGROUND, LABEL_DOUBLE, "Qbackgroung");
+		MDL::addLabel(MDL_QCCREAL, LABEL_DOUBLE, "QCCReal");
+		MDL::addLabel(MDL_QFOREGROUND, LABEL_DOUBLE, "Qforeground");
+		MDL::addLabel(MDL_QFOURIER, LABEL_DOUBLE, "QFourier");
+		MDL::addLabel(MDL_RANDOMSEED, LABEL_INT, "randomSeed");
         MDL::addLabel(MDL_REF2, LABEL_INT, "ref2");
         MDL::addLabel(MDL_REF3D, LABEL_INT, "ref3d");
         MDL::addLabel(MDL_REF, LABEL_INT, "ref");
