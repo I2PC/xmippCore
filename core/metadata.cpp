@@ -543,6 +543,16 @@ size_t MetaData::addRow(const MDRow &row)
     return id;
 }
 
+bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) {
+    for (auto &v : values) {
+        if (!containsLabel(v.label))
+                return false;
+    }
+    if (id == BAD_OBJID)
+        REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
+    return myMDSql->select(id, values);
+}
+
 void MetaData::addRowOpt(const MDRow &row)
 {
     addRows({row});

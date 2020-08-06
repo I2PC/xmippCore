@@ -653,6 +653,64 @@ bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject>
 	return(ret);
 }
 
+std::string MDSql::createSelectQuery(size_t id, const std::vector<MDObject> &values) {
+    std::stringstream cols;
+    const auto len = values.size();
+    for (size_t i = 0; i < len; ++i) {
+        cols << MDL::label2StrSql(values.at(i).label);
+        if (len != (i + 1)) {
+            cols << ", ";
+        }
+    }
+    std::stringstream ss;
+    ss << "SELECT "
+        << cols.str()
+        << " FROM " << tableName(tableId)
+        << " WHERE objID=" << id << ";";
+    return ss.str();
+}
+
+std::string MDSql::createSelectQuery(const std::vector<MDObject> &values) {
+    std::stringstream cols;
+    const auto len = values.size();
+    for (size_t i = 0; i < len; ++i) {
+        cols << MDL::label2StrSql(values.at(i).label);
+        if (len != (i + 1)) {
+            cols << ", ";
+        }
+    }
+    std::stringstream ss;
+    ss << "SELECT "
+        << cols.str()
+        << " FROM " << tableName(tableId) << ";";
+    return ss.str();
+}
+
+bool MDSql::select(size_t id, std::vector<MDObject> &values) {
+    // assuming all records are the same
+    auto query = createSelectQuery(id, values);
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover);
+    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+    // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    auto res = sqlCommitTrans()
+            && sqlBeginTrans();
+
+    // execute
+    res = res && (SQLITE_ROW == sqlite3_step(stmt));
+    for (size_t i = 0; i < values.size(); ++i) {
+        extractValue(stmt, i, values.at(i));
+    }
+
+    sqlite3_clear_bindings(stmt);
+    sqlite3_reset(stmt);
+
+    sqlite3_finalize(stmt);
+    res = res && sqlEndTrans() && sqlBeginTrans();
+
+    return res;
+}
+
 bool MDSql::getObjectValue(const int objId, MDObject  &value)
 {
 	if (beThreadSafe) { sqlMutex.lock(); }

@@ -167,11 +167,23 @@ private:
      */
     bool setObjectValue(const MDObject &value);
 
+    /** Create a query for inserting multiple values in a single row */
     std::string createInsertQuery(const std::vector<const MDObject*> &values);
 
+    /** Create a query for selecting multiple values from a table */
+    std::string createSelectQuery(const std::vector<MDObject> &values);
+
+    /** Create a query for selecting multiple values from a specific row */
+    std::string createSelectQuery(size_t id, const std::vector<MDObject> &values);
+
+    /** Insert new row of values */
     bool insert(const std::vector<const MDObject*> &values);
 
+    /** Insert multiple rows of values */
     bool insert(std::vector<std::vector<const MDObject*>> records);
+
+    /** Select multiple values from a specific row */
+    bool select(size_t id, std::vector<MDObject> &values);
 
     /** Get the values of several objects.
      */

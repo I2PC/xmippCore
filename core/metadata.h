@@ -592,6 +592,7 @@ public:
         mdValueOut.getValue(valueOut);
         return true;
     }
+
     template<class T>
     void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const
     {
@@ -624,6 +625,8 @@ public:
             valuesOut[i] = value;
         }
     }
+
+    bool getRowValues(size_t id, std::vector<MDObject> &values);
 
     /** Get all values of a column as a vector.
      */
