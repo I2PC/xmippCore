@@ -60,6 +60,7 @@ enum JoinType
 };
 
 #include "metadata.h"
+
 /* return number of tables from a metadata file saved as sqlite */
 int getBlocksInMetaDataFileDB(const FileName &inFile, StringVector& blockList);
 
@@ -145,10 +146,6 @@ private:
      */
     bool addColumn(MDLabel column);
 
-    /** Add a new column to a metadata.
-     */
-    bool addColumns(const std::vector<MDLabel> &columns);
-
    /** Rename Column
     * SQLite itself does not support it. So some hacking is needed here
     */
@@ -165,53 +162,6 @@ private:
     /**Set the value of all objects in an specified column.
      */
     bool setObjectValue(const MDObject &value);
-
-    /** Create a query for inserting multiple values in a single row */
-    std::string createInsertQuery(const std::vector<const MDObject*> &values);
-
-    /** Create a query for selecting multiple values from a table */
-    std::string createSelectQuery(const std::vector<MDObject> &values) const;
-
-    /** Create a query for selecting multiple values from a specific row */
-    std::string createSelectQuery(size_t id, const std::vector<MDObject> &values);
-
-    /** Insert new row of values */
-    bool insert(const std::vector<const MDObject*> &values);
-
-    /** Insert multiple rows of values */
-    bool insert(std::vector<std::vector<const MDObject*>> records);
-
-    /** Select multiple values from a specific row */
-    bool select(size_t id, std::vector<MDObject> &values);
-
-    template<typename T>
-    bool select(const MDLabel &label, std::vector<T> &values) const {
-        // assuming all records are the same
-        auto query = createSelectQuery({label});
-
-        sqlite3_stmt *stmt = nullptr;
-        // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
-        // do our business in a clean transaction and start a new transaction after (not to break the original code)
-        auto res = sqlCommitTrans()
-                && sqlBeginTrans();
-        res = res && (SQLITE_OK == sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover));
-
-        MDObject obj(label);
-        T val;
-        // execute
-        while ((res = res && (sqlite3_step(stmt)) == SQLITE_ROW)) {
-            extractValue(stmt, 0, obj);
-            obj.getValue(val);
-            values.emplace_back(val);
-        }
-
-        sqlite3_reset(stmt);
-
-        sqlite3_finalize(stmt);
-        res = res && sqlEndTrans() && sqlBeginTrans();
-
-        return res;
-    }
 
     /** Get the values of several objects.
      */
@@ -318,7 +268,6 @@ private:
     static bool sqlBegin();
     static void sqlEnd();
     static bool sqlBeginTrans();
-    static bool sqlEndTrans();
     static bool sqlCommitTrans();
     /** Return an unique id for each metadata
      * this function should be called once for each
@@ -328,6 +277,7 @@ private:
 
     bool dropTable();
     bool createTable(const std::vector<MDLabel> * labelsVector = NULL, bool withObjID=true);
+    bool insertValues(double a, double b);
     bool initializeSelect( bool addWhereObjId, std::vector<MDLabel> labels);
     bool initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values);
     bool initializeUpdate( std::vector<MDLabel> labels);
@@ -342,7 +292,7 @@ private:
 
     bool 	bindStatement( size_t id);
     int 	bindValue(sqlite3_stmt *stmt, const int position, const MDObject &valueIn);
-    void 	extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut) const;
+    void 	extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut);
 
     static char *errmsg;
     static const char *zLeftover;

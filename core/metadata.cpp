@@ -24,12 +24,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <regex.h>
-#include <algorithm>
-#include <malloc.h>
 #include "metadata.h"
 #include "xmipp_image.h"
-#include "xmipp_program_sql.h"
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
@@ -238,6 +234,24 @@ void MetaData::getColumnValues(const MDLabel label, std::vector<MDObject> &value
         valuesOut[i] = mdValueOut;
     }
 }
+
+template<typename T>
+bool MetaData::getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
+    if (!containsLabel(label))
+            return false;
+    return sqlUtils::select(label,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values);
+}
+
+/**
+ *  XXX HACK Because of the cyclic dependency between MetaData/MetaData label and MetaData SQL,
+ *  this cannot be in header. So we need to explicitly instantiate it
+ */
+template bool MetaData::getColumnValuesOpt<float>(MDLabel, std::vector<float, std::allocator<float> >&) const;
+template bool MetaData::getColumnValuesOpt<FileName>(MDLabel, std::vector<FileName, std::allocator<FileName> >&) const;
+template bool MetaData::getColumnValuesOpt<int>(MDLabel, std::vector<int, std::allocator<int> >&) const;
 
 void MetaData::setColumnValues(const std::vector<MDObject> &valuesIn)
 {
@@ -550,7 +564,10 @@ bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) {
     }
     if (id == BAD_OBJID)
         REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
-    return myMDSql->select(id, values);
+    return sqlUtils::select(id,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values);
 }
 
 void MetaData::addRowOpt(const MDRow &row)
@@ -569,7 +586,9 @@ void MetaData::addMissingLabels(const MDRow &row) {
     }
     // add missing labels
     if ( ! missingLabels.empty()) {
-        myMDSql->addColumns(missingLabels);
+        sqlUtils::addColumns(missingLabels,
+                    myMDSql->db,
+                    myMDSql->tableName(myMDSql->tableId));
         activeLabels.insert(activeLabels.end(), missingLabels.begin(), missingLabels.end());
     }
 }
@@ -608,7 +627,8 @@ void MetaData::addRows(const std::vector<MDRow> &rows)
         }
     }
     // insert values to db
-    myMDSql->insert(records);
+    sqlUtils::insert(records, myMDSql->db,
+                    myMDSql->tableName(myMDSql->tableId));
 }
 
 

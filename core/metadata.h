@@ -40,6 +40,7 @@
 #include "xmipp_funcs.h"
 #include "xmipp_strings.h"
 #include "metadata_sql.h"
+#include "utils/sql_utils.h"
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary
@@ -635,11 +636,7 @@ public:
     /** Get all values of a column as a vector.
      */
     template<typename T>
-    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
-        if (!containsLabel(label))
-                return false;
-        return myMDSql->select(label, values);
-    }
+    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const;
 
     /** Set all values of a column as a vector.
      * The input vector must have the same size as the Metadata.

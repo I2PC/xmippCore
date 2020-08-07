@@ -23,14 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <algorithm>
-#include <math.h>
-#include <stdlib.h>
 #include "metadata_sql.h"
 #include "xmipp_threads.h"
-#include <sys/time.h>
-#include <regex.h>
-
 //#define DEBUG
 
 //This is needed for static memory allocation
@@ -185,23 +179,6 @@ size_t MDSql::addRow()
 
     //sqlite3_finalize(stmt);
     return id;
-}
-
-bool MDSql::addColumns(const std::vector<MDLabel> &columns) {
-    // it seems that with columns, one cannot use data binding
-    auto query = "ALTER TABLE " + tableName(tableId) + " ADD COLUMN ";
-    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
-    // do our business in a clean transaction and start a new transaction after (not to break the original code)
-    auto res = sqlCommitTrans()
-            && sqlBeginTrans();
-
-    for (auto c : columns) {
-        auto stmt = query + MDL::label2SqlColumn(c) + ";";
-        res = res && (sqlite3_exec(db, stmt.c_str(), NULL, NULL, &errmsg) == SQLITE_OK);
-    }
-
-    res = res && sqlEndTrans() && sqlBeginTrans();
-    return res;
 }
 
 bool MDSql::addColumn(MDLabel column)
@@ -385,61 +362,6 @@ bool MDSql::setObjectValue(const MDObject &value)
     }
     sqlite3_finalize(stmt);
     return r;
-}
-
-std::string MDSql::createInsertQuery(const std::vector<const MDObject*> &values) {
-    std::stringstream cols;
-    std::stringstream vals;
-    const auto len = values.size();
-    for (size_t i = 0; i < len; ++i) {
-        cols << MDL::label2StrSql(values.at(i)->label);
-        vals << "?";
-        if (len != (i + 1)) {
-            cols << ", ";
-            vals << ", ";
-        }
-    }
-    std::stringstream ss;
-    ss << "INSERT INTO " << tableName(tableId)
-            << " (" << cols.str() << ")"
-            << " VALUES "
-            << " (" << vals.str() << ");";
-    return ss.str();
-}
-
-bool MDSql::insert(std::vector<std::vector<const MDObject*>> records) {
-    if (0 == records.size()) {
-        return true;
-    }
-    // assuming all records are the same
-    const auto &rec = records.at(0);
-    auto query = createInsertQuery(rec);
-    sqlite3_stmt *stmt = nullptr;
-    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover);
-    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
-    // do our business in a clean transaction and start a new transaction after (not to break the original code)
-    auto res = sqlCommitTrans()
-            && sqlBeginTrans();
-
-    const auto len = rec.size();
-    for (const auto &r : records) {
-        // bind proper values
-        for (size_t i = 0; i < len; ++i) {
-            bindValue(stmt, i + 1, *r.at(i));
-        }
-        // execute
-        res = res && sqlite3_step(stmt);
-        sqlite3_clear_bindings(stmt);
-        sqlite3_reset(stmt);
-    }
-    sqlite3_finalize(stmt);
-    res = res && sqlEndTrans() && sqlBeginTrans();
-
-    return res;
-}
-
-bool MDSql::insert(const std::vector<const MDObject*> &values) {
-    return insert(std::vector<std::vector<const MDObject*>>{values});
 }
 
 bool MDSql::setObjectValue(const int objId, const MDObject &value)
@@ -652,63 +574,6 @@ bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject>
 	}
 
 	return(ret);
-}
-
-std::string MDSql::createSelectQuery(size_t id, const std::vector<MDObject> &values) {
-    std::stringstream cols;
-    const auto len = values.size();
-    for (size_t i = 0; i < len; ++i) {
-        cols << MDL::label2StrSql(values.at(i).label);
-        if (len != (i + 1)) {
-            cols << ", ";
-        }
-    }
-    std::stringstream ss;
-    ss << "SELECT "
-        << cols.str()
-        << " FROM " << tableName(tableId)
-        << " WHERE objID=" << id << ";";
-    return ss.str();
-}
-
-std::string MDSql::createSelectQuery(const std::vector<MDObject> &values) const {
-    std::stringstream cols;
-    const auto len = values.size();
-    for (size_t i = 0; i < len; ++i) {
-        cols << MDL::label2StrSql(values.at(i).label);
-        if (len != (i + 1)) {
-            cols << ", ";
-        }
-    }
-    std::stringstream ss;
-    ss << "SELECT "
-        << cols.str()
-        << " FROM " << tableName(tableId) << ";";
-    return ss.str();
-}
-
-bool MDSql::select(size_t id, std::vector<MDObject> &values) {
-    // assuming all records are the same
-    auto query = createSelectQuery(id, values);
-    sqlite3_stmt *stmt = nullptr;
-    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, &zLeftover);
-    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
-    // do our business in a clean transaction and start a new transaction after (not to break the original code)
-    auto res = sqlCommitTrans()
-            && sqlBeginTrans();
-
-    // execute
-    res = res && (SQLITE_ROW == sqlite3_step(stmt));
-    for (size_t i = 0; i < values.size(); ++i) {
-        extractValue(stmt, i, values.at(i));
-    }
-
-    sqlite3_reset(stmt);
-
-    sqlite3_finalize(stmt);
-    res = res && sqlEndTrans() && sqlBeginTrans();
-
-    return res;
 }
 
 bool MDSql::getObjectValue(const int objId, MDObject  &value)
@@ -1534,16 +1399,6 @@ bool MDSql::sqlBeginTrans()
     return true;
 }
 
-bool MDSql::sqlEndTrans()
-{
-    if (sqlite3_exec(db, "END TRANSACTION", NULL, NULL, &errmsg) != SQLITE_OK)
-    {
-        std::cerr << "Couldn't end transaction:  " << errmsg << std::endl;
-        return false;
-    }
-    return true;
-}
-
 bool MDSql::sqlCommitTrans()
 {
     char *errmsg;
@@ -1710,7 +1565,7 @@ int MDSql::bindValue(sqlite3_stmt *stmt, const int position, const MDObject &val
   }
 }
 
-void MDSql::extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut) const
+void MDSql::extractValue(sqlite3_stmt *stmt, const int position, MDObject &valueOut)
 {
     switch (valueOut.type)
     {
