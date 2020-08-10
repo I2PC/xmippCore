@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include "symmetries.h"
+#include "geometry.h"
 
 // Read Symmetry file ======================================================
 // crystal symmetry matices from http://cci.lbl.gov/asu_gallery/
