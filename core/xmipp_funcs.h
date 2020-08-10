@@ -26,15 +26,11 @@
 #ifndef CORE_XMIPP_FUNCS_H
 #define CORE_XMIPP_FUNCS_H
 
-#include <fstream>
-#include <typeinfo>
 #include <complex>
-#include <algorithm>
-#include "xmipp_filename.h"
 #include "xmipp_macros.h"
-#include "xmipp_error.h"
+#include <vector>
 
-
+class FileName;
 
 // For timing functions
 // Uncomment next line timing functions are giving problems in your system

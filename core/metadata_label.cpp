@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <algorithm>
 #include "metadata_label.h"
+#include "xmipp_error.h"
 
 //This is needed for static memory allocation
 //std::map<MDLabel, MDLabelData> MDL::data;

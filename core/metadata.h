@@ -40,6 +40,8 @@
 #include "xmipp_funcs.h"
 #include "xmipp_strings.h"
 #include "metadata_sql.h"
+#include "xmipp_filename.h"
+#include "xmipp_error.h"
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary

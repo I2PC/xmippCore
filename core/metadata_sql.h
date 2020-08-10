@@ -32,6 +32,7 @@
 #include <sqlite3.h>
 #include "metadata_label.h"
 #include <vector>
+#include "xmipp_error.h"
 class MDSqlStaticInit;
 class MDQuery;
 class MetaData;

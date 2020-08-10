@@ -24,6 +24,77 @@
  ***************************************************************************/
 
 #include "matrix1d.h"
+#include "xmipp_filename.h"
+#include <fstream>
+
+template<typename T>
+void Matrix1D<T>::showWithGnuPlot(const std::string& xlabel, const std::string& title)
+{
+    FileName fn_tmp;
+    fn_tmp.initRandom(10);
+    Matrix1D<T>::write(static_cast<std::string>("PPP") + fn_tmp + ".txt");
+
+    std::ofstream fh_gplot;
+    fh_gplot.open(
+        (static_cast<std::string>("PPP") + fn_tmp + ".gpl").c_str());
+    if (!fh_gplot)
+        REPORT_ERROR(
+            ERR_UNCLASSIFIED,
+            static_cast<std::string>("vector::showWithGnuPlot: Cannot open PPP") + fn_tmp + ".gpl for output");
+    fh_gplot << "set xlabel \"" + xlabel + "\"\n";
+    fh_gplot
+    << "plot \"PPP" + fn_tmp + ".txt\" title \"" + title
+    + "\" w l\n";
+    fh_gplot << "pause 300 \"\"\n";
+    fh_gplot.close();
+    system(
+        (static_cast<std::string>("(gnuplot PPP") + fn_tmp
+         + ".gpl; rm PPP" + fn_tmp + ".txt PPP" + fn_tmp
+         + ".gpl) &").c_str());
+}
+
+template<typename T>
+void Matrix1D<T>::write(const FileName& fn) const
+{
+    std::ofstream out;
+    out.open(fn.c_str(), std::ios::out);
+    if (!out)
+        REPORT_ERROR(
+            ERR_IO_NOTOPEN,
+            static_cast< std::string >("Matrix1D::write: File " + fn + " cannot be opened for output"));
+
+    out << *this;
+    out.close();
+}
+
+template<typename T>
+void Matrix1D<T>::read(const FileName& fn)
+{
+    std::ifstream in;
+    in.open(fn.c_str(), std::ios::in);
+
+    if (!in)
+        REPORT_ERROR(
+            ERR_IO_NOTOPEN,
+            static_cast< std::string >("MultidimArray::read: File " + fn + " not found"));
+
+    in >> *this;
+    in.close();
+}
+
+template<typename T>
+void Matrix1D<T>::edit()
+{
+    FileName nam;
+    nam.initRandom(15);
+
+    nam = static_cast<std::string>("PPP" + nam + ".txt");
+    write
+    (nam);
+
+    system(
+        (static_cast<std::string>("xmipp_edit -i " + nam + " -remove &").c_str()));
+}
 
 Matrix1D<double> vectorR2(double x, double y)
 {
