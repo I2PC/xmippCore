@@ -25,10 +25,136 @@
 
 #include <algorithm>
 #include <queue>
+#include <random>
+#include <fstream>
 #include "alglib/ap.h"
 #include "alglib/linalg.h"
-
+#include "numerical_recipes.h"
 #include "matrix2d.h"
+#include "bilib/linearalgebra.h"
+#include "xmipp_filename.h"
+
+template<typename T>
+T Matrix2D<T>::det() const
+{
+    // (see Numerical Recipes, Chapter 2 Section 5)
+    if (mdimx == 0 || mdimy == 0)
+        REPORT_ERROR(ERR_MATRIX_EMPTY, "determinant: Matrix is empty");
+
+    if (mdimx != mdimy)
+        REPORT_ERROR(ERR_MATRIX_SIZE, "determinant: Matrix is not squared");
+
+    for (size_t i = 0; i < mdimy; i++)
+    {
+        bool all_zeros = true;
+        for (size_t j = 0; j < mdimx; j++)
+            if (fabs(MAT_ELEM((*this),i, j)) > XMIPP_EQUAL_ACCURACY)
+            {
+                all_zeros = false;
+                break;
+            }
+
+        if (all_zeros)
+            return 0;
+    }
+
+    // Perform decomposition
+    Matrix1D< int > indx;
+    T d;
+    Matrix2D<T> LU;
+    ludcmp(*this, LU, indx, d);
+
+    // Calculate determinant
+    for (size_t i = 0; i < mdimx; i++)
+        d *= (T) MAT_ELEM(LU,i , i);
+
+    return d;
+}
+
+template<typename T>
+void Matrix2D<T>::coreInit(const FileName &fn, int Ydim, int Xdim, size_t offset)
+{
+#ifdef XMIPP_MMAP
+
+    mdimx=Xdim;
+    mdimy=Ydim;
+    mdim=mdimx*mdimy;
+    destroyData=false;
+    mappedData=true;
+    fdMap = open(fn.c_str(),  O_RDWR, S_IREAD | S_IWRITE);
+    if (fdMap == -1)
+        REPORT_ERROR(ERR_IO_NOTOPEN,fn);
+    const size_t pagesize=sysconf(_SC_PAGESIZE);
+    size_t offsetPages=(offset/pagesize)*pagesize;
+    size_t offsetDiff=offset-offsetPages;
+    if ( (mdataOriginal = (char*) mmap(0,Ydim*Xdim*sizeof(T)+offsetDiff, PROT_READ | PROT_WRITE, MAP_SHARED, fdMap, offsetPages)) == MAP_FAILED )
+        REPORT_ERROR(ERR_MMAP_NOTADDR,(String)"mmap failed "+integerToString(errno));
+    mdata=(T*)(mdataOriginal+offsetDiff);
+#else
+
+    REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
+
+}
+
+template<typename T>
+void Matrix2D<T>::read(const FileName &fn)
+{
+    std::ifstream fhIn;
+    fhIn.open(fn.c_str());
+    if (!fhIn)
+        REPORT_ERROR(ERR_IO_NOTEXIST,fn);
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+    fhIn >> MAT_ELEM(*this,i,j);
+    fhIn.close();
+}
+
+template<typename T>
+void Matrix2D<T>::write(const FileName &fn) const
+{
+    std::ofstream fhOut;
+    fhOut.open(fn.c_str());
+    if (!fhOut)
+        REPORT_ERROR(ERR_IO_NOTOPEN,(std::string)"write: Cannot open "+fn+" for output");
+    fhOut << *this;
+    fhOut.close();
+}
+
+#define VIA_BILIB
+template<typename T>
+void svdcmp(const Matrix2D< T >& a,
+            Matrix2D< double >& u,
+            Matrix1D< double >& w,
+            Matrix2D< double >& v)
+{
+    // svdcmp only works with double
+    typeCast(a, u);
+
+    // Set size of matrices
+    w.initZeros(u.mdimx);
+    v.initZeros(u.mdimx, u.mdimx);
+
+    // Call to the numerical recipes routine
+#ifdef VIA_NR
+
+    svdcmp(u.mdata,
+           u.mdimy, u.mdimx,
+           w.vdata,
+           v.mdata);
+#endif
+
+#ifdef VIA_BILIB
+
+    int status;
+    SingularValueDecomposition(u.mdata,
+                               u.mdimy, u.mdimx,
+                               w.vdata,
+                               v.mdata,
+                               5000, &status);
+#endif
+}
+#undef VIA_NR
+#undef VIA_BILIB
 
 /* Cholesky decomposition -------------------------------------------------- */
 void cholesky(const Matrix2D<double> &M, Matrix2D<double> &L)
@@ -714,3 +840,27 @@ void orthogonalizeColumnsGramSchmidt(Matrix2D<double> &M)
 		}
 	}
 }
+
+template<typename T>
+void ludcmp(const Matrix2D<T>& A, Matrix2D<T>& LU, Matrix1D< int >& indx, T& d)
+{
+    LU = A;
+    if (VEC_XSIZE(indx)!=A.mdimx)
+        indx.resizeNoCopy(A.mdimx);
+    ludcmp(LU.adaptForNumericalRecipes2(), A.mdimx,
+           indx.adaptForNumericalRecipes(), &d);
+}
+
+template<typename T>
+void lubksb(const Matrix2D<T>& LU, Matrix1D< int >& indx, Matrix1D<T>& b)
+{
+    lubksb(LU.adaptForNumericalRecipes2(), indx.size(),
+           indx.adaptForNumericalRecipes(),
+           b.adaptForNumericalRecipes());
+}
+
+template void ludcmp<double>(Matrix2D<double> const&, Matrix2D<double>&, Matrix1D<int>&, double&);
+template void lubksb<double>(Matrix2D<double> const&, Matrix1D<int>&, Matrix1D<double>&);
+template void svdcmp<float>(Matrix2D<float> const&, Matrix2D<double>&, Matrix1D<double>&, Matrix2D<double>&);
+template void Matrix2D<int>::write(FileName const&) const;
+template class Matrix2D<double>;

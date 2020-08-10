@@ -26,18 +26,9 @@
 #ifndef CORE_MATRIX2D_H_
 #define CORE_MATRIX2D_H_
 
-#include <fstream>
-#include <errno.h>
-#include <fcntl.h>
-#include "bilib/linearalgebra.h"
-
-#include "xmipp_macros.h"
-#include "xmipp_filename.h"
-#include "xmipp_error.h"
 #include "matrix1d.h"
-#include <random>
+#include <complex>
 #include "xmipp_funcs.h"
-#include "numerical_recipes.h"
 
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
@@ -501,30 +492,7 @@ public:
 
     /** Core init from mapped file.
      * Offset is in bytes. */
-    void coreInit(const FileName &fn, int Ydim, int Xdim, size_t offset=0)
-    {
-#ifdef XMIPP_MMAP
-
-        mdimx=Xdim;
-        mdimy=Ydim;
-        mdim=mdimx*mdimy;
-        destroyData=false;
-        mappedData=true;
-        fdMap = open(fn.c_str(),  O_RDWR, S_IREAD | S_IWRITE);
-        if (fdMap == -1)
-            REPORT_ERROR(ERR_IO_NOTOPEN,fn);
-        const size_t pagesize=sysconf(_SC_PAGESIZE);
-        size_t offsetPages=(offset/pagesize)*pagesize;
-        size_t offsetDiff=offset-offsetPages;
-        if ( (mdataOriginal = (char*) mmap(0,Ydim*Xdim*sizeof(T)+offsetDiff, PROT_READ | PROT_WRITE, MAP_SHARED, fdMap, offsetPages)) == MAP_FAILED )
-            REPORT_ERROR(ERR_MMAP_NOTADDR,(String)"mmap failed "+integerToString(errno));
-        mdata=(T*)(mdataOriginal+offsetDiff);
-#else
-
-        REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
-#endif
-
-    }
+    void coreInit(const FileName &fn, int Ydim, int Xdim, size_t offset=0);
 
     /** Core init.
      * Initialize everything to 0
@@ -1234,29 +1202,11 @@ public:
     /** Read this matrix from file.
      *  The matrix is assumed to be already resized.
       */
-    void read(const FileName &fn)
-    {
-        std::ifstream fhIn;
-        fhIn.open(fn.c_str());
-        if (!fhIn)
-            REPORT_ERROR(ERR_IO_NOTEXIST,fn);
-        FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
-        fhIn >> MAT_ELEM(*this,i,j);
-        fhIn.close();
-    }
+    void read(const FileName &fn);
 
     /** Write this matrix to file
       */
-    void write(const FileName &fn) const
-    {
-        std::ofstream fhOut;
-        fhOut.open(fn.c_str());
-        if (!fhOut)
-            REPORT_ERROR(ERR_IO_NOTOPEN,(std::string)"write: Cannot open "+fn+" for output");
-        fhOut << *this;
-        fhOut.close();
-    }
-
+    void write(const FileName &fn) const;
     /** Show matrix
       */
     friend std::ostream& operator<<(std::ostream& ostrm, const Matrix2D<T>& v)
@@ -1559,41 +1509,7 @@ public:
      * double det = m.det();
      * @endcode
      */
-    T det() const
-    {
-        // (see Numerical Recipes, Chapter 2 Section 5)
-        if (mdimx == 0 || mdimy == 0)
-            REPORT_ERROR(ERR_MATRIX_EMPTY, "determinant: Matrix is empty");
-
-        if (mdimx != mdimy)
-            REPORT_ERROR(ERR_MATRIX_SIZE, "determinant: Matrix is not squared");
-
-        for (size_t i = 0; i < mdimy; i++)
-        {
-            bool all_zeros = true;
-            for (size_t j = 0; j < mdimx; j++)
-                if (fabs(MAT_ELEM((*this),i, j)) > XMIPP_EQUAL_ACCURACY)
-                {
-                    all_zeros = false;
-                    break;
-                }
-
-            if (all_zeros)
-                return 0;
-        }
-
-        // Perform decomposition
-        Matrix1D< int > indx;
-        T d;
-        Matrix2D<T> LU;
-        ludcmp(*this, LU, indx, d);
-
-        // Calculate determinant
-        for (size_t i = 0; i < mdimx; i++)
-            d *= (T) MAT_ELEM(LU,i , i);
-
-        return d;
-    }
+    T det() const;
 
     ///determinat of 3x3 matrix
     T det3x3() const
@@ -1793,25 +1709,13 @@ bool operator==(const Matrix2D<T>& op1, const Matrix2D<T>& op2)
 /** LU Decomposition
  */
 template<typename T>
-void ludcmp(const Matrix2D<T>& A, Matrix2D<T>& LU, Matrix1D< int >& indx, T& d)
-{
-    LU = A;
-    if (VEC_XSIZE(indx)!=A.mdimx)
-        indx.resizeNoCopy(A.mdimx);
-    ludcmp(LU.adaptForNumericalRecipes2(), A.mdimx,
-           indx.adaptForNumericalRecipes(), &d);
-}
+void ludcmp(const Matrix2D<T>& A, Matrix2D<T>& LU, Matrix1D< int >& indx, T& d);
 
 
 /** LU Backsubstitution
  */
 template<typename T>
-void lubksb(const Matrix2D<T>& LU, Matrix1D< int >& indx, Matrix1D<T>& b)
-{
-    lubksb(LU.adaptForNumericalRecipes2(), indx.size(),
-           indx.adaptForNumericalRecipes(),
-           b.adaptForNumericalRecipes());
-}
+void lubksb(const Matrix2D<T>& LU, Matrix1D< int >& indx, Matrix1D<T>& b);
 
 /** SVD Backsubstitution
  */
@@ -1829,36 +1733,7 @@ template<typename T>
 void svdcmp(const Matrix2D< T >& a,
             Matrix2D< double >& u,
             Matrix1D< double >& w,
-            Matrix2D< double >& v)
-{
-    // svdcmp only works with double
-    typeCast(a, u);
-
-    // Set size of matrices
-    w.initZeros(u.mdimx);
-    v.initZeros(u.mdimx, u.mdimx);
-
-    // Call to the numerical recipes routine
-#ifdef VIA_NR
-
-    svdcmp(u.mdata,
-           u.mdimy, u.mdimx,
-           w.vdata,
-           v.mdata);
-#endif
-
-#ifdef VIA_BILIB
-
-    int status;
-    SingularValueDecomposition(u.mdata,
-                               u.mdimy, u.mdimx,
-                               w.vdata,
-                               v.mdata,
-                               5000, &status);
-#endif
-}
-#undef VIA_NR
-#undef VIA_BILIB
+            Matrix2D< double >& v);
 
 /** Generalized eigenvector decomposition.
  * Solves the problem Av=dBv.

@@ -27,6 +27,7 @@
 #include <algorithm>
 #include "metadata.h"
 #include "xmipp_image.h"
+#include <random>
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
