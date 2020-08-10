@@ -32,8 +32,6 @@
 #define CORE_IMAGE_H
 
 #include "xmipp_image_base.h"
-#include "xmipp_image_generic.h"
-#include "xmipp_color.h"
 #include "multidim_array.h"
 
 /// @addtogroup Images
@@ -806,59 +804,7 @@ public:
      */
     int
     readPreview(const FileName &name, size_t Xdim, size_t Ydim = 0,
-                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE)
-    {
-        // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
-
-        ImageGeneric im;
-        size_t imXdim, imYdim, imZdim, Zdim;
-        int err;
-        err = im.readMapped(name, select_img);
-        im.getDimensions(imXdim, imYdim, imZdim);
-        ImageInfo imgInfo;
-        im.getInfo(imgInfo);
-
-        //Set information from image file
-        setName(name);
-        setDatatype(imgInfo.datatype);
-        aDimFile = imgInfo.adim;
-
-        im().setXmippOrigin();
-
-        double scale;
-
-        // If only Xdim is passed, it is the higher allowable size, for any dimension
-        if (Ydim == 0 && imXdim < imYdim)
-        {
-            Ydim = Xdim;
-            scale = ((double) Ydim) / ((double) imYdim);
-            Xdim = (int) (scale * imXdim);
-        }
-        else
-        {
-            scale = ((double) Xdim) / ((double) imXdim);
-            if (Ydim == 0)
-                Ydim = (int) (scale * imYdim);
-        }
-
-        int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
-
-        if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
-        {
-            MultidimArrayGeneric array(im(), select_slice - 1);
-            array.setXmippOrigin();
-
-            scaleToSize(mode, IMGMATRIX(*this), array, Xdim, Ydim);
-        }
-        else // Otherwise, All slices or Central slice is selected
-        {
-            Zdim = (select_slice == ALL_SLICES) ? imZdim : 1;
-            scaleToSize(mode, IMGMATRIX(*this), im(), Xdim, Ydim, Zdim);
-        }
-
-        IMGMATRIX(*this).resetOrigin();
-        return err;
-    }
+                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
 
     /** Returns an image with a lower resolution as a preview image.
      * If Zdim parameter is not passed, then all slices are rescaled.
