@@ -24,6 +24,30 @@
  ***************************************************************************/
 
 #include "multidim_array.h"
+#include "matrix2d.h"
+
+template<typename T>
+void MultidimArray<T>::getSliceAsMatrix(size_t k, Matrix2D<T> &m) const
+{
+    m.resizeNoCopy(YSIZE(*this),XSIZE(*this));
+    memcpy(&MAT_ELEM(m,0,0),&A3D_ELEM(*this,k,0,0),YSIZE(*this),XSIZE(*this)*sizeof(double));
+}
+
+template<typename T>
+MultidimArray<T>& MultidimArray<T>::operator=(const Matrix2D<T>& op1)
+{
+    resizeNoCopy(MAT_YSIZE(op1), MAT_XSIZE(op1));
+    memcpy(data,MATRIX2D_ARRAY(op1), MAT_SIZE(op1)*sizeof(T));
+
+    return *this;
+}
+
+template<typename T>
+void MultidimArray<T>::copy(Matrix2D<T>& op1) const
+{
+    op1.resizeNoCopy(YSIZE(*this), XSIZE(*this));
+    memcpy(MATRIX2D_ARRAY(op1), MULTIDIM_ARRAY(*this), MULTIDIM_SIZE(*this)*sizeof(T));
+}
 
 void MultidimArrayBase::setNdim(int Ndim)
 {
@@ -658,3 +682,7 @@ void planeFit(const MultidimArray<double> &z, const MultidimArray<double> &x, co
 	 p2 = c(1);
 	 p1 = c(0);
 }
+
+// explicit instantiation
+template MultidimArray<double>& MultidimArray<double>::operator=(Matrix2D<double> const&);
+template void MultidimArray<double>::copy(Matrix2D<double>&) const;

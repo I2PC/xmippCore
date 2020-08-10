@@ -26,6 +26,7 @@
 #ifndef CORE_MULTIDIM_ARRAY_H
 #define CORE_MULTIDIM_ARRAY_H
 
+#include "xmipp_macros.h"
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
 #endif
@@ -36,9 +37,15 @@
 
 #include "xmipp_strings.h"
 #include "matrix1d.h"
-#include "matrix2d.h"
+#include "xmipp_funcs.h"
+
 #include <algorithm>
 #include "numerical_recipes.h"
+#include "xmipp_filename.h"
+#include <fstream>
+
+template<typename T>
+class Matrix2D;
 
 extern int bestPrecision(float F, int _width);
 extern String floatToString(float F, int _width, int _prec);
@@ -2206,11 +2213,7 @@ public:
     }
 
     /** Get Z slice as matrix */
-    void getSliceAsMatrix(size_t k, Matrix2D<T> &m) const
-    {
-        m.resizeNoCopy(YSIZE(*this),XSIZE(*this));
-        memcpy(&MAT_ELEM(m,0,0),&A3D_ELEM(*this,k,0,0),YSIZE(*this),XSIZE(*this)*sizeof(double));
-    }
+    void getSliceAsMatrix(size_t k, Matrix2D<T> &m) const;
 
 
     /** Return the data aliased as a row vector in a Matrix1D
@@ -5379,13 +5382,7 @@ public:
      *
      * This function is ported to Python as assign.
      */
-    MultidimArray<T>& operator=(const Matrix2D<T>& op1)
-    {
-        resizeNoCopy(MAT_YSIZE(op1), MAT_XSIZE(op1));
-        memcpy(data,MATRIX2D_ARRAY(op1), MAT_SIZE(op1)*sizeof(T));
-
-        return *this;
-    }
+    MultidimArray<T>& operator=(const Matrix2D<T>& op1);
 
     /** Unary minus.
      *
@@ -5427,11 +5424,7 @@ public:
         return in;
     }
 
-    void copy(Matrix2D<T>& op1) const
-    {
-        op1.resizeNoCopy(YSIZE(*this), XSIZE(*this));
-        memcpy(MATRIX2D_ARRAY(op1), MULTIDIM_ARRAY(*this), MULTIDIM_SIZE(*this)*sizeof(T));
-    }
+    void copy(Matrix2D<T>& op1) const;
 
     /** Equality.
      *
