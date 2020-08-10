@@ -30,6 +30,717 @@
 #include <algorithm>
 
 template<typename T>
+Matrix1D<T>& Matrix1D<T>::operator=(const Matrix1D<T>& op1)
+{
+    if (&op1 != this)
+    {
+        resizeNoCopy(op1);
+        memcpy(vdata, op1.vdata, vdim * sizeof(T));
+        row = op1.row;
+    }
+
+    return *this;
+}
+
+template<typename T>
+bool Matrix1D<T>::operator==(const Matrix1D<T>& op1) const
+{
+    if (row != op1.row)
+        return false;
+
+    for (size_t i = 0; i < vdim; ++i)
+        if (!XMIPP_EQUAL_REAL(vdata[i], op1.vdata[i]))
+            return false;
+    return true;
+}
+
+template<typename T>
+Matrix1D<T>& Matrix1D<T>::operator=(const std::vector<T>& op1)
+{
+    resizeNoCopy(op1.size());
+    memcpy(&vdata[0],&(op1[0]),vdim*sizeof(T));
+    row = false;
+    return *this;
+}
+
+template<typename T>
+void Matrix1D<T>::clear()
+{
+    coreDeallocate();
+    coreInit();
+}
+
+template<typename T>
+void Matrix1D<T>::coreInit()
+{
+    vdim = 0;
+    row = false;
+    vdata = NULL;
+    destroyData = true;
+}
+
+template<typename T>
+void Matrix1D<T>::initConstant(T val)
+{
+    for (size_t j = 0; j < vdim; j++)
+        vdata[j] = val;
+}
+
+template<typename T>
+void Matrix1D<T>::initConstant(size_t Xdim, T val)
+{
+    if (vdim != Xdim)
+        resizeNoCopy(Xdim);
+    initConstant(val);
+}
+
+template<typename T>
+void Matrix1D<T>::enumerate()
+{
+  for (size_t j = 0; j < vdim; j++)
+      vdata[j] = j;
+}
+
+template<typename T>
+bool Matrix1D<T>::isAnyNaN()
+{
+    for (size_t j = 0; j < vdim; j++)
+        if (ISNAN(vdata[j]))
+            return true;
+    return false;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator*(T op1) const
+{
+    Matrix1D<T> tmp(*this);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) * op1;
+        (*ptr1++) = (*ptr2++) * op1;
+        (*ptr1++) = (*ptr2++) * op1;
+        (*ptr1++) = (*ptr2++) * op1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) * op1;
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator/(T op1) const
+{
+    Matrix1D<T> tmp(*this);
+    T iop1 = 1 / op1;
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) * iop1;
+        (*ptr1++) = (*ptr2++) * iop1;
+        (*ptr1++) = (*ptr2++) * iop1;
+        (*ptr1++) = (*ptr2++) * iop1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) * iop1;
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator+(T op1) const
+{
+    Matrix1D<T> tmp(*this);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) + op1;
+        (*ptr1++) = (*ptr2++) + op1;
+        (*ptr1++) = (*ptr2++) + op1;
+        (*ptr1++) = (*ptr2++) + op1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) + op1;
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator-(T op1) const
+    {
+        Matrix1D<T> tmp(*this);
+        T *ptr1 = &VEC_ELEM(tmp,0);
+        const T *ptr2 = &VEC_ELEM(*this,0);
+        size_t iBlockMax = vdim / 4;
+        for (size_t i = 0; i < iBlockMax; i++)
+        {
+            (*ptr1++) = (*ptr2++) - op1;
+            (*ptr1++) = (*ptr2++) - op1;
+            (*ptr1++) = (*ptr2++) - op1;
+            (*ptr1++) = (*ptr2++) - op1;
+        }
+        for (size_t i = iBlockMax * 4; i < vdim; ++i)
+            (*ptr1++) = (*ptr2++) - op1;
+        return tmp;
+    }
+
+template<typename T>
+void Matrix1D<T>::operator+=(const Matrix1D<T>& op1) const
+{
+    if (vdim != op1.vdim)
+        REPORT_ERROR(ERR_MATRIX_SIZE, "Not same sizes in vector summation");
+
+    T *ptr1 = &VEC_ELEM(*this,0);
+    const T *ptr2 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) += (*ptr2++);
+        (*ptr1++) += (*ptr2++);
+        (*ptr1++) += (*ptr2++);
+        (*ptr1++) += (*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) += (*ptr2++);
+}
+
+template<typename T>
+void Matrix1D<T>::operator-=(const Matrix1D<T>& op1) const
+{
+    if (vdim != op1.vdim)
+        REPORT_ERROR(ERR_MATRIX_SIZE, "Not same sizes in vector summation");
+
+    T *ptr1 = &VEC_ELEM(*this,0);
+    const T *ptr2 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) -= (*ptr2++);
+        (*ptr1++) -= (*ptr2++);
+        (*ptr1++) -= (*ptr2++);
+        (*ptr1++) -= (*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) -= (*ptr2++);
+}
+
+template<typename T>
+void Matrix1D<T>::operator*=(T op1)
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) *= op1;
+        (*ptr1++) *= op1;
+        (*ptr1++) *= op1;
+        (*ptr1++) *= op1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) *= op1;
+}
+
+template<typename T>
+void Matrix1D<T>::operator/=(T op1)
+{
+    T iop1 = 1 / op1;
+    T * ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) *= iop1;
+        (*ptr1++) *= iop1;
+        (*ptr1++) *= iop1;
+        (*ptr1++) *= iop1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) *= iop1;
+}
+
+template<typename T>
+void Matrix1D<T>::operator+=(T op1)
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) += op1;
+        (*ptr1++) += op1;
+        (*ptr1++) += op1;
+        (*ptr1++) += op1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) += op1;
+}
+
+template<typename T>
+void Matrix1D<T>::operator-=(T op1)
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) -= op1;
+        (*ptr1++) -= op1;
+        (*ptr1++) -= op1;
+        (*ptr1++) -= op1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) -= op1;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator*(const Matrix1D<T>& op1) const
+{
+    Matrix1D<T> tmp(op1);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    const T *ptr3 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) * (*ptr3++);
+        (*ptr1++) = (*ptr2++) * (*ptr3++);
+        (*ptr1++) = (*ptr2++) * (*ptr3++);
+        (*ptr1++) = (*ptr2++) * (*ptr3++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) * (*ptr3++);
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator/(const Matrix1D<T>& op1) const
+{
+    Matrix1D<T> tmp(op1);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    const T *ptr3 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) / (*ptr3++);
+        (*ptr1++) = (*ptr2++) / (*ptr3++);
+        (*ptr1++) = (*ptr2++) / (*ptr3++);
+        (*ptr1++) = (*ptr2++) / (*ptr3++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) / (*ptr3++);
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator+(const Matrix1D<T>& op1) const
+{
+    Matrix1D<T> tmp(op1);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    const T *ptr3 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) + (*ptr3++);
+        (*ptr1++) = (*ptr2++) + (*ptr3++);
+        (*ptr1++) = (*ptr2++) + (*ptr3++);
+        (*ptr1++) = (*ptr2++) + (*ptr3++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) + (*ptr3++);
+    return tmp;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator-(const Matrix1D<T>& op1) const
+{
+    Matrix1D<T> tmp(op1);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    const T *ptr3 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = (*ptr2++) - (*ptr3++);
+        (*ptr1++) = (*ptr2++) - (*ptr3++);
+        (*ptr1++) = (*ptr2++) - (*ptr3++);
+        (*ptr1++) = (*ptr2++) - (*ptr3++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = (*ptr2++) - (*ptr3++);
+    return tmp;
+}
+
+template<typename T>
+void Matrix1D<T>::operator*=(const Matrix1D<T>& op1)
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    const T *ptr2 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) *= (*ptr2++);
+        (*ptr1++) *= (*ptr2++);
+        (*ptr1++) *= (*ptr2++);
+        (*ptr1++) *= (*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) *= (*ptr2++);
+}
+
+template<typename T>
+void Matrix1D<T>::operator/=(const Matrix1D<T>& op1)
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    const T *ptr2 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) /= (*ptr2++);
+        (*ptr1++) /= (*ptr2++);
+        (*ptr1++) /= (*ptr2++);
+        (*ptr1++) /= (*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) /= (*ptr2++);
+}
+
+template<typename T>
+void Matrix1D<T>::operator+=(const Matrix1D<T>& op1)
+    {
+        T *ptr1 = &VEC_ELEM(*this,0);
+        const T *ptr2 = &VEC_ELEM(op1,0);
+        size_t iBlockMax = vdim / 4;
+        for (size_t i = 0; i < iBlockMax; i++)
+        {
+            (*ptr1++) += (*ptr2++);
+            (*ptr1++) += (*ptr2++);
+            (*ptr1++) += (*ptr2++);
+            (*ptr1++) += (*ptr2++);
+        }
+        for (size_t i = iBlockMax * 4; i < vdim; ++i)
+            (*ptr1++) += (*ptr2++);
+    }
+
+template<typename T>
+void Matrix1D<T>::operator-=(const Matrix1D<T>& op1)
+    {
+        T *ptr1 = &VEC_ELEM(*this,0);
+        const T *ptr2 = &VEC_ELEM(op1,0);
+        size_t iBlockMax = vdim / 4;
+        for (size_t i = 0; i < iBlockMax; i++)
+        {
+            (*ptr1++) -= (*ptr2++);
+            (*ptr1++) -= (*ptr2++);
+            (*ptr1++) -= (*ptr2++);
+            (*ptr1++) -= (*ptr2++);
+        }
+        for (size_t i = iBlockMax * 4; i < vdim; ++i)
+            (*ptr1++) -= (*ptr2++);
+    }
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator-() const
+{
+    Matrix1D<T> tmp(*this);
+    T *ptr1 = &VEC_ELEM(tmp,0);
+    const T *ptr2 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        (*ptr1++) = -(*ptr2++);
+        (*ptr1++) = -(*ptr2++);
+        (*ptr1++) = -(*ptr2++);
+        (*ptr1++) = -(*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        (*ptr1++) = -(*ptr2++);
+    return tmp;
+}
+
+template<typename T>
+void Matrix1D<T>::selfCEIL()
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        *ptr1 = ceil(*ptr1);
+        ++ptr1;
+        *ptr1 = ceil(*ptr1);
+        ++ptr1;
+        *ptr1 = ceil(*ptr1);
+        ++ptr1;
+        *ptr1 = ceil(*ptr1);
+        ++ptr1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+    {
+        *ptr1 = ceil(*ptr1);
+        ++ptr1;
+    }
+}
+
+template<typename T>
+void Matrix1D<T>::selfFLOOR()
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        *ptr1 = floor(*ptr1);
+        ++ptr1;
+        *ptr1 = floor(*ptr1);
+        ++ptr1;
+        *ptr1 = floor(*ptr1);
+        ++ptr1;
+        *ptr1 = floor(*ptr1);
+        ++ptr1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+    {
+        *ptr1 = floor(*ptr1);
+        ++ptr1;
+    }
+}
+
+template<typename T>
+void Matrix1D<T>::selfROUND()
+{
+    T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        *ptr1 = round(*ptr1);
+        ++ptr1;
+        *ptr1 = round(*ptr1);
+        ++ptr1;
+        *ptr1 = round(*ptr1);
+        ++ptr1;
+        *ptr1 = round(*ptr1);
+        ++ptr1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+    {
+        *ptr1 = round(*ptr1);
+        ++ptr1;
+    }
+}
+
+    /** Mean value of the vector */
+template<typename T>
+double Matrix1D<T>::computeMean() const
+{
+    if (vdim == 0)
+        return 0;
+
+    double sum = 0;
+    for (size_t j = 0; j < vdim; ++j)
+        sum+=VEC_ELEM(*this,j);
+    return sum/vdim;
+}
+
+template<typename T>
+T Matrix1D<T>::computeMax() const
+{
+    if (vdim == 0)
+        return 0;
+
+    T maxval = VEC_ELEM(*this,0);
+    for (size_t j = 0; j < vdim; ++j)
+        if (VEC_ELEM(*this,j) > maxval)
+            maxval = VEC_ELEM(*this,j);
+    return maxval;
+}
+
+template<typename T>
+void Matrix1D<T>::computeMinMax(T &minval, T &maxval) const
+{
+    if (vdim == 0)
+        return;
+
+    maxval = minval = VEC_ELEM(*this,0);
+    for (size_t j = 0; j < vdim; ++j)
+    {
+        T val=VEC_ELEM(*this,j);
+        if (val > maxval)
+            maxval = val;
+        else if (val<minval)
+            minval = val;
+    }
+}
+
+template<typename T>
+void Matrix1D<T>::computeMeanAndStddev(double &mean, double &stddev) const
+{
+    mean=stddev=0;
+    if (vdim == 0)
+        return;
+
+    double sum = 0, sum2 = 0;
+    for (size_t j = 0; j < vdim; ++j)
+    {
+        double val=VEC_ELEM(*this,j);
+        sum+=val;
+        sum2+=val*val;
+    }
+    mean=sum/vdim;
+    stddev=sum2/vdim-mean*mean;
+    if (stddev<0)
+        stddev=0;
+    else
+        stddev=sqrt(stddev);
+}
+
+template<typename T>
+int Matrix1D<T>::maxIndex() const
+{
+    if (vdim == 0)
+        return -1;
+
+    int jmax = 0;
+    T maxval = VEC_ELEM(*this, 0);
+    for (size_t j = 0; j < vdim; ++j)
+        if (VEC_ELEM(*this,j) > maxval)
+        {
+            jmax = j;
+            maxval = VEC_ELEM(*this,j);
+        }
+    return jmax;
+}
+
+template<typename T>
+int Matrix1D<T>::minIndex() const
+{
+    if (vdim == 0)
+        return -1;
+
+    int jmin = 0;
+    T minval = VEC_ELEM(*this, 0);
+    for (size_t j = 0; j < vdim; ++j)
+        if (VEC_ELEM(*this,j) < minval)
+        {
+            jmin = j;
+            minval = VEC_ELEM(*this,j);
+        }
+    return jmin;
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::transpose() const
+{
+    Matrix1D<T> temp(*this);
+    temp.selfTranspose();
+    return temp;
+}
+
+template<typename T>
+double Matrix1D<T>::sum(bool average) const
+{
+    double sum = 0;
+    const T *ptr1 = &VEC_ELEM(*this,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        sum += (*ptr1++);
+        sum += (*ptr1++);
+        sum += (*ptr1++);
+        sum += (*ptr1++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        sum += (*ptr1++);
+    if (average)
+        return sum / (double) vdim;
+    else
+        return sum;
+}
+
+template<typename T>
+double Matrix1D<T>::sum2() const
+{
+    double sum = 0;
+    const T *ptr1 = &VEC_ELEM(*this,0);
+    double val;
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        val = *ptr1;
+        sum += val * val;
+        ++ptr1;
+        val = *ptr1;
+        sum += val * val;
+        ++ptr1;
+        val = *ptr1;
+        sum += val * val;
+        ++ptr1;
+        val = *ptr1;
+        sum += val * val;
+        ++ptr1;
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+    {
+        val = *ptr1;
+        sum += val * val;
+        ++ptr1;
+    }
+    return sum;
+}
+
+template<typename T>
+double Matrix1D<T>::dotProduct(const Matrix1D<T> &op1) const
+{
+    double sum = 0;
+    const T *ptr1 = &VEC_ELEM(*this,0);
+    const T *ptr2 = &VEC_ELEM(op1,0);
+    size_t iBlockMax = vdim / 4;
+    for (size_t i = 0; i < iBlockMax; i++)
+    {
+        sum += (*ptr1++) * (*ptr2++);
+        sum += (*ptr1++) * (*ptr2++);
+        sum += (*ptr1++) * (*ptr2++);
+        sum += (*ptr1++) * (*ptr2++);
+    }
+    for (size_t i = iBlockMax * 4; i < vdim; ++i)
+        sum += (*ptr1++) * (*ptr2++);
+    return sum;
+}
+
+template<typename T>
+void Matrix1D<T>::selfNormalize()
+{
+    double m = module();
+    if (fabs(m) > XMIPP_EQUAL_ACCURACY)
+    {
+        T im = (T) (1.0 / m);
+        *this *= im;
+    }
+    else
+        initZeros();
+}
+
+template<typename T>
+void Matrix1D<T>::selfReverse()
+{
+    for (int j = 0; j <= (int) (vdim - 1) / 2; j++)
+    {
+        T aux;
+        SWAP(vdata[j], vdata[vdim-1-j], aux);
+    }
+}
+
+template<typename T>
+void Matrix1D<T>::numericalDerivative(Matrix1D<double> &result) const
+{
+    const double i12 = 1.0 / 12.0;
+    result.initZeros(*this);
+    for (int i = 2; i <= vdim - 2; i++)
+        result(i) = i12
+                    * (-(*this)(i + 2) + 8 * (*this)(i + 1) - 8 * (*this)(i - 1)
+                       + (*this)(i + 2));
+}
+
+template<typename T>
 void Matrix1D<T>::showWithGnuPlot(const std::string& xlabel, const std::string& title)
 {
     FileName fn_tmp;
@@ -179,3 +890,8 @@ Matrix1D<int> vectorR3(int x, int y, int z)
 
 // explicit instantiation
 template class Matrix1D<double>;
+template class Matrix1D<int>;
+template class Matrix1D<float>;
+template class Matrix1D<unsigned char>;
+template class Matrix1D<short>;
+template class Matrix1D<unsigned long>;
