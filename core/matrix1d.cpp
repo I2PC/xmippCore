@@ -25,7 +25,9 @@
 
 #include "matrix1d.h"
 #include "xmipp_filename.h"
+#include "numerical_recipes.h"
 #include <fstream>
+#include <algorithm>
 
 template<typename T>
 void Matrix1D<T>::showWithGnuPlot(const std::string& xlabel, const std::string& title)
@@ -47,10 +49,15 @@ void Matrix1D<T>::showWithGnuPlot(const std::string& xlabel, const std::string& 
     + "\" w l\n";
     fh_gplot << "pause 300 \"\"\n";
     fh_gplot.close();
-    system(
+    auto res = system(
         (static_cast<std::string>("(gnuplot PPP") + fn_tmp
          + ".gpl; rm PPP" + fn_tmp + ".txt PPP" + fn_tmp
          + ".gpl) &").c_str());
+    if (0 != res) {
+        REPORT_ERROR(
+            ERR_UNCLASSIFIED,
+            "Something went wrong when working with GNUPlot. Please report this error to developers.");
+    }
 }
 
 template<typename T>
@@ -92,8 +99,56 @@ void Matrix1D<T>::edit()
     write
     (nam);
 
-    system(
+    auto res = system(
         (static_cast<std::string>("xmipp_edit -i " + nam + " -remove &").c_str()));
+    if (0 != res) {
+        REPORT_ERROR(
+            ERR_UNCLASSIFIED,
+            "Something went wrong when working with xmipp_edit. Please report this error to developers.");
+    }
+}
+
+template<typename T>
+T Matrix1D<T>::computeMedian() const
+{
+    Matrix1D<T> aux;
+    aux=*this;
+    std::nth_element(aux.vdata,aux.vdata+vdim/2,aux.vdata+vdim);
+    return VEC_ELEM(aux,vdim/2);
+}
+template<typename T>
+Matrix1D<T> Matrix1D<T>::sort() const
+{
+    Matrix1D<T> temp(*this);
+    if (vdim == 0)
+        return temp;
+
+    std::sort(temp.vdata, temp.vdata + temp.vdim);
+    return temp;
+}
+
+template<typename T>
+void Matrix1D<T>::indexSort(Matrix1D<int> &indx) const
+{
+    Matrix1D< double > temp;
+    indx.clear();
+
+    if (VEC_XSIZE(*this) == 0)
+        return;
+
+    if (VEC_XSIZE(*this) == 1)
+    {
+        indx.resizeNoCopy(1);
+        VEC_ELEM(indx,0) = 1;
+        return;
+    }
+
+    // Initialise data
+    indx.resizeNoCopy(VEC_XSIZE(*this));
+    typeCast(*this, temp);
+
+    // Sort indexes
+    indexx(VEC_XSIZE(*this), MATRIX1D_ARRAY(temp)-1, MATRIX1D_ARRAY(indx)-1);
 }
 
 Matrix1D<double> vectorR2(double x, double y)
@@ -121,3 +176,6 @@ Matrix1D<int> vectorR3(int x, int y, int z)
     VEC_ELEM(result, 2) = z;
     return result;
 }
+
+// explicit instantiation
+template class Matrix1D<double>;

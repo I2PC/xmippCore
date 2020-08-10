@@ -37,6 +37,8 @@
 #include "xmipp_strings.h"
 #include "matrix1d.h"
 #include "matrix2d.h"
+#include <algorithm>
+#include "numerical_recipes.h"
 
 extern int bestPrecision(float F, int _width);
 extern String floatToString(float F, int _width, int _prec);

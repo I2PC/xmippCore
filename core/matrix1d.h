@@ -26,12 +26,17 @@
 #ifndef CORE_MATRIX1D_H_
 #define CORE_MATRIX1D_H_
 
-#include <stdlib.h>
-#include <cmath>
-#include <algorithm>
-#include "xmipp_funcs.h"
-#include "numerical_recipes.h"
+//#include <stdlib.h>
+//#include <cmath>
+//#include <algorithm>
+//#include "xmipp_funcs.h"
+//#include "numerical_recipes.h"
+#include <string>
+#include <vector>
+#include "xmipp_error.h"
+#include "xmipp_macros.h"
 
+class FileName;
 
 extern int bestPrecision(float F, int _width);
 extern std::string floatToString(float F, int _width, int _prec);
@@ -1298,15 +1303,7 @@ public:
      * v2 = v1.sort();
      * @endcode
      */
-    Matrix1D<T> sort() const
-    {
-        Matrix1D<T> temp(*this);
-        if (vdim == 0)
-            return temp;
-
-        std::sort(temp.vdata, temp.vdata + temp.vdim);
-        return temp;
-    }
+    Matrix1D<T> sort() const;
 
     /** Gives a vector with the indexes for a sorted vector
      *
@@ -1316,28 +1313,7 @@ public:
      * is at index 3, then comes the element at index 4, ... Note that
      * indexes start at 1.
      */
-    void indexSort(Matrix1D<int> &indx) const
-    {
-    	Matrix1D< double > temp;
-        indx.clear();
-
-        if (VEC_XSIZE(*this) == 0)
-            return;
-
-        if (VEC_XSIZE(*this) == 1)
-        {
-            indx.resizeNoCopy(1);
-            VEC_ELEM(indx,0) = 1;
-            return;
-        }
-
-        // Initialise data
-        indx.resizeNoCopy(VEC_XSIZE(*this));
-        typeCast(*this, temp);
-
-        // Sort indexes
-        indexx(VEC_XSIZE(*this), MATRIX1D_ARRAY(temp)-1, MATRIX1D_ARRAY(indx)-1);
-    }
+    void indexSort(Matrix1D<int> &indx) const;
 
     /** Mean value of the vector */
     double computeMean() const
@@ -1404,13 +1380,7 @@ public:
     }
 
     /** Median of the vector */
-    T computeMedian() const
-    {
-    	Matrix1D<T> aux;
-    	aux=*this;
-    	std::nth_element(aux.vdata,aux.vdata+vdim/2,aux.vdata+vdim);
-    	return VEC_ELEM(aux,vdim/2);
-    }
+    T computeMedian() const;
 
     /** Index for the maximum element.
      *
