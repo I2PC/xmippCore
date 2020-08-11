@@ -37,6 +37,7 @@
 //
 //#include "xmipp_strings.h"
 #include "matrix1d.h"
+#include "xmipp_random_mode.h"
 #include "xmipp_funcs.h"
 #include <algorithm>
 #include "numerical_recipes.h"
