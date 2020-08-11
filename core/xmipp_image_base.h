@@ -32,6 +32,7 @@
 #include "multidim_array_base.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
+#include "xmipp_funcs.h"
 
 //
 //// Includes for rwTIFF which cannot be inside it

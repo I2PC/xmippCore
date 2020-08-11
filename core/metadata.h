@@ -31,6 +31,7 @@
 #include "xmipp_filename.h"
 #include "xmipp_error.h"
 #include "metadata_label.h"
+#include <cmath>
 
 class MetaData;
 

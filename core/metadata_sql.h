@@ -33,10 +33,12 @@
 #include "metadata_label.h"
 #include <vector>
 #include "xmipp_error.h"
+#include <sstream>
 class MDSqlStaticInit;
 class MDQuery;
 class MetaData;
 class MDCache;
+class FileName;
 
 /** @addtogroup MetaData
  * @{
