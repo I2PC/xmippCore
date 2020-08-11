@@ -666,3 +666,8 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
 
     return(0);
 }
+
+int ImageBase::writeDM4(size_t img_select, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM4 is not implemented.");
+}

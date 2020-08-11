@@ -24,7 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
-
+#include "xmipp_memory.h"
 /*
  Based on rwSPIDER.h
  Header file for reading and writing SPIDER files

@@ -30,14 +30,8 @@
 #include "matrix2d.h"
 #include "multidim_array.h"
 #include "multidim_array_generic.h"
+#include "transformations_defines.h"
 
-#define IS_INV true
-#define IS_NOT_INV false
-#define DONT_WRAP false
-#define WRAP true
-#ifndef DBL_EPSILON
-#define DBL_EPSILON 1e-50
-#endif
 
 class MDRow;
 

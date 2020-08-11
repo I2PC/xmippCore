@@ -29,6 +29,8 @@
 
 #include "xmipp_image.h"
 #include "xmipp_image_generic.h"
+#include "matrix2d.h"
+#include "transformations.h"
 
 template<typename T>
 int Image<T>::readPreview(const FileName &name, size_t Xdim, size_t Ydim,
@@ -193,15 +195,177 @@ void Image< std::complex< double > >::castConvertPage2Datatype(std::complex< dou
     }
 }
 
-template int Image<std::complex<double> >::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<bool>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<int>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<short>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<float>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<unsigned int>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<double>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<char>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<unsigned short>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<unsigned char>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<unsigned long>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
-template int Image<long>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+template<typename T>
+void Image<T>::selfApplyGeometry(int SplineDegree, bool wrap,
+                  bool only_apply_shifts)
+{
+    //apply geo has not been defined for volumes
+    //and only make sense when reading data
+    if (data.getDim() < 3 && dataMode >= DATA)
+    {
+        Matrix2D<double> A;
+        getTransformationMatrix(A, only_apply_shifts);
+        if (!A.isIdentity())
+        {
+            MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
+            applyGeometry(SplineDegree, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
+                          wrap);
+        }
+    }
+}
+
+template<typename T>
+void Image<T>::getTransformationMatrix(Matrix2D<double> &A, bool only_apply_shifts,
+                        const size_t n)
+{
+    // This has only been implemented for 2D images...
+    MULTIDIM_ARRAY(*this).checkDimension(2);
+    A.resizeNoCopy(3, 3);
+    geo2TransformationMatrix(MD[n], A, only_apply_shifts);
+}
+
+template<typename T>
+void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
+{
+    //This implementation does not handle stacks,
+    //read in a block
+    if (data.ndim != 1)
+        REPORT_ERROR(ERR_MULTIDIM_SIZE,
+                     "Geometric transformation cannot be applied to stacks!!!");
+    if (MD.size() == 0)
+        MD.push_back(MDL::emptyHeader);
+    MDRow &rowAux = MD[0];
+
+    if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
+    {
+        double aux;
+        //origins
+        if (row.getValue(MDL_ORIGIN_X, aux))
+            rowAux.setValue(MDL_ORIGIN_X, aux);
+        if (row.getValue(MDL_ORIGIN_Y, aux))
+            rowAux.setValue(MDL_ORIGIN_Y, aux);
+        if (row.getValue(MDL_ORIGIN_Z, aux))
+            rowAux.setValue(MDL_ORIGIN_Z, aux);
+        //shifts
+        if (row.getValue(MDL_SHIFT_X, aux))
+            rowAux.setValue(MDL_SHIFT_X, aux);
+        if (row.getValue(MDL_SHIFT_Y, aux))
+            rowAux.setValue(MDL_SHIFT_Y, aux);
+        if (row.getValue(MDL_SHIFT_Z, aux))
+            rowAux.setValue(MDL_SHIFT_Z, aux);
+        //rotations
+        if (row.getValue(MDL_ANGLE_ROT, aux))
+            rowAux.setValue(MDL_ANGLE_ROT, aux);
+        if (row.getValue(MDL_ANGLE_TILT, aux))
+            rowAux.setValue(MDL_ANGLE_TILT, aux);
+        if (row.getValue(MDL_ANGLE_PSI, aux))
+            rowAux.setValue(MDL_ANGLE_PSI, aux);
+        //scale
+        if (row.getValue(MDL_SCALE, aux))
+            rowAux.setValue(MDL_SCALE, aux);
+        //weight
+        if (row.getValue(MDL_WEIGHT, aux))
+            rowAux.setValue(MDL_WEIGHT, aux);
+        bool auxBool;
+        if (row.getValue(MDL_FLIP, auxBool))
+            rowAux.setValue(MDL_FLIP, auxBool);
+    }
+
+    //apply geo has not been defined for volumes
+    //and only make sense when reading data
+    if (data.getDim() < 3 && dataMode >= DATA)
+    {
+        Matrix2D<double> A;
+        if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
+            getTransformationMatrix(A, only_apply_shifts);
+        else
+        {
+            String matrixStr;
+            row.getValue(MDL_TRANSFORM_MATRIX, matrixStr);
+            string2TransformationMatrix(matrixStr, A, 3);
+        }
+
+        if (!A.isIdentity())
+        {
+            MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
+            applyGeometry(BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
+                          wrap);
+        }
+    }
+}
+
+template<typename T>
+void Image<T>::getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim,
+           int select_slice, size_t select_img)
+{
+    // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
+
+    size_t Zdim;
+    ArrayDim imAdim;
+    MULTIDIM_ARRAY(*this).getDimensions(imAdim);
+    MULTIDIM_ARRAY(*this).setXmippOrigin();
+
+    double scale;
+
+    // If only Xdim is passed, it is the higher allowable size, for any dimension
+    if (Ydim == 0 && imAdim.xdim < imAdim.ydim)
+    {
+        Ydim = Xdim;
+        scale = ((double) Ydim) / ((double) imAdim.ydim);
+        Xdim = (int) (scale * imAdim.xdim);
+    }
+    else
+    {
+        scale = ((double) Xdim) / ((double) imAdim.xdim);
+        if (Ydim == 0)
+            Ydim = (int) (scale * imAdim.ydim);
+    }
+
+    Image<T> &imgOut = *((Image<T>*) imgBOut);
+
+    int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
+
+    if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
+    {
+        movePointerTo(select_slice, select_img);
+        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim);
+    }
+    else // Otherwise, All slices or Central slice is selected
+    {
+        movePointerTo(ALL_SLICES, select_img);
+        Zdim = (select_slice == ALL_SLICES) ? imAdim.zdim : 1;
+        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim,
+                    Zdim);
+    }
+
+    movePointerTo();
+    IMGMATRIX(*this).resetOrigin();
+
+    // We set the actual dimesions of th MDA to the imageOut as if it were read from file.
+    imgOut.setADimFile(IMGMATRIX(imgOut).getDimensions());
+}
+
+//template int Image<std::complex<double> >::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<bool>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<int>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<short>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<float>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<unsigned int>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<double>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<char>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<unsigned short>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<unsigned char>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<unsigned long>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+//template int Image<long>::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
+template class Image<std::complex<double> >;
+template class Image<bool>;
+template class Image<int>;
+template class Image<short>;
+template class Image<float>;
+template class Image<unsigned int>;
+template class Image<double>;
+template class Image<char>;
+template class Image<unsigned short>;
+template class Image<unsigned char>;
+template class Image<unsigned long>;
+template class Image<long>;

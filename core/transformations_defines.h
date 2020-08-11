@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,21 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_
+#define XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+#define NEAREST 0
+#define LINEAR 1
+#define BSPLINE2 2
+#define BSPLINE3 3
+#define BSPLINE4 4
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
+#define IS_INV true
+#define IS_NOT_INV false
+#define DONT_WRAP false
+#define WRAP true
+#ifndef DBL_EPSILON
+#define DBL_EPSILON 1e-50
+#endif
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+#endif /* XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_ */

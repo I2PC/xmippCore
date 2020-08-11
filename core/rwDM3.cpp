@@ -432,6 +432,12 @@ void printDM3(MetaData MD)
         printDM3node(MD, vObjs[i]);
 }
 
+
+int ImageBase::writeDM3(size_t img_select, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM3 is not implemented.");
+}
+
 /** DM3 Reader
   * @ingroup DM3
 */
