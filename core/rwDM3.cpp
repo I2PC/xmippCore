@@ -24,6 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "metadata.h"
 
 ///@defgroup DM3 DM3 File format
 ///@ingroup ImageFormats
@@ -429,6 +430,12 @@ void printDM3(MetaData MD)
 
     for (size_t i = 0; i < vObjs.size(); i++)
         printDM3node(MD, vObjs[i]);
+}
+
+
+int ImageBase::writeDM3(size_t img_select, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM3 is not implemented.");
 }
 
 /** DM3 Reader

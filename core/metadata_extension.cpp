@@ -7,6 +7,8 @@
 #include "metadata_extension.h"
 #include "xmipp_image_extension.h"
 #include "xmipp_fftw.h"
+#include "xmipp_image_generic.h"
+#include "matrix2d.h"
 
 #ifndef __linux__
 #define MAXDOUBLE __DBL_MAX__

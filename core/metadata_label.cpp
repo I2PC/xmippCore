@@ -23,9 +23,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <stdlib.h>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 #include "metadata_label.h"
+#include "xmipp_error.h"
+#include "xmipp_macros.h"
 
 //This is needed for static memory allocation
 //std::map<MDLabel, MDLabelData> MDL::data;
@@ -34,6 +37,17 @@ std::map<std::string, MDLabel> MDL::names;
 MDRow MDL::emptyHeader;
 MDLabelStaticInit MDL::initialization; //Just for initialization
 MDLabel MDL::bufferIndex;
+
+#define DOUBLE2STREAM(d) \
+        if (withFormat) {\
+                (os) << std::setw(12); \
+                (os) << (((d) != 0. && ABS(d) < 0.001) ? std::scientific : std::fixed);\
+            } os << d;
+
+#define INT2STREAM(i) \
+        if (withFormat) os << std::setw(20); \
+        os << i;
+        //this must have 20 since SIZE_MAX = 18446744073709551615 size
 
 
 void MDL::addLabel(const MDLabel label, const MDLabelType type, const String &name, int tags)

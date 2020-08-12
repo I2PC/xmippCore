@@ -27,23 +27,13 @@
 #ifndef CORE_TRANSFORMATIONS_H
 #define CORE_TRANSFORMATIONS_H
 
-#include "bilib/tboundaryconvention.h"
-#include "bilib/kerneldiff1.h"
-#include "bilib/changebasis.h"
-#include "bilib/pyramidtools.h"
-
 #include "matrix2d.h"
 #include "multidim_array.h"
 #include "multidim_array_generic.h"
-#include "geometry.h"
-#include "metadata.h"
-#define IS_INV true
-#define IS_NOT_INV false
-#define DONT_WRAP false
-#define WRAP true
-#ifndef DBL_EPSILON
-#define DBL_EPSILON 1e-50
-#endif
+#include "transformations_defines.h"
+
+
+class MDRow;
 
 /// @defgroup GeometricalTransformations Geometrical transformations
 /// @ingroup DataLibrary
@@ -1038,25 +1028,7 @@ void applyGeometry(int SplineDegree,
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,
                                MultidimArray< double > &coeffs,
-                               const MultidimArray< T > &V1)
-{
-
-    coeffs.initZeros(ZSIZE(V1), YSIZE(V1), XSIZE(V1));
-    STARTINGX(coeffs) = STARTINGX(V1);
-    STARTINGY(coeffs) = STARTINGY(V1);
-    STARTINGZ(coeffs) = STARTINGZ(V1);
-
-    int Status;
-    MultidimArray< double > aux;
-    typeCast(V1, aux); // This will create a single volume!
-
-    ChangeBasisVolume(MULTIDIM_ARRAY(aux), MULTIDIM_ARRAY(coeffs),
-                      XSIZE(V1), YSIZE(V1), ZSIZE(V1),
-                      CardinalSpline, BasicSpline, SplineDegree,
-                      MirrorOffBounds, DBL_EPSILON, &Status);
-    if (Status)
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Error in produceSplineCoefficients...");
-}
+                               const MultidimArray< T > &V1);
 
 // Special case for complex arrays
 void produceSplineCoefficients(int SplineDegree,
@@ -1070,25 +1042,7 @@ void produceSplineCoefficients(int SplineDegree,
 template <typename T>
 void produceImageFromSplineCoefficients(int SplineDegree,
                                         MultidimArray< T >& img,
-                                        const MultidimArray< double > &coeffs)
-{
-    MultidimArray< double > imgD;
-    imgD.initZeros(ZSIZE(coeffs), YSIZE(coeffs), XSIZE(coeffs));
-    STARTINGX(img) = STARTINGX(coeffs);
-    STARTINGY(img) = STARTINGY(coeffs);
-    STARTINGZ(img) = STARTINGZ(coeffs);
-
-    int Status;
-    MultidimArray< double > aux(coeffs);
-
-    ChangeBasisVolume(MULTIDIM_ARRAY(aux), MULTIDIM_ARRAY(imgD),
-                      XSIZE(coeffs), YSIZE(coeffs), ZSIZE(coeffs),
-                      BasicSpline, CardinalSpline, SplineDegree,
-                      MirrorOnBounds, DBL_EPSILON, &Status);
-    if (Status)
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Error in ImageFromSplineCoefficients...");
-    typeCast(imgD, img);
-}
+                                        const MultidimArray< double > &coeffs);
 
 /** Rotate an array around a given system axis.
  * @ingroup GeometricalTransformations
@@ -1359,59 +1313,7 @@ void selfScaleToSize(int SplineDegree,
 template<typename T>
 void reduceBSpline(int SplineDegree,
                    MultidimArray< double >& V2,
-                   const MultidimArray<T> &V1)
-{
-    double g[200]; // Coefficients of the reduce filter
-    long ng; // Number of coefficients of the reduce filter
-    double h[200]; // Coefficients of the expansion filter
-    long nh; // Number of coefficients of the expansion filter
-    short IsCentered; // Equal TRUE if the filter is a centered spline
-
-    // Get the filter
-    const char *splineType="Centered Spline";
-    if (GetPyramidFilter(splineType, SplineDegree,
-                         g, &ng, h, &nh, &IsCentered))
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Unable to load the filter coefficients");
-
-    MultidimArray< double>  aux;
-    typeCast(V1, aux);
-    if (V1.getDim() == 2)
-    {
-        if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (YSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux), XSIZE(aux) - 1);
-
-        V2.initZeros(YSIZE(aux) / 2, XSIZE(aux) / 2);
-        Reduce_2D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux),
-                  MULTIDIM_ARRAY(V2), g, ng, IsCentered);
-    }
-    else if (V1.getDim() == 3)
-    {
-        if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux - 1), YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux), XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux), XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux), XSIZE(aux));
-
-        V2.initZeros(ZSIZE(aux) / 2, YSIZE(aux) / 2, XSIZE(aux) / 2);
-        Reduce_3D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux), ZSIZE(aux),
-                  MULTIDIM_ARRAY(V2), g, ng, IsCentered);
-    }
-    else
-        REPORT_ERROR(ERR_MULTIDIM_DIM,"reduceBSpline ERROR: only valid for 2D or 3D arrays");
-}
+                   const MultidimArray<T> &V1);
 
 /** Expand a set of B-spline coefficients.
  * @ingroup GeometricalTransformations
@@ -1422,37 +1324,7 @@ void reduceBSpline(int SplineDegree,
 template<typename T>
 void expandBSpline(int SplineDegree,
                    MultidimArray< double >& V2,
-                   const MultidimArray<T> &V1)
-{
-    double g[200]; // Coefficients of the reduce filter
-    long ng; // Number of coefficients of the reduce filter
-    double h[200]; // Coefficients of the expansion filter
-    long nh; // Number of coefficients of the expansion filter
-    short IsCentered; // Equal TRUE if the filter is a centered spline, FALSE otherwise */
-
-    // Get the filter
-    if (GetPyramidFilter("Centered Spline", SplineDegree, g, &ng, h, &nh,
-                         &IsCentered))
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Unable to load the filter coefficients");
-
-    MultidimArray< double > aux;
-    typeCast(V1, aux);
-
-    if (V1.getDim() == 2)
-    {
-        V2.initZeros(2 * YSIZE(aux), 2 * XSIZE(aux));
-        Expand_2D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux),
-                  MULTIDIM_ARRAY(V2), h, nh, IsCentered);
-    }
-    else if (V1.getDim() == 3)
-    {
-        V2.initZeros(2 * ZSIZE(aux), 2 * YSIZE(aux), 2 * XSIZE(aux));
-        Expand_3D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux), ZSIZE(aux),
-                  MULTIDIM_ARRAY(V2), h, nh, IsCentered);
-    }
-    else
-        REPORT_ERROR(ERR_MULTIDIM_DIM,"expandBSpline ERROR: only valid for 2D or 3D arrays");
-}
+                   const MultidimArray<T> &V1);
 
 /** Reduce the nth volume by 2 using a BSpline pyramid.
  * @ingroup GeometricalTransformations

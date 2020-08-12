@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,22 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef XMIPPCORE_CORE_XMIPP_WRITE_MODE_H_
+#define XMIPPCORE_CORE_XMIPP_WRITE_MODE_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+/** Write mode
+ * This class defines the writing behavior.
+ */
+typedef enum
+{
+    WRITE_READONLY,   //only can read the file
+    WRITE_OVERWRITE, //forget about the old file and overwrite it
+    WRITE_REPLACE,   //replace a particular object by another
+    WRITE_APPEND,    //append and object at the end of a stack, so far can not append stacks
+    WRITE_LAST_LABEL                       // **** NOTE ****: Do keep this label always at the end
+    // it is here for looping purposes
+} WriteMode;
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+
+#endif /* XMIPPCORE_CORE_XMIPP_WRITE_MODE_H_ */
