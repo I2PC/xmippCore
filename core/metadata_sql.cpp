@@ -225,7 +225,7 @@ bool  MDSql::activateThreadMuting(void)
 }
 
 
-bool MDSql::renameColumn(const std::vector<MDLabel> oldLabel, const std::vector<MDLabel> newlabel)
+bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector<MDLabel> &newlabel)
 {
     //1 Create an new table that matches your original table,
     // but with the changed columns.
@@ -283,7 +283,7 @@ size_t MDSql::size(void)
     return execSingleIntStmt(ss);
 }
 
-bool MDSql::setObjectValues( size_t id, const std::vector<MDObject*> columnValues, const std::vector<MDLabel> *desiredLabels)
+bool MDSql::setObjectValues( size_t id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels)
 {
     bool r = true;			// Return value.
     int i=0, j=0;			// Loop indexes.
@@ -407,7 +407,7 @@ bool MDSql::setObjectValue(const int objId, const MDObject &value)
     return r;
 }
 
-bool MDSql::initializeSelect( bool addWhereObjId, std::vector<MDLabel> labels)
+bool MDSql::initializeSelect( bool addWhereObjId, const std::vector<MDLabel> &labels)
 {
 	int 	i=0;					// Loop counter.
 	bool	createdOK=true;		// Return value.
@@ -509,7 +509,7 @@ bool MDSql::initializeInsert(const std::vector<MDLabel> *labels, const std::vect
 	return(createdOK);
 }
 
-bool MDSql::initializeUpdate( std::vector<MDLabel> labels)
+bool MDSql::initializeUpdate(const std::vector<MDLabel> &labels)
 {
 	int 	i=0;				// Loop counter.
 	int		length=0;			// # labels.
@@ -555,7 +555,7 @@ bool MDSql::initializeUpdate( std::vector<MDLabel> labels)
 }
 
 
-bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values)
+bool MDSql::getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values)
 {
 	bool ret=true;				// Return value.
 	int i=0;					// Loop counter.
@@ -563,13 +563,14 @@ bool MDSql::getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject>
 	// Execute statement.
 	if (sqlite3_step(this->preparedStmt) == SQLITE_ROW)
 	{
-		for (i=0; i<labels.size() ;i++)
+	    const auto noOfLabels = labels.size();
+		for (i=0; i < noOfLabels; i++)
 		{
 			if (labels[i] != MDL_STAR_COMMENT)
 			{
-				MDObject value(labels[i]);
+				values.emplace_back(labels[i]);
+			    auto &value = values.back();
 				extractValue(this->preparedStmt, i, value);
-				(*values).push_back(value);
 			}
 		}
 	}
@@ -640,7 +641,7 @@ void MDSql::selectObjects(std::vector<size_t> &objectsOut, const MDQuery *queryP
 
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        objectsOut.push_back(sqlite3_column_int(stmt, 0));
+        objectsOut.emplace_back(sqlite3_column_int(stmt, 0));
     }
     sqlite3_finalize(stmt);
 }
@@ -860,7 +861,7 @@ size_t MDSql::aggregateSingleSizeT(const AggregateOperation operation,
     return (execSingleIntStmt(ss));
 }
 
-void MDSql::indexModify(const std::vector<MDLabel> columns, bool create)
+void MDSql::indexModify(const std::vector<MDLabel> &columns, bool create)
 {
     std::stringstream ss,index_name,index_column;
     std::string sep1=" ";

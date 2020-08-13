@@ -770,9 +770,9 @@ public:
      * in other labels, but insert are more expensive
      */
     void addIndex(MDLabel label) const;
-    void addIndex(const std::vector<MDLabel> desiredLabels) const;
+    void addIndex(const std::vector<MDLabel> &desiredLabels) const;
     void removeIndex(MDLabel label);
-    void removeIndex(const std::vector<MDLabel> desiredLabels);
+    void removeIndex(const std::vector<MDLabel> &desiredLabels);
 
     /** Add item id.
      * From 1 to last.
@@ -1160,8 +1160,8 @@ public:
      * columns need to be changed do it using this function instead one by one
      *
      */
-    void renameColumn(std::vector<MDLabel> oldLabel,
-                      std::vector<MDLabel> newLabel);
+    void renameColumn(const std::vector<MDLabel> &oldLabel,
+            const std::vector<MDLabel> &newLabel);
 
     void metadataToVec(std::vector<MDRow> &vd);
 
