@@ -24,6 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "xmipp_error.h"
 
 ///@defgroup SPE Princeton Instruments File Format
 ///@ingroup ImageFormats
@@ -75,4 +76,9 @@ int ImageBase::readSPE(size_t select_img,bool isStack)
     readData(fimg, select_img, datatype, pad);
 
     return(0);
+}
+
+int ImageBase::writeSPE(size_t select_img, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IMG_NOWRITE, "writeSPE is not implemented.");
 }

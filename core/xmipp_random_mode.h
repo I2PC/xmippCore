@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,16 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef XMIPPCORE_CORE_XMIPP_RANDOM_MODE_H_
+#define XMIPPCORE_CORE_XMIPP_RANDOM_MODE_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+/**
+ *  Structure to define random generation mode
+ */
+enum RandomMode
+{
+    RND_UNIFORM = 0,
+    RND_GAUSSIAN = 1
+} ;
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
-
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+#endif /* XMIPPCORE_CORE_XMIPP_RANDOM_MODE_H_ */

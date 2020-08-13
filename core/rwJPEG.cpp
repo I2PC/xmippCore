@@ -25,7 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "jpeglib.h"
-
+#include "xmipp_error.h"
 
 //#include <jpeglib.h>
 

@@ -26,21 +26,15 @@
 #ifndef CORE_METADATA_H
 #define CORE_METADATA_H
 
-#include <map>
-#include <vector>
-#include <iostream>
-#include <iterator>
-#include <sstream>
-#include <time.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sstream>
-#include <strings.h>
 #include <regex.h>
-#include "xmipp_funcs.h"
-#include "xmipp_strings.h"
-#include "metadata_sql.h"
+#include <cmath>
+#include "metadata_label.h"
+#include "metadata_sql_operations.h"
 #include "utils/sql_utils.h"
+#include "xmipp_error.h"
+#include "xmipp_filename.h"
+
+class MetaData;
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary

@@ -27,6 +27,8 @@
 #include "xmipp_program.h"
 #include "metadata_extension.h"
 #include "args.h"
+#include "xmipp_image_generic.h"
+
 void XmippProgram::initComments()
 {
     CommentList comments;

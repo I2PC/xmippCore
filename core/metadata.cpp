@@ -24,8 +24,10 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <random>
 #include "metadata.h"
 #include "xmipp_image.h"
+#include "metadata_sql.h"
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)

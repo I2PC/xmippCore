@@ -27,12 +27,8 @@
 #define CORE_METADATALABEL_H
 
 #include <map>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <fstream>
-#include "xmipp_funcs.h"
 #include "xmipp_strings.h"
+#include <vector>
 
 class MDLabelData;
 class MDObject;
@@ -1053,18 +1049,6 @@ public:
     void  setValue(const size_t &lv);
     void  setValue(const float &floatvalue);
     void  setValue(const char*  &charvalue);
-
-#define DOUBLE2STREAM(d) \
-        if (withFormat) {\
-                (os) << std::setw(12); \
-                (os) << (((d) != 0. && ABS(d) < 0.001) ? std::scientific : std::fixed);\
-            } os << d;
-
-#define INT2STREAM(i) \
-        if (withFormat) os << std::setw(20); \
-        os << i;
-        //this must have 20 since SIZE_MAX = 18446744073709551615 size
-
     void toStream(std::ostream &os, bool withFormat = false, bool isSql=false, bool escape=true) const;
     String toString(bool withFormat = false, bool isSql=false) const;
     bool fromStream(std::istream &is, bool fromString=false);

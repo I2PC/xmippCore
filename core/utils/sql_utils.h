@@ -26,8 +26,8 @@
 #ifndef CORE_UTILS_SQL_UTILS_H_
 #define CORE_UTILS_SQL_UTILS_H_
 
-#include "../metadata_label.h"
 #include <sqlite3.h>
+#include "../metadata_label.h"
 
 class sqlUtils {
 public:
@@ -134,17 +134,7 @@ protected:
         sqlite3_exec(db, "COMMIT TRANSACTION", nullptr, nullptr, nullptr);
     }
 
-    static inline bool checkError(sqlite3 *db) {
-        auto err = sqlite3_errcode(db);
-        if (0 != err) {
-            auto msg = sqlite3_errmsg(db);
-            std::cerr << "SQLite3 error: " << err
-                << "\n"
-                << msg << std::endl;
-            return false;
-        }
-        return true;
-    }
+    static bool checkError(sqlite3 *db);
 
     /** Create a query for selecting multiple values from a table */
     static std::string createSelectQuery(

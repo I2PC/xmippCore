@@ -23,7 +23,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <sstream>
 #include "sql_utils.h"
+#include "../xmipp_error.h"
 
 bool sqlUtils::addColumns(const std::vector<MDLabel> &columns,
         sqlite3 *db, const std::string &table) {
@@ -240,3 +242,15 @@ int sqlUtils::bindValue(sqlite3_stmt *stmt, const int position, const MDObject &
     }
   }
 }
+
+bool sqlUtils::checkError(sqlite3 *db) {
+        auto err = sqlite3_errcode(db);
+        if (0 != err) {
+            auto msg = sqlite3_errmsg(db);
+            std::cerr << "SQLite3 error: " << err
+                << "\n"
+                << msg << std::endl;
+            return false;
+        }
+        return true;
+    }

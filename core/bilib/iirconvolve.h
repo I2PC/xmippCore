@@ -1,3 +1,5 @@
+#include "tboundaryconvention.h"
+
 /**@defgroup IIRConvolve IIR Convolve
    @ingroup BilibLibrary */
 //@{

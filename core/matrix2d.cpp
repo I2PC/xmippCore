@@ -23,12 +23,137 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <algorithm>
 #include <queue>
-#include "alglib/ap.h"
+#include <fstream>
 #include "alglib/linalg.h"
-
+#include "numerical_recipes.h"
 #include "matrix2d.h"
+#include "bilib/linearalgebra.h"
+#include "xmipp_filename.h"
+#include "matrix1d.h"
+#include "xmipp_funcs.h"
+
+template<typename T>
+T Matrix2D<T>::det() const
+{
+    // (see Numerical Recipes, Chapter 2 Section 5)
+    if (mdimx == 0 || mdimy == 0)
+        REPORT_ERROR(ERR_MATRIX_EMPTY, "determinant: Matrix is empty");
+
+    if (mdimx != mdimy)
+        REPORT_ERROR(ERR_MATRIX_SIZE, "determinant: Matrix is not squared");
+
+    for (size_t i = 0; i < mdimy; i++)
+    {
+        bool all_zeros = true;
+        for (size_t j = 0; j < mdimx; j++)
+            if (fabs(MAT_ELEM((*this),i, j)) > XMIPP_EQUAL_ACCURACY)
+            {
+                all_zeros = false;
+                break;
+            }
+
+        if (all_zeros)
+            return 0;
+    }
+
+    // Perform decomposition
+    Matrix1D< int > indx;
+    T d;
+    Matrix2D<T> LU;
+    ludcmp(*this, LU, indx, d);
+
+    // Calculate determinant
+    for (size_t i = 0; i < mdimx; i++)
+        d *= (T) MAT_ELEM(LU,i , i);
+
+    return d;
+}
+
+template<typename T>
+void Matrix2D<T>::coreInit(const FileName &fn, int Ydim, int Xdim, size_t offset)
+{
+#ifdef XMIPP_MMAP
+
+    mdimx=Xdim;
+    mdimy=Ydim;
+    mdim=mdimx*mdimy;
+    destroyData=false;
+    mappedData=true;
+    fdMap = open(fn.c_str(),  O_RDWR, S_IREAD | S_IWRITE);
+    if (fdMap == -1)
+        REPORT_ERROR(ERR_IO_NOTOPEN,fn);
+    const size_t pagesize=sysconf(_SC_PAGESIZE);
+    size_t offsetPages=(offset/pagesize)*pagesize;
+    size_t offsetDiff=offset-offsetPages;
+    if ( (mdataOriginal = (char*) mmap(0,Ydim*Xdim*sizeof(T)+offsetDiff, PROT_READ | PROT_WRITE, MAP_SHARED, fdMap, offsetPages)) == MAP_FAILED )
+        REPORT_ERROR(ERR_MMAP_NOTADDR,(String)"mmap failed "+integerToString(errno));
+    mdata=(T*)(mdataOriginal+offsetDiff);
+#else
+
+    REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
+
+}
+
+template<typename T>
+void Matrix2D<T>::read(const FileName &fn)
+{
+    std::ifstream fhIn;
+    fhIn.open(fn.c_str());
+    if (!fhIn)
+        REPORT_ERROR(ERR_IO_NOTEXIST,fn);
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+    fhIn >> MAT_ELEM(*this,i,j);
+    fhIn.close();
+}
+
+template<typename T>
+void Matrix2D<T>::write(const FileName &fn) const
+{
+    std::ofstream fhOut;
+    fhOut.open(fn.c_str());
+    if (!fhOut)
+        REPORT_ERROR(ERR_IO_NOTOPEN,(std::string)"write: Cannot open "+fn+" for output");
+    fhOut << *this;
+    fhOut.close();
+}
+
+#define VIA_BILIB
+template<typename T>
+void svdcmp(const Matrix2D< T >& a,
+            Matrix2D< double >& u,
+            Matrix1D< double >& w,
+            Matrix2D< double >& v)
+{
+    // svdcmp only works with double
+    typeCast(a, u);
+
+    // Set size of matrices
+    w.initZeros(u.mdimx);
+    v.initZeros(u.mdimx, u.mdimx);
+
+    // Call to the numerical recipes routine
+#ifdef VIA_NR
+
+    svdcmp(u.mdata,
+           u.mdimy, u.mdimx,
+           w.vdata,
+           v.mdata);
+#endif
+
+#ifdef VIA_BILIB
+
+    int status;
+    SingularValueDecomposition(u.mdata,
+                               u.mdimy, u.mdimx,
+                               w.vdata,
+                               v.mdata,
+                               5000, &status);
+#endif
+}
+#undef VIA_NR
+#undef VIA_BILIB
 
 /* Cholesky decomposition -------------------------------------------------- */
 void cholesky(const Matrix2D<double> &M, Matrix2D<double> &L)
@@ -57,266 +182,7 @@ void svbksb(Matrix2D<double> &u, Matrix1D<double> &w, Matrix2D<double> &v,
            x.adaptForNumericalRecipes());
 }
 
-// Solve linear systems ---------------------------------------------------
-void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result)
-{
-	Matrix2D<double> &A=h.A;
-	Matrix1D<double> &b=h.b;
-	Matrix2D<double> &AtA=h.AtA;
-	Matrix2D<double> &AtAinv=h.AtAinv;
-	Matrix1D<double> &Atb=h.Atb;
 
-	// Compute AtA and Atb
-	int I=MAT_YSIZE(A);
-	int J=MAT_XSIZE(A);
-	AtA.initZeros(J,J);
-	Atb.initZeros(J);
-	for (int i=0; i<J; ++i)
-	{
-		for (int j=0; j<J; ++j)
-		{
-			double AtA_ij=0;
-			for (int k=0; k<I; ++k)
-				AtA_ij+=MAT_ELEM(A,k,i)*MAT_ELEM(A,k,j);
-			MAT_ELEM(AtA,i,j)=AtA_ij;
-		}
-		double Atb_i=0;
-		for (int k=0; k<I; ++k)
-			Atb_i+=MAT_ELEM(A,k,i)*VEC_ELEM(b,k);
-		VEC_ELEM(Atb,i)=Atb_i;
-	}
-
-	// Compute the inverse of AtA
-	AtA.inv(AtAinv);
-
-	// Now multiply by Atb
-	result.initZeros(J);
-	FOR_ALL_ELEMENTS_IN_MATRIX2D(AtAinv)
-		VEC_ELEM(result,i)+=MAT_ELEM(AtAinv,i,j)*VEC_ELEM(Atb,j);
-}
-
-// Solve linear systems ---------------------------------------------------
-void weightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &result)
-{
-	Matrix2D<double> &A=h.A;
-	Matrix1D<double> &b=h.b;
-	Matrix1D<double> &w=h.w;
-
-	// See http://en.wikipedia.org/wiki/Least_squares#Weighted_least_squares
-	FOR_ALL_ELEMENTS_IN_MATRIX1D(w)
-	{
-		double wii=sqrt(VEC_ELEM(w,i));
-		VEC_ELEM(b,i)*=wii;
-		for (size_t j=0; j<MAT_XSIZE(A); ++j)
-			MAT_ELEM(A,i,j)*=wii;
-	}
-	solveLinearSystem(h,result);
-}
-
-// Solve linear system with RANSAC ----------------------------------------
-//#define DEBUG
-//#define DEBUG_MORE
-double ransacWeightedLeastSquaresBasic(WeightedLeastSquaresHelper &h, Matrix1D<double> &result,
-		double tol, int Niter, double outlierFraction)
-{
-	int N=MAT_YSIZE(h.A); // Number of equations
-	int M=MAT_XSIZE(h.A); // Number of unknowns
-
-	// Initialize a vector with all equation indexes
-	std::vector<int> eqIdx;
-	eqIdx.reserve(N);
-	for (int n=0; n<N; ++n)
-		eqIdx.push_back(n);
-	int *eqIdxPtr=&eqIdx[0];
-
-#ifdef DEBUG_MORE
-	// Show all equations
-	for (int n=0; n<N; n++)
-	{
-		std::cout << "Eq. " << n << " w=" << VEC_ELEM(h.w,n) << " b=" << VEC_ELEM(h.b,n) << " a=";
-		for (int j=0; j<M; j++)
-			std::cout << MAT_ELEM(h.A,n,j) << " ";
-		std::cout << std::endl;
-	}
-#endif
-
-	// Resize a WLS helper for solving the MxM equation systems
-	PseudoInverseHelper haux;
-	haux.A.resizeNoCopy(M,M);
-	haux.b.resizeNoCopy(M);
-	Matrix2D<double> &A=haux.A;
-	Matrix1D<double> &b=haux.b;
-
-	// Solve Niter randomly chosen equation systems
-	double bestError=1e38;
-	const int Mdouble=M*sizeof(double);
-	int minNewM=(int)((1.0-outlierFraction)*N-M);
-	if (minNewM<0)
-		minNewM=0;
-
-	Matrix1D<double> resultAux;
-	Matrix1D<int> idxIn(N);
-	WeightedLeastSquaresHelper haux2;
-	for (int it=0; it<Niter; ++it)
-	{
-#ifdef DEBUG_MORE
-		std::cout << "Iter: " << it << std::endl;
-#endif
-        idxIn.initZeros();
-
-        // Randomly select M equations
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(eqIdx.begin(), eqIdx.end(), g);
-
-        // Select the equation system
-        for (int i=0; i<M; ++i)
-        {
-        	int idx=eqIdxPtr[i];
-        	memcpy(&MAT_ELEM(A,i,0),&MAT_ELEM(h.A,idx,0),Mdouble);
-        	VEC_ELEM(b,i)=VEC_ELEM(h.b,idx);
-        	VEC_ELEM(idxIn,idx)=1;
-#ifdef DEBUG_MORE
-		std::cout << "    Using Eq.: " << idx << " for first solution" << std::endl;
-#endif
-        }
-
-        // Solve the equation system
-        // We use LS because the weight of some of the equations might be too low
-        // and then the system is ill conditioned
-        solveLinearSystem(haux, resultAux);
-
-        // Study the residuals of the rest
-        int newM=0;
-        for (int i=M+1; i<N; ++i)
-        {
-        	int idx=eqIdxPtr[i];
-        	double bp=0;
-        	for (int j=0; j<M; ++j)
-        		bp+=MAT_ELEM(h.A,idx,j)*VEC_ELEM(resultAux,j);
-        	if (fabs(bp-VEC_ELEM(h.b,idx))<tol)
-        	{
-        		VEC_ELEM(idxIn,idx)=1;
-        		++newM;
-        	}
-#ifdef DEBUG_MORE
-		std::cout << "    Checking Eq.: " << idx << " err=" << bp-VEC_ELEM(h.b,idx) << std::endl;
-#endif
-        }
-
-        // If the model represent more points
-        if (newM>minNewM)
-        {
-        	Matrix2D<double> &A2=haux2.A;
-        	Matrix1D<double> &b2=haux2.b;
-        	Matrix1D<double> &w2=haux2.w;
-        	A2.resizeNoCopy(M+newM,M);
-        	b2.resizeNoCopy(M+newM);
-        	w2.resizeNoCopy(M+newM);
-
-            // Select the equation system
-        	int targeti=0;
-            for (int i=0; i<N; ++i)
-            	if (VEC_ELEM(idxIn,i))
-            	{
-					memcpy(&MAT_ELEM(A2,targeti,0),&MAT_ELEM(h.A,i,0),Mdouble);
-					VEC_ELEM(b2,targeti)=VEC_ELEM(h.b,i);
-					VEC_ELEM(w2,targeti)=VEC_ELEM(h.w,i);
-					++targeti;
-            	}
-
-            // Solve it with WLS
-            weightedLeastSquares(haux2, resultAux);
-
-            // Compute the mean error
-            double err=0;
-            for (int i=0; i<M+newM; ++i)
-			{
-				double bp=0;
-				for (int j=0; j<M; ++j)
-					bp+=MAT_ELEM(A2,i,j)*VEC_ELEM(resultAux,j);
-				err+=fabs(VEC_ELEM(b2,i)-bp)*VEC_ELEM(w2,i);
-			}
-            err/=(M+newM);
-            if (err<bestError)
-            {
-            	bestError=err;
-            	result=resultAux;
-#ifdef DEBUG
-            	std::cout << "Best solution iter: " << it << " Error=" << err << " frac=" << (float)(M+newM)/VEC_XSIZE(h.b) << std::endl;
-#ifdef DEBUG_MORE
-            	std::cout << "Result:" << result << std::endl;
-                for (int i=0; i<M+newM; ++i)
-    			{
-    				double bp=0;
-    				for (int j=0; j<M; ++j)
-    					bp+=MAT_ELEM(A2,i,j)*VEC_ELEM(resultAux,j);
-    				std::cout << "Eq. " << i << " w=" << VEC_ELEM(w2,i) << " b2=" << VEC_ELEM(b2,i) << " bp=" << bp << std::endl;
-    				err+=fabs(VEC_ELEM(b2,i)-bp)*VEC_ELEM(w2,i);
-    			}
-#endif
-#endif
-            }
-        }
-	}
-	return bestError;
-}
-#undef DEBUG
-
-struct ThreadRansacArgs {
-	// Input
-	int myThreadID;
-	WeightedLeastSquaresHelper * h;
-	double tol;
-	int Niter;
-	double outlierFraction;
-
-	// Output
-	Matrix1D<double> result;
-	double error;
-};
-
-void * threadRansacWeightedLeastSquares(void * args)
-{
-	ThreadRansacArgs * master = (ThreadRansacArgs *) args;
-	master->error=ransacWeightedLeastSquaresBasic(*(master->h), master->result,
-			master->tol, master->Niter, master->outlierFraction);
-	return NULL;
-}
-
-void ransacWeightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &result,
-		double tol, int Niter, double outlierFraction, int Nthreads)
-{
-	// Read and preprocess the images
-	pthread_t * th_ids = new pthread_t[Nthreads];
-	ThreadRansacArgs * th_args = new ThreadRansacArgs[Nthreads];
-	for (int nt = 0; nt < Nthreads; nt++) {
-		// Passing parameters to each thread
-		th_args[nt].myThreadID = nt;
-		th_args[nt].h = &h;
-		th_args[nt].tol = tol;
-		th_args[nt].Niter = Niter/Nthreads;
-		th_args[nt].outlierFraction = outlierFraction;
-		pthread_create((th_ids + nt), NULL, threadRansacWeightedLeastSquares,
-				(void *) (th_args + nt));
-	}
-
-	// Waiting for threads to finish
-	double err=1e38;
-	for (int nt = 0; nt < Nthreads; nt++)
-	{
-		pthread_join(*(th_ids + nt), NULL);
-		if (th_args[nt].error<err)
-		{
-			err=th_args[nt].error;
-			result=th_args[nt].result;
-		}
-	}
-
-    // Threads structures are not needed any more
-    delete []th_ids;
-    delete []th_args;
-}
 
 void normalizeColumns(Matrix2D<double> &A)
 {
@@ -714,3 +580,727 @@ void orthogonalizeColumnsGramSchmidt(Matrix2D<double> &M)
 		}
 	}
 }
+
+template<typename T>
+void ludcmp(const Matrix2D<T>& A, Matrix2D<T>& LU, Matrix1D< int >& indx, T& d)
+{
+    LU = A;
+    if (VEC_XSIZE(indx)!=A.mdimx)
+        indx.resizeNoCopy(A.mdimx);
+    ludcmp(LU.adaptForNumericalRecipes2(), A.mdimx,
+           indx.adaptForNumericalRecipes(), &d);
+}
+
+template<typename T>
+void lubksb(const Matrix2D<T>& LU, Matrix1D< int >& indx, Matrix1D<T>& b)
+{
+    lubksb(LU.adaptForNumericalRecipes2(), indx.size(),
+           indx.adaptForNumericalRecipes(),
+           b.adaptForNumericalRecipes());
+}
+
+template<typename T>
+void Matrix2D<T>::computeRowMeans(Matrix1D<double> &Xmr) const
+{
+    Xmr.initZeros(MAT_YSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(Xmr,i)+=MAT_ELEM(*this,i,j);
+    Xmr*=1.0/MAT_XSIZE(*this);
+}
+
+template<typename T>
+void Matrix2D<T>::computeColMeans(Matrix1D<double> &Xmr) const
+{
+    Xmr.initZeros(MAT_YSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(Xmr,j)+=MAT_ELEM(*this,i,j);
+    Xmr*=1.0/MAT_YSIZE(*this);
+ }
+
+template<typename T>
+void Matrix2D<T>::inv(Matrix2D<T>& result) const
+{
+    if (mdimx == 0 || mdimy == 0)
+        REPORT_ERROR(ERR_MATRIX_EMPTY, "Inverse: Matrix is empty");
+    result.initZeros(mdimx, mdimy);
+    SPEED_UP_temps0;
+    if (mdimx==2)
+    {
+        M2x2_INV(result,*this);
+    }
+    else if (mdimx==3)
+    {
+        M3x3_INV(result,*this);
+    }
+    else if (mdimx==4)
+    {
+        M4x4_INV(result,*this);
+    }
+    else
+    {
+        // Perform SVD decomposition
+        Matrix2D< double > u, v;
+        Matrix1D< double > w;
+        svdcmp(*this, u, w, v); // *this = U * W * V^t
+
+        double tol = computeMax() * XMIPP_MAX(mdimx, mdimy) * 1e-14;
+
+        // Compute W^-1
+        bool invertible = false;
+        FOR_ALL_ELEMENTS_IN_MATRIX1D(w)
+        {
+            if (fabs(VEC_ELEM(w,i)) > tol)
+            {
+                VEC_ELEM(w,i) = 1.0 / VEC_ELEM(w,i);
+                invertible = true;
+            }
+            else
+                VEC_ELEM(w,i) = 0.0;
+        }
+
+        if (!invertible)
+            return;
+
+        // Compute V*W^-1
+        FOR_ALL_ELEMENTS_IN_MATRIX2D(v)
+        MAT_ELEM(v,i,j) *= VEC_ELEM(w,j);
+
+        // Compute Inverse
+        for (size_t i = 0; i < mdimx; i++)
+            for (size_t j = 0; j < mdimy; j++)
+                for (size_t k = 0; k < mdimx; k++)
+                    MAT_ELEM(result,i,j) += MAT_ELEM(v,i,k) * MAT_ELEM(u,j,k);
+    }
+}
+
+template<typename T>
+void Matrix2D<T>::eigs(Matrix2D<double> &U, Matrix1D<double> &W, Matrix2D<double> &V, Matrix1D<int> &indexes) const
+{
+  svdcmp(*this, U, W, V);
+  indexes.resizeNoCopy(W);
+  indexes.enumerate();
+
+  double dAux;
+  int iAux;
+
+  FOR_ALL_ELEMENTS_IN_MATRIX1D(W)
+  {
+      for (int j = i; j > 0 && dMi(W, j) > dMi(W, j-1); --j)
+      {
+        VEC_SWAP(W, j, j-1, dAux);
+        VEC_SWAP(indexes, j, j-1, iAux);
+      }
+  }
+}
+
+template<typename T>
+Matrix1D<T> Matrix1D<T>::operator*(const Matrix2D<T>& M)
+{
+    Matrix1D<T> result;
+
+    if (VEC_XSIZE(*this) != MAT_YSIZE(M))
+        REPORT_ERROR(ERR_MATRIX_SIZE, "Not compatible sizes in matrix by vector");
+
+    if (!isRow())
+        REPORT_ERROR(ERR_MATRIX_DIM, "Vector is not a row");
+
+    result.initZeros(MAT_XSIZE(M));
+    for (size_t j = 0; j < MAT_XSIZE(M); j++)
+        for (size_t i = 0; i < MAT_YSIZE(M); i++)
+            VEC_ELEM(result,j) += VEC_ELEM(*this,i) * MAT_ELEM(M,i, j);
+
+    result.setRow();
+    return result;
+}
+
+template<typename T>
+Matrix1D<T> Matrix2D<T>::operator*(const Matrix1D<T>& op1) const
+{
+    Matrix1D<T> result;
+
+    if (mdimx != VEC_XSIZE(op1))
+        REPORT_ERROR(ERR_MATRIX_SIZE, "Not compatible sizes in matrix by vector");
+
+    if (!op1.isCol())
+        REPORT_ERROR(ERR_MATRIX, "Vector is not a column");
+
+    result.initZeros(mdimy);
+    for (size_t i = 0; i < mdimy; i++)
+        for (size_t j = 0; j < mdimx; j++)
+            VEC_ELEM(result,i) += MAT_ELEM(*this,i, j) * VEC_ELEM(op1,j);
+
+    result.setCol();
+    return result;
+}
+
+template<typename T>
+void Matrix2D<T>::rowSum(Matrix1D<T> &sum) const
+{
+    sum.initZeros(MAT_YSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(sum,i)+=MAT_ELEM(*this,i,j);
+}
+
+template<typename T>
+void Matrix2D<T>::colSum(Matrix1D<T> &sum) const
+{
+    sum.initZeros(MAT_XSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(sum,j)+=MAT_ELEM(*this,i,j);
+}
+
+template<typename T>
+void Matrix2D<T>::rowEnergySum(Matrix1D<T> &sum) const
+{
+    sum.initZeros(MAT_YSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(sum,i)+=MAT_ELEM(*this,i,j)*MAT_ELEM(*this,i,j);
+}
+
+template<typename T>
+void Matrix2D<T>::fromVector(const Matrix1D<T>& op1)
+{
+    // Null vector => Null matrix
+    if (op1.size() == 0)
+    {
+        clear();
+        return;
+    }
+
+    // Look at shape and copy values
+    if (op1.isRow())
+    {
+        if (mdimy!=1 || mdimx!=VEC_XSIZE(op1))
+            resizeNoCopy(1, VEC_XSIZE(op1));
+
+        for (size_t j = 0; j < VEC_XSIZE(op1); j++)
+            MAT_ELEM(*this,0, j) = VEC_ELEM(op1,j);
+    }
+    else
+    {
+        if (mdimy!=1 || mdimx!=VEC_XSIZE(op1))
+            resizeNoCopy(VEC_XSIZE(op1), 1);
+
+        for (size_t i = 0; i < VEC_XSIZE(op1); i++)
+            MAT_ELEM(*this, i, 0) = VEC_ELEM(op1,i);
+    }
+}
+
+template<typename T>
+void Matrix2D<T>::toVector(Matrix1D<T>& op1) const
+{
+    // Null matrix => Null vector
+    if (mdimx == 0 || mdimy == 0)
+    {
+        op1.clear();
+        return;
+    }
+
+    // If matrix is not a vector, produce an error
+    if (!(mdimx == 1 || mdimy == 1))
+        REPORT_ERROR(ERR_MATRIX_DIM,
+                     "toVector: Matrix cannot be converted to vector");
+
+    // Look at shape and copy values
+    if (mdimy == 1)
+    {
+        // Row vector
+        if (VEC_XSIZE(op1)!=mdimx)
+            op1.resizeNoCopy(mdimx);
+
+        memcpy(&VEC_ELEM(op1,0),&MAT_ELEM(*this,0,0),mdimx*sizeof(double));
+
+        op1.setRow();
+    }
+    else
+    {
+        // Column vector
+        if (VEC_XSIZE(op1)!=mdimy)
+            op1.resizeNoCopy(mdimy);
+
+        for (size_t i = 0; i < mdimy; i++)
+            VEC_ELEM(op1,i) = MAT_ELEM(*this,i, 0);
+
+        op1.setCol();
+    }
+}
+
+template<typename T>
+void Matrix2D<T>::getRow(size_t i, Matrix1D<T>& v) const
+{
+    if (mdimx == 0 || mdimy == 0)
+    {
+        v.clear();
+        return;
+    }
+
+    if (i >= mdimy)
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "getRow: Matrix subscript (i) greater than matrix dimension");
+
+    if (VEC_XSIZE(v)!=mdimx)
+        v.resizeNoCopy(mdimx);
+    memcpy(&VEC_ELEM(v,0),&MAT_ELEM(*this,i,0),mdimx*sizeof(T));
+
+    v.setRow();
+}
+
+template<typename T>
+void Matrix2D<T>::getCol(size_t j, Matrix1D<T>& v) const
+{
+    if (mdimx == 0 || mdimy == 0)
+    {
+        v.clear();
+        return;
+    }
+
+    if (j >= mdimx)
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS,"getCol: Matrix subscript (j) greater than matrix dimension");
+
+    if (VEC_XSIZE(v)!=mdimy)
+        v.resizeNoCopy(mdimy);
+    for (size_t i = 0; i < mdimy; i++)
+        VEC_ELEM(v,i) = MAT_ELEM(*this,i, j);
+
+    v.setCol();
+}
+
+template<typename T>
+void Matrix2D<T>::setRow(size_t i, const Matrix1D<T>& v)
+{
+    if (mdimx == 0 || mdimy == 0)
+        REPORT_ERROR(ERR_MATRIX_EMPTY, "setRow: Target matrix is empty");
+
+    if (i >= mdimy)
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setRow: Matrix subscript (i) out of range");
+
+    if (VEC_XSIZE(v) != mdimx)
+        REPORT_ERROR(ERR_MATRIX_SIZE,
+                     "setRow: Vector dimension different from matrix one");
+
+    if (!v.isRow())
+        REPORT_ERROR(ERR_MATRIX_DIM, "setRow: Not a row vector in assignment");
+
+    memcpy(&MAT_ELEM(*this,i,0),&VEC_ELEM(v,0),mdimx*sizeof(double));
+}
+
+template<typename T>
+void Matrix2D<T>::setCol(size_t j, const Matrix1D<T>& v)
+{
+    if (mdimx == 0 || mdimy == 0)
+        REPORT_ERROR(ERR_MATRIX_EMPTY, "setCol: Target matrix is empty");
+
+    if (j>= mdimx)
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setCol: Matrix subscript (j) out of range");
+
+    if (VEC_XSIZE(v) != mdimy)
+        REPORT_ERROR(ERR_MATRIX_SIZE,
+                     "setCol: Vector dimension different from matrix one");
+
+    if (!v.isCol())
+        REPORT_ERROR(ERR_MATRIX_DIM, "setCol: Not a column vector in assignment");
+
+    for (size_t i = 0; i < mdimy; i++)
+        MAT_ELEM(*this,i, j) = VEC_ELEM(v,i);
+}
+
+template<typename T>
+void Matrix2D<T>::getDiagonal(Matrix1D<T> &d) const
+{
+    d.resizeNoCopy(MAT_XSIZE(*this));
+    for (size_t i=0; i<MAT_XSIZE(*this); ++i)
+        VEC_ELEM(d,i)=MAT_ELEM(*this,i,i);
+}
+
+template<typename T>
+Matrix2D<T>& Matrix2D<T>::operator=(const Matrix2D<T>& op1)
+{
+   if (&op1 != this)
+   {
+       if (MAT_XSIZE(*this)!=MAT_XSIZE(op1) ||
+           MAT_YSIZE(*this)!=MAT_YSIZE(op1))
+           resizeNoCopy(op1);
+       memcpy(mdata,op1.mdata,op1.mdim*sizeof(T));
+   }
+
+   return *this;
+}
+
+template<typename T>
+void Matrix2D<T>::coreInit()
+{
+   mdimx=mdimy=mdim=0;
+   mdata=NULL;
+   mdataOriginal=NULL;
+   destroyData=true;
+   mappedData=false;
+   fdMap=-1;
+}
+
+template<typename T>
+void Matrix2D<T>::coreAllocate( int _mdimy, int _mdimx)
+{
+   if (_mdimy <= 0 ||_mdimx<=0)
+   {
+       clear();
+       return;
+   }
+
+   mdimx=_mdimx;
+   mdimy=_mdimy;
+   mdim=_mdimx*_mdimy;
+   mdata = new T [mdim];
+   mdataOriginal = NULL;
+   mappedData=false;
+   fdMap=-1;
+   if (mdata == NULL)
+       REPORT_ERROR(ERR_MEM_NOTENOUGH, "coreAllocate: No space left");
+}
+
+template<typename T>
+void Matrix2D<T>::coreDeallocate()
+{
+   if (mdata != NULL && destroyData)
+       delete[] mdata;
+   if (mappedData)
+   {
+#ifdef XMIPP_MMAP
+       munmap(mdataOriginal,mdimx*mdimy*sizeof(T));
+       close(fdMap);
+#else
+
+       REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
+
+   }
+   mdata=NULL;
+   mdataOriginal=NULL;
+}
+
+template<typename T>
+void Matrix2D<T>::resize(size_t Ydim, size_t Xdim, bool noCopy)
+{
+
+   if (Xdim == mdimx && Ydim == mdimy)
+       return;
+
+   if (Xdim <= 0 || Ydim <= 0)
+   {
+       clear();
+       return;
+   }
+
+   T * new_mdata;
+   size_t YXdim=Ydim*Xdim;
+
+   try
+   {
+       new_mdata = new T [YXdim];
+   }
+   catch (std::bad_alloc &)
+   {
+       REPORT_ERROR(ERR_MEM_NOTENOUGH, "Allocate: No space left");
+   }
+
+   // Copy needed elements, fill with 0 if necessary
+   if (!noCopy)
+   {
+       T zero=0; // Useful for complexes
+       for (size_t i = 0; i < Ydim; i++)
+           for (size_t j = 0; j < Xdim; j++)
+           {
+               T *val=NULL;
+               if (i >= mdimy)
+                   val = &zero;
+               else if (j >= mdimx)
+                   val = &zero;
+               else
+                   val = &mdata[i*mdimx + j];
+               new_mdata[i*Xdim+j] = *val;
+           }
+   }
+   else
+       memset(new_mdata,0,YXdim*sizeof(T));
+
+   // deallocate old vector
+   coreDeallocate();
+
+   // assign *this vector to the newly created
+   mdata = new_mdata;
+   mdimx = Xdim;
+   mdimy = Ydim;
+   mdim = Xdim * Ydim;
+   mappedData = false;
+}
+
+
+template<typename T>
+void Matrix2D<T>::mapToFile(const FileName &fn, int Ydim, int Xdim, size_t offset)
+{
+   if (mdata!=NULL)
+       clear();
+
+#ifdef XMIPP_MMAP
+
+   coreInit(fn,Ydim,Xdim,offset);
+#else
+
+   resizeNoCopy(Ydim, Xdim);
+#endif
+
+}
+
+template<typename T>
+void Matrix2D<T>::submatrix(int i0, int j0, int iF, int jF)
+{
+   if (i0 < 0 || j0 < 0 || iF >= MAT_YSIZE(*this) || jF >= MAT_XSIZE(*this))
+       REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS,"Submatrix indexes out of bounds");
+   Matrix2D<T> result(iF - i0 + 1, jF - j0 + 1);
+
+   FOR_ALL_ELEMENTS_IN_MATRIX2D(result)
+   MAT_ELEM(result, i, j) = MAT_ELEM(*this, i+i0, j+j0);
+
+   *this = result;
+}
+
+template<typename T>
+void Matrix2D<T>::initRandom(size_t Ydim, size_t Xdim, double op1, double op2, RandomMode mode)
+{
+   if (mdimx!=Xdim || mdimy!=Ydim)
+       resizeNoCopy(Ydim, Xdim);
+   for (size_t j = 0; j < mdim; j++)
+      mdata[j] = static_cast< T > (mode == RND_UNIFORM ? rnd_unif(op1, op2) : rnd_gaus(op1, op2));
+}
+
+/** Initialize to gaussian numbers */
+template<typename T>
+void Matrix2D<T>::initGaussian(int Ydim, int Xdim, double op1, double op2)
+{
+ initRandom(Ydim, Xdim, op1, op2, RND_GAUSSIAN);
+}
+
+
+template<typename T>
+void Matrix2D<T>::initGaussian(int dim, double var)
+{
+   double center = ((double)dim)/2;
+   initZeros(dim, dim);
+   for (int i = 0; i < dim; i++)
+       for (int j = 0; j < dim; j++)
+           MAT_ELEM(*this,i,j) = std::exp(-( (i-center)*(i-center)+(j-center)*(j-center) )/(2*var*var));
+}
+
+template<typename T>
+Matrix2D<T> Matrix2D<T>::operator*(const Matrix2D<T>& op1) const
+{
+   Matrix2D<T> result;
+   if (mdimx != op1.mdimy)
+       REPORT_ERROR(ERR_MATRIX_SIZE, "Not compatible sizes in matrix multiplication");
+
+   result.initZeros(mdimy, op1.mdimx);
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < op1.mdimx; j++)
+           for (size_t k = 0; k < mdimx; k++)
+               MAT_ELEM(result,i, j) += MAT_ELEM(*this,i, k) * MAT_ELEM(op1, k, j);
+   return result;
+}
+
+template<typename T>
+Matrix2D<T> Matrix2D<T>::operator+(const Matrix2D<T>& op1) const
+{
+   Matrix2D<T> result;
+   if (mdimx != op1.mdimx || mdimy != op1.mdimy)
+       REPORT_ERROR(ERR_MATRIX_SIZE, "operator+: Not same sizes in matrix summation");
+
+   result.initZeros(mdimy, mdimx);
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           result(i, j) = (*this)(i, j) + op1(i, j);
+
+   return result;
+}
+
+template<typename T>
+void Matrix2D<T>::operator+=(const Matrix2D<T>& op1) const
+{
+   if (mdimx != op1.mdimx || mdimy != op1.mdimy)
+       REPORT_ERROR(ERR_MATRIX_SIZE, "operator+=: Not same sizes in matrix summation");
+
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           MAT_ELEM(*this,i, j) += MAT_ELEM(op1, i, j);
+}
+
+template<typename T>
+Matrix2D<T> Matrix2D<T>::operator-(const Matrix2D<T>& op1) const
+{
+   Matrix2D<T> result;
+   if (mdimx != op1.mdimx || mdimy != op1.mdimy)
+       REPORT_ERROR(ERR_MATRIX_SIZE, "operator-: Not same sizes in matrix summation");
+
+   result.initZeros(mdimy, mdimx);
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           result(i, j) = (*this)(i, j) - op1(i, j);
+
+   return result;
+}
+
+template<typename T>
+void Matrix2D<T>::operator-=(const Matrix2D<T>& op1) const
+{
+   if (mdimx != op1.mdimx || mdimy != op1.mdimy)
+       REPORT_ERROR(ERR_MATRIX_SIZE, "operator-=: Not same sizes in matrix summation");
+
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           MAT_ELEM(*this,i, j) -= MAT_ELEM(op1, i, j);
+}
+
+template<typename T>
+bool Matrix2D<T>::equal(const Matrix2D<T>& op,
+          double accuracy) const
+{
+   if (!sameShape(op))
+       return false;
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           if (fabs( MAT_ELEM(*this,i,j) - MAT_ELEM(op,i,j) ) > accuracy)
+           {
+               //std::cerr << "DEBUG_ROB: MAT_ELEM(*this,i,j): " << MAT_ELEM(*this,i,j) << std::endl;
+               //std::cerr << "DEBUG_ROB: MAT_ELEM(op,i,j): " << MAT_ELEM(op,i,j) << std::endl;
+               return false;
+           }
+   return true;
+}
+
+template<typename T>
+bool Matrix2D<T>::equalAbs(const Matrix2D<T>& op,
+          double accuracy) const
+{
+   if (!sameShape(op))
+       return false;
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           if ( (fabs( MAT_ELEM(*this,i,j)) - fabs(MAT_ELEM(op,i,j)) )> accuracy)
+           {
+               //std::cerr << "DEBUG_ROB: MAT_ELEM(*this,i,j): " << MAT_ELEM(*this,i,j) << std::endl;
+               //std::cerr << "DEBUG_ROB: MAT_ELEM(op,i,j): " << MAT_ELEM(op,i,j) << std::endl;
+               return false;
+           }
+   return true;
+}
+
+template<typename T>
+T Matrix2D<T>::computeMax() const
+{
+   if (mdim <= 0)
+       return static_cast< T >(0);
+
+   T maxval = mdata[0];
+   for (size_t n = 0; n < mdim; n++)
+       if (mdata[n] > maxval)
+           maxval = mdata[n];
+   return maxval;
+}
+
+template<typename T>
+T Matrix2D<T>::computeMin() const
+{
+   if (mdim <= 0)
+       return static_cast< T >(0);
+
+   T minval = mdata[0];
+   for (size_t n = 0; n < mdim; n++)
+       if (mdata[n] < minval)
+           minval = mdata[n];
+   return minval;
+}
+
+template<typename T>
+void Matrix2D<T>::computeMaxAndMin(T &maxValue, T &minValue) const
+{
+   maxValue=minValue=0;
+   if (mdim <= 0)
+       return;
+
+   maxValue = minValue = mdata[0];
+   for (size_t n = 0; n < mdim; n++)
+   {
+       T val=mdata[n];
+       if (val < minValue)
+           minValue = val;
+       else if (val > maxValue)
+           maxValue = val;
+   }
+}
+
+template<typename T>
+T** Matrix2D<T>::adaptForNumericalRecipes() const
+{
+   T** m = NULL;
+   ask_Tmatrix(m, 1, mdimy, 1, mdimx);
+
+   for (int i = 0; i < mdimy; i++)
+       for (int j = 0; j < mdimx; j++)
+           m[i+1][j+1] = mdata[i*mdimx + j];
+
+   return m;
+}
+
+template<typename T>
+void Matrix2D<T>::loadFromNumericalRecipes(T** m, int Ydim, int Xdim)
+{
+   if (mdimx!=Xdim || mdimy!=Ydim)
+       resizeNoCopy(Ydim, Xdim);
+
+   for (int i = 1; i <= Ydim; i++)
+       for (int j = 1; j <= Xdim; j++)
+           MAT_ELEM(*this,i - 1, j - 1) = m[i][j];
+}
+
+template<typename T>
+T Matrix2D<T>::trace() const
+{
+   size_t d=std::min(MAT_XSIZE(*this),MAT_YSIZE(*this));
+   T retval=0;
+   for (size_t i=0; i<d; ++i)
+       retval+=MAT_ELEM(*this,i,i);
+   return retval;
+}
+
+template<typename T>
+Matrix2D<T> Matrix2D<T>::transpose() const
+{
+   Matrix2D<T> result(mdimx, mdimy);
+   FOR_ALL_ELEMENTS_IN_MATRIX2D(result)
+   MAT_ELEM(result,i,j) = MAT_ELEM((*this),j,i);
+   return result;
+}
+
+template<typename T>
+bool Matrix2D<T>::isIdentity() const
+{
+   for (size_t i = 0; i < mdimy; i++)
+       for (size_t j = 0; j < mdimx; j++)
+           if (i != j)
+           {
+               if (MAT_ELEM(*this,i,j)!=0)
+                   return false;
+           }
+           else
+           {
+               if (MAT_ELEM(*this,i,j)!=1)
+                   return false;
+           }
+   return true;
+}
+
+template void ludcmp<double>(Matrix2D<double> const&, Matrix2D<double>&, Matrix1D<int>&, double&);
+template void lubksb<double>(Matrix2D<double> const&, Matrix1D<int>&, Matrix1D<double>&);
+template void svdcmp<float>(Matrix2D<float> const&, Matrix2D<double>&, Matrix1D<double>&, Matrix2D<double>&);
+template void svdcmp<double>(Matrix2D<double> const&, Matrix2D<double>&, Matrix1D<double>&, Matrix2D<double>&);
+template Matrix1D<double> Matrix1D<double>::operator*(Matrix2D<double> const&);
+template class Matrix2D<double>;
+template class Matrix2D<int>;
+template class Matrix2D<float>;
+template class Matrix2D<unsigned char>;
