@@ -110,6 +110,36 @@ bool sqlUtils::select(size_t rowId,
     return checkError(db);
 }
 
+bool sqlUtils::select(
+        sqlite3 *db, const std::string &table,
+        const std::vector<MDObject> &columns,
+        std::vector<std::vector<MDObject>> &rows) {
+    // assuming all records are the same
+    auto query = createSelectQuery(columns, table);
+    sqlite3_stmt *stmt = nullptr;
+    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+    // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    commitTrans(db);
+    beginTrans(db);
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+
+    // execute, extract value from each row
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        rows.emplace_back(columns);
+        auto &r = rows.back();
+        for (size_t i = 0; i < columns.size(); ++i) {
+            extractValue(stmt, i, r.at(i));
+        }
+    }
+    sqlite3_reset(stmt);
+
+    sqlite3_finalize(stmt);
+    endTrans(db);
+    beginTrans(db);
+
+    return checkError(db);
+}
+
 
 std::string sqlUtils::createSelectQuery(size_t id,
         const std::vector<MDObject> &values,

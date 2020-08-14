@@ -327,15 +327,57 @@ void 	MetaData::finalizeGetRow(void) const
 	myMDSql->finalizePreparedStmt();
 }
 
+std::vector<MDObject> MetaData::getObjectsForActiveLabels() const {
+    // get active labels
+    std::vector<MDObject> values;
+    const auto &labels = activeLabels;
+    values.reserve(labels.size());
+    for (auto &l : labels) {
+        values.emplace_back(l);
+    }
+    return values;
+}
+
+bool MetaData::getAllRows(std::vector<MDRow> &rows) const
+{
+    std::vector<std::vector<MDObject>> rawRows;
+    rawRows.reserve(this->size());
+    auto columns = getObjectsForActiveLabels();
+    if ( !  sqlUtils::select(myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            columns,
+            rawRows)) return false;
+
+    rows.clear();
+    const auto noOfRows = rawRows.size();
+    rows.resize(noOfRows);
+    for (size_t i = 0; i < noOfRows; ++i) {
+        auto &row = rows.at(i);
+        const auto &vals = rawRows.at(i);
+        // fill the row
+        for (auto &v : vals) {
+            row.setValue(v);
+        }
+    }
+    return true;
+}
+
 bool MetaData::getRow(MDRow &row, size_t id) const
 {
+    if (id == BAD_OBJID)
+        REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
+    // clear whatever is there now
     row.clear();
-    for (std::vector<MDLabel>::const_iterator it = activeLabels.begin(); it != activeLabels.end(); ++it)
-    {
-        MDObject obj(*it);
-        if (!getValue(obj, id))
-            return false;
-        row.setValue(obj);
+    // get active labels
+    auto values = getObjectsForActiveLabels();
+    // get values from the row
+    if ( ! sqlUtils::select(id,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values)) return false;
+    // fill them
+    for (auto &v : values) {
+        row.setValue(v);
     }
     return true;
 }
@@ -552,7 +594,7 @@ size_t MetaData::addRow(const MDRow &row)
     return id;
 }
 
-bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) {
+bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) const {
     for (auto &v : values) {
         if (!containsLabel(v.label))
                 return false;

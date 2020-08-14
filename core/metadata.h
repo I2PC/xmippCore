@@ -320,6 +320,12 @@ protected:
     void _readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValues, const std::vector<MDLabel> *desiredLabels);
     void _readRowFormat(std::istream& is);
 
+    /**
+     * Get a vector of (empty) objects for each active label
+     */
+    std::vector<MDObject> getObjectsForActiveLabels() const;
+
+
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
@@ -621,7 +627,7 @@ public:
         }
     }
 
-    bool getRowValues(size_t id, std::vector<MDObject> &values);
+    bool getRowValues(size_t id, std::vector<MDObject> &values) const;
 
     /** Get all values of a column as a vector.
      */
@@ -666,6 +672,7 @@ public:
     bool 	execGetRow(MDRow &row) const;
     void 	finalizeGetRow(void) const;
     bool 	getRow(MDRow &row, size_t id) const;
+    bool    getAllRows(std::vector<MDRow> &rows) const;
     bool 	getRow2(MDRow &row, size_t id) const;
 
     /** Copy all the values in the input row in the current metadata*/
