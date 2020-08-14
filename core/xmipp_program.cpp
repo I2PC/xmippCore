@@ -742,16 +742,12 @@ void XmippMetadataProgram::checkPoint()
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
-    size_t objId;
-    MDRow rowIn, rowOut;
     mdOut.clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing
     preProcess();
 
     startProcessing();
-
-    size_t objIndex = 0;
 
     if (!oroot.empty())
     {
@@ -763,12 +759,20 @@ void XmippMetadataProgram::run()
         pathBaseName   = fullBaseName.getDir();
     }
 
+    std::vector<MDRow> rowsIn;
+    mdIn->getAllRows(rowsIn);
+    bool saveRows = each_image_produces_an_output || produces_a_metadata;
+    std::vector<MDRow> rowsOut;
+    rowsOut.resize(saveRows ? rowsIn.size() : 1);
+    size_t objId;
+    size_t objIndex = 0;
     //FOR_ALL_OBJECTS_IN_METADATA(mdIn)
     while (getImageToProcess(objId, objIndex))
     {
+        auto &rowOut = saveRows ? rowsOut.at(objIndex) : rowsOut.at(0);
+        auto &rowIn = rowsIn.at(objIndex);
         ++objIndex; //increment for composing starting at 1
 
-        mdIn->getRow(rowIn, objId);
         rowIn.getValue(image_label, fnImg);
 
         if (fnImg.empty())
@@ -811,12 +815,11 @@ void XmippMetadataProgram::run()
 
         processImage(fnImg, fnImgOut, rowIn, rowOut);
 
-        if (each_image_produces_an_output || produces_a_metadata)
-            mdOut.addRow(rowOut);
-
         checkPoint();
         showProgress();
     }
+    if (saveRows)
+        mdOut.addRows(rowsOut);
     wait();
 
     //free iterator memory
