@@ -23,13 +23,14 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <regex.h>
 #include <algorithm>
-#include <math.h>
-#include <stdlib.h>
+#include <sstream>
 #include "metadata_sql.h"
 #include "xmipp_threads.h"
-#include <sys/time.h>
-#include <regex.h>
+#include "xmipp_filename.h"
+#include "metadata.h"
+
 //#define DEBUG
 
 //This is needed for static memory allocation
@@ -1643,4 +1644,16 @@ void MDCache::clear()
         sqlite3_finalize(addRowStmt);
         addRowStmt = NULL;
     }
+}
+
+String MDQuery::limitString() const
+{
+    if (limit == -1 && offset > 0)
+        REPORT_ERROR(ERR_MD_SQL, "Sqlite does not support OFFSET without LIMIT");
+    std::stringstream ss;
+    if (limit != -1)
+        ss << " LIMIT " << limit << " ";
+    if (offset > 0)
+        ss << " OFFSET " << offset << " ";
+    return ss.str();
 }

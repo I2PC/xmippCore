@@ -1089,7 +1089,12 @@ public:
     /** Destructor */
     ~MDRow();
     /** True if this row contains this label */
-    bool containsLabel(MDLabel label) const;
+    inline bool containsLabel(MDLabel label) const {
+        return objects[label] != NULL;
+    }
+
+    /** Returns all labels defined for this row */
+    std::vector<MDLabel> getLabels() const;
 
     /** Add a new label */
     void addLabel(MDLabel label);

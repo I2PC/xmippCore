@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "metadata.h"
+#include "metadata_sql.h"
 
 ///@defgroup DM3 DM3 File format
 ///@ingroup ImageFormats

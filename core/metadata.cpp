@@ -24,10 +24,10 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <algorithm>
+#include <random>
 #include "metadata.h"
 #include "xmipp_image.h"
-#include <random>
+#include "metadata_sql.h"
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
@@ -236,6 +236,24 @@ void MetaData::getColumnValues(const MDLabel label, std::vector<MDObject> &value
         valuesOut[i] = mdValueOut;
     }
 }
+
+template<typename T>
+bool MetaData::getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
+    if (!containsLabel(label))
+            return false;
+    return sqlUtils::select(label,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values);
+}
+
+/**
+ *  XXX HACK Because of the cyclic dependency between MetaData/MetaData label and MetaData SQL,
+ *  this cannot be in header. So we need to explicitly instantiate it
+ */
+template bool MetaData::getColumnValuesOpt<float>(MDLabel, std::vector<float, std::allocator<float> >&) const;
+template bool MetaData::getColumnValuesOpt<FileName>(MDLabel, std::vector<FileName, std::allocator<FileName> >&) const;
+template bool MetaData::getColumnValuesOpt<int>(MDLabel, std::vector<int, std::allocator<int> >&) const;
 
 void MetaData::setColumnValues(const std::vector<MDObject> &valuesIn)
 {
@@ -532,6 +550,80 @@ size_t MetaData::addRow(const MDRow &row)
     SET_ROW_VALUES(row);
 
     return id;
+}
+
+bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) {
+    for (auto &v : values) {
+        if (!containsLabel(v.label))
+                return false;
+    }
+    if (id == BAD_OBJID)
+        REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
+    return sqlUtils::select(id,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values);
+}
+
+void MetaData::addRowOpt(const MDRow &row)
+{
+    addRows({row});
+}
+
+void MetaData::addMissingLabels(const MDRow &row) {
+    // find missing labels
+    std::vector<MDLabel> missingLabels;
+    auto definedLabels = row.getLabels();
+    for (const auto &l : definedLabels){
+        if ( ! containsLabel(l)) {
+            missingLabels.push_back(l);
+        }
+    }
+    // add missing labels
+    if ( ! missingLabels.empty()) {
+        sqlUtils::addColumns(missingLabels,
+                    myMDSql->db,
+                    myMDSql->tableName(myMDSql->tableId));
+        activeLabels.insert(activeLabels.end(), missingLabels.begin(), missingLabels.end());
+    }
+}
+
+void MetaData::addRows(const std::vector<MDRow> &rows)
+{
+    const auto noOfRows = rows.size();
+    if (0 == noOfRows) {
+        return;
+    }
+    const auto &firstRow = rows.at(0);
+
+    // assuming all rows are using the same labels
+    addMissingLabels(firstRow);
+
+    // create mask of valid labels
+    std::vector<MDLabel> labels;
+    labels.reserve(firstRow._size);
+    for (int i = 0; i < firstRow._size; ++i) {
+        const MDLabel &label = firstRow.order[i];
+        if (firstRow.containsLabel(label)) {
+            labels.emplace_back(label);
+        }
+    }
+    const auto noOfLabels = labels.size();
+
+    // extract values to be added
+    std::vector<std::vector<const MDObject*>> records;
+    records.reserve(noOfRows);
+    for (const auto &r : rows) {
+        records.push_back(std::vector<const MDObject*>());
+        auto &vals = records.back();
+        vals.reserve(noOfLabels);
+        for (const auto &l : labels) {
+            vals.push_back(r.getObject(l));
+        }
+    }
+    // insert values to db
+    sqlUtils::insert(records, myMDSql->db,
+                    myMDSql->tableName(myMDSql->tableId));
 }
 
 

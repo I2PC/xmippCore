@@ -27,11 +27,12 @@
 #define CORE_METADATA_H
 
 #include <regex.h>
-#include "metadata_sql.h"
-#include "xmipp_filename.h"
-#include "xmipp_error.h"
-#include "metadata_label.h"
 #include <cmath>
+#include "metadata_label.h"
+#include "metadata_sql_operations.h"
+#include "utils/sql_utils.h"
+#include "xmipp_error.h"
+#include "xmipp_filename.h"
 
 class MetaData;
 
@@ -586,6 +587,7 @@ public:
         mdValueOut.getValue(valueOut);
         return true;
     }
+
     template<class T>
     void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const
     {
@@ -619,9 +621,16 @@ public:
         }
     }
 
+    bool getRowValues(size_t id, std::vector<MDObject> &values);
+
     /** Get all values of a column as a vector.
      */
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
+
+    /** Get all values of a column as a vector.
+     */
+    template<typename T>
+    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const;
 
     /** Set all values of a column as a vector.
      * The input vector must have the same size as the Metadata.
@@ -671,6 +680,9 @@ public:
     bool 	execAddRow(const MDRow &row);
     void 	finalizeAddRow(void);
     size_t 	addRow(const MDRow &row);
+    void    addRowOpt(const MDRow &row);
+    void    addRows(const std::vector<MDRow> &rows);
+    void    addMissingLabels(const MDRow &row);
     size_t 	addRow2(const MDRow &row);
 
     /** Set label values from string representation.

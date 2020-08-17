@@ -26,14 +26,12 @@
 #ifndef CORE_METADATASQL_H
 #define CORE_METADATASQL_H
 
-#include <iostream>
-#include <map>
-#include "xmipp_strings.h"
 #include <sqlite3.h>
+#include "xmipp_strings.h"
 #include "metadata_label.h"
-#include <vector>
 #include "xmipp_error.h"
-#include <sstream>
+#include "metadata_sql_operations.h"
+
 class MDSqlStaticInit;
 class MDQuery;
 class MetaData;
@@ -44,25 +42,7 @@ class FileName;
  * @{
  */
 
-/** Posible Aggregation Operations in a MetaData */
-enum AggregateOperation
-{
-    AGGR_COUNT, AGGR_MAX, AGGR_MIN, AGGR_SUM, AGGR_AVG
-};
-
-/** Posible Set Operations with MetaData */
-enum SetOperation
-{
-    UNION, UNION_DISTINCT, INTERSECTION, SUBSTRACTION, INNER_JOIN, LEFT_JOIN, OUTER_JOIN,NATURAL_JOIN,REMOVE_DUPLICATE, DISTINCT
-};
-
-/** Enumeration of JOIN types for this operation */
-enum JoinType
-{
-    INNER=INNER_JOIN, LEFT=LEFT_JOIN, OUTER=OUTER_JOIN,NATURAL=NATURAL_JOIN
-};
-
-#include "metadata.h"
+//#include "metadata.h"
 
 /* return number of tables from a metadata file saved as sqlite */
 int getBlocksInMetaDataFileDB(const FileName &inFile, StringVector& blockList);
@@ -352,17 +332,7 @@ public:
     }
 
     /** Return the LIMIT string to be used in SQL */
-    String limitString() const
-    {
-        if (limit == -1 && offset > 0)
-            REPORT_ERROR(ERR_MD_SQL, "Sqlite does not support OFFSET without LIMIT");
-        std::stringstream ss;
-        if (limit != -1)
-            ss << " LIMIT " << limit << " ";
-        if (offset > 0)
-            ss << " OFFSET " << offset << " ";
-        return ss.str();
-    }
+    String limitString() const;
 
     /** Return the WHERE string to be used in SQL query */
     String whereString() const
