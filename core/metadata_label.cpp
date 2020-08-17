@@ -152,7 +152,7 @@ MDLabel  MDL::str2Label(const String &labelName)
     return names[labelName];
 }//close function str2Label
 
-String  MDL::label2Str(const MDLabel label)
+String  MDL::label2Str(const MDLabel &label)
 {
     return  (isValidLabel(label)) ? data[(int)label]->str : "";
 }//close function label2Str
@@ -245,7 +245,7 @@ bool MDL::isVectorLong(const MDLabel label)
 {
     return (data[(int)label]->type == LABEL_VECTOR_SIZET);
 }
-bool MDL::isValidLabel(const MDLabel label)
+bool MDL::isValidLabel(const MDLabel &label)
 {
     return label > MDL_UNDEFINED &&
            label < MDL_LAST_LABEL &&

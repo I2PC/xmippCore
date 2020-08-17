@@ -132,11 +132,11 @@ private:
    /** Rename Column
     * SQLite itself does not support it. So some hacking is needed here
     */
-    bool renameColumn(const std::vector<MDLabel> oldLabel, const std::vector<MDLabel> newlabel);
+    bool renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector<MDLabel> &newlabel);
 
     /** Insert a new register inserting input columns.
      */
-    bool setObjectValues( size_t id, const std::vector<MDObject*> columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
+    bool setObjectValues( size_t id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
 
     /**Set the value of an object in an specified column.
      */
@@ -148,7 +148,7 @@ private:
 
     /** Get the values of several objects.
      */
-    bool getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values);
+    bool getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values);
 
     /** Get the value of an object.
      */
@@ -211,7 +211,7 @@ private:
     /** This function will be used to create o delete an index over a column.
      *Those indexes will improve searchs, but inserts will become expensives
      */
-    void indexModify(const std::vector<MDLabel> columns, bool create=true);
+    void indexModify(const std::vector<MDLabel> &columns, bool create=true);
 
     /** Some iteration methods
      */
@@ -261,9 +261,9 @@ private:
     bool dropTable();
     bool createTable(const std::vector<MDLabel> * labelsVector = NULL, bool withObjID=true);
     bool insertValues(double a, double b);
-    bool initializeSelect( bool addWhereObjId, std::vector<MDLabel> labels);
+    bool initializeSelect( bool addWhereObjId, const std::vector<MDLabel> &labels);
     bool initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values);
-    bool initializeUpdate( std::vector<MDLabel> labels);
+    bool initializeUpdate(const std::vector<MDLabel> &labels);
     void finalizePreparedStmt(void);
     void prepareStmt(const std::stringstream &ss, sqlite3_stmt *stmt);
     bool execSingleStmt(const std::stringstream &ss);
