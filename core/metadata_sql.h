@@ -541,12 +541,7 @@ public:
         query2 = new MDValueRelational(o2, LE);
 
     }
-    virtual String queryStringFunc() const
-    {
-        std::stringstream ss;
-        ss << "(" << query1->queryStringFunc() << " AND " << query2->queryStringFunc() << ")";
-        return ss.str();
-    }
+    virtual String queryStringFunc() const;
 
     ~MDValueRange()
     {
@@ -632,19 +627,7 @@ public:
         operations.clear();
     }
 
-    virtual String queryStringFunc() const
-    {
-        if (queries.size() > 0)
-        {
-            std::stringstream ss;
-            ss << "(" << queries[0]->queryStringFunc() << ") ";
-            for (size_t i = 1; i < queries.size(); i++)
-                ss << operations[i] << " (" << queries[i]->queryStringFunc() << ") ";
-
-            return ss.str();
-        }
-        return " ";
-    }
+    virtual String queryStringFunc() const;
 
 }
 ;//end of class MDMultiQuery
