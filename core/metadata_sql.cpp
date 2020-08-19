@@ -1657,3 +1657,24 @@ String MDQuery::limitString() const
         ss << " OFFSET " << offset << " ";
     return ss.str();
 }
+
+String MDValueRange::queryStringFunc() const
+{
+    std::stringstream ss;
+    ss << "(" << query1->queryStringFunc() << " AND " << query2->queryStringFunc() << ")";
+    return ss.str();
+}
+
+String MDMultiQuery::queryStringFunc() const
+{
+    if (queries.size() > 0)
+    {
+        std::stringstream ss;
+        ss << "(" << queries[0]->queryStringFunc() << ") ";
+        for (size_t i = 1; i < queries.size(); i++)
+            ss << operations[i] << " (" << queries[i]->queryStringFunc() << ") ";
+
+        return ss.str();
+    }
+    return " ";
+}

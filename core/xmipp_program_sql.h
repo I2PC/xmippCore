@@ -26,11 +26,14 @@
 #ifndef CORE_PROGRAM_SQL_H_
 #define CORE_PROGRAM_SQL_H_
 
-#include <map>
-#include "xmipp_program.h"
 #include "sqlite3.h"
+#include "argsprinter.h"
+#include "xmipp_filename.h"
+#include "metadata_label.h"
 
 typedef std::map<const char*, String> DictDB;
+
+class CommentList;
 
 String& escapeSqliteStr(String & str);
 
@@ -64,7 +67,7 @@ public:
     /** Insert a program into db, the id field will be filled */
     bool insertProgram(DictDB &program);
     /** Get from the db the comment for a label */
-    String getLabelComment(MDLabel label);
+    String getLabelComment(const MDLabel &label);
 
     //Methods inherits from Program Printer
     virtual void printProgram(const ProgramDef &program, int v = 0);

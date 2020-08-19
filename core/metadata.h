@@ -33,6 +33,7 @@
 #include "utils/sql_utils.h"
 #include "xmipp_error.h"
 #include "xmipp_filename.h"
+#include "metadata_writemode.h"
 
 class MetaData;
 
@@ -47,13 +48,7 @@ class MetaData;
 #define FILENAME_XMIPP_STAR "# XMIPP_STAR_1"
 #define FILENAME_XMIPP_SQLITE "SQLite format 3"
 #define DEFAULT_BLOCK_NAME "noname"
-/** Write mode
- */
-typedef enum
-{
-    MD_OVERWRITE, //forget about the old file and overwrite it
-    MD_APPEND     //append a data_ at the file end or replace an existing one
-} WriteModeMetaData;
+
 
 /** Iterate over all elements in MetaData
  *

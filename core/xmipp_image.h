@@ -31,6 +31,7 @@
 #ifndef CORE_IMAGE_H
 #define CORE_IMAGE_H
 
+#include <typeinfo>
 #include "xmipp_image_base.h"
 #include "multidim_array.h"
 

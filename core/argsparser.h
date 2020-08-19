@@ -26,19 +26,10 @@
 #ifndef CORE_ARGSPARSER_H_
 #define CORE_ARGSPARSER_H_
 
-//#include <cstring>
-//#include <iostream>
-//#include <sstream>
-//#include <vector>
 #include <map>
-//#include <algorithm>
-//#include <stdio.h>
-//#include <stdlib.h>
-#include "xmipp_error.h"
+#include <iostream>
 #include "xmipp_strings.h"
-
-
-typedef std::vector<String> StringVector;
+#include "comment_list.h"
 
 //TODO (MARIANA) Please give more documentation and in a good structure e.g. @name (see args.h as example)
 /* MARIANA: I defined the name of this group. Please define it as you want. */
@@ -135,20 +126,6 @@ public:
     ArgToken * currentToken() const;
     ArgTokenType lookahead() const;
 
-};
-
-/** Just a class for holding comments */
-class CommentList
-{
-public:
-    StringVector comments;
-    std::vector<int> visibility;
-    std::vector<bool> wikiVerbatim;
-
-    void addComment(const String &comment, int visible = 0, bool wikiVerbatim=false);
-    void addComment(const char * comment, bool verbatim=false);
-    void clear();
-    size_t size() const;
 };
 
 /** Following classes represent the Abstract Syntax Tree
