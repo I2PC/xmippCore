@@ -50,6 +50,57 @@ void MultidimArray<T>::copy(Matrix2D<T>& op1) const
     memcpy(MATRIX2D_ARRAY(op1), MULTIDIM_ARRAY(*this), MULTIDIM_SIZE(*this)*sizeof(T));
 }
 
+template<typename T>
+void MultidimArray<T>::rangeAdjustLS(const MultidimArray<T> &example,
+                 const MultidimArray<int> *mask)
+{
+    if (NZYXSIZE(*this) <= 0)
+        return;
+
+    Matrix2D<double> A;
+    A.initZeros(2,2);
+    Matrix1D<double> b;
+    b.initZeros(2);
+
+    size_t n;
+    T *ptr=NULL;
+    if (mask==NULL)
+    {
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        {
+			MAT_ELEM(A,0,0)+=1;
+			MAT_ELEM(A,0,1)+=*ptr;
+			MAT_ELEM(A,1,1)+=(*ptr)*(*ptr);
+
+			VEC_ELEM(b,0)+=DIRECT_MULTIDIM_ELEM(example,n);
+			VEC_ELEM(b,1)+=DIRECT_MULTIDIM_ELEM(example,n)*(*ptr);
+        }
+    }
+    else
+    {
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        if (DIRECT_MULTIDIM_ELEM(*mask,n))
+        {
+			MAT_ELEM(A,0,0)+=1;
+			MAT_ELEM(A,0,1)+=*ptr;
+			MAT_ELEM(A,1,1)+=(*ptr)*(*ptr);
+
+			VEC_ELEM(b,0)+=DIRECT_MULTIDIM_ELEM(example,n);
+			VEC_ELEM(b,1)+=DIRECT_MULTIDIM_ELEM(example,n)*(*ptr);
+        }
+    }
+
+    b=A.inv()*b;
+	T a0=(T)VEC_ELEM(b,0);
+	T a1=(T)VEC_ELEM(b,1);
+	if (mask==NULL)
+		FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+		*ptr = a0+a1*(*ptr);
+	else
+		FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        if (DIRECT_MULTIDIM_ELEM(*mask,n))
+			*ptr = a0+a1*(*ptr);
+}
 
 
 // Window in 2D -----------------------------------------------------------
@@ -414,3 +465,4 @@ void planeFit(const MultidimArray<double> &z, const MultidimArray<double> &x, co
 // explicit instantiation
 template MultidimArray<double>& MultidimArray<double>::operator=(Matrix2D<double> const&);
 template void MultidimArray<double>::copy(Matrix2D<double>&) const;
+template void MultidimArray<double>::rangeAdjustLS(const MultidimArray<double> &example, const MultidimArray<int> *mask);
