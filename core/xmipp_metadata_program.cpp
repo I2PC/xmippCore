@@ -280,16 +280,16 @@ void XmippMetadataProgram::finishProcessing()
 
 void XmippMetadataProgram::writeOutput()
 {
-    if (!single_image && !mdOut->isEmpty() && !fn_out.empty())
+    if (!single_image && !mdOut.isEmpty() && !fn_out.empty())
     {
         if (produces_an_output || produces_a_metadata || !oroot.empty()) // Out as independent images
-            mdOut->write(fn_out.replaceExtension("xmd"));
+            mdOut.write(fn_out.replaceExtension("xmd"));
         else if (save_metadata_stack) // Output is stack and also save its associated metadata
         {
             FileName outFileName = getParam("--save_metadata_stack");
             if (outFileName.empty())
                 outFileName = fn_out.replaceExtension("xmd");
-            mdOut->write(outFileName);
+            mdOut.write(outFileName);
         }
     }
 }
@@ -339,7 +339,7 @@ void XmippMetadataProgram::run()
     FileName fnImg, fnImgOut, fullBaseName;
     size_t objId;
     MDRow rowIn, rowOut;
-    mdOut->clear(); //this allows multiple runs of the same Program object
+    mdOut.clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing
     preProcess();
@@ -407,7 +407,7 @@ void XmippMetadataProgram::run()
         processImage(fnImg, fnImgOut, rowIn, rowOut);
 
         if (each_image_produces_an_output || produces_a_metadata)
-            mdOut->addRow(rowOut);
+            mdOut.addRow(rowOut);
 
         checkPoint();
         showProgress();
