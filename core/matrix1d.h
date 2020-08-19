@@ -1680,6 +1680,29 @@ public:
         in.close();
     }
 
+    /** Read from an ASCII file, assuming that the size of the input file is unknown
+     */
+    void readNoSize(const FileName& fn)
+    {
+        std::ifstream in;
+        in.open(fn.c_str(), std::ios::in);
+
+        if (!in)
+            REPORT_ERROR(
+                ERR_IO_NOTOPEN,
+                static_cast< std::string >("MultidimArray::read: File " + fn + " not found"));
+
+        std::vector<double> vec;
+        double aux;
+        while (in >> aux)
+        	vec.push_back(aux);
+
+        resizeNoCopy(vec.size());
+        for (size_t i=0; i<vec.size(); ++i)
+        	VEC_ELEM(*this,i)=(T)vec[i];
+        in.close();
+    }
+
     /** Input from input stream.
      *
      * Actual size of the array is used to know how many values must be read.
