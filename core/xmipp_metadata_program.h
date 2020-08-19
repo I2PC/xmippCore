@@ -31,8 +31,8 @@
 #include "xmipp_filename.h"
 #include "metadata_label.h"
 #include "metadata_writemode.h"
+#include "metadata.h"
 
-class MetaData;
 class MDIterator;
 
 /** Special class of XmippProgram that performs some operation related with processing images.
@@ -45,7 +45,7 @@ class XmippMetadataProgram: public virtual XmippProgram
 private:
     /// Input and output metadatas
     MetaData * mdIn;
-    MetaData * mdOut; //TODO: can be treated by reference as mdIn for
+    MetaData mdOut; //TODO: can be treated by reference as mdIn for
     // uses from another programs...
 public:
     /// The input metadata should not be used
@@ -57,7 +57,7 @@ public:
     }
     MetaData * getOutputMd()
     {
-        return mdOut;
+        return &mdOut;
     }
 
 public:
