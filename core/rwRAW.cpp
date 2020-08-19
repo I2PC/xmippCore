@@ -24,7 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
-
+#include "xmipp_error.h"
 
 DataType ImageBase::datatypeRAW(String strDT)
 {

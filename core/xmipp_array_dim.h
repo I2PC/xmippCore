@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,52 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef XMIPPCORE_CORE_XMIPP_ARRAY_DIM_H_
+#define XMIPPCORE_CORE_XMIPP_ARRAY_DIM_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+#include <stddef.h>
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
+/**
+ *  Structure with the dimensions information of an image
+ */
+struct ArrayDim
+{
+    // Number of images
+    size_t ndim;
+    // Number of elements in Z
+    size_t zdim;
+    // Number of elements in Y
+    size_t ydim;
+    // Number of elements in X
+    size_t xdim;
+    // Number of elements in YX
+    size_t yxdim;
+    // Number of elements in ZYX
+    size_t zyxdim;
+    // Number of elements in NZYX
+    size_t nzyxdim;
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+    ArrayDim()
+    {
+        ndim = 0;
+        zdim = 0;
+        ydim = 0;
+        xdim = 0;
+        yxdim = 0;
+        zyxdim = 0;
+        nzyxdim = 0;
+    }
+
+    bool operator==(ArrayDim &adim)
+    {
+        return (this->ndim == adim.ndim &&
+                this->zdim == adim.zdim &&
+                this->ydim == adim.ydim &&
+                this->xdim == adim.xdim );
+    }
+}
+;
+
+
+
+#endif /* XMIPPCORE_CORE_XMIPP_ARRAY_DIM_H_ */

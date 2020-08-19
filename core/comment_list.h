@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,23 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef CORE_COMMENT_LIST_H_
+#define CORE_COMMENT_LIST_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+#include "xmipp_strings.h"
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
+/** Just a class for holding comments */
+class CommentList
+{
+public:
+    StringVector comments;
+    std::vector<int> visibility;
+    std::vector<bool> wikiVerbatim;
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+    void addComment(const String &comment, int visible = 0, bool wikiVerbatim=false);
+    void addComment(const char * comment, bool verbatim=false);
+    void clear();
+    size_t size() const;
+};
+
+#endif /* CORE_COMMENT_LIST_H_ */

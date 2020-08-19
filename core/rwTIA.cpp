@@ -24,6 +24,8 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "xmipp_error.h"
+#include "xmipp_memory.h"
 
 #define TIASIZE    30 // Size of the TIA header without pDATA_OFFSET
 
@@ -243,3 +245,9 @@ int ImageBase::readTIA(int select_img,bool isStack)
 
     return(0);
 }
+
+int ImageBase::writeTIA(int img_select, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IMG_NOWRITE, "ERROR: writeTIA is not implemented.");
+}
+

@@ -24,6 +24,8 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "xmipp_error.h"
+#include "xmipp_memory.h"
 /*
         Base on rwMRC.h
         Header file for reading and writing MRC files

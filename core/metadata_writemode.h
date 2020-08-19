@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,16 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef CORE_METADATA_WRITEMODE_H_
+#define CORE_METADATA_WRITEMODE_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+/** Write mode
+ */
+typedef enum
+{
+    MD_OVERWRITE, //forget about the old file and overwrite it
+    MD_APPEND     //append a data_ at the file end or replace an existing one
+} WriteModeMetaData;
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+#endif /* CORE_METADATA_WRITEMODE_H_ */

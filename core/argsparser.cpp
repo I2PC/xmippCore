@@ -26,14 +26,7 @@
 #include <algorithm>
 #include <sstream>
 #include "argsparser.h"
-//#include <string>
-//#include <iostream>
-
-
-
-//#include "xmipp_filename.h"
-//#include "xmipp_program.h"
-//#include "xmipp_color.h"
+#include "xmipp_error.h"
 
 //-------------------   LEXER IMPLEMENTATIONS --------------------------------
 
@@ -352,30 +345,6 @@ ArgTokenType ArgLexer::lookahead() const
 
 
 //-------------------   PARSER IMPLEMENTATIONS   --------------------------------
-void CommentList::addComment(const String &comment, int visible, bool verbatim)
-{
-    comments.push_back(comment);
-    visibility.push_back(visible);
-    wikiVerbatim.push_back(verbatim);
-}
-void CommentList::addComment(const char * comment, bool verbatim)
-{
-    size_t t=0;
-    while(comment[t]=='+' && comment[t]!='\0')
-        t++;
-    addComment(comment+t,t,verbatim);
-}
-
-void CommentList::clear()
-{
-    comments.clear();
-    visibility.clear();
-    wikiVerbatim.clear();
-}
-size_t CommentList::size() const
-{
-    return comments.size();
-}
 
 ASTNode::ASTNode(ArgLexer * lexer, ASTNode * parent)
 {

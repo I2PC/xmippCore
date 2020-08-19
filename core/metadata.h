@@ -26,20 +26,16 @@
 #ifndef CORE_METADATA_H
 #define CORE_METADATA_H
 
-#include <map>
-#include <vector>
-#include <iostream>
-#include <iterator>
-#include <sstream>
-#include <time.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sstream>
-#include <strings.h>
 #include <regex.h>
-#include "xmipp_funcs.h"
-#include "xmipp_strings.h"
-#include "metadata_sql.h"
+#include <cmath>
+#include "metadata_label.h"
+#include "metadata_sql_operations.h"
+#include "utils/sql_utils.h"
+#include "xmipp_error.h"
+#include "xmipp_filename.h"
+#include "metadata_writemode.h"
+
+class MetaData;
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary
@@ -52,13 +48,7 @@
 #define FILENAME_XMIPP_STAR "# XMIPP_STAR_1"
 #define FILENAME_XMIPP_SQLITE "SQLite format 3"
 #define DEFAULT_BLOCK_NAME "noname"
-/** Write mode
- */
-typedef enum
-{
-    MD_OVERWRITE, //forget about the old file and overwrite it
-    MD_APPEND     //append a data_ at the file end or replace an existing one
-} WriteModeMetaData;
+
 
 /** Iterate over all elements in MetaData
  *
@@ -592,6 +582,7 @@ public:
         mdValueOut.getValue(valueOut);
         return true;
     }
+
     template<class T>
     void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const
     {
@@ -625,9 +616,16 @@ public:
         }
     }
 
+    bool getRowValues(size_t id, std::vector<MDObject> &values);
+
     /** Get all values of a column as a vector.
      */
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
+
+    /** Get all values of a column as a vector.
+     */
+    template<typename T>
+    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const;
 
     /** Set all values of a column as a vector.
      * The input vector must have the same size as the Metadata.
@@ -677,6 +675,9 @@ public:
     bool 	execAddRow(const MDRow &row);
     void 	finalizeAddRow(void);
     size_t 	addRow(const MDRow &row);
+    void    addRowOpt(const MDRow &row);
+    void    addRows(const std::vector<MDRow> &rows);
+    void    addMissingLabels(const MDRow &row);
     size_t 	addRow2(const MDRow &row);
 
     /** Set label values from string representation.
@@ -764,9 +765,9 @@ public:
      * in other labels, but insert are more expensive
      */
     void addIndex(MDLabel label) const;
-    void addIndex(const std::vector<MDLabel> desiredLabels) const;
+    void addIndex(const std::vector<MDLabel> &desiredLabels) const;
     void removeIndex(MDLabel label);
-    void removeIndex(const std::vector<MDLabel> desiredLabels);
+    void removeIndex(const std::vector<MDLabel> &desiredLabels);
 
     /** Add item id.
      * From 1 to last.
@@ -1154,8 +1155,8 @@ public:
      * columns need to be changed do it using this function instead one by one
      *
      */
-    void renameColumn(std::vector<MDLabel> oldLabel,
-                      std::vector<MDLabel> newLabel);
+    void renameColumn(const std::vector<MDLabel> &oldLabel,
+            const std::vector<MDLabel> &newLabel);
 
     void metadataToVec(std::vector<MDRow> &vd);
 

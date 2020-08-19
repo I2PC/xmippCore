@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,21 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#ifndef CORE_AXIS_VIEW_H_
+#define CORE_AXIS_VIEW_H_
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+/**
+ * Possible views for 3D MuldimArray
+ */
+typedef enum
+{
+    VIEW_Z_NEG,    // Front view (Z negative)
+    VIEW_Z_POS,    //  Z positve
+    VIEW_Y_NEG,    // Align -Y axis to Z axis, rotating 90 degrees around X axis");
+    VIEW_Y_POS, // Align Y axis to Z axis, rotating -90 degrees around X axis");
+    VIEW_X_NEG,   // Align -X axis to Z axis, rotating -90 degrees around Y axis");
+    VIEW_X_POS   // Align X axis to Z axis, rotating 90 degrees around Y axis");
+} AxisView;
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
 
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+#endif /* CORE_AXIS_VIEW_H_ */

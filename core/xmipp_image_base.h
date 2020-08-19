@@ -27,15 +27,21 @@
 #define CORE_IMAGE_BASE_H_
 
 #include "xmipp_image_macros.h"
-#include "multidim_array.h"
-#include "transformations.h"
-#include "metadata.h"
 #include "xmipp_datatype.h"
+#include "metadata_label.h"
+#include "multidim_array_base.h"
+#include "xmipp_filename.h"
+#include "transformations_defines.h"
+#include "xmipp_funcs.h"
+
 //
 //// Includes for rwTIFF which cannot be inside it
 #include <tiffio.h>
 #include <hdf5.h>
 
+template<typename T>
+class Matrix2D;
+class MetaData;
 
 /* Minimum size of a TIFF file to be mapped to a tempfile in case of mapping from
  * image file is required

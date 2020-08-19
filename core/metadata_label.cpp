@@ -23,9 +23,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <stdlib.h>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 #include "metadata_label.h"
+#include "xmipp_error.h"
+#include "xmipp_macros.h"
 
 //This is needed for static memory allocation
 //std::map<MDLabel, MDLabelData> MDL::data;
@@ -34,6 +37,17 @@ std::map<std::string, MDLabel> MDL::names;
 MDRow MDL::emptyHeader;
 MDLabelStaticInit MDL::initialization; //Just for initialization
 MDLabel MDL::bufferIndex;
+
+#define DOUBLE2STREAM(d) \
+        if (withFormat) {\
+                (os) << std::setw(12); \
+                (os) << (((d) != 0. && ABS(d) < 0.001) ? std::scientific : std::fixed);\
+            } os << d;
+
+#define INT2STREAM(i) \
+        if (withFormat) os << std::setw(20); \
+        os << i;
+        //this must have 20 since SIZE_MAX = 18446744073709551615 size
 
 
 void MDL::addLabel(const MDLabel label, const MDLabelType type, const String &name, int tags)
@@ -138,7 +152,7 @@ MDLabel  MDL::str2Label(const String &labelName)
     return names[labelName];
 }//close function str2Label
 
-String  MDL::label2Str(const MDLabel label)
+String  MDL::label2Str(const MDLabel &label)
 {
     return  (isValidLabel(label)) ? data[(int)label]->str : "";
 }//close function label2Str
@@ -231,7 +245,7 @@ bool MDL::isVectorLong(const MDLabel label)
 {
     return (data[(int)label]->type == LABEL_VECTOR_SIZET);
 }
-bool MDL::isValidLabel(const MDLabel label)
+bool MDL::isValidLabel(const MDLabel &label)
 {
     return label > MDL_UNDEFINED &&
            label < MDL_LAST_LABEL &&
@@ -772,11 +786,17 @@ int MDRow::size() const
     return _size;
 }
 
-bool MDRow::containsLabel(MDLabel label) const
-{
-    return objects[label] != NULL;
+std::vector<MDLabel> MDRow::getLabels() const {
+    std::vector<MDLabel> res;
+    res.reserve(_size);
+    for (int i = 0; i < _size; ++i){
+        const MDLabel &label = order[i];
+        if (containsLabel(label)) {
+            res.push_back(label);
+        }
+    }
+    return res;
 }
-
 
 void MDRow::addLabel(MDLabel label)
 {

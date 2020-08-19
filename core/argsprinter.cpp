@@ -25,8 +25,8 @@
 
 #include "argsprinter.h"
 #include "xmipp_filename.h"
-//#include "xmipp_program.h"
 #include "xmipp_color.h"
+#include "xmipp_error.h"
 
 //-------------------   PRINTER IMPLEMENTATIONS   --------------------------------
 void Printer::printToken(ArgToken * token)

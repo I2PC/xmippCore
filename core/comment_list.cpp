@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +23,29 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWSPE_H_
-#define CORE_RWSPE_H_
+#include "comment_list.h"
 
-///@defgroup SPE Princeton Instruments File Format
-///@ingroup ImageFormats
+void CommentList::addComment(const String &comment, int visible, bool verbatim)
+{
+    comments.push_back(comment);
+    visibility.push_back(visible);
+    wikiVerbatim.push_back(verbatim);
+}
+void CommentList::addComment(const char * comment, bool verbatim)
+{
+    size_t t=0;
+    while(comment[t]=='+' && comment[t]!='\0')
+        t++;
+    addComment(comment+t,t,verbatim);
+}
 
-// I/O prototypes
-/** SPE Reader
-  * @ingroup SPE
-*/
-int readSPE(size_t select_img,bool isStack=false);
-
-/** SPE Writer
-  * @ingroup SPE
-*/
-int writeSPE(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE);
-#endif /* RWSPE_H_ */
+void CommentList::clear()
+{
+    comments.clear();
+    visibility.clear();
+    wikiVerbatim.clear();
+}
+size_t CommentList::size() const
+{
+    return comments.size();
+}

@@ -37,9 +37,6 @@ int readDM4(size_t img_select,bool isStack=false);
 /** DM4 Writer
   * @ingroup DM4
 */
-int writeDM4(size_t img_select, bool isStack=false, int mode=WRITE_OVERWRITE)
-{
-    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM4 is not implemented.");
-}
+int writeDM4(size_t img_select, bool isStack=false, int mode=WRITE_OVERWRITE);
 
 #endif /* RWDM4_H_ */

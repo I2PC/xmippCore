@@ -23,11 +23,21 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <stdlib.h>
-#include <time.h>
+//#include <stdlib.h>
+//#include <time.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 #include <fcntl.h>
-#include <string.h>
+//#include <string.h>
+#include "xmipp_funcs.h"
+#include "numerical_recipes.h"
+#include "xmipp_filename.h"
+#include <fstream>
+
+//#include <typeinfo>
+//#include "xmipp_error.h"
+//#include <algorithm>
+
 #ifndef __MINGW32__
  #include <sys/mman.h>
  #ifdef __MACH__
@@ -35,8 +45,6 @@
   #include <mach/mach.h>
  #endif
 #endif
-#include "xmipp_funcs.h"
-#include "numerical_recipes.h"
 
 
 /* Numerical functions ----------------------------------------------------- */
