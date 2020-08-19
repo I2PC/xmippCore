@@ -801,6 +801,29 @@ void Matrix1D<T>::read(const FileName& fn)
 }
 
 template<typename T>
+void Matrix1D<T>::readNoSize(const FileName& fn)
+{
+    std::ifstream in;
+    in.open(fn.c_str(), std::ios::in);
+
+    if (!in)
+        REPORT_ERROR(
+            ERR_IO_NOTOPEN,
+            static_cast< std::string >("MultidimArray::read: File " + fn + " not found"));
+
+    std::vector<double> vec;
+    double aux;
+    while (in >> aux)
+    	vec.push_back(aux);
+
+    resizeNoCopy(vec.size());
+    for (size_t i=0; i<vec.size(); ++i)
+    	VEC_ELEM(*this,i)=(T)vec[i];
+    in.close();
+}
+
+
+template<typename T>
 void Matrix1D<T>::edit()
 {
     FileName nam;
