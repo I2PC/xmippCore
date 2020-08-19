@@ -23,7 +23,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <sstream>
 #include "xmipp_program_sql.h"
+#include "metadata_label.h"
 
 void ProgramDb::init(const FileName &dbName)
 {
@@ -157,7 +159,7 @@ bool ProgramDb::insertProgram(DictDB &program)
 //    return rc == SQLITE_OK;
 //}
 
-String ProgramDb::getLabelComment(MDLabel label)
+String ProgramDb::getLabelComment(const MDLabel &label)
 {
       sqlite3_stmt *stmt;
       String aux = MDL::label2Str(label);

@@ -45,6 +45,7 @@
 #include <fstream>
 #include "multidim_array_base.h"
 #include "xmipp_error.h"
+#include "axis_view.h"
 
 template<typename T>
 class Matrix2D;
@@ -77,18 +78,7 @@ void selfCoreArrayByArrayMask(const MultidimArray<T>& op1, const MultidimArray<T
                           MultidimArray<T>& result, char operation,
                           const MultidimArray<T> *mask);
 
-/**
- * Possible views for 3D MuldimArray
- */
-typedef enum
-{
-    VIEW_Z_NEG,    // Front view (Z negative)
-    VIEW_Z_POS,    //  Z positve
-    VIEW_Y_NEG,    // Align -Y axis to Z axis, rotating 90 degrees around X axis");
-    VIEW_Y_POS, // Align Y axis to Z axis, rotating -90 degrees around X axis");
-    VIEW_X_NEG,   // Align -X axis to Z axis, rotating -90 degrees around Y axis");
-    VIEW_X_POS   // Align X axis to Z axis, rotating 90 degrees around Y axis");
-} AxisView;
+
 
 
 
