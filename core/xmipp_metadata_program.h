@@ -44,8 +44,8 @@ class XmippMetadataProgram: public virtual XmippProgram
 {
 private:
     /// Input and output metadatas
-    MetaData * mdIn;
-    MetaData * mdOut; //TODO: can be treated by reference as mdIn for
+    MetaData * mdIn = nullptr;
+    MetaData * mdOut = nullptr; //TODO: can be treated by reference as mdIn for
     // uses from another programs...
 public:
     /// The input metadata should not be used
