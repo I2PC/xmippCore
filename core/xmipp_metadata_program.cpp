@@ -53,12 +53,17 @@ XmippMetadataProgram::XmippMetadataProgram()
     save_metadata_stack = false;
     keep_input_columns = false;
     track_origin = false;
+    create_empty_stackfile = false;
+    datatypeOut = DT_Double;
+    mdIn = nullptr;
+    mdOut = new MetaData();
 }
 
 XmippMetadataProgram::~XmippMetadataProgram()
 {
     if (delete_mdIn)
         delete mdIn;
+    delete mdOut;
 }
 
 int XmippMetadataProgram::tryRead(int argc, const char ** argv, bool reportErrors )
