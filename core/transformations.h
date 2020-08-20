@@ -200,6 +200,266 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
 #define BSPLINE3 3
 #define BSPLINE4 4
 
+namespace applyGeometryImpl {
+
+template<typename T1,typename T, bool wrap>
+void applyGeometry2DDegree1(
+                   MultidimArray<T>& __restrict__ V2,
+                   const MultidimArray<T1>& __restrict__ V1,
+                   const Matrix2D<double> &Aref)
+{
+    // 2D transformation
+    const double Aref00=MAT_ELEM(Aref,0,0);
+    const double Aref10=MAT_ELEM(Aref,1,0);
+
+    // Find center and limits of image
+    const double cen_y  = (int)(YSIZE(V2) / 2);
+    const double cen_x  = (int)(XSIZE(V2) / 2);
+    const double cen_yp = (int)(YSIZE(V1) / 2);
+    const double cen_xp = (int)(XSIZE(V1) / 2);
+    const double minxp  = -cen_xp;
+    const double minyp  = -cen_yp;
+    const double minxpp = minxp-XMIPP_EQUAL_ACCURACY;
+    const double minypp = minyp-XMIPP_EQUAL_ACCURACY;
+    const double maxxp  = XSIZE(V1) - cen_xp - 1;
+    const double maxyp  = YSIZE(V1) - cen_yp - 1;
+    const double maxxpp = maxxp+XMIPP_EQUAL_ACCURACY;
+    const double maxypp = maxyp+XMIPP_EQUAL_ACCURACY;
+    const int Xdim   = XSIZE(V1);
+    const int Ydim   = YSIZE(V1);
+
+    // Now we go from the output image to the input image, ie, for any pixel
+    // in the output image we calculate which are the corresponding ones in
+    // the original image, make an interpolation with them and put this value
+    // at the output pixel
+
+#ifdef DEBUG_APPLYGEO
+    std::cout << "A\n" << Aref << std::endl
+    << "(cen_x ,cen_y )=(" << cen_x  << "," << cen_y  << ")\n"
+    << "(cen_xp,cen_yp)=(" << cen_xp << "," << cen_yp << ")\n"
+    << "(min_xp,min_yp)=(" << minxp  << "," << minyp  << ")\n"
+    << "(max_xp,max_yp)=(" << maxxp  << "," << maxyp  << ")\n";
+#endif
+    // Calculate position of the beginning of the row in the output image
+    const double x = -cen_x;
+    double y = -cen_y;
+    for (size_t i = 0; i < YSIZE(V2); i++)
+    {
+        // Calculate this position in the input image according to the
+        // geometrical transformation
+        // they are related by
+        // coords_output(=x,y) = A * coords_input (=xp,yp)
+        double xp = x * MAT_ELEM(Aref, 0, 0) + y * MAT_ELEM(Aref, 0, 1) + MAT_ELEM(Aref, 0, 2);
+        double yp = x * MAT_ELEM(Aref, 1, 0) + y * MAT_ELEM(Aref, 1, 1) + MAT_ELEM(Aref, 1, 2);
+
+        // Loop over j is splitted according to wrap (wrap==true is not
+        // vectorizable) and also according to SplineDegree value
+        // (I have not fully analyzed vector dependences for
+        // SplineDegree==3 and else branch)
+        if (wrap)
+        {
+            // This is original implementation
+            for (int j=0; j<XSIZE(V2) ;j++)
+            {
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "Computing (" << i << "," << j << ")\n";
+                std::cout << "   (y, x) =(" << y << "," << x << ")\n"
+                << "   before wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+#endif
+                bool x_isOut = XMIPP_RANGE_OUTSIDE_FAST(xp, minxpp, maxxpp);
+                bool y_isOut = XMIPP_RANGE_OUTSIDE_FAST(yp, minypp, maxypp);
+
+                if (x_isOut)
+                {
+                    xp = realWRAP(xp, minxp - 0.5, maxxp + 0.5);
+                }
+
+                if (y_isOut)
+                {
+                    yp = realWRAP(yp, minyp - 0.5, maxyp + 0.5);
+                }
+
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "   after wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+                std::cout << "   Interp = " << interp << std::endl;
+                // The following line sounds dangerous...
+                //x++;
+#endif
+
+                // Linear interpolation
+                // Calculate the integer position in input image, be
+                // careful that it is not the nearest but the one
+                // at the top left corner of the interpolation square.
+                // Ie, (0.7,0.7) would give (0,0)
+                // Calculate also weights for point m1+1,n1+1
+                double wx = xp + cen_xp;
+                double wy = yp + cen_yp;
+                int m1 = (int) wx;
+                int n1 = (int) wy;
+                int n2 = n1 + 1;
+                int m2 = m1 + 1;
+                wx = wx - m1;
+                wy = wy - n1;
+                double wx_1 = 1 - wx;
+                double wy_1 = 1 - wy;
+
+                // m2 and n2 can be out by 1 so wrap must be check here
+                if (m2 >= Xdim)
+                    m2 = 0;
+                if (n2 >= Ydim)
+                    n2 = 0;
+
+#ifdef DEBUG_APPLYGEO
+                std::cout << "   From (" << n1 << "," << m1 << ") and ("
+                        << n2 << "," << m2 << ")\n";
+                std::cout << "   wx= " << wx << " wy= " << wy
+                        << std::endl;
+#endif
+
+                // Perform interpolation
+                double v1 = wy_1 * wx_1 * DIRECT_A2D_ELEM(V1, n1, m1);
+                double v2 = wy_1 * wx * DIRECT_A2D_ELEM(V1, n1, m2);
+                double v3 = wx_1 * wy * DIRECT_A2D_ELEM(V1, n2, m1);
+                double v4 = wx * wy * DIRECT_A2D_ELEM(V1, n2, m2);
+
+                dAij(V2, i, j) = (T) (v1 + v2 + v3 + v4);
+#ifdef DEBUG_APPYGEO
+                std::cout << "   val= " << dAij(V2, i, j) << std::endl;
+#endif
+
+                // Compute new point inside input image
+                xp += Aref00;
+                yp += Aref10;
+            }
+        } /* wrap == true */
+        else
+        {
+
+            // Inner loop boundaries.
+            int globalMin=0, globalMax=XSIZE(V2);
+
+            // First and last iteration with valid values for x and y coordinates.
+            int minX, maxX, minY, maxY;
+
+            // Compute valid iterations in x and y coordinates. If one of them is always out
+            // of boundaries then the inner loop is not executed this iteration.
+            if (!getLoopRange( xp, minxpp, maxxpp, Aref00, XSIZE(V2), minX, maxX) ||
+                !getLoopRange( yp, minypp, maxypp, Aref10, XSIZE(V2), minY, maxY))
+            {
+                y++;
+                continue;
+            }
+            else
+            {
+                // Compute initial iteration.
+                globalMin = minX;
+                if (minX < minY)
+                {
+                    globalMin = minY;
+                }
+
+                // Compute last iteration.
+                globalMax = maxX;
+                if (maxX > maxY)
+                {
+                    globalMax = maxY;
+                }
+                globalMax++;
+
+                // Check max iteration is not higher than image.
+                if ((globalMax >= 0) && ((size_t)globalMax > XSIZE(V2)))
+                {
+                    globalMax = XSIZE(V2);
+                }
+
+                xp += globalMin*Aref00;
+                yp += globalMin*Aref10;
+            }
+
+
+            #pragma simd reduction (+:xp,yp)
+            for (int j=globalMin; j<globalMax ;j++)
+            {
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "Computing (" << i << "," << j << ")\n";
+                std::cout << "   (y, x) =(" << y << "," << x << ")\n"
+                << "   before wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+
+                std::cout << "   after wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+                std::cout << "   Interp = " << interp << std::endl;
+                // The following line sounds dangerous...
+                //x++;
+#endif
+
+                // Linear interpolation
+
+                // Calculate the integer position in input image, be careful
+                // that it is not the nearest but the one at the top left corner
+                // of the interpolation square. Ie, (0.7,0.7) would give (0,0)
+                // Calculate also weights for point m1+1,n1+1
+                double wx = xp + cen_xp;
+                int m1 = (int) wx;
+                wx = wx - m1;
+                int m2 = m1 + 1;
+                double wy = yp + cen_yp;
+                int n1 = (int) wy;
+                wy = wy - n1;
+                int n2 = n1 + 1;
+
+#ifdef DEBUG_APPLYGEO
+                std::cout << "   From (" << n1 << "," << m1 << ") and ("
+                    << n2 << "," << m2 << ")\n";
+                std::cout << "   wx= " << wx << " wy= " << wy << std::endl;
+#endif
+
+                // Perform interpolation
+                // if wx == 0 means that the rightest point is useless for this
+                // interpolation, and even it might not be defined if m1=xdim-1
+                // The same can be said for wy.
+                double wx_1 = (1-wx);
+                double wy_1 = (1-wy);
+                double aux2=wy_1* wx_1 ;
+                double tmp  = aux2 * DIRECT_A2D_ELEM(V1, n1, m1);
+
+                if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
+                    tmp += (wy_1-aux2) * DIRECT_A2D_ELEM(V1, n1, m2);
+
+                if ((wy != 0) && ((n2 < 0) || ((size_t)n2 < V1.ydim)))
+                {
+                    aux2=wy * wx_1;
+                    tmp += aux2 * DIRECT_A2D_ELEM(V1, n2, m1);
+
+                    if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
+                        tmp += (wy-aux2) * DIRECT_A2D_ELEM(V1, n2, m2);
+                }
+
+                dAij(V2, i, j) = (T) tmp;
+
+#ifdef DEBUG_APPYGEO
+                std::cout << "   val= " << dAij(V2, i, j) << std::endl;
+#endif
+
+                // Compute new point inside input image
+                xp += Aref00;
+                yp += Aref10;
+            }
+        } /* wrap == false */
+
+        y++;
+    }
+}
+
+
+} // namespace applyGeometryImpl
+
+
 /** Applies a geometrical transformation.
  * @ingroup GeometricalTransformations
  *
@@ -332,6 +592,16 @@ void applyGeometry(int SplineDegree,
 
     if (V1.getDim() == 2)
     {
+        // this version should be slightly more optimized than the general one bellow
+        if (1 == SplineDegree) {
+            if (wrap) {
+                applyGeometryImpl::applyGeometry2DDegree1<T1, T, true>(V2, V1, Aref);
+            } else {
+                applyGeometryImpl::applyGeometry2DDegree1<T1, T, false>(V2, V1, Aref);
+            }
+            return;
+        }
+
         // 2D transformation
         double Aref00=MAT_ELEM(Aref,0,0);
         double Aref10=MAT_ELEM(Aref,1,0);
