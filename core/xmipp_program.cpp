@@ -441,7 +441,6 @@ int XmippProgram::version() const
     REPORT_ERROR(ERR_NOT_IMPLEMENTED,"");
 }
 
-
 XmippProgramGeneric::XmippProgramGeneric()
 {
     initComments();
