@@ -946,7 +946,9 @@ void MultidimArray<T>::showWithGnuPlot(const String& xlabel, const String& title
     "\" w l\n";
     fh_gplot << "pause 300 \"\"\n";
     fh_gplot.close();
-    system(formatString("(gnuplot PPP%s.gpl; rm PPP%s.txt PPP%s.gpl) &", fnStr, fnStr, fnStr).c_str());
+    if (0 != system(formatString("(gnuplot PPP%s.gpl; rm PPP%s.txt PPP%s.gpl) &", fnStr, fnStr, fnStr).c_str()) ) {
+        REPORT_ERROR(ERR_IO, "Cannot open gnuplot");
+    }
 }
 
 template<typename T>
@@ -958,7 +960,9 @@ void MultidimArray<T>::edit()
     nam = formatString("PPP%s.txt", nam.c_str());
     write(nam);
 
-    system(formatString("xmipp_edit -i %s -remove &", nam.c_str()).c_str());
+    if (0 != system(formatString("xmipp_edit -i %s -remove &", nam.c_str()).c_str())) {
+        REPORT_ERROR(ERR_IO, "Cannot open xmipp_edit");
+    }
 }
 
 template<typename T>
