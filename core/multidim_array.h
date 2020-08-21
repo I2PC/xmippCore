@@ -30,21 +30,11 @@
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
 #endif
-///// Consider biblib as external library
-///// for compilation, xmipp/external should be passed as -I
-//#include "bilib/tsplinebasis.h"
-#include "bilib/kernel.h"
-//
-//#include "xmipp_strings.h"
+#include <complex>
 #include "matrix1d.h"
 #include "xmipp_random_mode.h"
-#include "xmipp_funcs.h"
-#include <algorithm>
-#include "numerical_recipes.h"
-#include "xmipp_filename.h"
-#include <fstream>
 #include "multidim_array_base.h"
-#include "xmipp_error.h"
+#include "xmipp_memory.h"
 #include "axis_view.h"
 
 template<typename T>
@@ -317,27 +307,7 @@ public:
 
     /* Create a temporary file to mmap the data.
      */
-    FILE* mmapFile(T* &_data, size_t nzyxDim) const
-    {
-#ifdef XMIPP_MMAP
-        FILE* fMap = tmpfile();
-        int Fd = fileno(fMap);
-
-        if ((lseek(Fd, nzyxDim*sizeof(T)-1, SEEK_SET) == -1) || (::write(Fd,"",1) == -1))
-        {
-            fclose(fMap);
-            REPORT_ERROR(ERR_IO_NOWRITE,"MultidimArray::resize: Error 'stretching' the map file.");
-        }
-        if ( (_data = (T*) mmap(0,nzyxDim*sizeof(T), PROT_READ | PROT_WRITE, MAP_SHARED, Fd, 0)) == (void*) MAP_FAILED )
-            REPORT_ERROR(ERR_MMAP_NOTADDR,formatString("MultidimArray::resize: mmap failed. Error %s", strerror(errno)));
-
-        return fMap;
-#else
-
-        REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
-#endif
-
-    }
+    FILE* mmapFile(T* &_data, size_t nzyxDim) const;
 
     /** Core deallocate.
      * Free all data.
@@ -468,118 +438,7 @@ public:
      * V1.resize(3, 3, 2);
      * @endcode
      */
-    void resize(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, bool copy=true)
-    {
-        if (Ndim*Zdim*Ydim*Xdim == nzyxdimAlloc && data != NULL)
-        {
-            ndim = Ndim;
-            xdim = Xdim;
-            ydim = Ydim;
-            zdim = Zdim;
-            yxdim = Ydim * Xdim;
-            zyxdim = Zdim * yxdim;
-            nzyxdim = Ndim * zyxdim;
-            return;
-        }
-        else if (!destroyData)
-            REPORT_ERROR(ERR_MULTIDIM_SIZE, "Cannot resize array when accessing through alias.");
-
-        if (Xdim <= 0 || Ydim <= 0 || Zdim <= 0 || Ndim <= 0)
-        {
-            clear();
-            return;
-        }
-
-        // data can be NULL while xdim etc are set to non-zero values
-        // (This can happen for reading of images...)
-        // In that case, initialize data to zeros.
-        if (NZYXSIZE(*this) > 0 && data == NULL)
-        {
-            ndim = Ndim;
-            xdim = Xdim;
-            ydim = Ydim;
-            zdim = Zdim;
-            yxdim = Ydim * Xdim;
-            zyxdim = Zdim * yxdim;
-            nzyxdim = Ndim * zyxdim;
-
-            coreAllocate();
-            return;
-        }
-
-        // Ask for memory
-        size_t YXdim=(size_t)Ydim*Xdim;
-        size_t ZYXdim=YXdim*Zdim;
-        size_t NZYXdim=ZYXdim*Ndim;
-        FILE*  new_mFd=NULL;
-
-        T * new_data=NULL;
-
-        try
-        {
-            if (mmapOn)
-                new_mFd = mmapFile(new_data, NZYXdim);
-            else
-                new_data = new T [NZYXdim];
-
-            memset(new_data,0,NZYXdim*sizeof(T));
-        }
-        catch (std::bad_alloc &)
-        {
-            if (!mmapOn)
-            {
-                setMmap(true);
-                resize(Ndim, Zdim, Ydim, Xdim, copy);
-                return;
-            }
-            else
-            {
-                std::ostringstream sstream;
-                sstream << "Allocate: No space left to allocate ";
-                sstream << (NZYXdim * sizeof(T)/1024/1024/1024) ;
-                sstream << "Gb." ;
-                REPORT_ERROR(ERR_MEM_NOTENOUGH, sstream.str());
-            }
-        }
-        // Copy needed elements, fill with 0 if necessary
-        if (copy)
-        {
-            T zero=0; // Very useful for complex matrices
-            T *val=NULL;
-            for (size_t l = 0; l < Ndim; l++)
-                for (size_t k = 0; k < Zdim; k++)
-                    for (size_t i = 0; i < Ydim; i++)
-                        for (size_t j = 0; j < Xdim; j++)
-                        {
-                            if (l >= NSIZE(*this))
-                                val = &zero;
-                            else if (k >= ZSIZE(*this))
-                                val = &zero;
-                            else if (i >= YSIZE(*this))
-                                val = &zero;
-                            else if (j >= XSIZE(*this))
-                                val = &zero;
-                            else
-                                val = &DIRECT_NZYX_ELEM(*this, l, k, i, j);
-                            new_data[l*ZYXdim + k*YXdim+i*Xdim+j] = *val;
-                        }
-        }
-
-        // deallocate old array
-        coreDeallocate();
-
-        // assign *this vector to the newly created
-        data = new_data;
-        ndim = Ndim;
-        xdim = Xdim;
-        ydim = Ydim;
-        zdim = Zdim;
-        yxdim = Ydim * Xdim;
-        zyxdim = Zdim * yxdim;
-        nzyxdim = Ndim * zyxdim;
-        mFd = new_mFd;
-        nzyxdimAlloc = nzyxdim;
-    }
+    void resize(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, bool copy=true);
 
     /** Resize according to a pattern.
      *
@@ -1557,149 +1416,7 @@ public:
      * (x,y,z) are in logical coordinates.
      */
     T interpolatedElementBSpline3D(double x, double y, double z,
-                                   int SplineDegree = 3) const
-    {
-        int SplineDegree_1 = SplineDegree - 1;
-
-        // Logical to physical
-        z -= STARTINGZ(*this);
-        y -= STARTINGY(*this);
-        x -= STARTINGX(*this);
-
-        int l1 = (int)ceil(x - SplineDegree_1);
-        int l2 = l1 + SplineDegree;
-
-        int m1 = (int)ceil(y - SplineDegree_1);
-        int m2 = m1 + SplineDegree;
-
-        int n1 = (int)ceil(z - SplineDegree_1);
-        int n2 = n1 + SplineDegree;
-
-        double zyxsum = 0.0;
-        double aux;
-        int Xdim=(int)XSIZE(*this);
-        int Ydim=(int)YSIZE(*this);
-        int Zdim=(int)ZSIZE(*this);
-        for (int nn = n1; nn <= n2; nn++)
-        {
-            int equivalent_nn=nn;
-            if      (nn<0)
-                equivalent_nn=-nn-1;
-            else if (nn>=Zdim)
-                equivalent_nn=2*Zdim-nn-1;
-            double yxsum = 0.0;
-            for (int m = m1; m <= m2; m++)
-            {
-                int equivalent_m=m;
-                if      (m<0)
-                    equivalent_m=-m-1;
-                else if (m>=Ydim)
-                    equivalent_m=2*Ydim-m-1;
-                double xsum = 0.0;
-                for (int l = l1; l <= l2; l++)
-                {
-                    double xminusl = x - (double) l;
-                    int equivalent_l=l;
-                    if      (l<0)
-                        equivalent_l=-l-1;
-                    else if (l>=Xdim)
-                        equivalent_l=2*Xdim-l-1;
-                    double Coeff = (double) DIRECT_A3D_ELEM(*this,
-                                                            equivalent_nn,equivalent_m,equivalent_l);
-                    switch (SplineDegree)
-                    {
-                    case 2:
-                        xsum += Coeff * Bspline02(xminusl);
-                        break;
-                    case 3:
-                        BSPLINE03(aux,xminusl);
-                        xsum += Coeff * aux;
-                        break;
-                    case 4:
-                        xsum += Coeff * Bspline04(xminusl);
-                        break;
-                    case 5:
-                        xsum += Coeff * Bspline05(xminusl);
-                        break;
-                    case 6:
-                        xsum += Coeff * Bspline06(xminusl);
-                        break;
-                    case 7:
-                        xsum += Coeff * Bspline07(xminusl);
-                        break;
-                    case 8:
-                        xsum += Coeff * Bspline08(xminusl);
-                        break;
-                    case 9:
-                        xsum += Coeff * Bspline09(xminusl);
-                        break;
-                    }
-                }
-
-                double yminusm = y - (double) m;
-                switch (SplineDegree)
-                {
-                case 2:
-                    yxsum += xsum * Bspline02(yminusm);
-                    break;
-                case 3:
-                    BSPLINE03(aux,yminusm);
-                    yxsum += xsum * aux;
-                    break;
-                case 4:
-                    yxsum += xsum * Bspline04(yminusm);
-                    break;
-                case 5:
-                    yxsum += xsum * Bspline05(yminusm);
-                    break;
-                case 6:
-                    yxsum += xsum * Bspline06(yminusm);
-                    break;
-                case 7:
-                    yxsum += xsum * Bspline07(yminusm);
-                    break;
-                case 8:
-                    yxsum += xsum * Bspline08(yminusm);
-                    break;
-                case 9:
-                    yxsum += xsum * Bspline09(yminusm);
-                    break;
-                }
-            }
-
-            double zminusn = z - (double) nn;
-            switch (SplineDegree)
-            {
-            case 2:
-                zyxsum += yxsum * Bspline02(zminusn);
-                break;
-            case 3:
-                BSPLINE03(aux,zminusn);
-                zyxsum += yxsum * aux;
-                break;
-            case 4:
-                zyxsum += yxsum * Bspline04(zminusn);
-                break;
-            case 5:
-                zyxsum += yxsum * Bspline05(zminusn);
-                break;
-            case 6:
-                zyxsum += yxsum * Bspline06(zminusn);
-                break;
-            case 7:
-                zyxsum += yxsum * Bspline07(zminusn);
-                break;
-            case 8:
-                zyxsum += yxsum * Bspline08(zminusn);
-                break;
-            case 9:
-                zyxsum += yxsum * Bspline09(zminusn);
-                break;
-            }
-        }
-
-        return (T) zyxsum;
-    }
+                                   int SplineDegree = 3) const;
 
     /** Interpolates the value of the nth 2D matrix M at the point (x,y) knowing
      * that this image is a set of B-spline coefficients
@@ -1717,193 +1434,9 @@ public:
      * 0.5,3);
      * @endcode
      */
-    inline T interpolatedElementBSpline2D(double x, double y, int SplineDegree = 3) const
-    {
-        int SplineDegree_1 = SplineDegree - 1;
+    T interpolatedElementBSpline2D(double x, double y, int SplineDegree = 3) const;
 
-        // Logical to physical
-        y -= STARTINGY(*this);
-        x -= STARTINGX(*this);
-
-        int l1 = (int)ceil(x - SplineDegree_1);
-        int l2 = l1 + SplineDegree;
-        int m1 = (int)ceil(y - SplineDegree_1);
-        int m2 = m1 + SplineDegree;
-
-        double columns = 0.0;
-        double aux;
-        int Ydim=(int)YSIZE(*this);
-        int Xdim=(int)XSIZE(*this);
-        for (int m = m1; m <= m2; m++)
-        {
-            int equivalent_m=m;
-            if      (m<0)
-                equivalent_m=-m-1;
-            else if (m>=Ydim)
-                equivalent_m=2*Ydim-m-1;
-            double rows = 0.0;
-            for (int l = l1; l <= l2; l++)
-            {
-                double xminusl = x - (double) l;
-                int equivalent_l=l;
-                if      (l<0)
-                    equivalent_l=-l-1;
-                else if (l>=Xdim)
-                    equivalent_l=2*Xdim-l-1;
-                double Coeff = DIRECT_A2D_ELEM(*this, equivalent_m,equivalent_l);
-                switch (SplineDegree)
-                {
-                case 2:
-                    rows += Coeff * Bspline02(xminusl);
-                    break;
-
-                case 3:
-                    BSPLINE03(aux,xminusl);
-                    rows += Coeff * aux;
-                    break;
-
-                case 4:
-                    rows += Coeff * Bspline04(xminusl);
-                    break;
-
-                case 5:
-                    rows += Coeff * Bspline05(xminusl);
-                    break;
-
-                case 6:
-                    rows += Coeff * Bspline06(xminusl);
-                    break;
-
-                case 7:
-                    rows += Coeff * Bspline07(xminusl);
-                    break;
-
-                case 8:
-                    rows += Coeff * Bspline08(xminusl);
-                    break;
-
-                case 9:
-                    rows += Coeff * Bspline09(xminusl);
-                    break;
-                }
-            }
-
-            double yminusm = y - (double) m;
-            switch (SplineDegree)
-            {
-            case 2:
-                columns += rows * Bspline02(yminusm);
-                break;
-
-            case 3:
-                BSPLINE03(aux,yminusm);
-                columns += rows * aux;
-                break;
-
-            case 4:
-                columns += rows * Bspline04(yminusm);
-                break;
-
-            case 5:
-                columns += rows * Bspline05(yminusm);
-                break;
-
-            case 6:
-                columns += rows * Bspline06(yminusm);
-                break;
-
-            case 7:
-                columns += rows * Bspline07(yminusm);
-                break;
-
-            case 8:
-                columns += rows * Bspline08(yminusm);
-                break;
-
-            case 9:
-                columns += rows * Bspline09(yminusm);
-                break;
-            }
-        }
-        return (T) columns;
-    }
-
-    inline T interpolatedElementBSpline2D_Degree3(double x, double y) const
-    {
-    	bool	firstTime=true;			// Inner loop first time execution flag.
-    	double	*ref;
-
-       	// Logical to physical
-        y -= STARTINGY(*this);
-        x -= STARTINGX(*this);
-
-        int l1 = (int)ceil(x - 2);
-        int l2 = l1 + 3;
-        int m1 = (int)ceil(y - 2);
-        int m2 = m1 + 3;
-
-        double columns = 0.0;
-        double aux;
-        int Ydim=(int)YSIZE(*this);
-        int Xdim=(int)XSIZE(*this);
-
-        int		equivalent_l_Array[LOOKUP_TABLE_LEN]; // = new int [l2 - l1 + 1];
-        double 	aux_Array[LOOKUP_TABLE_LEN];// = new double [l2 - l1 + 1];
-
-        for (int m = m1; m <= m2; m++)
-        {
-            int equivalent_m=m;
-            if      (m<0)
-                equivalent_m=-m-1;
-            else if (m>=Ydim)
-                equivalent_m=2*Ydim-m-1;
-            double rows = 0.0;
-            int	index=0;
-            ref = &DIRECT_A2D_ELEM(*this, equivalent_m,0);
-            for (int l = l1; l <= l2; l++)
-            {
-            	int equivalent_l;
-            	// Check if it is first time executing inner loop.
-            	if (firstTime)
-            	{
-					double xminusl = x - (double) l;
-					equivalent_l=l;
-					if (l<0)
-					{
-						equivalent_l=-l-1;
-					}
-					else if (l>=Xdim)
-					{
-						equivalent_l=2*Xdim-l-1;
-					}
-
-					equivalent_l_Array[index] = equivalent_l;
-					BSPLINE03(aux,xminusl);
-					aux_Array[index] = aux;
-					index++;
-            	}
-            	else
-            	{
-            		equivalent_l = equivalent_l_Array[index];
-					aux = aux_Array[index];
-					index++;
-            	}
-
-            	//double Coeff = DIRECT_A2D_ELEM(*this, equivalent_m,equivalent_l);
-            	double Coeff = ref[equivalent_l];
-                rows += Coeff * aux;
-            }
-
-            // Set first time inner flag is executed to false.
-    		firstTime = false;
-
-            double yminusm = y - (double) m;
-            BSPLINE03(aux,yminusm);
-            columns += rows * aux;
-        }
-
-        return (T) columns;
-    }
+    T interpolatedElementBSpline2D_Degree3(double x, double y) const;
 
 	/** Interpolates the value of the nth 1D vector M at the point (x) knowing
      * that this vector is a set of B-spline coefficients
@@ -1920,65 +1453,7 @@ public:
      * interpolated_value = Bspline_coeffs.interpolatedElementBSpline(0.5,3);
      * @endcode
      */
-    T interpolatedElementBSpline1D(double x, int SplineDegree = 3) const
-    {
-        int SplineDegree_1 = SplineDegree - 1;
-
-        // Logical to physical
-        x -= STARTINGX(*this);
-
-        int l1 = (int)ceil(x - SplineDegree_1);
-        int l2 = l1 + SplineDegree;
-        int Xdim=(int)XSIZE(*this);
-        double sum = 0.0;
-        for (int l = l1; l <= l2; l++)
-        {
-            double xminusl = x - (double) l;
-            int equivalent_l=l;
-            if      (l<0)
-                equivalent_l=-l-1;
-            else if (l>=Xdim)
-                equivalent_l=2*Xdim-l-1;
-            double Coeff = (double) DIRECT_A1D_ELEM(*this, equivalent_l);
-            double aux;
-            switch (SplineDegree)
-            {
-            case 2:
-                sum += Coeff * Bspline02(xminusl);
-                break;
-
-            case 3:
-                BSPLINE03(aux,xminusl);
-                sum += Coeff * aux;
-                break;
-
-            case 4:
-                sum += Coeff * Bspline04(xminusl);
-                break;
-
-            case 5:
-                sum += Coeff * Bspline05(xminusl);
-                break;
-
-            case 6:
-                sum += Coeff * Bspline06(xminusl);
-                break;
-
-            case 7:
-                sum += Coeff * Bspline07(xminusl);
-                break;
-
-            case 8:
-                sum += Coeff * Bspline08(xminusl);
-                break;
-
-            case 9:
-                sum += Coeff * Bspline09(xminusl);
-                break;
-            }
-        }
-        return (T) sum;
-    }
+    T interpolatedElementBSpline1D(double x, int SplineDegree = 3) const;
     //@}
 
     /// @name Statistics functions
@@ -2387,25 +1862,7 @@ public:
             stddev = 0;
     }
 
-    void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
-    {
-    	std::vector<double> bgI;
-
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
-        {
-            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
-            {
-            	double aux = DIRECT_MULTIDIM_ELEM(*this, n);
-                bgI.push_back(aux);
-            }
-        }
-
-        std::sort(bgI.begin(), bgI.end());
-        if (bgI.size() % 2 != 0)
-            median = bgI[bgI.size() / 2];
-        else
-            median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
-    }
+    void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const;
 
     /** Compute statistics within 2D region of 2D image.
      *
@@ -3353,20 +2810,7 @@ public:
      * // gaussian distribution with 0 mean and stddev=1
      * @endcode
      */
-    void initRandom(double op1, double op2, RandomMode mode = RND_UNIFORM)
-    {
-        T* ptr=NULL;
-        size_t n;
-        if (mode == RND_UNIFORM)
-            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-            *ptr = static_cast< T >(rnd_unif(op1, op2));
-        else if (mode == RND_GAUSSIAN)
-            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-            *ptr = static_cast< T >(rnd_gaus(op1, op2));
-        else
-            REPORT_ERROR(ERR_VALUE_INCORRECT,
-                         formatString("InitRandom: Mode not supported"));
-    }
+    void initRandom(double op1, double op2, RandomMode mode = RND_UNIFORM);
 
     /** Add noise to actual values.
      *
@@ -3397,23 +2841,7 @@ public:
     void addNoise(double op1,
                   double op2,
                   const String& mode = "uniform",
-                  double df = 3.) const
-    {
-        T* ptr=NULL;
-        size_t n;
-        if (mode == "uniform")
-            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-            *ptr += static_cast< T >(rnd_unif(op1, op2));
-        else if (mode == "gaussian")
-            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-            *ptr += static_cast< T >(rnd_gaus(op1, op2));
-        else if (mode == "student")
-            FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-            *ptr += static_cast< T >(rnd_student_t(df, op1, op2));
-        else
-            REPORT_ERROR(ERR_VALUE_INCORRECT,
-                         formatString("AddNoise: Mode not supported (%s)", mode.c_str()));
-    }
+                  double df = 3.) const;
     //@}
 
     /** @name Utilities
@@ -3559,13 +2987,7 @@ public:
      * v2 = v1.sort();
      * @endcode
      */
-    void sort(MultidimArray<T> &result) const
-    {
-        checkDimension(1);
-
-        result = *this;
-        std::sort(result.data, result.data + result.nzyxdim);
-    }
+    void sort(MultidimArray<T> &result) const;
 
     /** Gives a vector with the indexes for a sorted vector
      *
@@ -3579,32 +3001,7 @@ public:
      * v2 = v1.indexSort();
      * @endcode
      */
-    void indexSort(MultidimArray< int > &indx) const
-    {
-        checkDimension(1);
-
-        MultidimArray< double > temp;
-        indx.clear();
-
-        if (xdim == 0)
-            return;
-
-        if (xdim == 1)
-        {
-            indx.resizeNoCopy(1);
-            DIRECT_A1D_ELEM(indx,0) = 1;
-            return;
-        }
-
-        // Initialise data
-        indx.resizeNoCopy(xdim);
-        typeCast(*this, temp);
-
-        // Sort indexes
-        double* temp_array = temp.adaptForNumericalRecipes1D();
-        int* indx_array = indx.adaptForNumericalRecipes1D();
-        indexx(XSIZE(*this), temp_array, indx_array);
-    }
+    void indexSort(MultidimArray< int > &indx) const;
 
     /** Cumulative Density Function.
      * For each entry in the array, give what is the probability of having a value smaller or equal than this entry.*/
@@ -3810,15 +3207,7 @@ public:
                           T avgv,
                           T sigv,
                           double accuracy = XMIPP_EQUAL_ACCURACY,
-                          MultidimArray<int> * mask = NULL )
-    {
-        T* ptr=NULL;
-        size_t n;
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-        if (mask == NULL || DIRECT_MULTIDIM_ELEM(*mask,n) > 0 )
-            if (ABS(*ptr - oldv) <= accuracy)
-                *ptr = rnd_gaus(avgv, sigv);
-    }
+                          MultidimArray<int> * mask = NULL );
 
     /** Binarize.
      *
@@ -3918,25 +3307,7 @@ public:
      * v_sorted(minPerc) = -1
      * v_sorted(maxPerc) =  1
      */
-    void selfNormalizeInterval(double minPerc=0.25, double maxPerc=0.75, int Npix=1000)
-    {
-        std::vector<double> randValues; // Vector with random chosen values
-
-        for(int i=0; i<Npix; i++)
-        {
-            size_t indx = (size_t)rnd_unif(0, MULTIDIM_SIZE(*this));
-            randValues.push_back(DIRECT_MULTIDIM_ELEM(*this,indx));
-        }
-        std::sort(randValues.begin(),randValues.end());
-
-        double m = randValues[(size_t)(minPerc*Npix)];
-        double M = randValues[(size_t)(maxPerc*Npix)];
-
-        T* ptr=NULL;
-        size_t n;
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
-        *ptr = 2/(M-m)*(*ptr-m)-1;
-    }
+    void selfNormalizeInterval(double minPerc=0.25, double maxPerc=0.75, int Npix=1000);
 
     /** MAX
      *
@@ -4190,27 +3561,7 @@ public:
      * This function uses gnuplot to plot this vector. You must supply the
      * xlabel, ylabel, and title.
      */
-    void showWithGnuPlot(const String& xlabel, const String& title)
-    {
-        checkDimension(1);
-
-        FileName fn_tmp;
-        fn_tmp.initRandom(10);
-        const char * fnStr = fn_tmp.c_str();
-        MultidimArray<T>::write(formatString("PPP%s.txt", fnStr));
-
-        std::ofstream fh_gplot;
-        fh_gplot.open(formatString("PPP%s.gpl", fnStr).c_str());
-        if (!fh_gplot)
-            REPORT_ERROR(ERR_IO_NOTOPEN,
-                         formatString("vector::showWithGnuPlot: Cannot open PPP%s.gpl for output", fnStr));
-        fh_gplot << "set xlabel \"" + xlabel + "\"\n";
-        fh_gplot << "plot \"PPP" + fn_tmp + ".txt\" title \"" + title +
-        "\" w l\n";
-        fh_gplot << "pause 300 \"\"\n";
-        fh_gplot.close();
-        system(formatString("(gnuplot PPP%s.gpl; rm PPP%s.txt PPP%s.gpl) &", fnStr, fnStr, fnStr).c_str());
-    }
+    void showWithGnuPlot(const String& xlabel, const String& title);
 
     /** Edit with xmipp_editor.
      *
@@ -4218,30 +3569,11 @@ public:
      * edits it with xmipp_editor. After closing the editor the file is
      * removed.
      */
-    void edit()
-    {
-        FileName nam;
-        nam.initRandom(15);
-
-        nam = formatString("PPP%s.txt", nam.c_str());
-        write(nam);
-
-        system(formatString("xmipp_edit -i %s -remove &", nam.c_str()).c_str());
-    }
+    void edit();
 
     /** Write to an ASCII file.
      */
-    void write(const FileName& fn) const
-    {
-        std::ofstream out;
-        out.open(fn.c_str(), std::ios::out);
-        if (!out)
-            REPORT_ERROR(ERR_IO_NOTOPEN,
-                         formatString("MultidimArray::write: File %s cannot be opened for output", fn.c_str()));
-
-        out << *this;
-        out.close();
-    }
+    void write(const FileName& fn) const;
     //@}
 
     /// @name Operators
