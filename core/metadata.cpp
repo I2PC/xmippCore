@@ -24,7 +24,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <fstream>
 #include <random>
+#include <algorithm>
 #include "metadata.h"
 #include "xmipp_image.h"
 #include "metadata_sql.h"
