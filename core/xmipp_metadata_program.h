@@ -57,7 +57,7 @@ public:
     }
     MetaData * getOutputMd()
     {
-        return &mdOut;
+        return mdOut;
     }
 
 public:

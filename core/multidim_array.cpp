@@ -1227,5 +1227,3 @@ template void MultidimArray<unsigned long>::initRandom(double, double, RandomMod
 template void MultidimArray<unsigned short>::initRandom(double, double, RandomMode);
 // write
 template void MultidimArray<bool>::write(FileName const&) const;
-// Adjust LS
-template void MultidimArray<double>::rangeAdjustLS(const MultidimArray<double> &example, const MultidimArray<int> *mask);
