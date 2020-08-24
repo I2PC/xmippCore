@@ -57,10 +57,24 @@ public:
      * @param db to be read
      * @param table to be read
      * @param values will be stored here
+     * @return true on success
     */
     static bool select(size_t rowId,
             sqlite3 *db, const std::string &table,
             std::vector<MDObject> &values);
+
+    /**
+     * Retrieve all rows from a table
+     * All MDObjects are expected to be in the same order
+     * @param db to be read
+     * @param table to be read
+     * @columns to be read
+     * @param rows will be stored here
+     * @return true on success
+     */
+    static bool select(sqlite3 *db, const std::string &table,
+            const std::vector<MDObject> &columns,
+            std::vector<std::vector<MDObject>> &rows);
 
     /**
      * Retrieve all values within a single column

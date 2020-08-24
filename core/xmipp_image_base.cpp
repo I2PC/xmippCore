@@ -47,6 +47,7 @@ void ImageBase::init()
     _exists = mmapOnRead = mmapOnWrite = false;
     mFd        = 0;
     mappedSize = mappedOffset = virtualOffset = 0;
+    m_auxI = nullptr;
 }
 
 void ImageBase::clearHeader()
@@ -704,7 +705,7 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     mmapOnRead = mapData;
 #endif
 
-    FileName ext_name = hFile->ext_name;
+    const auto &ext_name = hFile->ext_name;
     fimg = hFile->fimg;
     fhed = hFile->fhed;
     tif  = hFile->tif;
@@ -844,20 +845,22 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         // CHECK FOR INCONSISTENCIES BETWEEN data.xdim and x, etc???
         size_t Xdim, Ydim, Zdim, _Xdim, _Ydim, _Zdim, Ndim, _Ndim;
         Xdim = Ydim = Zdim = _Xdim = _Ydim = _Zdim = Ndim = _Ndim = 0;
-        Image<char> auxI;
-        auxI._read(filNamePlusExt, hFile, HEADER, ALL_IMAGES);
+        if (nullptr == m_auxI) {
+            m_auxI = new Image<char>();
+        }
+        m_auxI->_read(filNamePlusExt, hFile, HEADER, ALL_IMAGES);
 
         this->getDimensions(Xdim, Ydim, Zdim, Ndim);
-        auxI.getDimensions(_Xdim, _Ydim, _Zdim, _Ndim);
+        m_auxI->getDimensions(_Xdim, _Ydim, _Zdim, _Ndim);
 
-        if(auxI.getSize()>1)
+        if(m_auxI->getSize()>1)
         {
             replaceNsize = _Ndim;
 
             /** If we are going to changes all images, then swap of the file may be changed,
              *  otherwise, original swap remains. */
             if (select_img > ALL_IMAGES || Ndim < replaceNsize)
-                swapWrite = auxI.swap;
+                swapWrite = m_auxI->swap;
 
             if(Xdim != _Xdim ||
                Ydim != _Ydim ||
@@ -1032,4 +1035,9 @@ std::ostream& operator<<(std::ostream& o, const ImageBase& I)
         o << "--- Geometry ---" << std::endl << oGeo.str();
 
     return o;
+}
+
+ImageBase::~ImageBase()
+{
+    delete m_auxI;
 }

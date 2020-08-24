@@ -32,6 +32,8 @@
 #include "bilib/kerneldiff1.h"
 #include "bilib/changebasis.h"
 #include "bilib/pyramidtools.h"
+#include "xmipp_fft.h"
+#include "bilib/kernel.h"
 
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,

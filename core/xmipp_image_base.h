@@ -42,6 +42,8 @@
 template<typename T>
 class Matrix2D;
 class MetaData;
+template<typename T>
+class Image;
 
 /* Minimum size of a TIFF file to be mapped to a tempfile in case of mapping from
  * image file is required
@@ -285,8 +287,7 @@ public:
     }
 
     /** Destructor.*/
-    virtual ~ImageBase()
-    {}
+    virtual ~ImageBase();
 
     /** Is this file an image
      *
@@ -854,7 +855,9 @@ protected:
 
     /** Show ImageBase */
     friend std::ostream& operator<<(std::ostream& o, const ImageBase& I);
-
+private:
+    // Auxiliary image used for special write case
+    Image<char> *m_auxI;
 };
 //@}
 #endif /* IMAGE_BASE_H_ */

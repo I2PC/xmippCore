@@ -23,10 +23,11 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <algorithm>
 #include <dirent.h>
+#include <fstream>
 #include <stdio.h>
 #include <unistd.h>
-#include <algorithm>
 #include "xmipp_filename.h"
 #include "xmipp_funcs.h"
 #include "xmipp_image_macros.h"
