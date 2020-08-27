@@ -1884,79 +1884,78 @@ void fastRadialAverage(const MultidimArray< T >& m,
 
 template<typename T>
 void radialAverageAxis(const MultidimArray< T >& m,
-                   Matrix1D< int >& center_of_rot,
-                   MultidimArray< T >& radial_mean,
-                   MultidimArray< int >& radial_count)
+                   char axis,
+                   MultidimArray< double >& radial_mean)
 //                   const bool& rounding = false)
 {
-    Matrix1D< double > idx(3);
-
-
-    // First determine the maximum distance that one should expect, to set the
-    // dimension of the radial average vector
-    MultidimArray< int > distances(8);
-
-    double z = STARTINGZ(m) - ZZ(center_of_rot);
-    double y = STARTINGY(m) - YY(center_of_rot);
-    double x = STARTINGX(m) - XX(center_of_rot);
-
-    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = FINISHINGX(m) - XX(center_of_rot);
-
-    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = FINISHINGY(m) - YY(center_of_rot);
-
-    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = STARTINGX(m) - XX(center_of_rot);
-
-    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
-    z = FINISHINGZ(m) - ZZ(center_of_rot);
-
-    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = FINISHINGX(m) - XX(center_of_rot);
-
-    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = STARTINGY(m) - YY(center_of_rot);
-
-    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = STARTINGX(m) - XX(center_of_rot);
-
-    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
-
-    int dim = (int) CEIL(distances.computeMax()) + 1;
-//    if (rounding)
-//        dim++;
-
-    // Define the vectors
-    radial_mean.initZeros(dim);
-    radial_count.initZeros(dim);
-
-    // Perform the radial sum and count pixels that contribute to every
-    // distance
-    FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
-    {
-//        ZZ(idx) = k - ZZ(center_of_rot);
-        YY(idx) = i - YY(center_of_rot);
-        XX(idx) = j - XX(center_of_rot);
-
-        // Determine distance to the center
-        ;
-        double module = sqrt(YY(idx)*YY(idx)+XX(idx)*XX(idx));
-//        int distance = (rounding) ? (int) round(module) : (int) floor(module);
-        int distance = (int) floor(module);  //estrellafg
-
-
-        // Sum te value to the pixels with the same distance
-        DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A2D_ELEM(m, i, j);
-
-        // Count the pixel
-        DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
-    }
-
-    // Perform the mean
-    FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
-      if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
-        DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+//    Matrix1D< double > idx(3);
+//
+//
+//    // First determine the maximum distance that one should expect, to set the
+//    // dimension of the radial average vector
+//    MultidimArray< int > distances(8);
+//
+//    double z = STARTINGZ(m);
+//    double y = STARTINGY(m);
+//    double x = STARTINGX(m);
+//
+//    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
+//    x = FINISHINGX(m);
+//
+//    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
+//    y = FINISHINGY(m);
+//
+//    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
+//    x = STARTINGX(m);
+//
+//    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
+//    z = FINISHINGZ(m);
+//
+//    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
+//    x = FINISHINGX(m);
+//
+//    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
+//    y = STARTINGY(m);
+//
+//    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
+//    x = STARTINGX(m);
+//
+//    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
+//
+//    int dim = (int) CEIL(distances.computeMax()) + 1;
+////    if (rounding)
+////        dim++;
+//
+//    // Define the vectors
+//    radial_mean.initZeros(dim);
+////    radial_count.initZeros(dim);
+//
+//    // Perform the radial sum and count pixels that contribute to every
+//    // distance
+//    FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
+//    {
+////        ZZ(idx) = k - ZZ(center_of_rot);
+//        YY(idx) = i;
+//        XX(idx) = j;
+//
+//        // Determine distance to the center
+//        ;
+//        double module = sqrt(YY(idx)*YY(idx)+XX(idx)*XX(idx));
+////        int distance = (rounding) ? (int) round(module) : (int) floor(module);
+//        int distance = (int) floor(module);  //estrellafg
+//
+//
+//        // Sum te value to the pixels with the same distance
+//        DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A2D_ELEM(m, i, j);
+//
+//        // Count the pixel
+////        DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
+//    }
+//
+//    // Perform the mean
+//    FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
+////      if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
+////        DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
