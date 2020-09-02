@@ -88,12 +88,15 @@ bool sqlUtils::select(size_t rowId,
         std::vector<MDObject> &values) {
     // assuming all records are the same
     auto query = createSelectQuery(rowId, values, table);
-    sqlite3_stmt *stmt = nullptr;
-    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+
     // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
     // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    sqlite3_mutex_enter(sqlite3_db_mutex(db)); // FIXME this should be only done on demand or not at all ...
     commitTrans(db);
     beginTrans(db);
+
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
 
     // execute
     sqlite3_step(stmt);
@@ -106,6 +109,7 @@ bool sqlUtils::select(size_t rowId,
     sqlite3_finalize(stmt);
     endTrans(db);
     beginTrans(db);
+    sqlite3_mutex_leave(sqlite3_db_mutex(db)); // FIXME this should be only done on demand or not at all ...
 
     return checkError(db);
 }
