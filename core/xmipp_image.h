@@ -643,7 +643,7 @@ public:
     /** Check if file Datatype is the same as the declared image object (T type) to use mmap.
      */
     bool
-    checkMmapT(DataType datatype)
+    checkMmapT(DataType datatype) override
     {
 
         switch (datatype)
@@ -651,80 +651,31 @@ public:
             case DT_Unknown:
                 REPORT_ERROR(ERR_TYPE_INCORRECT, "ERROR: datatype is Unknown_Type");
             case DT_UHalfByte:
-            {
                 return 0;
-            }
             case DT_UChar:
-            {
-                if (typeid(T) == typeid(unsigned char))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned char);
             case DT_SChar:
-            {
-                if (typeid(T) == typeid(char))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(char);
             case DT_UShort:
-            {
-                if (typeid(T) == typeid(unsigned short))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned short);
             case DT_Short:
-            {
-                if (typeid(T) == typeid(short))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(short);
             case DT_UInt:
-            {
-                if (typeid(T) == typeid(unsigned int))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned int);
             case DT_Int:
-            {
-                if (typeid(T) == typeid(int))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(int);
             case DT_Long:
-            {
-                if (typeid(T) == typeid(long))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(long);
             case DT_Float:
-            {
-                if (typeid(T) == typeid(float))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(float);
             case DT_Double:
-            {
-                if (typeid(T) == typeid(double))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(double);
             default:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;
                 REPORT_ERROR(ERR_TYPE_INCORRECT, " ERROR: cannot cast datatype to T");
             }
         }
-        //               int * iTemp = (int*) map;
-        //                ptrDest = reinterpret_cast<T*> (iTemp);
     }
 
     /** flip image around X axis
@@ -1040,7 +991,7 @@ private:
     /** Read the raw data
      */
     void
-    readData(FILE* fimg, size_t select_img, DataType datatype, size_t pad)
+    readData(FILE* fimg, size_t select_img, DataType datatype, size_t pad) override
     {
         //#define DEBUG
 #ifdef DEBUG
@@ -1103,21 +1054,53 @@ private:
         }
         else
         {
-            char* page = NULL;
-
             // Allocate memory for image data (Assume xdim, ydim, zdim and ndim are already set
             //if memory already allocated use it (no resize allowed)
             data.coreAllocateReuse();
             //ROB
-            //#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 
             data.printShape();
         printf("DEBUG: Page size: %ld offset= %ld \n", pagesize, offset);
         printf("DEBUG: Swap = %d  Pad = %ld  Offset = %ld\n", swap, pad, offset);
-        printf("DEBUG: myoffset = %ld select_img= %ld \n", selectImgOffset, selectImgSizeT);
+        printf("DEBUG: myoffset = %ld select_img= %ld \n", selectImgOffset, select_img);
+        printf("DEBUG: NSIZE = %lu \n", NSIZE(data));
 #endif
 #undef DEBUG
+
+        // const bool is_type_same = checkMmapT(datatype);
+        const bool is_type_same = false; // set to false to have original behavior
+
+        if (is_type_same && !swap) {
+            // printf( "type is same, reading without cast\n" );
+
+            size_t slice_elements = ZYXSIZE(data);
+
+            if (fseek(fimg, selectImgOffset, SEEK_SET) == -1)
+                REPORT_ERROR(ERR_IO_SIZE, "readData: can not seek the file pointer");
+
+            if (pad == 0) {
+                // printf( "pad == 0, reading with one fread \n" );
+                if (fread(MULTIDIM_ARRAY(data), pagesize * NSIZE(data), 1, fimg) != 1) {
+                        REPORT_ERROR(ERR_IO_NOREAD, "readData: cannot read the whole image slice");
+                    }
+            } else {
+                for (size_t n = 0; n < NSIZE(data); ++n) {
+                    if (fread(MULTIDIM_ARRAY(data) + slice_elements * n, pagesize, 1, fimg) != 1) {
+                        REPORT_ERROR(ERR_IO_NOREAD, "readData: cannot read the whole image slice");
+                    }
+
+                    if (fseek(fimg, pad, SEEK_CUR) == -1) {
+                            REPORT_ERROR(ERR_IO_SIZE, "readData: cannot seek the file pointer");
+                    }
+                }
+            }
+
+            
+        } else {
+            // std::cout << "original read" << std::endl;
+            char* page = NULL;
 
             if (pagesize > pagemax)
                 page = (char *) askMemory(pagemax * sizeof(char));
@@ -1157,6 +1140,8 @@ private:
             //    freeMemory(padpage, pad*sizeof(char));
             if (page > 0)
                 freeMemory(page, pagesize * sizeof(char));
+
+        }
 
 #ifdef DEBUG
 
@@ -1274,6 +1259,15 @@ private:
 
         if (castMode != CW_CAST)
             data.computeDoubleMinMaxRange(min0, max0, offset, datasize_n);
+
+        // const bool is_type_same = checkMmapT(wDType);
+        const bool is_type_same = false;
+
+        if ( is_type_same ) {
+            // printf( "type is same, writing without casting\n" );
+            fwrite( MULTIDIM_ARRAY(data) + offset, datasize, 1, fimg );
+            return;
+        }
 
         if (datasize > rw_max_page_size)
             fdata = (char *) askMemory(rw_max_page_size * sizeof(char));

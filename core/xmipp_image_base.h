@@ -351,6 +351,14 @@ public:
     int read(const FileName &name, DataMode datamode = DATA, size_t select_img = ALL_IMAGES,
              bool mapData = false, int mode = WRITE_READONLY);
 
+    /**
+    * Reads `batch_size` images from a single image file starting from image with index `start_img`.
+    * If batch_size == ALL_IMAGES, then all images starting from `start_img` to last image are read.
+    */
+    int readBatch(const FileName &name, size_t start_img, size_t batch_size, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
+
+    int readRange(const FileName &name, size_t start_img, size_t end_img, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
+
     /** General read function
      * you can read a single image from a single image file
      * or a single image file from an stack, in the second case
@@ -817,6 +825,9 @@ protected:
     /** Internal read image file method.
      */
     int _read(const FileName &name, ImageFHandler* hFile, DataMode datamode = DATA, size_t select_img = ALL_IMAGES,
+              bool mapData = false);
+
+    int _readBatch(const FileName &name, ImageFHandler* hFile, size_t start_img, size_t batch_size, DataMode datamode = DATA,
               bool mapData = false);
 
     /** Internal write image file method.
