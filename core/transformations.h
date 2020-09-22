@@ -1778,7 +1778,7 @@ void radialAverage(const MultidimArray< T >& m,
         double module = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
         int distance = (rounding) ? (int) round(module) : (int) floor(module);
 
-        // Sum te value to the pixels with the same distance
+        // Sum the value to the pixels with the same distance
         DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
 
         // Count the pixel
@@ -1883,79 +1883,72 @@ void fastRadialAverage(const MultidimArray< T >& m,
 }
 
 template<typename T>
-void radialAverageAxis(const MultidimArray< T >& m,
-                   char axis,
-                   MultidimArray< double >& radial_mean)
-//                   const bool& rounding = false)
+void radialAverageAxis(const MultidimArray< T >& in,
+                   	   char axis,
+					   MultidimArray< double >& out)
 {
-//    Matrix1D< double > idx(3);
-//
-//
-//    // First determine the maximum distance that one should expect, to set the
-//    // dimension of the radial average vector
-//    MultidimArray< int > distances(8);
-//
-//    double z = STARTINGZ(m);
-//    double y = STARTINGY(m);
-//    double x = STARTINGX(m);
-//
-//    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
-//    x = FINISHINGX(m);
-//
-//    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
-//    y = FINISHINGY(m);
-//
-//    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
-//    x = STARTINGX(m);
-//
-//    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
-//    z = FINISHINGZ(m);
-//
-//    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
-//    x = FINISHINGX(m);
-//
-//    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
-//    y = STARTINGY(m);
-//
-//    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
-//    x = STARTINGX(m);
-//
-//    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
-//
-//    int dim = (int) CEIL(distances.computeMax()) + 1;
-////    if (rounding)
-////        dim++;
-//
-//    // Define the vectors
-//    radial_mean.initZeros(dim);
-////    radial_count.initZeros(dim);
-//
-//    // Perform the radial sum and count pixels that contribute to every
-//    // distance
-//    FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
-//    {
-////        ZZ(idx) = k - ZZ(center_of_rot);
-//        YY(idx) = i;
-//        XX(idx) = j;
-//
-//        // Determine distance to the center
-//        ;
-//        double module = sqrt(YY(idx)*YY(idx)+XX(idx)*XX(idx));
-////        int distance = (rounding) ? (int) round(module) : (int) floor(module);
-//        int distance = (int) floor(module);  //estrellafg
-//
-//
-//        // Sum te value to the pixels with the same distance
-//        DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A2D_ELEM(m, i, j);
-//
-//        // Count the pixel
-////        DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
-//    }
-//
-//    // Perform the mean
-//    FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
-////      if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
-////        DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+	Matrix1D< double > idx(3);
+
+		Matrix1D<int> center_of_rot(2);
+		center_of_rot.initZeros();
+	    std::cout << "----t0-------" << idx << std::endl;
+
+		for (int k=STARTINGZ(in); k<=FINISHINGZ(in); ++k)
+		{
+			// First determine the maximum distance that one should expect, to set the
+			// dimension of the radial average vector
+		    std::cout << "----t1-------" << idx << std::endl;
+			MultidimArray< int > distances(8);
+
+		    double z = STARTINGZ(in) - ZZ(center_of_rot);
+			double y = STARTINGY(in) - YY(center_of_rot);
+			double x = STARTINGX(in) - XX(center_of_rot);
+		    std::cout << "----t2-------" << idx << std::endl;
+
+			distances(0) = (int) floor(sqrt(x * x + y * y));
+			x = FINISHINGX(in) - XX(center_of_rot);
+
+			distances(1) = (int) floor(sqrt(x * x + y * y));
+			y = FINISHINGY(in) - YY(center_of_rot);
+
+			distances(2) = (int) floor(sqrt(x * x + y * y));
+			x = STARTINGX(in) - XX(center_of_rot);
+
+//			distances(3) = (int) floor(sqrt(x * x + y * y));
+//			z = FINISHINGZ(in) - ZZ(center_of_rot);
+
+			distances(3) = (int) floor(sqrt(x * x + y * y));
+			x = FINISHINGX(in) - XX(center_of_rot);
+
+			distances(4) = (int) floor(sqrt(x * x + y * y));
+			y = STARTINGY(in) - YY(center_of_rot);
+
+			distances(5) = (int) floor(sqrt(x * x + y * y));
+			x = STARTINGX(in) - XX(center_of_rot);
+		    std::cout << "----t3-------" << idx << std::endl;
+
+			distances(6) = (int) floor(sqrt(x * x + y * y));
+
+			int dim = (int) CEIL(distances.computeMax()) + 1;
+		    out.initZeros(in);
+		    std::cout << "----t4-------" << idx << std::endl;
+
+        	ZZ(idx) = k - ZZ(center_of_rot);
+
+	        for (int i=STARTINGY(in); i<=FINISHINGY(in); ++i)
+	        {
+	            std::cout << "----t5-------" << idx << std::endl;
+	            for (int j=STARTINGX(in); j<=FINISHINGX(in); ++j)
+	            {
+					YY(idx) = i - YY(center_of_rot);
+					XX(idx) = j - XX(center_of_rot);
+
+					A2D_ELEM(out,i,j) = (int) floor(idx.module());
+					std::cout << "----t12-------" << idx << std::endl;
+	            }
+	        }
+		}
+
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
