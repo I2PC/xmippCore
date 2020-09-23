@@ -357,6 +357,10 @@ public:
     */
     int readBatch(const FileName &name, size_t start_img, size_t batch_size, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
 
+    /**
+    * Reads range of images form a single image file starting from image with index `start_img` and ending with
+    * image with index `end_img` inclusive.
+    */
     int readRange(const FileName &name, size_t start_img, size_t end_img, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
 
     /** General read function
