@@ -1069,10 +1069,7 @@ private:
 #endif
 #undef DEBUG
 
-        // const bool is_type_same = checkMmapT(datatype);
-        const bool is_type_same = false; // set to false to have original behavior
-
-        if (is_type_same && !swap) {
+        if (checkMmapT(datatype) && !swap) {
             // printf( "type is same, reading without cast\n" );
 
             size_t slice_elements = ZYXSIZE(data);
@@ -1260,11 +1257,7 @@ private:
         if (castMode != CW_CAST)
             data.computeDoubleMinMaxRange(min0, max0, offset, datasize_n);
 
-        // const bool is_type_same = checkMmapT(wDType);
-        const bool is_type_same = false;
-
-        if ( is_type_same ) {
-            // printf( "type is same, writing without casting\n" );
+        if ( checkMmapT(wDType) ) {
             fwrite( MULTIDIM_ARRAY(data) + offset, datasize, 1, fimg );
             return;
         }
