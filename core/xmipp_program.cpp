@@ -440,33 +440,3 @@ int XmippProgram::version() const
 {
     REPORT_ERROR(ERR_NOT_IMPLEMENTED,"");
 }
-
-XmippProgramGeneric::XmippProgramGeneric()
-{
-    initComments();
-    progDef = new ProgramDef();
-    definitionComplete = false;
-}
-
-void XmippProgramGeneric::endDefinition()
-{
-    definitionComplete = true;
-    this->defineCommons();
-    progDef->parse();
-}
-
-void XmippProgramGeneric::read(int argc, const char ** argv, bool reportErrors)
-{
-    if (!definitionComplete)
-        endDefinition();
-    XmippProgram::read(argc, argv, reportErrors);
-}
-//All the following are necessary to override the base class implementation
-void XmippProgramGeneric::readParams()
-{}
-void XmippProgramGeneric::defineParams()
-{}
-void XmippProgramGeneric::show()
-{}
-void XmippProgramGeneric::run()
-{}

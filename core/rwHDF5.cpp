@@ -116,24 +116,27 @@ hid_t ImageBase::H5Datatype(DataType datatype)
 
 }
 
-
-
-int ImageBase::readHDF5(size_t select_img)
-{
-    bool isStack = false;
-
-    H5infoProvider provider = getProvider(fhdf5); // Provider name
-
-    int errCode = 0;
-
+class readHDF5Data {
+public:
     hid_t dataset;    /* Dataset and datatype identifiers */
     hid_t filespace;
     hsize_t dims[4]; // We are not going to support more than 4 dimensions, at this moment.
     hsize_t nobjEman;
     hid_t cparms;
     int rank;
+    ~readHDF5Data() {
+        H5Pclose(cparms);
+        H5Sclose(filespace);
+        H5Dclose(dataset);
+    }
+};
+
+int ImageBase::readHDF5(size_t select_img)
+{
+    H5infoProvider provider = getProvider(fhdf5); // Provider name
 
     String dsname = filename.getBlockName();
+    readHDF5Data d;
     
     // Setting default dataset name
     if (dsname.empty())
@@ -146,7 +149,7 @@ int ImageBase::readHDF5(size_t select_img)
             hid_t grpid;
             grpid = H5Gopen(fhdf5,"/MDF/images/", H5P_DEFAULT);
             /*herr_t err = */
-            H5Gget_num_objs(grpid, &nobjEman);
+            H5Gget_num_objs(grpid, &d.nobjEman);
             dsname = formatString(dsname.c_str(), IMG_INDEX(select_img));
             H5Gclose(grpid);
             break;
@@ -159,32 +162,29 @@ int ImageBase::readHDF5(size_t select_img)
         switch (provider.first)
         {
         case EMAN: // Images in stack are stored in separated groups
-            nobjEman=1;
+            d.nobjEman=1;
             break;
         default:
             break;
         }
     }
 
-    dataset = H5Dopen2(fhdf5, dsname.c_str(), H5P_DEFAULT);
+    d.dataset = H5Dopen2(fhdf5, dsname.c_str(), H5P_DEFAULT);
 
-    if( dataset < 0)
+    if( d.dataset < 0)
         REPORT_ERROR(ERR_IO_NOTEXIST, formatString("readHDF5: Dataset '%s' not found",dsname.c_str()));
 
-    cparms = H5Dget_create_plist(dataset); /* Get properties handle first. */
+    d.cparms = H5Dget_create_plist(d.dataset); /* Get properties handle first. */
 
     // Get dataset rank and dimension.
-    filespace = H5Dget_space(dataset);    /* Get filespace handle first. */
+    d.filespace = H5Dget_space(d.dataset);    /* Get filespace handle first. */
     //    rank      = H5Sget_simple_extent_ndims(filespace);
-    rank  = H5Sget_simple_extent_dims(filespace, dims, NULL);
+    int rank  = H5Sget_simple_extent_dims(d.filespace, d.dims, NULL);
 
     // Offset only set when it is possible to access to data directly
-    offset = (H5D_CONTIGUOUS == H5Pget_layout(cparms))? H5Dget_offset(dataset) : 0;
+    offset = (H5D_CONTIGUOUS == H5Pget_layout(d.cparms))? H5Dget_offset(d.dataset) : 0;
 
-
-    //    status = H5Dread(dataset, tid, H5S_ALL, H5S_ALL, H5P_DEFAULT, bm_out);
-
-    hid_t h5datatype = H5Dget_type(dataset);
+    hid_t h5datatype = H5Dget_type(d.dataset);
 
     // Reading byte order
     switch(H5Tget_order(h5datatype))
@@ -206,6 +206,7 @@ int ImageBase::readHDF5(size_t select_img)
     DataType datatype = datatypeH5(h5datatype);
     MDMainHeader.setValue(MDL_DATATYPE,(int) datatype);
 
+    bool isStack = false;
     // Setting isStack depending on provider
     switch (provider.first)
     {
@@ -217,16 +218,15 @@ int ImageBase::readHDF5(size_t select_img)
     	break;
     }
 
-
     ArrayDim aDim;
     size_t nDimFile;
-    aDim.xdim = dims[rank-1];
-    aDim.ydim = (rank>1)?dims[rank-2]:1;
-    aDim.zdim = (rank>3 || (rank==3 && !isStack))?dims[rank-3]:1;
+    aDim.xdim = d.dims[rank-1];
+    aDim.ydim = (rank>1)?d.dims[rank-2]:1;
+    aDim.zdim = (rank>3 || (rank==3 && !isStack))?d.dims[rank-3]:1;
     if ( provider.first == EMAN )
-        nDimFile = nobjEman;
+        nDimFile = d.nobjEman;
     else
-        nDimFile = ( rank<3 || !isStack )?1:dims[0] ;
+        nDimFile = ( rank<3 || !isStack )?1:d.dims[0] ;
 
     if (select_img > nDimFile)
         REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readHDF5 (%s): Image number %lu exceeds stack size %lu", filename.c_str(), select_img, nDimFile));
@@ -236,7 +236,7 @@ int ImageBase::readHDF5(size_t select_img)
 
     //Read header only
     if(dataMode == HEADER || (dataMode == _HEADER_ALL && aDim.ndim > 1))
-        return errCode;
+        return 0;
 
 
     // EMAN stores each image in a separate dataset
@@ -246,23 +246,19 @@ int ImageBase::readHDF5(size_t select_img)
     size_t   imgStart = IMG_INDEX(select_img);
     size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : aDim.ndim;
 
-
-
     MD.clear();
     MD.resize(imgEnd - imgStart,MDL::emptyHeader);
 
     if (dataMode < DATA)   // Don't read  data if not necessary but read the header
-        return errCode;
+        return 0;
 
-    if ( H5Pget_layout(cparms) == H5D_CONTIGUOUS ) //We can read it directly
+    if ( H5Pget_layout(d.cparms) == H5D_CONTIGUOUS ) //We can read it directly
         readData(fimg, select_img, datatype, 0);
     else // We read it by hyperslabs
     {
         // Allocate memory for image data (Assume xdim, ydim, zdim and ndim are already set
         //if memory already allocated use it (no resize allowed)
         mdaBase->coreAllocateReuse();
-
-        hid_t       memspace;
 
         hsize_t offset[4]; // Hyperslab offset in the file
         hsize_t  count[4]; // Size of the hyperslab in the file
@@ -285,13 +281,12 @@ int ImageBase::readHDF5(size_t select_img)
         count[rank-1]  = aDim.xdim;
         offset[rank-1]  = 0;
 
-        aDim.xdim = dims[rank-1];
-        aDim.ydim = (rank>1)?dims[rank-2]:1;
-        aDim.zdim = (rank == 4)?dims[1]:1;
-        // size_t nDimFile = (rank>2)?dims[0]:1 ;
+        aDim.xdim = d.dims[rank-1];
+        aDim.ydim = (rank>1)?d.dims[rank-2]:1;
+        aDim.zdim = (rank == 4)?d.dims[1]:1;
 
         // Define the memory space to read a hyperslab.
-        memspace = H5Screate_simple(rank,count,NULL);
+        hid_t memspace = H5Screate_simple(rank,count,NULL);
 
         size_t data = (size_t) this->mdaBase->getArrayPointer();
         size_t pad = aDim.zyxdim*gettypesize(myT());
@@ -303,14 +298,13 @@ int ImageBase::readHDF5(size_t select_img)
             // Set the offset of the hyperslab to be read
             offset[0] = idx;
 
-            if ( H5Sselect_hyperslab(filespace, H5S_SELECT_SET, offset, NULL,
+            if ( H5Sselect_hyperslab(d.filespace, H5S_SELECT_SET, offset, NULL,
                                      count, NULL) < 0 )
                 REPORT_ERROR(ERR_IO_NOREAD, formatString("readHDF5: Error selecting hyperslab %d from filename %s",
                              imgStart, filename.c_str()));
 
-            //            movePointerTo(ALL_SLICES,imN);
             // Read
-            if ( H5Dread(dataset, H5Datatype(myT()), memspace, filespace,
+            if ( H5Dread(d.dataset, H5Datatype(myT()), memspace, d.filespace,
                          H5P_DEFAULT, (void*)(data + pad*imN)) < 0 )
                 REPORT_ERROR(ERR_IO_NOREAD,formatString("readHDF5: Error reading hyperslab %d from filename %s",
                                                         imgStart, filename.c_str()));
@@ -318,11 +312,7 @@ int ImageBase::readHDF5(size_t select_img)
         H5Sclose(memspace);
     }
 
-    H5Pclose(cparms);
-    H5Sclose(filespace);
-    H5Dclose(dataset);
-
-    return errCode;
+    return 0;
 }
 
 int ImageBase::writeHDF5(size_t select_img, bool isStack, int mode, String bitDepth, CastWriteMode castMode)
