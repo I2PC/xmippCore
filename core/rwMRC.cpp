@@ -627,14 +627,7 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
 
     size_t imgEnd = (isStack)? Ndim : 1;
 
-    // if (checkMmapT(wDType)) {
-    //     printf( "Types are same\n" );
-    // } else {
-    //     printf( "Types are different\n" );
-    // }
-
     if (checkMmapT(wDType) && !mmapOnWrite && dataMode >= DATA) {
-        // printf( "Writing all at once\n" );
         writeData(fimg, 0, wDType, datasize_n * imgEnd, castMode);
     } else {
         for ( size_t i = 0; i < imgEnd; i++ )
