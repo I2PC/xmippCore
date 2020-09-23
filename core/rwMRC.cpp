@@ -627,24 +627,37 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
 
     size_t imgEnd = (isStack)? Ndim : 1;
 
-    for ( size_t i = 0; i < imgEnd; i++ )
-    {
-        // If to also write the image data or jump its size
-        if (dataMode >= DATA)
+    // if (checkMmapT(wDType)) {
+    //     printf( "Types are same\n" );
+    // } else {
+    //     printf( "Types are different\n" );
+    // }
+
+    if (checkMmapT(wDType) && !mmapOnWrite && dataMode >= DATA) {
+        // printf( "Writing all at once\n" );
+        writeData(fimg, 0, wDType, datasize_n * imgEnd, castMode);
+    } else {
+        for ( size_t i = 0; i < imgEnd; i++ )
         {
-            if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
+            // If to also write the image data or jump its size
+            if (dataMode >= DATA)
             {
-                mappedOffset = ftell(fimg);
-                mappedSize = mappedOffset + datasize;
-                fseek(fimg, datasize-1, SEEK_CUR);
-                fputc(0, fimg);
+                if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
+                {
+                    mappedOffset = ftell(fimg);
+                    mappedSize = mappedOffset + datasize;
+                    fseek(fimg, datasize-1, SEEK_CUR);
+                    fputc(0, fimg);
+                }
+                else
+                    writeData(fimg, i*datasize_n, wDType, datasize_n, castMode);
             }
             else
-                writeData(fimg, i*datasize_n, wDType, datasize_n, castMode);
-        }
-        else
-            fseek(fimg, datasize, SEEK_CUR);
+                fseek(fimg, datasize, SEEK_CUR);
+        }    
     }
+
+    
 
     // Unlock the file
     flock.unlock();
