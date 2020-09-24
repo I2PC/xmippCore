@@ -1883,72 +1883,33 @@ void fastRadialAverage(const MultidimArray< T >& m,
 }
 
 template<typename T>
-void radialAverageAxis(const MultidimArray< T >& in,
-                   	   char axis,
-					   MultidimArray< double >& out)
+void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< double >& out)
 {
-	Matrix1D< double > idx(3);
-		in.printShape();
-		Matrix1D<int> center_of_rot(2);
-		center_of_rot.initZeros();
-//	    std::cout << "----t0-------" << idx << std::endl;
-
-		for (int k=STARTINGZ(in); k<=FINISHINGZ(in); ++k)
+	MultidimArray<double> inCentered;
+	inCentered.alias(in);
+	inCentered.setXmippOrigin();
+	if (axis=='z')
+	{
+		out.initZeros(ZSIZE(in),XSIZE(in));
+		out.setXmippOrigin();
+		for (int i=STARTINGY(inCentered); i<=FINISHINGY(inCentered); ++i)
 		{
-			// First determine the maximum distance that one should expect, to set the
-			// dimension of the radial average vector
-//		    std::cout << "----t1-------" << idx << std::endl;
-			MultidimArray< int > distances(8);
-
-		    double z = STARTINGZ(in) - ZZ(center_of_rot);
-			double y = STARTINGY(in) - YY(center_of_rot);
-			double x = STARTINGX(in) - XX(center_of_rot);
-//		    std::cout << "----t2-------" << idx << std::endl;
-
-			distances(0) = (int) floor(sqrt(x * x + y * y));
-			x = FINISHINGX(in) - XX(center_of_rot);
-
-			distances(1) = (int) floor(sqrt(x * x + y * y));
-			y = FINISHINGY(in) - YY(center_of_rot);
-
-			distances(2) = (int) floor(sqrt(x * x + y * y));
-			x = STARTINGX(in) - XX(center_of_rot);
-
-//			distances(3) = (int) floor(sqrt(x * x + y * y));
-//			z = FINISHINGZ(in) - ZZ(center_of_rot);
-
-			distances(3) = (int) floor(sqrt(x * x + y * y));
-			x = FINISHINGX(in) - XX(center_of_rot);
-
-			distances(4) = (int) floor(sqrt(x * x + y * y));
-			y = STARTINGY(in) - YY(center_of_rot);
-
-			distances(5) = (int) floor(sqrt(x * x + y * y));
-			x = STARTINGX(in) - XX(center_of_rot);
-//		    std::cout << "----t3-------" << idx << std::endl;
-
-			distances(6) = (int) floor(sqrt(x * x + y * y));
-
-			int dim = (int) CEIL(distances.computeMax()) + 1;
-		    out.initZeros(in);
-//		    std::cout << "----t4-------" << idx << std::endl;
-
-        	ZZ(idx) = k - ZZ(center_of_rot);
-
-	        for (int i=STARTINGY(in); i<=FINISHINGY(in); ++i)
-	        {
-//	            std::cout << "----t5-------" << idx << std::endl;
-	            for (int j=STARTINGX(in); j<=FINISHINGX(in); ++j)
-	            {
-					YY(idx) = i - YY(center_of_rot);
-					XX(idx) = j - XX(center_of_rot);
-
-					A2D_ELEM(out,i,j) = (int) floor(idx.module());
-//					std::cout << "----t12-------" << idx << std::endl;
-	            }
-	        }
+			double z=i;
+			for (int j=0; j<XSIZE(out)/2; ++j)
+			{
+				for (double ang=0; ang<TWOPI; ang+=TWOPI/72)
+				{
+					double x=j*cos(ang);
+					double y=j*sin(ang);
+					double val=inCentered.interpolatedElement3D(x,y,z);
+					A2D_ELEM(out,i,j)+=val;
+				}
+				A2D_ELEM(out,i,-j)=A2D_ELEM(out,i,j);
+			}
 		}
-
+	}
+	else
+		REPORT_ERROR(ERR_ARG_INCORRECT,"Not implemented yet");
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
