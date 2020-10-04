@@ -1139,40 +1139,47 @@ void MultidimArray<T>::randomSubstitute(T oldv,
 
 // explicit instantiation
 template class MultidimArray<double>;
+
 // mmapFile
 template FILE* MultidimArray<bool>::mmapFile(bool*&, unsigned long) const;
 template FILE* MultidimArray<float>::mmapFile(float*&, unsigned long) const;
-template FILE* MultidimArray<int>::mmapFile(int*&, unsigned long) const;
 template FILE* MultidimArray<char>::mmapFile(char*&, unsigned long) const;
+template FILE* MultidimArray<int>::mmapFile(int*&, unsigned long) const;
 template FILE* MultidimArray<long>::mmapFile(long*&, unsigned long) const;
-template FILE* MultidimArray<unsigned short>::mmapFile(unsigned short*&, unsigned long) const;
+template FILE* MultidimArray<short>::mmapFile(short*&, unsigned long) const;
+template FILE* MultidimArray<unsigned char>::mmapFile(unsigned char*&, unsigned long) const;
 template FILE* MultidimArray<unsigned int>::mmapFile(unsigned int*&, unsigned long) const;
 template FILE* MultidimArray<unsigned long>::mmapFile(unsigned long*&, unsigned long) const;
-template FILE* MultidimArray<std::complex<double> >::mmapFile(std::complex<double>*&, unsigned long) const;
+template FILE* MultidimArray<unsigned short>::mmapFile(unsigned short*&, unsigned long) const;
+template FILE* MultidimArray<std::complex<double>>::mmapFile(std::complex<double>*&, unsigned long) const;
+
 // resize
-template void MultidimArray<short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<bool>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<float>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<char>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<int>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<unsigned char>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<unsigned int>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<unsigned long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<unsigned short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
-template void MultidimArray<long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
-template void MultidimArray<float>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
-template void MultidimArray<bool>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
-template void MultidimArray<char>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
-template void MultidimArray<std::complex<double> >::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<std::complex<double>>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+
 // index sort
-template void MultidimArray<int>::indexSort(MultidimArray<int>&) const;
 template void MultidimArray<float>::indexSort(MultidimArray<int>&) const;
+template void MultidimArray<int>::indexSort(MultidimArray<int>&) const;
+
 // init random
 template void MultidimArray<float>::initRandom(double, double, RandomMode);
-template void MultidimArray<int>::initRandom(double, double, RandomMode);
-template void MultidimArray<short>::initRandom(double, double, RandomMode);
 template void MultidimArray<char>::initRandom(double, double, RandomMode);
 template void MultidimArray<long>::initRandom(double, double, RandomMode);
+template void MultidimArray<int>::initRandom(double, double, RandomMode);
+template void MultidimArray<short>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned char>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned int>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned long>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned short>::initRandom(double, double, RandomMode);
+
 // write
 template void MultidimArray<bool>::write(FileName const&) const;
