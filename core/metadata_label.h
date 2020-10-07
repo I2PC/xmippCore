@@ -227,7 +227,11 @@ enum MDLabel
     MDL_FLIP, ///< Flip the image? (bool)
     MDL_FOM, ///< Figure of Merit in 0-1 range (double)
     MDL_FRAME_ID, ///< Unique id of frame inside a Movie
-    MDL_IDX, ///< Index within a list (size_t)
+	MDL_GRAPH_DISTANCE2MAX, ///< Distance to graph filtered max
+	MDL_GRAPH_DISTANCE2MAX_PREVIOUS, ///< when previous assignment validation
+	MDL_GRAPH_CC, ///< Correlation between assigned direction and graph filtered maximum
+	MDL_GRAPH_CC_PREVIOUS, ///< when previous assignment validation
+	MDL_IDX, ///< Index within a list (size_t)
     MDL_IMAGE, ///< Name of an image (std::string)
     MDL_IMAGE_COVARIANCE, ///< Name of the covariance imagee associated to this image
     MDL_IMAGE_IDX, ///< Index of an image within a list (size_t)
@@ -264,6 +268,7 @@ enum MDLabel
     MDL_MAXCC, ///< Maximum cross-correlation for the image (double)
     MDL_MAXCC_PERCENTILE, ///< Percentile of the maximum cross-correlation for the image (double)
     MDL_MAX, ///< Maximum value (double)
+	MDL_MAXCC_PREVIOUS, ///< Correlation from previous alignment
     MDL_MICROGRAPH, ///< Name of a micrograph (std::string)
     MDL_MICROGRAPH_ID, ///< Micrograph unique id for reference (MDL_ITEM_ID should be used for Micrographs list)
     MDL_MICROGRAPH_MOVIE, ///< Name of a movie (std::string)
@@ -359,6 +364,7 @@ enum MDLabel
     MDL_REF, ///< Class to which the image belongs (int)
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
+	MDL_ASSIGNED_DIR_REF_CC, ///< correlation of references assigned by two methods
 
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
@@ -1315,6 +1321,7 @@ private:
         MDL::addLabel(MDL_ANGLE_TEMPERATURE, LABEL_DOUBLE, "angleTemp");
 
         MDL::addLabel(MDL_APPLY_SHIFT, LABEL_BOOL, "applyShift");
+        MDL::addLabel(MDL_ASSIGNED_DIR_REF_CC, LABEL_DOUBLE, "assignedDirRefCC");
         MDL::addLabel(MDL_AVG, LABEL_DOUBLE, "avg");
         MDL::addLabel(MDL_AVG_CHANGES_ORIENTATIONS, LABEL_DOUBLE, "avgChanOrient");
         MDL::addLabel(MDL_AVG_CHANGES_OFFSETS, LABEL_DOUBLE, "avgChanOffset");
@@ -1549,6 +1556,11 @@ private:
         MDL::addLabel(MDL_FOM, LABEL_DOUBLE, "fom");
         MDL::addLabel(MDL_FRAME_ID, LABEL_SIZET, "frameId");
 
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX, LABEL_DOUBLE, "distance2MaxGraph");
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX_PREVIOUS, LABEL_DOUBLE, "distance2MaxGraphPrevious");
+        MDL::addLabel(MDL_GRAPH_CC, LABEL_DOUBLE, "graphCC");
+        MDL::addLabel(MDL_GRAPH_CC_PREVIOUS, LABEL_DOUBLE, "graphCCPrevious");
+
         MDL::addLabel(MDL_IDX, LABEL_SIZET, "index");
         MDL::addLabel(MDL_IMAGE1, LABEL_STRING, "image1", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_IMAGE2, LABEL_STRING, "image2", TAGLABEL_IMAGE);
@@ -1603,6 +1615,7 @@ private:
         MDL::addLabel(MDL_MAXCC, LABEL_DOUBLE, "maxCC");
         MDL::addLabel(MDL_MAXCC_PERCENTILE, LABEL_DOUBLE, "maxCCPerc");
         MDL::addLabel(MDL_MAX, LABEL_DOUBLE, "max");
+        MDL::addLabel(MDL_MAXCC_PREVIOUS, LABEL_DOUBLE, "maxCCprevious");
         MDL::addLabel(MDL_MICROGRAPH_ID, LABEL_SIZET, "micrographId");
         MDL::addLabel(MDL_MICROGRAPH, LABEL_STRING, "micrograph", TAGLABEL_MICROGRAPH);
         MDL::addLabel(MDL_MICROGRAPH_MOVIE_ID, LABEL_SIZET, "micrographMovieId");
