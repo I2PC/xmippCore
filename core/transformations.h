@@ -1904,10 +1904,12 @@ void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< d
 					double val=inCentered.interpolatedElement3D(x,y,z);
 					A2D_ELEM(out,i,j)+=val;
 				}
+				A2D_ELEM(out,i,j)/=73;
 				A2D_ELEM(out,i,-j)=A2D_ELEM(out,i,j);
 			}
 		}
 	}
+
 	else
 		REPORT_ERROR(ERR_ARG_INCORRECT,"Not implemented yet");
 }
