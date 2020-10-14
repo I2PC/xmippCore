@@ -115,9 +115,9 @@ enum MDLabel
     MDL_CONTINUOUS_SCALE_X, ///< scale x of continuous assignment
     MDL_CONTINUOUS_SCALE_Y, ///< scale y of continuous assignment
 
-	MDL_CORRELATION_IDX, ///< correlation value between a particle and its assigned projection
-	MDL_CORRELATION_MASK, ///< masked correlation value between a particle and its assigned projection inside the region with pixel values higher than the standard deviation
-	MDL_CORRELATION_WEIGHT, ///< weighted correlation value between a particle and its assigned projection taking into the difference between both images
+    MDL_CORRELATION_IDX, ///< correlation value between a particle and its assigned projection
+    MDL_CORRELATION_MASK, ///< masked correlation value between a particle and its assigned projection inside the region with pixel values higher than the standard deviation
+    MDL_CORRELATION_WEIGHT, ///< weighted correlation value between a particle and its assigned projection taking into the difference between both images
 
     MDL_CTF_DATA_PHASE_FLIPPED, // Is the Data Phase-Flippled?
     MDL_CTF_CORRECTED, // Is the CTF corrected?
@@ -130,6 +130,10 @@ enum MDLabel
     MDL_CTF_DEFOCUSA, ///< average defocus (Angtroms)
     MDL_CTF_DEFOCUSU, ///< Defocus U (Angstroms)
     MDL_CTF_DEFOCUSV, ///< Defocus V (Angstroms)
+    MDL_CTF_DEFOCUS_CHANGE, ///< Defocus change with respect to previous defoucs (Angstroms)
+    MDL_CTF_DEFOCUS_R2, ///< Defocus coefficient of determination
+    MDL_CTF_DEFOCUS_COEFS, ///< Coefficients of the defocus adjustment plane
+    MDL_CTF_DEFOCUS_RESIDUAL, ///< Difference between the observed defocus value and the estimated defocus value
     MDL_CTF_X0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_Y0, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
     MDL_CTF_XF, ///< The CTF is valid within (x0,y0) to (xF,yF) in the micrograph coordinates
@@ -153,9 +157,9 @@ enum MDLabel
     MDL_CTF_TRANSVERSAL_DISPLACEMENT, ///< Transversal displacemente
     MDL_CTF_Q0, ///< Inelastic absorption
     MDL_CTF_K, ///< CTF gain
-	MDL_CTF_ENV_R0, ///< CTF Envelope polynomial parameter
-	MDL_CTF_ENV_R1, ///< CTF Envelope polynomial parameter
-	MDL_CTF_ENV_R2, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R0, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R1, ///< CTF Envelope polynomial parameter
+    MDL_CTF_ENV_R2, ///< CTF Envelope polynomial parameter
     MDL_CTF_BG_GAUSSIAN_K, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN_SIGMAU, ///< CTF Background parameter
     MDL_CTF_BG_GAUSSIAN_SIGMAV, ///< CTF Background parameter
@@ -235,9 +239,7 @@ enum MDLabel
     MDL_IMAGE_REF, ///< Name of of the class image from which MDL_IMAGE is coming from
     MDL_IMAGE_RESIDUAL, ///< Name of a residual image associated to this image
     MDL_IMAGE_TILTED, ///< Name of the tilted images associated to MDL_IMAGE
-
-	MDL_IMED, ///< imed value between a particle and its assigned projection
-
+    MDL_IMED, ///< imed value between a particle and its assigned projection
     MDL_IMGMD, ///< Name of Metadata file for all images (string)
     MDL_IMAGE1, ///< Image associated to this object (std::string)
     MDL_IMAGE2, ///< Image associated to this object (std::string)
@@ -422,6 +424,8 @@ enum MDLabel
     MDL_SIGNALCHANGE, ///< Signal change for an image
     MDL_SPH_COEFFICIENTS, ///< Deformation coefficients
     MDL_SPH_DEFORMATION, ///< Deformation in voxels
+    MDL_SPH_TSNE_COEFF1D, ///tsne coefficicient in 1D
+    MDL_SPH_TSNE_COEFF2D, ///tsne coefficients in 2D
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
@@ -466,6 +470,7 @@ enum MDLabel
     MDL_ZCOOR, ///< Z component (int)
     MDL_ZSCORE, ///< Global Z Score (double)
     MDL_ZSCORE_DEEPLEARNING1, ///< Z Score (double)
+    MDL_GOOD_REGION_SCORE, ///< Z Score (double)
     MDL_ZSCORE_HISTOGRAM, ///< Z Score (double)
     MDL_ZSCORE_RESMEAN, ///< Z Score of the mean of the residuals (double)
     MDL_ZSCORE_RESVAR, ///< Z Score of the stddev of the residuals (double)
@@ -1460,6 +1465,10 @@ private:
         MDL::addLabel(MDL_CTF_DEFOCUS_ANGLE, LABEL_DOUBLE, "ctfDefocusAngle");
         MDL::addLabel(MDL_CTF_DEFOCUSU, LABEL_DOUBLE, "ctfDefocusU");
         MDL::addLabel(MDL_CTF_DEFOCUSV, LABEL_DOUBLE, "ctfDefocusV");
+        MDL::addLabel(MDL_CTF_DEFOCUS_CHANGE, LABEL_DOUBLE, "ctfDefocusChange");
+        MDL::addLabel(MDL_CTF_DEFOCUS_R2, LABEL_DOUBLE, "ctfDefocusR2");
+        MDL::addLabel(MDL_CTF_DEFOCUS_RESIDUAL, LABEL_DOUBLE, "ctfDefocusResidual");
+        MDL::addLabel(MDL_CTF_DEFOCUS_COEFS, LABEL_VECTOR_DOUBLE, "ctfDefocusCoeficients");
         MDL::addLabel(MDL_CTF_DIMENSIONS, LABEL_VECTOR_DOUBLE, "ctfDimensions");
         MDL::addLabel(MDL_CTF_DOWNSAMPLE_PERFORMED, LABEL_DOUBLE, "CtfDownsampleFactor");
         MDL::addLabel(MDL_CTF_ENERGY_LOSS, LABEL_DOUBLE, "ctfEnergyLoss");
@@ -1787,6 +1796,8 @@ private:
         MDL::addLabel(MDL_SIGNALCHANGE, LABEL_DOUBLE, "signalChange");
         MDL::addLabel(MDL_SPH_COEFFICIENTS, LABEL_VECTOR_DOUBLE, "sphCoefficients");
         MDL::addLabel(MDL_SPH_DEFORMATION, LABEL_DOUBLE, "sphDeformation");
+        MDL::addLabel(MDL_SPH_TSNE_COEFF1D, LABEL_DOUBLE, "sphTsne1D");
+        MDL::addLabel(MDL_SPH_TSNE_COEFF2D, LABEL_VECTOR_DOUBLE, "sphTsne2D");
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
@@ -1845,6 +1856,7 @@ private:
         MDL::addLabel(MDL_ZSCORE_SNR1, LABEL_DOUBLE, "zScoreSNR1");
         MDL::addLabel(MDL_ZSCORE_SNR2, LABEL_DOUBLE, "zScoreSNR2");
         MDL::addLabel(MDL_ZSCORE_DEEPLEARNING1, LABEL_DOUBLE, "zScoreDeepLearning1");
+        MDL::addLabel(MDL_GOOD_REGION_SCORE, LABEL_DOUBLE, "goodRegionScore");
         MDL::addLabel(MDL_ZSIZE, LABEL_SIZET, "zSize");
 
         MDL::addLabelAlias(MDL_XCOOR, "Xcoor");//3.0

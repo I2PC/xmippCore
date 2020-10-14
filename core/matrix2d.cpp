@@ -165,7 +165,9 @@ double ransacWeightedLeastSquaresBasic(WeightedLeastSquaresHelper &h, Matrix1D<d
         idxIn.initZeros();
 
         // Randomly select M equations
-        std::random_shuffle(eqIdx.begin(), eqIdx.end());
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(eqIdx.begin(), eqIdx.end(), g);
 
         // Select the equation system
         for (int i=0; i<M; ++i)

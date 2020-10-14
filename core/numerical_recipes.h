@@ -31,6 +31,7 @@
 #include <math.h>
 #include "xmipp_memory.h"
 #include "xmipp_macros.h"
+#include <algorithm>
 
 //@defgroup NumericalRecipes Functions from the Numerical Recipes
 //@ingroup DataLibrary
@@ -55,7 +56,6 @@ void fourn(double data[], int nn[], int ndim, int isign);  // Complex FFT 2D,3D,
 
 // Sorting -----------------------------------------------------------------
 void indexx(int n, double arrin[], int indx[]);         // Sorting indexes
-void qcksrt(int n, double arr[]);                       // Sorting
 
 // Bessel functions --------------------------------------------------------
 double bessj0(double x);
@@ -115,16 +115,12 @@ void svbksb(double *u, double *w, double *v, int m, int n, double *b, double *x)
 void convlv(double *data, int n, double *respns, int m, int isign, double *ans);
 void realft(double *data, int n, int isign);
 void twofft(double *data1, double *data2, double *fft1, double *fft2, int n);
-void savgol(double *c, int np, int nl, int nr, int ld, int m);
 void four1(double *data, int nn, int isign);
 
 // Optimization ------------------------------------------------------------
 void powell(double *p, double *xi, int n, double ftol, int &iter,
             double &fret, double(*func)(double *, void *), void *prm,
             bool show);
-
-void amebsa(double **p, double y[], int ndim, double pb[], double *yb,
-            double ftol, double (*funk)(double []), int *iter, double temptr);
 
 // These two routines have been taken from
 // http://users.utu.fi/vesoik/userdocs/programs/libpet
@@ -160,8 +156,6 @@ void    cfsqp(int, int, int, int, int, int, int, int, int, int *, int, int,
               void *);
 
 // Wavelets ----------------------------------------------------------------
-void wt1(double a[], unsigned long n, int isign,
-         void(*wtstep)(double [], unsigned long, int));
 void wtn(double a[], unsigned long nn[], int ndim, int isign,
          void(*wtstep)(double [], unsigned long, int));
 void pwtset(int n);

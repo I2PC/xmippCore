@@ -1928,8 +1928,11 @@ bool MetaData::nextBlock(mdBuffer &buffer, mdBlock &block)
         block.nameSize = newLine - buffer.begin;
         //Search for next block if exists one
         //use assign and check if not NULL at same time
-        if (!(block.end = BUFFER_FIND(buffer, "\ndata_", 6)))
-            block.end = block.begin + buffer.size;
+        if (!(block.end = BUFFER_FIND(buffer, "\ndata_", 6))) {
+            block.end = block.begin + buffer.size; }
+        else {
+            block.end += 1; // to include terminal \n
+        }
         block.loop = BUFFER_FIND(buffer, "\nloop_", 6);
         //If loop_ is not found or is found outside block
         //scope, the block is in column format
@@ -2152,15 +2155,11 @@ void MetaData::replace(const MDLabel label, const String &oldStr, const String &
 
 void MetaData::randomize(const MetaData &MDin)
 {
-    static bool randomized = false;
-    if (!randomized)
-    {
-        srand ( time(NULL) );
-        randomized = true;
-    }
+    std::random_device rd;
+    auto g = std::mt19937(rd());
     std::vector<size_t> objects;
     MDin.myMDSql->selectObjects(objects);
-    std::random_shuffle(objects.begin(), objects.end());
+    std::shuffle(objects.begin(), objects.end(), g);
     importObjects(MDin, objects);
 }
 

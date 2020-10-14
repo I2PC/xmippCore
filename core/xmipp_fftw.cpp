@@ -26,6 +26,7 @@
 
 #include "xmipp_fftw.h"
 #include "args.h"
+#include "transformations.h"
 #include <string.h>
 #include <pthread.h>
 
@@ -104,7 +105,10 @@ FourierTransformer::~FourierTransformer()
         {
         	destroyThreads();
         	planCreated = false;
-        	cleanup();
+        	// Don't call cleanup.
+        	// There might be other transformers, and this call would
+        	// invalidate it's plans
+//        	cleanup();
         }
     }
     pthread_mutex_unlock(&fftw_plan_mutex);
@@ -409,6 +413,18 @@ void FFT_phase(const MultidimArray< std::complex<double> > &v,
     DIRECT_MULTIDIM_ELEM(phase, n) = atan2(DIRECT_MULTIDIM_ELEM(v,n).imag(), DIRECT_MULTIDIM_ELEM(v, n).real());
 }
 
+void radial_magnitude(const MultidimArray<double> & v, MultidimArray< std::complex< double > > &V,
+                      MultidimArray< double >& radialMagnitude)
+{
+	FourierTransform(v,V);
+	MultidimArray<double> Vmag;
+	FFT_magnitude(V,Vmag);
+	CenterFFT(Vmag,true);
+	Vmag.setXmippOrigin();
+	MultidimArray<int> radialCount;
+	Matrix1D<int> center(3);
+	radialAverage(Vmag,center,radialMagnitude,radialCount);
+}
 
 void convolutionFFTStack(const MultidimArray<double> &img,
                     const MultidimArray<double> &kernel,

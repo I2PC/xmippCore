@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # **************************************************************************
 # *
@@ -30,7 +30,10 @@ import os
 from os.path import join
 from glob import glob
 from datetime import datetime
+import sysconfig
+import sys
 
+PYTHON_LIB = os.environ.get("PYTHON_LIB")
 
 Import('env')
 
@@ -133,7 +136,7 @@ addLib('xmippCore.so',
        dirs=['bindings'],
        patterns=['python/*.cpp'],
        incs=python_incdirs,
-       libs=['python2.7', 'XmippCore'],
+       libs=[PYTHON_LIB, 'XmippCore'],
        prefix='', target='xmippCore')
 
 

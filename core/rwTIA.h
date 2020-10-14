@@ -42,7 +42,6 @@ int readTIA(int img_select,bool isStack=false);
 int writeTIA(int img_select, bool isStack=false, int mode=WRITE_OVERWRITE)
 {
     REPORT_ERROR(ERR_IMG_NOWRITE, "ERROR: writeTIA is not implemented.");
-    return(-1);
 }
 
 #endif /* RWTIA_H_ */

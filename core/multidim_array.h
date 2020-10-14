@@ -804,7 +804,7 @@ public:
     /** Sets new 4D dimensions.
      *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
      */
-    void setDimensions(int Xdim, int Ydim, int Zdim, int Ndim);
+    void setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim);
 
     /** Sets new 4D dimensions.
      *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
@@ -1197,6 +1197,18 @@ public:
         coreInit();
     }
 
+    /**
+     * Size constructor with 4D size and already allocated data.
+     */
+    MultidimArray(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, T *data) {
+        this->coreInit();
+        this->setDimensions(Xdim, Ydim, Zdim, Ndim);
+        this->data = data;
+        this->nzyxdimAlloc = this->nzyxdim;
+        this->destroyData = false;
+    }
+
+
     /** Size constructor with 4D size.
      * The Size constructor creates an array with memory associated,
      * and fills it with zeros.
@@ -1277,6 +1289,7 @@ public:
             DIRECT_A1D_ELEM(*this,i) = vector[i];
     }
 
+
     /** Destructor.
      */
     virtual ~MultidimArray()
@@ -1344,8 +1357,6 @@ public:
     {
         if(data!=NULL)
             REPORT_ERROR(ERR_MEM_NOTDEALLOC, "do not allocate space for an image if you have not deallocate it first");
-        if (nzyxdim < 0)
-            REPORT_ERROR(ERR_MEM_BADREQUEST,"coreAllocate:Cannot allocate a negative number of bytes");
 
         if (mmapOn)
             mFd = mmapFile(data, nzyxdim);
@@ -1382,9 +1393,6 @@ public:
             return;
         else if (nzyxdim > nzyxdimAlloc)
             coreDeallocate();
-
-        if (nzyxdim < 0)
-            REPORT_ERROR(ERR_MEM_BADREQUEST,"coreAllocateReuse:Cannot allocate a negative number of bytes");
 
         if (mmapOn)
             mFd = mmapFile(data, nzyxdim);
@@ -2043,7 +2051,7 @@ public:
         return A1D_ELEM(*this, i);
     }
 
-    inline T& operator[](int i) const
+    inline T& operator[](size_t i) const
      {
          return data[i];
      }
@@ -2325,7 +2333,7 @@ public:
             return;
         }
 
-        if (j < 0 || j >= xdim)
+        if (j >= xdim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS,"getCol: Matrix subscript (j) greater than matrix dimension");
 
         v.resizeNoCopy(ydim);
@@ -2347,7 +2355,7 @@ public:
         if (xdim == 0 || ydim == 0)
             REPORT_ERROR(ERR_MULTIDIM_EMPTY, "setCol: Target matrix is empty");
 
-        if (j < 0 || j>= xdim)
+        if (j>= xdim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "setCol: Matrix subscript (j) out of range");
 
         if (v.xdim != ydim)
@@ -2377,7 +2385,7 @@ public:
             return;
         }
 
-        if (i < 0 || i >= ydim)
+        if (i >= ydim)
             REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, "getRow: Matrix subscript (i) greater than matrix dimension");
 
         v.resizeNoCopy(xdim);
@@ -3410,22 +3418,23 @@ public:
      * The average, standard deviation, minimum and maximum value are
      * returned.
      */
-    void computeAvgStdev(double& avg, double& stddev) const
+    template<typename U>
+    void computeAvgStdev(U& avg, U& stddev) const
     {
+        static_assert(
+                std::is_same<double, U>::value || std::is_same<float, U>::value,
+                "U must be a floating presiont type");
         if (NZYXSIZE(*this) <= 0)
             return;
 
         avg = 0;
         stddev = 0;
-
-        T* ptr=NULL;
-        size_t n;
-        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        const size_t nMax = nzyxdim;
+        for (size_t n = 0; n < nMax; ++n)
         {
-            T Tval=*ptr;
-            double val=Tval;
-            avg += val;
-            stddev += val * val;
+            U v = (U)data[n];
+            avg += v;
+            stddev += v * v;
         }
 
         avg /= NZYXSIZE(*this);
@@ -3450,28 +3459,47 @@ public:
     void computeAvgStdev_within_binary_mask(const MultidimArray< int >& mask,
                                             double& avg, double& stddev) const
     {
-        SPEED_UP_tempsInt;
         double sum1 = 0;
         double sum2 = 0;
-        int N = 0;
+        double N = 0;
 
-        FOR_ALL_ELEMENTS_IN_COMMON_IN_ARRAY3D(mask, *this)
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
         {
-            if (A3D_ELEM(mask, k, i, j) != 0)
+            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
             {
                 ++N;
-                double aux=A3D_ELEM(*this, k, i, j);
+                double aux=DIRECT_MULTIDIM_ELEM(*this, n);
                 sum1 += aux;
                 sum2 += aux*aux;
             }
         }
 
         // average and standard deviation
-        avg  = sum1 / (double) N;
+        avg  = sum1 / N;
         if (N > 1)
             stddev = sqrt(fabs(sum2 / N - avg * avg) * N / (N - 1));
         else
             stddev = 0;
+    }
+
+    void computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
+    {
+    	std::vector<double> bgI;
+
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
+        {
+            if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
+            {
+            	double aux = DIRECT_MULTIDIM_ELEM(*this, n);
+                bgI.push_back(aux);
+            }
+        }
+
+        std::sort(bgI.begin(), bgI.end());
+        if (bgI.size() % 2 != 0)
+            median = bgI[bgI.size() / 2];
+        else
+            median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
     }
 
     /** Compute statistics within 2D region of 2D image.
@@ -3533,12 +3561,8 @@ public:
             return DIRECT_MULTIDIM_ELEM(*this,0);
 
         // Initialise data
-        MultidimArray< double > temp(*this);
-
-        // Sort indexes
-        double* temp_array = MULTIDIM_ARRAY(temp)-1;
-        qcksrt(NZYXSIZE(*this), temp_array); //FIXME: Valgrind:: Invalid read of size 8: qcksrt(int, double*) (numerical_recipes.cpp:266)
-
+        MultidimArray<T> temp;
+        this->sort(temp);
 
         // Get median
         if (NZYXSIZE(*this)%2==0)
@@ -3690,22 +3714,22 @@ public:
      * @endcode
      */
     // This function must be explicitly implemented outside.
-    void statisticsAdjust(double avgF, double stddevF)
+    template<typename U>
+    void statisticsAdjust(U avgF, U stddevF)
     {
-        double avg0=0.0, stddev0=0.0;
-        double a, b;
+        static_assert(
+                std::is_same<double, U>::value || std::is_same<float, U>::value,
+                "U must be a floating presiont type");
+        U avg0 = 0;
+        U stddev0 = 0;
 
         if (NZYXSIZE(*this) == 0)
             return;
 
         computeAvgStdev(avg0, stddev0);
 
-        if (stddev0 != 0)
-            a = stddevF / stddev0;
-        else
-            a = 0;
-
-        b = avgF - a * avg0;
+        U a = (stddev0 != 0) ? (stddevF / stddev0) : 0;
+        U b = avgF - a * avg0;
 
         T* ptr=&DIRECT_MULTIDIM_ELEM(*this,0);
         size_t nmax=(nzyxdim/4)*4;
@@ -4634,23 +4658,8 @@ public:
     {
         checkDimension(1);
 
-        MultidimArray<T> temp;
-        MultidimArray< double > aux;
-
-        if (xdim == 0)
-        {
-            result.clear();
-            return;
-        }
-
-        // Initialise data
-        typeCast(*this, aux);
-
-        // Sort
-        double * aux_array = aux.adaptForNumericalRecipes1D();
-        qcksrt(xdim, aux_array);
-
-        typeCast(aux, result);
+        result = *this;
+        std::sort(result.data, result.data + result.nzyxdim);
     }
 
     /** Gives a vector with the indexes for a sorted vector
@@ -5672,7 +5681,9 @@ std::ostream& operator<< (std::ostream& ostrm, const MultidimArray<T>& v)
 /** Extract piece from image.
  * No check on boundaries are performed.
  */
-void window2D(const MultidimArray<double> &Ibig, MultidimArray<double> &Ismall, int y0, int x0, int yF, int xF);
+template<typename T>
+void window2D(const MultidimArray<T> &Ibig, MultidimArray<T> &Ismall,
+        size_t y0, size_t x0, size_t yF, size_t xF);
 
 /** correlationIndex nD
  * @ingroup Filters
@@ -5769,8 +5780,6 @@ template<>
 double MultidimArray< std::complex< double > >::computeAvg() const;
 template<>
 void MultidimArray< std::complex< double > >::maxIndex(size_t &lmax, int& kmax, int& imax, int& jmax) const;
-template<>
-void MultidimArray<double>::computeAvgStdev(double& avg, double& stddev) const;
 template<>
 bool operator==(const MultidimArray< std::complex< double > >& op1,
                 const MultidimArray< std::complex< double > >& op2);

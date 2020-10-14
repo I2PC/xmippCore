@@ -166,6 +166,13 @@ public:
         im->resize(Ndim,Zdim,Ydim,Xdim,copy);
     }
 
+    /** Change the internal size, the allocated memory is the same,
+        so make sure that you are not changing the total size */
+    void setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim)
+    {
+        im->setDimensions(Xdim,Ydim,Zdim,Ndim);
+    }
+
     void resize(ArrayDim &adim, bool copy=true)
     {
         im->resize(adim, copy);
@@ -208,10 +215,11 @@ public:
 
     void * getArrayPointer() const
     {
-#define GETMULTIDIMARRAY(type) return (void *) (((MultidimArray<type>*) im)->data);
+        void *res;
+#define GETMULTIDIMARRAY(type) res = (void *) (((MultidimArray<type>*) im)->data);
         SWITCHDATATYPE(datatype,GETMULTIDIMARRAY)
 #undef GETMULTIDIMARRAY
-
+        return res;
     }
 
     /**
@@ -430,10 +438,11 @@ public:
     /** Get constant access */
     double operator()(size_t n, int k, int i, int j) const
     {
-#define GETVALUE(type) return NZYX_ELEM(*(MultidimArray<type>*)im,n,k,i,j);
+        double ret;
+#define GETVALUE(type) ret =  NZYX_ELEM(*(MultidimArray<type>*)im,n,k,i,j);
         SWITCHDATATYPE(datatype,GETVALUE)
 #undef GETVALUE
-
+        return ret;
     }
     /**
      * equal operator
@@ -451,10 +460,11 @@ public:
     /** Get constant access */
     double operator()(int i, int j) const
     {
-#define GETVALUE(type) return A2D_ELEM(*(MultidimArray<type>*)im,i,j);
+        double ret;
+#define GETVALUE(type) ret = A2D_ELEM(*(MultidimArray<type>*)im,i,j);
         SWITCHDATATYPE(datatype,GETVALUE)
 #undef GETVALUE
-
+        return ret;
     }
 
     /** Get array */

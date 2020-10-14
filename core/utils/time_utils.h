@@ -92,7 +92,7 @@ public:
         auto duration = measureTime<ToDuration>(func, args...);
         if (isReportEnabled) {
             reportIndent(indent_counter);
-            std::cout << funName << separator << duration << separator << unit << std::endl;
+            std::cout << funName << separator << duration << separator << unit << "\n";
         }
         --indent_counter;
     }

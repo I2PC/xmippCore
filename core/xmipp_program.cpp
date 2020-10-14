@@ -58,7 +58,6 @@ void XmippProgram::defineCommons()
     addParamsLine("                         : Otherwise, specific param help is showed,");
     addParamsLine("                         : param should be provided without the '-'");
     addParamsLine("alias --help;");
-    addParamsLine("[--gui*]                 : Show a GUI to launch the program.");
     addParamsLine("[--more*]                : Show additional options.");
 
     ///This are a set of internal command for MetaProgram usage
@@ -66,7 +65,6 @@ void XmippProgram::defineCommons()
     addParamsLine("==+++++ Internal section ==");
     addParamsLine("[--xmipp_write_definition* <dbname>] : Print metadata info about the program to sqlite database");
     addParamsLine("[--xmipp_write_wiki* ] : Print metadata info about the program in wiki format");
-    addParamsLine("[--xmipp_write_protocol* <scriptfile>] : Generate protocol header file");
     addParamsLine("[--xmipp_write_autocomplete* <scriptfile>] : Add program autocomplete bash options to script file");
     addParamsLine("[--xmipp_protocol_script <script>] : This is only meanful when execute throught protocols");
     addParamsLine("[--xmipp_validate_params] : Validate input params");
@@ -116,12 +114,8 @@ bool XmippProgram::checkBuiltIns()
         writeToDB();
     else if (checkParam("--xmipp_write_wiki"))
         createWiki();
-    else if (checkParam("--xmipp_write_protocol"))
-        writeToProtocol();
     else if (checkParam("--xmipp_write_autocomplete"))
         writeToAutocomplete();
-    else if (checkParam("--gui"))
-        createGUI();
     else
         return false;
     return true;
@@ -133,29 +127,11 @@ void XmippProgram::writeToDB()
     db.printProgram(*progDef);
 }
 
-void XmippProgram::writeToProtocol( )
-{
-    String scriptfile = getParam("--xmipp_write_protocol");
-    ProtPrinter pp(scriptfile.c_str());
-    pp.printProgram(*progDef);
-}
-
 void XmippProgram::writeToAutocomplete( )
 {
     String scriptfile = getParam("--xmipp_write_autocomplete");
     AutocompletePrinter ap(scriptfile.c_str());
     ap.printProgram(*progDef, 3);
-}
-
-void XmippProgram::createGUI()
-{
-    String script = formatString("./%s.py", progDef->name.c_str());
-    const char * scriptStr = script.c_str();
-    ProtPrinter pp(scriptStr, true);
-    pp.printProgram(*progDef);
-    chmod(scriptStr, S_IRWXU);
-    if (system(scriptStr)==-1)
-    	REPORT_ERROR(ERR_UNCLASSIFIED,"Could not create shell");
 }
 
 void XmippProgram::createWiki()
@@ -231,19 +207,14 @@ void XmippProgram::read(int argc, const char ** argv, bool reportErrors)
 
     doRun = false;
     errorCode = 0; //suppose no errors
-    ///If not arguments are provided, show the GUI or console program help
+    ///If not arguments are provided show the console program help
     //this behavior will be defined with environment variable XMIPP_BEHAVIOR
     if (argc == 1)
     {
-        if (runWithoutArgs)
+        if (runWithoutArgs) {
             doRun = true;
-        else
-        {
-            const char * gui_default = getenv("XMIPP_GUI_DEFAULT");
-            if (gui_default != NULL && STR_EQUAL(gui_default, "1"))
-                createGUI();
-            else
-                usage();
+        } else {
+            usage();
         }
     }
     else
