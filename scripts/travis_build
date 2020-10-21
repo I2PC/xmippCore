@@ -25,9 +25,7 @@
 import os
 import subprocess
 
-
 XMIPP = 'xmipp'
-
 REPOSITORIES = {XMIPP: 'https://github.com/I2PC/xmipp.git'}
 
 
@@ -63,8 +61,10 @@ def checkout(repo, branch):
     runJob('git init', show_output=False)
     _, branch = getBranch(repo, repo_dir)
     print(green('Checkout ' + repo + ' ...'))
-    runJob(f'git remote add origin {REPOSITORIES[repo]}', show_output=False)
-    runJob(f'git fetch && git checkout origin/{branch} -ft', show_output=False)
+    runJob('git remote add origin {}'.format(REPOSITORIES[repo]),
+           show_output=False)
+    runJob('git fetch && git checkout origin/{} -ft'.format(branch),
+           show_output=False)
 
 
 def getCurrentTravisBranch():
@@ -126,12 +126,12 @@ def main():
     src_dir = os.path.join('src', 'xmippCore')
     # create src directory and move all there.
     # ignore error (moving 'src' to 'src' and dot files)
-    runJob(f'mkdir -p {src_dir} && mv ./* ./.* {src_dir} 2>/dev/null')
+    runJob('mkdir -p {0} && mv ./* ./.* {0} 2>/dev/null'.format(src_dir))
     # get xmipp
     checkout(XMIPP, None)
     # replace sonar settings
     sonar_file = os.path.join(src_dir, 'sonar-project.properties')
-    runJob(f'mv -f {sonar_file} .')
+    runJob('mv -f {} .'.format(sonar_file))
 
 if __name__ == '__main__':
     main()
