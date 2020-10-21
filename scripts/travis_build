@@ -1,0 +1,137 @@
+#!/usr/bin/env python3
+# ***************************************************************************
+# * Authors:     David Strelak (dstrelak@cnb.csic.es)
+# *
+# *
+# * This program is free software; you can redistribute it and/or modify
+# * it under the terms of the GNU General Public License as published by
+# * the Free Software Foundation; either version 2 of the License, or
+# * (at your option) any later version.
+# *
+# * This program is distributed in the hope that it will be useful,
+# * but WITHOUT ANY WARRANTY; without even the implied warranty of
+# * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# * GNU General Public License for more details.
+# *
+# * You should have received a copy of the GNU General Public License
+# * along with this program; if not, write to the Free Software
+# * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+# * 02111-1307  USA
+# *
+# *  All comments concerning this program package may be sent to the
+# *  e-mail address 'scipion@cnb.csic.es'
+# ***************************************************************************/
+
+import os
+import subprocess
+
+
+XMIPP = 'xmipp'
+
+REPOSITORIES = {XMIPP: 'https://github.com/I2PC/xmipp.git'}
+
+
+def green(text):
+    return "\033[92m "+text+"\033[0m"
+
+
+def red(text):
+    return "\033[91m "+text+"\033[0m"
+
+
+def runJob(cmd, cwd='./', show_output=True, log=None, show_command=True):
+    if show_command:
+        print(green(cmd))
+    p = subprocess.Popen(
+        cmd, cwd=cwd, env=os.environ,
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    while True:
+        output = p.stdout.readline().decode("utf-8")
+        if output == '' and p.poll() is not None:
+            break
+        if output:
+            l = output.rstrip()
+            if show_output:
+                print(l)
+            if log is not None:
+                log.append(l)
+    return True
+
+
+def checkout(repo, branch):
+    repo_dir = '.'
+    runJob('git init', show_output=False)
+    _, branch = getBranch(repo, repo_dir)
+    print(green('Checkout ' + repo + ' ...'))
+    runJob(f'git remote add origin {REPOSITORIES[repo]}', show_output=False)
+    runJob(f'git fetch && git checkout origin/{branch} -ft', show_output=False)
+
+
+def getCurrentTravisBranch():
+    # see https://docs.travis-ci.com/user/environment-variables/
+    # On Travis, PR will have the TRAVIS_PULL_REQUEST_BRANCH variable non-empty
+    # otherwise the TRAVIS_BRANCH will hold the name of the current branch
+    current_branch = (
+        os.environ.get('TRAVIS_PULL_REQUEST_BRANCH') or
+        os.environ.get('TRAVIS_BRANCH'))
+    print(green("Detected branch: " + current_branch))
+    return current_branch is not None, current_branch
+
+
+def getAllBranches(repo):
+    log = []
+    prefix = 'refs/heads/'
+    result = runJob('git ls-remote -h %s' % REPOSITORIES[repo],
+                    show_output=False, log=log, show_command=False)
+    if result:
+        branches = [l.split(prefix)[1] for l in log]
+        return True, branches
+    print(red('Cannot list branches for ' + repo))
+    return False, None
+
+
+def getBranch(repo, repo_dir):
+    # we need to get current branch of the xmipp
+    r1, branchHint = getCurrentTravisBranch()
+    r2, branches = getAllBranches(repo)
+    if r1 and r2 and branchHint in branches:
+        return True, branchHint
+    # default branch
+    return getDefaultBranch(repo)
+
+
+def getDefaultBranch(repo):
+    log = []
+    key = 'HEAD branch:'
+    # this might not work for git < 1.8.5,
+    # see:
+    # https://stackoverflow.com/a/32503667/5484355
+    # https://stackoverflow.com/questions/2832269/git-remote-head-is-ambiguous
+    # In such a case we return None (and during e.g. clone the client should
+    # decide what is the default branch)
+    result = runJob('git remote show %s' % REPOSITORIES[repo],
+                    show_output=False, log=log, show_command=False)
+    if result:
+        for l in log:
+            if key in l:
+                branch = l.split(key)[1]  # HEAD branch: devel
+                return (True, branch.strip())
+    print(red('Cannot auto-detect default branch for ' + repo +
+              '. Maybe git version < 1.8.5?'))
+    return (False, None)
+
+
+def main():
+    # move all files into proper location
+    src_dir = os.path.join('src', 'xmippCore')
+    # create src directory and move all there.
+    # ignore error (moving 'src' to 'src' and dot files)
+    runJob(f'mkdir -p {src_dir} && mv ./* ./.* {src_dir} 2>/dev/null')
+    # get xmipp
+    checkout(XMIPP, None)
+    # replace sonar settings
+    sonar_file = os.path.join(src_dir, 'sonar-project.properties')
+    runJob(f'mv -f {sonar_file} .')
+
+if __name__ == '__main__':
+    main()
