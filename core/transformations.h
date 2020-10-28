@@ -1778,7 +1778,7 @@ void radialAverage(const MultidimArray< T >& m,
         double module = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
         int distance = (rounding) ? (int) round(module) : (int) floor(module);
 
-        // Sum te value to the pixels with the same distance
+        // Sum the value to the pixels with the same distance
         DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
 
         // Count the pixel
@@ -1880,6 +1880,38 @@ void fastRadialAverage(const MultidimArray< T >& m,
     FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
       if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
         DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+}
+
+template<typename T>
+void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< double >& out)
+{
+	MultidimArray<double> inCentered;
+	inCentered.alias(in);
+	inCentered.setXmippOrigin();
+	if (axis=='z')
+	{
+		out.initZeros(ZSIZE(in),XSIZE(in));
+		out.setXmippOrigin();
+		for (int i=STARTINGY(inCentered); i<=FINISHINGY(inCentered); ++i)
+		{
+			double z=i;
+			for (int j=0; j<XSIZE(out)/2; ++j)
+			{
+				for (double ang=0; ang<TWOPI; ang+=TWOPI/72)
+				{
+					double x=j*cos(ang);
+					double y=j*sin(ang);
+					double val=inCentered.interpolatedElement3D(x,y,z);
+					A2D_ELEM(out,i,j)+=val;
+				}
+				A2D_ELEM(out,i,j)/=73;
+				A2D_ELEM(out,i,-j)=A2D_ELEM(out,i,j);
+			}
+		}
+	}
+
+	else
+		REPORT_ERROR(ERR_ARG_INCORRECT,"Not implemented yet");
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
