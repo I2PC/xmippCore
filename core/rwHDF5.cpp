@@ -25,10 +25,10 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_hdf5.h"
+#include "xmipp_image_fhandler.h"
 
 
-
-DataType ImageBase::datatypeH5(hid_t h5datatype)
+DataType datatypeH5(hid_t h5datatype)
 {
     H5T_sign_t h5sign = H5Tget_sign(h5datatype);
 
@@ -84,7 +84,7 @@ DataType ImageBase::datatypeH5(hid_t h5datatype)
     return dt;
 }
 
-hid_t ImageBase::H5Datatype(DataType datatype)
+hid_t H5Datatype(DataType datatype)
 {
     switch (datatype)
     {
@@ -133,9 +133,10 @@ public:
 
 int ImageBase::readHDF5(size_t select_img)
 {
+    hid_t    fhdf5;       // HDF5 File handler
     H5infoProvider provider = getProvider(fhdf5); // Provider name
 
-    String dsname = filename.getBlockName();
+    String dsname = hFile->fileName.getBlockName();
     readHDF5Data d;
     
     // Setting default dataset name
@@ -229,7 +230,7 @@ int ImageBase::readHDF5(size_t select_img)
         nDimFile = ( rank<3 || !isStack )?1:d.dims[0] ;
 
     if (select_img > nDimFile)
-        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readHDF5 (%s): Image number %lu exceeds stack size %lu", filename.c_str(), select_img, nDimFile));
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readHDF5 (%s): Image number %lu exceeds stack size %lu", hFile->fileName.c_str(), select_img, nDimFile));
 
     aDim.ndim = replaceNsize = (select_img == ALL_IMAGES)? nDimFile :1 ;
     setDimensions(aDim);
@@ -253,7 +254,7 @@ int ImageBase::readHDF5(size_t select_img)
         return 0;
 
     if ( H5Pget_layout(d.cparms) == H5D_CONTIGUOUS ) //We can read it directly
-        readData(fimg, select_img, datatype, 0);
+        readData(hFile->fimg, select_img, datatype, 0);
     else // We read it by hyperslabs
     {
         // Allocate memory for image data (Assume xdim, ydim, zdim and ndim are already set
@@ -301,13 +302,13 @@ int ImageBase::readHDF5(size_t select_img)
             if ( H5Sselect_hyperslab(d.filespace, H5S_SELECT_SET, offset, NULL,
                                      count, NULL) < 0 )
                 REPORT_ERROR(ERR_IO_NOREAD, formatString("readHDF5: Error selecting hyperslab %d from filename %s",
-                             imgStart, filename.c_str()));
+                             imgStart, hFile->fileName.c_str()));
 
             // Read
             if ( H5Dread(d.dataset, H5Datatype(myT()), memspace, d.filespace,
                          H5P_DEFAULT, (void*)(data + pad*imN)) < 0 )
                 REPORT_ERROR(ERR_IO_NOREAD,formatString("readHDF5: Error reading hyperslab %d from filename %s",
-                                                        imgStart, filename.c_str()));
+                                                        imgStart, hFile->fileName.c_str()));
         }
         H5Sclose(memspace);
     }

@@ -136,6 +136,7 @@ struct SPIDERhead
 #include "metadata_label.h"
 #include <errno.h>
 #include <memory>
+#include "xmipp_image_fhandler.h"
 
 int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
 #undef DEBUG
@@ -147,9 +148,9 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
 
     // SPIDERhead* header = new SPIDERhead;
     std::unique_ptr<SPIDERhead> header( new SPIDERhead() );
-    if ( fread( header.get(), SPIDERSIZE, 1, fimg ) != 1 )
+    if ( fread( header.get(), SPIDERSIZE, 1, hFile->fimg ) != 1 )
         REPORT_ERROR(ERR_IO_NOREAD, formatString("rwSPIDER: cannot read Spider main header from file %s"
-                     ". Error message: %s", filename.c_str() ,strerror(errno)));
+                     ". Error message: %s", hFile->fileName.c_str() ,strerror(errno)));
 
     // Determine byte order and swap bytes if from different-endian machine
     if ( (swap = (( fabs(header->nslice) > SWAPTRIG ) || ( fabs(header->iform) > 1000 ) ||
@@ -157,7 +158,7 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
         swapPage((char *) header.get(), SPIDERSIZE - 180, DT_Float);
 
     if(header->labbyt != header->labrec*header->lenbyt)
-        REPORT_ERROR(ERR_IO_NOTFILE,formatString("Invalid Spider file:  %s", filename.c_str()));
+        REPORT_ERROR(ERR_IO_NOTFILE,formatString("Invalid Spider file:  %s", hFile->fileName.c_str()));
 
     offset = (size_t) header->labbyt;
     DataType datatype  = DT_Float;
@@ -180,7 +181,7 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
     _nDim = (isStack)? (size_t)(header->maxim) : 1;
 
     if (_xDim < 1 || _yDim < 1 || _zDim < 1 || _nDim < 1)
-        REPORT_ERROR(ERR_IO_NOTFILE,formatString("Invalid Spider file:  %s", filename.c_str()));
+        REPORT_ERROR(ERR_IO_NOTFILE,formatString("Invalid Spider file:  %s", hFile->fileName.c_str()));
 
     replaceNsize = _nDim;
 
@@ -208,7 +209,7 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
     if ( isStack)
     {
         if ( start_img > _nDim )
-            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readSpider (%s): Image number %lu exceeds stack size %lu" ,filename.c_str(),start_img, _nDim));
+            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readSpider (%s): Image number %lu exceeds stack size %lu" ,hFile->fileName.c_str(),start_img, _nDim));
         offset += offset;
     }
 
@@ -234,14 +235,14 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
 
     for (size_t n = 0, i = imgStart; i < imgEnd; ++i, ++n, img_seek += image_size )
     {
-        if (fseek( fimg, img_seek, SEEK_SET ) != 0)//fseek return 0 on success
+        if (fseek( hFile->fimg, img_seek, SEEK_SET ) != 0)//fseek return 0 on success
             REPORT_ERROR(ERR_IO, formatString("rwSPIDER: error seeking %lu for read image %lu", img_seek, i));
 
         // std::cerr << formatString("DEBUG_JM: rwSPIDER: seeking %lu for read image %lu", img_seek, i) <<std::endl;
 
         if(isStack)
         {
-            if ( fread( header.get(), SPIDERSIZE, 1, fimg ) != 1 )
+            if ( fread( header.get(), SPIDERSIZE, 1, hFile->fimg ) != 1 )
                 REPORT_ERROR(ERR_IO_NOREAD, formatString("rwSPIDER: cannot read Spider image %lu header", i));
             if ( swap )
                 swapPage((char *) header.get(), SPIDERSIZE - 180, DT_Float);
@@ -279,7 +280,7 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
     std::cerr<<"DEBUG readSPIDER: select_img= "<<select_img<<" n= "<<Ndim<<" pad = "<<pad<<std::endl;
 #endif
     //offset should point to the begin of the data
-    readData(fimg, start_img, datatype, pad );
+    readData(hFile->fimg, start_img, datatype, pad );
 
     return 0;
 }
@@ -506,7 +507,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
 
     //locking the file
     FileLock flock;
-    flock.lock(fimg);
+    flock.lock(hFile->fimg);
 
     // Write main header
     if( mode == WRITE_OVERWRITE ||
@@ -516,7 +517,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
     {
         if ( swapWrite )
             swapPage((char *) header, SPIDERSIZE - 180, DT_Float);
-        fwrite( header, offset, 1, fimg );
+        fwrite( header, offset, 1, hFile->fimg );
     }
 
     // write single image if not stack
@@ -526,18 +527,18 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
         {
             if (mmapOnWrite)
             {
-                mappedOffset = ftell(fimg);
+                mappedOffset = ftell(hFile->fimg);
                 mappedSize = mappedOffset + datasize;
-                fseek(fimg, datasize-1, SEEK_CUR);
-                fputc(0, fimg);
+                fseek(hFile->fimg, datasize-1, SEEK_CUR);
+                fputc(0, hFile->fimg);
             }
             else
-                writeData(fimg, 0, wDType, datasize_n, CW_CAST);
+                writeData(hFile->fimg, 0, wDType, datasize_n, CW_CAST);
         }
     }
     else // Jump to the selected imgStart position
     {
-        fseek( fimg,offset + (offset+datasize)*imgStart, SEEK_SET);
+        fseek( hFile->fimg,offset + (offset+datasize)*imgStart, SEEK_SET);
 
         //for ( size_t i=0; i<Ndim; i++ )
         std::vector<MDRow>::iterator it = MD.begin();
@@ -566,21 +567,21 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
             //do not need to unlock because we are in the overwrite case
             if ( swapWrite )
                 swapPage((char *) header, SPIDERSIZE - 180, DT_Float);
-            fwrite( header, offset, 1, fimg );
+            fwrite( header, offset, 1, hFile->fimg );
             if (dataMode >= DATA)
             {
                 if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
                 {
-                    mappedOffset = ftell(fimg);
+                    mappedOffset = ftell(hFile->fimg);
                     mappedSize = mappedOffset + datasize;
-                    fseek(fimg, datasize-1, SEEK_CUR);
-                    fputc(0, fimg);
+                    fseek(hFile->fimg, datasize-1, SEEK_CUR);
+                    fputc(0, hFile->fimg);
                 }
                 else
-                    writeData(fimg, i*datasize_n, wDType, datasize_n, CW_CAST);
+                    writeData(hFile->fimg, i*datasize_n, wDType, datasize_n, CW_CAST);
             }
             else
-                fseek(fimg, datasize, SEEK_CUR);
+                fseek(hFile->fimg, datasize, SEEK_CUR);
         }
     }
     //I guess I do not need to unlock since we are going to close the file

@@ -26,6 +26,7 @@
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
 #include "xmipp_memory.h"
+#include "xmipp_image_fhandler.h"
 
 #define TIASIZE    30 // Size of the TIA header without pDATA_OFFSET
 
@@ -78,7 +79,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
 {
     TIAhead * header = new TIAhead;
 
-    xmippFREAD(&header->endianess, sizeof(short int), 1, fimg, swap );
+    xmippFREAD(&header->endianess, sizeof(short int), 1, hFile->fimg, swap );
 
     // Set Endianess
     if (header->endianess == 18761)
@@ -88,38 +89,38 @@ int ImageBase::readTIA(int select_img,bool isStack)
     if (IsBigEndian())
         swap = !swap;
 
-    xmippFREAD(&header->SeriesID, sizeof(short int), 1, fimg, swap );
-    xmippFREAD(&header->SeriesVersion, sizeof(short int), 1, fimg, swap);
-    xmippFREAD(&header->DATA_TYPE_ID, sizeof(int), 1, fimg, swap);
-    xmippFREAD(&header->TagTypeID, sizeof(int), 1, fimg, swap );
-    xmippFREAD(&header->TotalNumberElements, sizeof(int), 1, fimg, swap );
-    xmippFREAD(&header->NUMBER_IMAGES, sizeof(int), 1, fimg, swap );
-    xmippFREAD(&header->OFFSET_ARRAY_OFFSET, sizeof(int), 1, fimg, swap );
-    xmippFREAD(&header->numberdimensions, sizeof(int), 1, fimg, swap );
+    xmippFREAD(&header->SeriesID, sizeof(short int), 1, hFile->fimg, swap );
+    xmippFREAD(&header->SeriesVersion, sizeof(short int), 1, hFile->fimg, swap);
+    xmippFREAD(&header->DATA_TYPE_ID, sizeof(int), 1, hFile->fimg, swap);
+    xmippFREAD(&header->TagTypeID, sizeof(int), 1, hFile->fimg, swap );
+    xmippFREAD(&header->TotalNumberElements, sizeof(int), 1, hFile->fimg, swap );
+    xmippFREAD(&header->NUMBER_IMAGES, sizeof(int), 1, hFile->fimg, swap );
+    xmippFREAD(&header->OFFSET_ARRAY_OFFSET, sizeof(int), 1, hFile->fimg, swap );
+    xmippFREAD(&header->numberdimensions, sizeof(int), 1, hFile->fimg, swap );
 
     // Check data type
     if (header->DATA_TYPE_ID != 16674)
         REPORT_ERROR(ERR_TYPE_INCORRECT, "ERROR: readTIA only processes images in real space");
 
-    fseek(fimg, header->OFFSET_ARRAY_OFFSET, SEEK_SET);
+    fseek(hFile->fimg, header->OFFSET_ARRAY_OFFSET, SEEK_SET);
     header->pDATA_OFFSET = (int *) askMemory(header->NUMBER_IMAGES * sizeof(int));
-    xmippFREAD(header->pDATA_OFFSET, sizeof(int), header->NUMBER_IMAGES, fimg, swap);
+    xmippFREAD(header->pDATA_OFFSET, sizeof(int), header->NUMBER_IMAGES, hFile->fimg, swap);
 
     TIAdataHead* dataHeaders = new TIAdataHead [header->NUMBER_IMAGES];
 
     // Read all the image headers
     for (int i = 0; i < header->NUMBER_IMAGES; i++)
     {
-        fseek(fimg, header->pDATA_OFFSET[i], SEEK_SET);
-        xmippFREAD(&(dataHeaders[i].CalibrationOffsetX), sizeof(double), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].PIXEL_WIDTH, sizeof(double), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].CalibrationElementX, sizeof(int), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].CalibrationOffsetY, sizeof(double), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].PIXEL_HEIGHT, sizeof(double), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].CalibrationElementY, sizeof(int), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].DATA_TYPE, sizeof(short int), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].IMAGE_WIDTH, sizeof(int), 1, fimg, swap);
-        xmippFREAD(&dataHeaders[i].IMAGE_HEIGHT, sizeof(int), 1, fimg, swap);
+        fseek(hFile->fimg, header->pDATA_OFFSET[i], SEEK_SET);
+        xmippFREAD(&(dataHeaders[i].CalibrationOffsetX), sizeof(double), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].PIXEL_WIDTH, sizeof(double), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].CalibrationElementX, sizeof(int), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].CalibrationOffsetY, sizeof(double), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].PIXEL_HEIGHT, sizeof(double), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].CalibrationElementY, sizeof(int), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].DATA_TYPE, sizeof(short int), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].IMAGE_WIDTH, sizeof(int), 1, hFile->fimg, swap);
+        xmippFREAD(&dataHeaders[i].IMAGE_HEIGHT, sizeof(int), 1, hFile->fimg, swap);
     }
 
     int _xDim,_yDim;
@@ -241,7 +242,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
         return 0;
 
     size_t pad = TIAdataSIZE;
-    readData(fimg, select_img, datatype, pad);
+    readData(hFile->fimg, select_img, datatype, pad);
 
     return(0);
 }

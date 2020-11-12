@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,23 +23,34 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWHDF5_H_
-#define CORE_RWHDF5_H_
+#ifndef CORE_XMIPP_TIFF_DIR_HEAD_H_
+#define CORE_XMIPP_TIFF_DIR_HEAD_H_
 
-#include "hdf5.h"
+#include <tiffio.h>
+
+/** TIFF Data Header
+*/
+struct ImageBase::TIFFDirHead
+{                                   // Header for each Directory in TIFF
+    unsigned short  bitsPerSample;
+    unsigned short  samplesPerPixel;
+    unsigned int   imageWidth;
+    unsigned int   imageLength;
+    uint16           imageSampleFormat;
+    unsigned short  resUnit;
+    float            xTiffRes,yTiffRes;
+    unsigned int subFileType;
+    uint16 pNumber, pTotal; // pagenumber and total number of pages of current directory
+    TIFFDirHead()
+    {
+            bitsPerSample=samplesPerPixel=0;
+            imageWidth=imageLength=subFileType=0;
+            imageSampleFormat=0;
+            xTiffRes=yTiffRes=0;
+            pNumber = pTotal = 0;
+            resUnit = 0;
+    }
+};
 
 
-///@defgroup HDF5 HDF5 File format
-///@ingroup ImageFormats
-//@{
-
-
-/** Determine datatype of a HDF5 dataset.
-  * @ingroup TIFF
-  */
-DataType datatypeH5(hid_t dataset);
-
-hid_t H5Datatype(DataType datatype);
-
-//@}
-#endif /* RWHDF5_H_ */
+#endif /* CORE_XMIPP_TIFF_DIR_HEAD_H_ */

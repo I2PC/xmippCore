@@ -26,6 +26,7 @@
 #include "xmipp_image_base.h"
 #include "metadata.h"
 #include "metadata_sql.h"
+#include "xmipp_image_fhandler.h"
 
 ///@defgroup DM4 DM4 File format
 ///@ingroup ImageFormats
@@ -477,9 +478,9 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
     // Check Machine endianness
     bool isLE = IsLittleEndian();
 
-    xmippFREAD(&header->fileVersion, sizeof(int), 1, fimg, isLE);
-    xmippFREAD(&dummy, sizeof(long), 1, fimg, isLE);
-    xmippFREAD(&header->byteOrder, sizeof(int), 1, fimg, isLE);
+    xmippFREAD(&header->fileVersion, sizeof(int), 1, hFile->fimg, isLE);
+    xmippFREAD(&dummy, sizeof(long), 1, hFile->fimg, isLE);
+    xmippFREAD(&header->byteOrder, sizeof(int), 1, hFile->fimg, isLE);
 
     // Set Endianess
     swap = (isLE^header->byteOrder);
@@ -487,9 +488,9 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
     if ( header->fileVersion!=4 )
         REPORT_ERROR(ERR_IO_NOREAD, "readDM4: Input file is not Digital Micrograph 3 format.");
 
-    xmippFREAD(&header->sorted, sizeof(char), 1, fimg, false);
-    xmippFREAD(&header->open, sizeof(char), 1, fimg, false);
-    xmippFREAD(&header->nTags, sizeof(long), 1, fimg, isLE);
+    xmippFREAD(&header->sorted, sizeof(char), 1, hFile->fimg, false);
+    xmippFREAD(&header->open, sizeof(char), 1, hFile->fimg, false);
+    xmippFREAD(&header->nTags, sizeof(long), 1, hFile->fimg, isLE);
 
     header->tags.addLabel(MDL_DM3_NODEID);
     header->tags.addLabel(MDL_DM3_PARENTID);
@@ -503,7 +504,7 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
     int nodeID = 0, parentID = 0;
 
     for (int n=1;n<=header->nTags;n++)
-        readTagDM4(fimg, header, parentID, nodeID, isLE, swap);
+        readTagDM4(hFile->fimg, header, parentID, nodeID, isLE, swap);
 
 //#define DEBUG
 #ifdef DEBUG
@@ -598,7 +599,7 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
     }
 
     if (dataHeaders.size() == 0)
-        REPORT_ERROR(ERR_IMG_NOREAD,formatString("readDM4: Image information not found in file %s",filename.c_str()));
+        REPORT_ERROR(ERR_IMG_NOREAD,formatString("readDM4: Image information not found in file %s",hFile->fileName.c_str()));
 
     int _xDim,_yDim, _zDim;
     size_t _nDim;
@@ -663,7 +664,7 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
 #endif
 
     size_t pad = 0;
-    readData(fimg, select_img, datatype, pad);
+    readData(hFile->fimg, select_img, datatype, pad);
 
     return(0);
 }

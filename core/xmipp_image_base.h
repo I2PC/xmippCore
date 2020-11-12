@@ -34,16 +34,12 @@
 #include "transformations_defines.h"
 #include "xmipp_funcs.h"
 
-//
-//// Includes for rwTIFF which cannot be inside it
-#include <tiffio.h>
-#include <hdf5.h>
-
 template<typename T>
 class Matrix2D;
 class MetaData;
 template<typename T>
 class Image;
+class ImageFHandler;
 
 /* Minimum size of a TIFF file to be mapped to a tempfile in case of mapping from
  * image file is required
@@ -106,21 +102,6 @@ typedef enum
     // it is here for looping purposes
 } CastWriteMode;
 
-/** Open File struct
- * This struct is used to share the File handlers with Image Collection class
- */
-struct ImageFHandler
-{
-    FILE*     fimg;       // Image File handler
-    FILE*     fhed;       // Image File header handler
-    TIFF*     tif;        // TIFF Image file handler
-    hid_t     fhdf5;   // HDF5 File handler
-    FileName  fileName;   // Image file name
-    FileName  headName;   // Header file name
-    FileName  ext_name;   // Filename extension
-    bool     exist;       // Shows if the file exists. Equal 0 means file does not exist or not stack.
-    int        mode;   // Opening mode behavior
-};
 
 struct ImageInfo
 {
@@ -241,13 +222,8 @@ public:
     MDRow               MDMainHeader;           // data for the file
 
 protected:
-    FileName            filename;    // File name
     FileName            tempFilename; // Temporary filename
     FileName            dataFName;   // Data File name without flags
-    FILE*               fimg;        // Image File handler
-    FILE*               fhed;        // Image File header handler
-    TIFF*               tif;         // TIFF Image file hander
-    hid_t    fhdf5;       // HDF5 File handler
     ImageFHandler*      hFile;       // Image File handler information structure
     ArrayDim         aDimFile;   // Image header file information structure (original info from file)
     DataMode            dataMode;    // Flag to force select what will be read/write from image files
@@ -256,14 +232,12 @@ protected:
     int                 swapWrite;   // Perform byte swapping upon writing
     TransformType       transform;   // Transform type
     size_t              replaceNsize;// Stack size in the replace case
-    bool                _exists;     // does target file exists?  // equal 0 if not exists or not a stack
     bool                mmapOnRead;  // Mapping when reading from file
     bool                mmapOnWrite; // Mapping when writing to file
     int                 mFd;         // Handle the file in reading method and mmap
     size_t              mappedSize;  // Size of the mapped file
     size_t              mappedOffset;// Offset for the mapped file
     size_t          virtualOffset;// MDA Offset when movePointerTo is used
-
 public:
 
     /** Init.
@@ -320,10 +294,7 @@ public:
     }
 
     /** Rename the image*/
-    void rename (const FileName &name)
-    {
-        filename = name;
-    }
+    void rename (const FileName &name);
 
     /** Create a mapped image file
      *
@@ -487,10 +458,7 @@ public:
      * std::cout << "Image name = " << I.name() << std::endl;
      * @endcode
      */
-    const FileName & name() const
-    {
-        return filename;
-    }
+    const FileName & name() const;
 
     /** Get dimensions of the multidimArray inside image.
      *  TODO: This method must be changed to return the size
@@ -670,10 +638,7 @@ public:
     }
     /** Set file name
      */
-    void setName(const FileName &_filename)
-    {
-        filename = _filename;
-    }
+    void setName(const FileName &_filename);
 
     /** Set the read/write dataMode of the object
      */
@@ -809,7 +774,14 @@ protected:
 #include "rwTIFF.h"
 #include "rwEM.h"
 #include "rwPIF.h"
-#include "rwHDF5.h"
+    /** Read Images from HDF5 container files.
+      */
+    int readHDF5(size_t select_img);
+
+    /** Write Images to HDF5 container files.
+      */
+    int writeHDF5(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE, String bitDepth="", CastWriteMode castMode = CW_CAST);
+
 
     /// ----------------------------------------------------------
 

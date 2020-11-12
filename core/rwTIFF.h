@@ -30,27 +30,7 @@
 ///@ingroup ImageFormats
 //@{
 
-/** TIFF Data Header
-*/
-struct TIFFDirHead
-{                                   // Header for each Directory in TIFF
-    unsigned short  bitsPerSample;
-    unsigned short  samplesPerPixel;
-    unsigned int   imageWidth;
-    unsigned int   imageLength;
-    uint16           imageSampleFormat;
-    unsigned short  resUnit;
-    float            xTiffRes,yTiffRes;
-    unsigned int subFileType;
-    uint16 pNumber, pTotal; // pagenumber and total number of pages of current directory
-    TIFFDirHead()
-    {
-        	bitsPerSample=samplesPerPixel=0;
-        	imageWidth=imageLength=subFileType=0;
-            imageSampleFormat=0;
-            xTiffRes=yTiffRes=0;
-    }
-};
+struct TIFFDirHead;
 
 /** castTiffTile2T
   * write the content of a tile from a TIFF file to an image array
@@ -78,7 +58,7 @@ void castTiffLine2T(
 /** Determine datatype of the TIFF format file.
   * @ingroup TIFF
   */
-DataType datatypeTIFF(TIFFDirHead dHead);
+DataType datatypeTIFF(const TIFFDirHead &dHead);
 
 /** Read TIFF format files.
   */

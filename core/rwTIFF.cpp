@@ -25,6 +25,8 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_tiff_dir_head.h"
+#include "xmipp_image_fhandler.h"
 
 /**
  * castTiffTile2T
@@ -78,7 +80,7 @@ void ImageBase::castTiffLine2T(
 /** Determine datatype of the TIFF format file.
   * @ingroup TIFF
 */
-DataType ImageBase::datatypeTIFF(TIFFDirHead dHead)
+DataType ImageBase::datatypeTIFF(const TIFFDirHead &dHead)
 {
     DataType datatype;
 
@@ -145,34 +147,34 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     do
     {
         dhRef.imageSampleFormat = SAMPLEFORMAT_VOID;
-        if (TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE,  &dhRef.bitsPerSample) == 0)
+        if (TIFFGetField(hFile->tif, TIFFTAG_BITSPERSAMPLE,  &dhRef.bitsPerSample) == 0)
             REPORT_ERROR(ERR_IO_NOREAD,"rwTIFF: Error reading TIFFTAG_BITSPERSAMPLE");
-        if (TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL,&dhRef.samplesPerPixel) == 0)
+        if (TIFFGetField(hFile->tif, TIFFTAG_SAMPLESPERPIXEL,&dhRef.samplesPerPixel) == 0)
             dhRef.samplesPerPixel = 1;
 
-        if (TIFFGetField(tif, TIFFTAG_IMAGEWIDTH,     &dhRef.imageWidth) == 0)
+        if (TIFFGetField(hFile->tif, TIFFTAG_IMAGEWIDTH,     &dhRef.imageWidth) == 0)
             REPORT_ERROR(ERR_IO_NOREAD,"rwTIFF: Error reading TIFFTAG_IMAGEWIDTH");
-        if (TIFFGetField(tif, TIFFTAG_IMAGELENGTH,    &dhRef.imageLength) == 0)
+        if (TIFFGetField(hFile->tif, TIFFTAG_IMAGELENGTH,    &dhRef.imageLength) == 0)
             REPORT_ERROR(ERR_IO_NOREAD,"rwTIFF: Error reading TIFFTAG_IMAGELENGTH");
-        if (TIFFGetField(tif, TIFFTAG_SUBFILETYPE,    &dhRef.subFileType) == 0)
+        if (TIFFGetField(hFile->tif, TIFFTAG_SUBFILETYPE,    &dhRef.subFileType) == 0)
             dhRef.subFileType = 0; // Some scanners does not provide this label. So, we set this to zero
         //            REPORT_ERROR(ERR_IO_NOREAD,"rwTIFF: Error reading TIFFTAG_SUBFILETYPE");
-        TIFFGetField(tif, TIFFTAG_SAMPLEFORMAT,   &dhRef.imageSampleFormat);
-        TIFFGetField(tif, TIFFTAG_RESOLUTIONUNIT, &dhRef.resUnit);
-        TIFFGetField(tif, TIFFTAG_XRESOLUTION,    &dhRef.xTiffRes);
-        TIFFGetField(tif, TIFFTAG_YRESOLUTION,    &dhRef.yTiffRes);
-        TIFFGetField(tif, TIFFTAG_PAGENUMBER,     &dhRef.pNumber, &dhRef.pTotal);
+        TIFFGetField(hFile->tif, TIFFTAG_SAMPLEFORMAT,   &dhRef.imageSampleFormat);
+        TIFFGetField(hFile->tif, TIFFTAG_RESOLUTIONUNIT, &dhRef.resUnit);
+        TIFFGetField(hFile->tif, TIFFTAG_XRESOLUTION,    &dhRef.xTiffRes);
+        TIFFGetField(hFile->tif, TIFFTAG_YRESOLUTION,    &dhRef.yTiffRes);
+        TIFFGetField(hFile->tif, TIFFTAG_PAGENUMBER,     &dhRef.pNumber, &dhRef.pTotal);
 
         if ((dhRef.subFileType & 0x00000001) != 0x00000001) //add image if not a thumbnail
             dirHead.push_back(dhRef);
     }
-    while(TIFFReadDirectory(tif));
+    while(TIFFReadDirectory(hFile->tif));
 
-    swap = TIFFIsByteSwapped(tif);
+    swap = TIFFIsByteSwapped(hFile->tif);
 
     //Check select_img is lower than stack size
     if (select_img > dirHead.size())
-        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readTIFF (%s): Image number %lu exceeds stack size %lu", filename.c_str(), select_img, dirHead.size()));
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readTIFF (%s): Image number %lu exceeds stack size %lu", hFile->fileName.c_str(), select_img, dirHead.size()));
     else if (select_img == ALL_IMAGES)// Check images dimensions. Need to be the same
     {
         for (size_t i = 1; i < dirHead.size(); i++)
@@ -267,7 +269,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
 
     for (size_t i = imgStart; i < imgEnd; ++i)
     {
-        TIFFSetDirectory(tif,(tdir_t) i);
+        TIFFSetDirectory(hFile->tif,(tdir_t) i);
 
         // If samplesPerPixel is higher than 3 it means there are extra samples, as associated alpha data
         // Greyscale images are usually samplesPerPixel=1
@@ -275,21 +277,21 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
         if (dirHead[i].samplesPerPixel > 3)
             dirHead[i].samplesPerPixel = 1;
 
-        if (TIFFIsTiled(tif))
+        if (TIFFIsTiled(hFile->tif))
         {
-            TIFFGetField(tif, TIFFTAG_TILEWIDTH, &tileWidth);
-            TIFFGetField(tif, TIFFTAG_TILELENGTH,&tileLength);
-            tif_buf = (char*)_TIFFmalloc(TIFFTileSize(tif));
+            TIFFGetField(hFile->tif, TIFFTAG_TILEWIDTH, &tileWidth);
+            TIFFGetField(hFile->tif, TIFFTAG_TILELENGTH,&tileLength);
+            tif_buf = (char*)_TIFFmalloc(TIFFTileSize(hFile->tif));
         }
         else
         {
-            TIFFGetFieldDefaulted(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-            scanline = TIFFScanlineSize(tif);
+            TIFFGetFieldDefaulted(hFile->tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+            scanline = TIFFScanlineSize(hFile->tif);
             tif_buf = (char*)_TIFFmalloc(scanline);
         }
         if (tif_buf == 0)
         {
-            TIFFError(TIFFFileName(tif), "No space for strip buffer");
+            TIFFError(TIFFFileName(hFile->tif), "No space for strip buffer");
             exit(-1);
         }
 
@@ -297,14 +299,14 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
 
         datatype = datatypeTIFF(dirHead[i]);
 
-        if (TIFFIsTiled(tif))
+        if (TIFFIsTiled(hFile->tif))
         {
             for (y = 0; y < dirHead[0].imageLength; y += tileLength)
                 for (x = 0; x < dirHead[0].imageWidth; x += tileWidth)
                 {
-                    TIFFReadTile(tif, tif_buf, x, y, 0, 0);
+                    TIFFReadTile(hFile->tif, tif_buf, x, y, 0, 0);
                     if (swap)
-                        swapPage((char*)tif_buf, TIFFTileSize(tif)*sizeof(unsigned char), datatype);
+                        swapPage((char*)tif_buf, TIFFTileSize(hFile->tif)*sizeof(unsigned char), datatype);
 
                     castTiffTile2T((pad*imReaded), tif_buf, x, y,
                                    dirHead[i].imageWidth, dirHead[i].imageLength,
@@ -317,7 +319,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
         {
             for (y = 0; y < dirHead[i].imageLength; y++)
             {
-                TIFFReadScanline(tif, tif_buf, y);
+                TIFFReadScanline(hFile->tif, tif_buf, y);
                 castTiffLine2T((pad*imReaded), tif_buf, y,
                                dirHead[i].imageWidth, dirHead[i].imageLength,
                                dirHead[i].samplesPerPixel,
@@ -470,39 +472,39 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
 
     if ((tif_buf = (char*)_TIFFmalloc(bufferSize)) == 0)
     {
-        TIFFError(TIFFFileName(tif), "No space for strip buffer");
+        TIFFError(TIFFFileName(hFile->tif), "No space for strip buffer");
         exit(-1);
     }
 
     //Write each image in a directory
     for (size_t i = 0; i < aDim.ndim; i++ )
     {
-        TIFFSetDirectory(tif,(tdir_t) i + imgStart);
+        TIFFSetDirectory(hFile->tif,(tdir_t) i + imgStart);
 
         // Image header
-        TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE,  dhMain.bitsPerSample);
-        TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL,dhMain.samplesPerPixel);
-        TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT,   dhMain.imageSampleFormat);
-        TIFFSetField(tif, TIFFTAG_IMAGEWIDTH,     dhMain.imageWidth);
-        TIFFSetField(tif, TIFFTAG_IMAGELENGTH,    dhMain.imageLength);
-        TIFFSetField(tif, TIFFTAG_RESOLUTIONUNIT, dhMain.resUnit);
-        TIFFSetField(tif, TIFFTAG_XRESOLUTION,    dhMain.xTiffRes);
-        TIFFSetField(tif, TIFFTAG_YRESOLUTION,    dhMain.yTiffRes);
-        TIFFSetField(tif, TIFFTAG_PHOTOMETRIC,    PHOTOMETRIC_MINISBLACK);
-        TIFFSetField(tif, TIFFTAG_COMPRESSION,    COMPRESSION_NONE);
-        TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,   (uint32) dhMain.imageLength);
-        TIFFSetField(tif, TIFFTAG_PLANARCONFIG,   PLANARCONFIG_CONTIG);
-        TIFFSetField(tif, TIFFTAG_SOFTWARE,       "Xmipp 3.0");
+        TIFFSetField(hFile->tif, TIFFTAG_BITSPERSAMPLE,  dhMain.bitsPerSample);
+        TIFFSetField(hFile->tif, TIFFTAG_SAMPLESPERPIXEL,dhMain.samplesPerPixel);
+        TIFFSetField(hFile->tif, TIFFTAG_SAMPLEFORMAT,   dhMain.imageSampleFormat);
+        TIFFSetField(hFile->tif, TIFFTAG_IMAGEWIDTH,     dhMain.imageWidth);
+        TIFFSetField(hFile->tif, TIFFTAG_IMAGELENGTH,    dhMain.imageLength);
+        TIFFSetField(hFile->tif, TIFFTAG_RESOLUTIONUNIT, dhMain.resUnit);
+        TIFFSetField(hFile->tif, TIFFTAG_XRESOLUTION,    dhMain.xTiffRes);
+        TIFFSetField(hFile->tif, TIFFTAG_YRESOLUTION,    dhMain.yTiffRes);
+        TIFFSetField(hFile->tif, TIFFTAG_PHOTOMETRIC,    PHOTOMETRIC_MINISBLACK);
+        TIFFSetField(hFile->tif, TIFFTAG_COMPRESSION,    COMPRESSION_NONE);
+        TIFFSetField(hFile->tif, TIFFTAG_ROWSPERSTRIP,   (uint32) dhMain.imageLength);
+        TIFFSetField(hFile->tif, TIFFTAG_PLANARCONFIG,   PLANARCONFIG_CONTIG);
+        TIFFSetField(hFile->tif, TIFFTAG_SOFTWARE,       "Xmipp 3.0");
 
         if (aDim.ndim == 1 && isStack == false)
         {
-            TIFFSetField(tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x0);
-            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16) 0, (uint16) 0);
+            TIFFSetField(hFile->tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x0);
+            TIFFSetField(hFile->tif, TIFFTAG_PAGENUMBER, (uint16) 0, (uint16) 0);
         }
         else
         {
-            TIFFSetField(tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x2);
-            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16) i, (uint16) aDim.ndim);
+            TIFFSetField(hFile->tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x2);
+            TIFFSetField(hFile->tif, TIFFTAG_PAGENUMBER, (uint16) i, (uint16) aDim.ndim);
         }
 
         // Only write images when needed
@@ -521,11 +523,11 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
                     getCastConvertPageFromT(i*datasize_n + y*aDim.xdim,
                                             (char *)tif_buf, wDType, (size_t) aDim.xdim, min0, max0, castMode);
 
-                TIFFWriteScanline(tif, tif_buf,y,0);
+                TIFFWriteScanline(hFile->tif, tif_buf,y,0);
             }
         }
 
-        TIFFWriteDirectory(tif);
+        TIFFWriteDirectory(hFile->tif);
     }
 
     _TIFFfree(tif_buf);

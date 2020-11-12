@@ -26,6 +26,7 @@
 #include "xmipp_image_base.h"
 #include "jpeglib.h"
 #include "xmipp_error.h"
+#include "xmipp_image_fhandler.h"
 
 //#include <jpeglib.h>
 
@@ -37,7 +38,7 @@ int ImageBase::readJPEG(size_t select_img)
     cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_decompress(&cinfo);
 
-    jpeg_stdio_src(&cinfo, fimg);
+    jpeg_stdio_src(&cinfo, hFile->fimg);
     jpeg_read_header(&cinfo, TRUE);
 
     MDMainHeader.setValue(MDL_MIN,0.);
@@ -182,7 +183,7 @@ int ImageBase::writeJPEG(size_t select_img, bool isStack, int mode, String bitDe
     cinfo.err = jpeg_std_error(&jerr);
     jpeg_create_compress(&cinfo);
 
-    jpeg_stdio_dest(&cinfo, fimg);
+    jpeg_stdio_dest(&cinfo, hFile->fimg);
 
     /* Set JPEG image properties */
     cinfo.image_width = aDim.xdim;      /* image width and height, in pixels */

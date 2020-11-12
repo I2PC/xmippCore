@@ -27,6 +27,7 @@
 #include "xmipp_image.h"
 #include "xmipp_error.h"
 #include "metadata.h"
+#include "xmipp_image_fhandler.h"
 
 //This is needed for static memory allocation
 
@@ -34,17 +35,12 @@ void ImageBase::init()
 {
     clearHeader();
 
-    filename = tempFilename = dataFName = "";
-    fimg = fhed = NULL;
-    hFile = NULL;
-    tif = NULL;
+    hFile = nullptr;
     dataMode = DATA;
     transform = isComplexT() ? Standard : NoTransform;
-    filename.clear();
     offset = 0;
     swap = swapWrite = 0;
     replaceNsize = 0;
-    _exists = mmapOnRead = mmapOnWrite = false;
     mFd        = 0;
     mappedSize = mappedOffset = virtualOffset = 0;
     m_auxI = nullptr;
@@ -142,7 +138,7 @@ int ImageBase::readOrReadPreview(const FileName &name, size_t Xdim, size_t Ydim,
 }
 
 /** New mapped file */
-void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileName &_filename,
+void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileName &filename,
                               bool createTempFile, size_t select_img, bool isStack, int mode)
 {
     /** If XMIPP_MMAP is not defined this function is supposed to create
@@ -153,15 +149,14 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 
     setDimensions(Xdim, Ydim, Zdim, 1); // Images with Ndim >1 cannot be mapped to image file
     MD.resize(1);
-    filename = _filename;
     FileName fnToOpen;
     if (createTempFile)
     {
         tempFilename.initUniqueName("temp_XXXXXX");
-        fnToOpen = tempFilename + ":" + _filename.getExtension();
+        fnToOpen = tempFilename + ":" + filename.getExtension();
     }
     else
-        fnToOpen=_filename;
+        fnToOpen=filename;
 
     /* If the filename is in stack or an image is selected, we will suppose
      * you want to write this, even if you have not set the flags to.
@@ -235,7 +230,17 @@ int ImageBase::readApplyGeo(const MetaData &md, size_t objId,
 void ImageBase::write(const FileName &name, size_t select_img, bool isStack,
                       int mode, CastWriteMode castMode, int _swapWrite)
 {
-    const FileName &fname = (name.empty()) ? filename : name;
+    const FileName &fname = [this, name]() {
+        if (name.empty()) {
+            if (nullptr != hFile) {
+                return hFile->fileName;
+            } else {
+                return FileName();
+            }
+        } else {
+            return name;
+        }
+    }();
 
     if (mmapOnWrite && mappedSize > 0)
     {
@@ -496,7 +501,7 @@ void ImageBase::getDimensions(size_t &Xdim, size_t &Ydim, size_t &Zdim, size_t &
  */
 void ImageBase::getInfo(ImageInfo &imgInfo) const
 {
-    imgInfo.filename = filename;
+    imgInfo.filename = hFile->fileName;
     imgInfo.offset = offset;
     imgInfo.datatype = datatype();
     imgInfo.swap = getSwap() > 0;
@@ -647,64 +652,43 @@ ImageFHandler* ImageBase::openFile(const FileName &name, int mode) const
 /** Close file function.
   * Close the image file according to its name and file handler.
   */
-void ImageBase::closeFile(ImageFHandler* hFile) const
+void ImageBase::closeFile(ImageFHandler* h) const
 {
-    FileName ext_name, fileName;
-    FILE* fimg, *fhed;
-    TIFF* tif;
-    hid_t fhdf5;
+    auto ifh = (nullptr != h) ? h : hFile;
+    if (nullptr == ifh)
+        REPORT_ERROR(ERR_LOGIC_ERROR, "Both passed image handler and internal handler are null");
 
-    if (hFile != NULL)
+    if (ifh->ext_name.contains("tif"))
     {
-        fileName = hFile->fileName;
-        ext_name = hFile->ext_name;
-        fimg = hFile->fimg;
-        fhed = hFile->fhed;
-        tif  = hFile->tif;
-        fhdf5 = hFile->fhdf5;
-    }
-    else
-    {
-        fileName = filename;
-        ext_name = filename.getFileFormat();
-        fimg = this->fimg;
-        fhed = this->fhed;
-        tif  = this->tif;
-        fhdf5 = this->fhdf5;
-
-    }
-
-    if (ext_name.contains("tif"))
-    {
-        TIFFClose(tif);
+        TIFFClose(ifh->tif);
         /* Since when creating a TIFF file without adding an image the file is 8 bytes
          * and this same file returns an error when trying to open again, we are going
          * to suppose that under 8 bytes this is empty.
         */
-        if (fileName.getFileSize() < 9)
-            filename.deleteFile();
+        if (ifh->fileName.getFileSize() < 9)
+            ifh->fileName.deleteFile();
     }
-    else if (ext_name.contains("hdf") || ext_name.contains("h5"))
+    else if (ifh->ext_name.contains("hdf") || ifh->ext_name.contains("h5"))
     {
-        H5Fclose(fhdf5);
-        if (fclose(fimg) != 0 )
-            REPORT_ERROR(ERR_IO_NOCLOSED,(String)"Can not close image file "+ filename);
+        H5Fclose(ifh->fhdf5);
+        if (fclose(ifh->fimg) != 0 )
+            REPORT_ERROR(ERR_IO_NOCLOSED,(String)"Can not close image file "+ ifh->fileName);
     }
     else
     {
-        if (fclose(fimg) != 0 )
-            REPORT_ERROR(ERR_IO_NOCLOSED,(String)"Can not close image file "+ filename);
+        if (fclose(ifh->fimg) != 0 )
+            REPORT_ERROR(ERR_IO_NOCLOSED,(String)"Can not close image file "+ ifh->fileName);
 
-        if (fhed != NULL &&  fclose(fhed) != 0 )
+        if (ifh->fhed != NULL &&  fclose(ifh->fhed) != 0 )
             REPORT_ERROR(ERR_IO_NOCLOSED,(String)"Can not close header file of "
-                         + filename);
+                         + ifh->fileName);
     }
     delete hFile;
 }
 
 /* Internal read image file method.
  */
-int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamode, size_t select_img,
+int ImageBase::_read(const FileName &name, ImageFHandler* h, DataMode datamode, size_t select_img,
                      bool mapData)
 {
     // Temporary Error to find old select_img == -1
@@ -728,14 +712,9 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     mmapOnRead = mapData;
 #endif
 
-    const auto &ext_name = hFile->ext_name;
-    fimg = hFile->fimg;
-    fhed = hFile->fhed;
-    tif  = hFile->tif;
-    fhdf5 = hFile->fhdf5;
+    this->hFile = h;
 
     size_t image_num = name.getPrefixNumber();
-    filename = name;
     dataFName = hFile->fileName;
 
     if (image_num != ALL_IMAGES)
@@ -756,43 +735,43 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     //Just clear the header before reading
     MDMainHeader.clear();
     //Set the file pointer at beginning
-    if (fimg != NULL)
-        fseek(fimg, 0, SEEK_SET);
-    if (fhed != NULL)
-        fseek(fhed, 0, SEEK_SET);
+    if (h->fimg != NULL)
+        fseek(h->fimg, 0, SEEK_SET);
+    if (h->fhed != NULL)
+        fseek(h->fhed, 0, SEEK_SET);
 
-    if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
-        ext_name.contains("stk") || ext_name.contains("vol"))
+    if (h->ext_name.contains("spi") || h->ext_name.contains("xmp")  ||
+        h->ext_name.contains("stk") || h->ext_name.contains("vol"))
         err = readSPIDER(select_img);
-    else if (ext_name.contains("mrcs")||ext_name.contains("st"))//mrc stack MUST go BEFORE plain MRC
+    else if (h->ext_name.contains("mrcs")||h->ext_name.contains("st"))//mrc stack MUST go BEFORE plain MRC
         err = readMRC(select_img,true);
-    else if (ext_name.contains("mrc")||ext_name.contains("map"))//mrc
+    else if (h->ext_name.contains("mrc")||h->ext_name.contains("map"))//mrc
         err = readMRC(select_img,false);
-    else if (ext_name.contains("img") || ext_name.contains("hed"))//
+    else if (h->ext_name.contains("img") || h->ext_name.contains("hed"))//
         err = readIMAGIC(select_img);//imagic is always an stack
-    else if (ext_name.contains("ser"))//TIA
+    else if (h->ext_name.contains("ser"))//TIA
         err = readTIA(select_img,false);
-    else if (ext_name.contains("dm3"))//DM3
+    else if (h->ext_name.contains("dm3"))//DM3
         err = readDM3(select_img,false);
-    else if (ext_name.contains("dm4"))//DM4
+    else if (h->ext_name.contains("dm4"))//DM4
         err = readDM4(select_img,false);
-    else if (ext_name.contains("ems"))//EM stack
+    else if (h->ext_name.contains("ems"))//EM stack
         err = readEM(select_img, true);
-    else if (ext_name.contains("em"))//EM
+    else if (h->ext_name.contains("em"))//EM
         err = readEM(select_img);
-    else if (ext_name.contains("pif"))//PIF
+    else if (h->ext_name.contains("pif"))//PIF
         err = readPIF(select_img);
-    else if (ext_name.contains("inf"))//RAW with INF file
+    else if (h->ext_name.contains("inf"))//RAW with INF file
         err = readINF(select_img,false);
-    else if (ext_name.contains("raw"))//RAW without INF file
+    else if (h->ext_name.contains("raw"))//RAW without INF file
         err = readRAW(select_img,false);
-    else if (ext_name.contains("tif"))//TIFF
+    else if (h->ext_name.contains("tif"))//TIFF
         err = readTIFF(select_img,false);
-    else if (ext_name.contains("spe"))//SPE
+    else if (h->ext_name.contains("spe"))//SPE
         err = readSPE(select_img,false);
-    else if (ext_name.contains("jpg"))//SPE
+    else if (h->ext_name.contains("jpg"))//SPE
         err = readJPEG(select_img);
-    else if (ext_name.contains("hdf") || ext_name.contains("h5"))//SPE
+    else if (h->ext_name.contains("hdf") || h->ext_name.contains("h5"))//SPE
         err = readHDF5(select_img);
     else
         err = readSPIDER(select_img);
@@ -801,7 +780,7 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     return err;
 }
 
-int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t start_img, size_t batch_size, DataMode datamode,
+int ImageBase::_readBatch(const FileName &name, ImageFHandler* h, size_t start_img, size_t batch_size, DataMode datamode,
                      bool mapData)
 {
 
@@ -822,30 +801,24 @@ int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t sta
     mmapOnRead = mapData;
 #endif
 
-    const auto &ext_name = hFile->ext_name;
-    fimg = hFile->fimg;
-    fhed = hFile->fhed;
-    tif  = hFile->tif;
-    fhdf5 = hFile->fhdf5;
-
-    filename = name;
+    this->hFile = h;
     dataFName = hFile->fileName;
 
 
     //Just clear the header before reading
     MDMainHeader.clear();
     //Set the file pointer at beginning
-    if (fimg != NULL)
-        fseek(fimg, 0, SEEK_SET);
-    if (fhed != NULL)
-        fseek(fhed, 0, SEEK_SET);
+    if (h->fimg != NULL)
+        fseek(h->fimg, 0, SEEK_SET);
+    if (h->fhed != NULL)
+        fseek(h->fhed, 0, SEEK_SET);
 
-    if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
-        ext_name.contains("stk") || ext_name.contains("vol")) {
+    if (h->ext_name.contains("spi") || h->ext_name.contains("xmp")  ||
+            h->ext_name.contains("stk") || h->ext_name.contains("vol")) {
         err = readSPIDER(start_img, batch_size);
-    } else if (ext_name.contains("mrcs")||ext_name.contains("st")) { //mrc stack MUST go BEFORE plain MRC
+    } else if (h->ext_name.contains("mrcs")||h->ext_name.contains("st")) { //mrc stack MUST go BEFORE plain MRC
         err = readMRC(start_img, batch_size, true);
-    } else if (ext_name.contains("mrc")||ext_name.contains("map")) {//mrc
+    } else if (h->ext_name.contains("mrc")||h->ext_name.contains("map")) {//mrc
         err = readMRC(start_img, batch_size, false);
     } else {
         REPORT_ERROR(ERR_NOT_IMPLEMENTED, "Reading of a range of files is implemented only for SPIDER and MRC stack.");
@@ -857,7 +830,7 @@ int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t sta
 
 /* Internal write image file method.
  */
-void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select_img,
+void ImageBase::_write(const FileName &name, ImageFHandler* h, size_t select_img,
                        bool isStack, int mode, CastWriteMode castMode)
 {
 
@@ -874,13 +847,8 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         return;
     }
 
-    filename = name;
+    this->hFile = h;
     dataFName = hFile->fileName;
-    _exists = hFile->exist;
-    fimg = hFile->fimg;
-    fhed = hFile->fhed;
-    tif  = hFile->tif;
-
     FileName ext_name = hFile->ext_name;
 
     size_t aux;
@@ -918,7 +886,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
     replaceNsize = 0;//reset replaceNsize in case image is reused
     if(isStack && select_img == ALL_IMAGES && mode == WRITE_REPLACE)
         REPORT_ERROR(ERR_VALUE_INCORRECT,"Please specify object to be replaced");
-    else if (_exists && (mode == WRITE_REPLACE || mode == WRITE_APPEND))
+    else if (h->exist && (mode == WRITE_REPLACE || mode == WRITE_APPEND))
     {
         // CHECK FOR INCONSISTENCIES BETWEEN data.xdim and x, etc???
         size_t Xdim, Ydim, Zdim, _Xdim, _Ydim, _Zdim, Ndim, _Ndim;
@@ -952,7 +920,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
             }
         }
     }
-    else if(!_exists && mode == WRITE_APPEND)
+    else if(!h->exist && mode == WRITE_APPEND)
     {
         ;
     }
@@ -964,10 +932,10 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
      * SELECT FORMAT
      */
     //Set the file pointer at beginning
-    if (fimg != NULL)
-        fseek(fimg, 0, SEEK_SET);
-    if (fhed != NULL)
-        fseek(fhed, 0, SEEK_SET);
+    if (h->fimg != NULL)
+        fseek(h->fimg, 0, SEEK_SET);
+    if (h->fhed != NULL)
+        fseek(h->fhed, 0, SEEK_SET);
 
     if(ext_name.contains("spi") || ext_name.contains("xmp") ||
        ext_name.contains("vol"))
@@ -1006,15 +974,14 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
 
     if ( err < 0 )
     {
-        std::cerr << " Filename = " << filename << " Extension= " << ext_name << std::endl;
+        std::cerr << " Filename = " << h->fileName << " Extension= " << ext_name << std::endl;
         REPORT_ERROR(ERR_IO_NOWRITE, "Error writing file");
     }
 
     /* If initially the file did not existed, once the first image is written,
      * then the file exists
      */
-    if (!_exists)
-        hFile->exist = _exists = true;
+    hFile->exist = true;
 }
 
 bool ImageBase::isImage(const FileName &name)
@@ -1035,10 +1002,10 @@ std::ostream& operator<<(std::ostream& o, const ImageBase& I)
 {
     o << std::endl;
     DataType * fileDT = NULL;
-    if (!I.filename.empty())
+    if (!I.hFile->fileName.empty())
     {
         o << "--- File information ---" << std::endl;
-        o << "Filename       : " << I.filename << std::endl;
+        o << "Filename       : " << I.hFile->fileName << std::endl;
         o << "Endianess      : ";
         if (I.swap^IsLittleEndian())
             o << "Little"  << std::endl;
@@ -1113,6 +1080,20 @@ std::ostream& operator<<(std::ostream& o, const ImageBase& I)
         o << "--- Geometry ---" << std::endl << oGeo.str();
 
     return o;
+}
+
+void ImageBase::rename(const FileName &name) {
+    hFile->fileName = name;
+}
+
+const FileName& ImageBase::name() const
+{
+    return hFile->fileName;
+}
+
+void ImageBase::setName(const FileName &_filename)
+{
+    hFile->fileName = _filename;
 }
 
 ImageBase::~ImageBase()

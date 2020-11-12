@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_image_fhandler.h"
 
 DataType ImageBase::datatypeRAW(String strDT)
 {
@@ -82,14 +83,14 @@ int ImageBase::readRAW(size_t select_img, bool isStack)
     StringVector info;
     DataType datatype;
 
-    found = filename.find_first_of("#");
-    infolist = filename.substr(found+1);
-    filename = filename.substr(0,found);
+    found = hFile->fileName.find_first_of("#");
+    infolist = hFile->fileName.substr(found+1);
+    hFile->fileName = hFile->fileName.substr(0,found);
     infolist.toLowercase();
     splitString(infolist,",",info, false);
 
     if (info.size() < 4)
-        REPORT_ERROR(ERR_ARG_MISSING, (String) " Cannot open file " + filename +
+        REPORT_ERROR(ERR_ARG_MISSING, (String) " Cannot open file " + hFile->fileName +
                      ". Not enough header arguments.");
 
     _xDim = textToInteger(info[0]);
@@ -133,7 +134,7 @@ int ImageBase::readRAW(size_t select_img, bool isStack)
         return 0;
 
     size_t pad = 0;
-    readData(fimg, select_img, datatype, pad);
+    readData(hFile->fimg, select_img, datatype, pad);
 
     return(0);
 }

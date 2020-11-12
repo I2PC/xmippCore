@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_image_fhandler.h"
 
 /*
  * rwIMAGIC.h
@@ -131,8 +132,8 @@ int  ImageBase::readIMAGIC(size_t select_img)
 
     IMAGIChead* header = new IMAGIChead;
 
-    if ( fread( header, IMAGICSIZE, 1, fhed ) < 1 )
-        REPORT_ERROR(ERR_IO_NOREAD,(String)"readIMAGIC: header file of " + filename + " cannot be read");
+    if ( fread( header, IMAGICSIZE, 1, hFile->fhed ) < 1 )
+        REPORT_ERROR(ERR_IO_NOREAD,(String)"readIMAGIC: header file of " + hFile->fileName + " cannot be read");
 
     // Determine byte order and swap bytes if from little-endian machine
     if ( (swap = (( abs(header->nyear) > SWAPTRIG ) || ( header->ixlp > SWAPTRIG ))) )
@@ -200,14 +201,14 @@ int  ImageBase::readIMAGIC(size_t select_img)
     }
 
     // Get the header information
-    fseek( fhed, IMG_INDEX(select_img) * IMAGICSIZE, SEEK_SET );
+    fseek( hFile->fhed, IMG_INDEX(select_img) * IMAGICSIZE, SEEK_SET );
 
     MD.clear();
     MD.resize(_nDim,MDL::emptyHeader);
     double daux=1.;
     for ( size_t i = 0; i < _nDim; ++i )
     {
-        if ( fread( header, IMAGICSIZE, 1, fhed ) < 1 )
+        if ( fread( header, IMAGICSIZE, 1, hFile->fhed ) < 1 )
             return(-2);
         {
             if ( swap )
@@ -232,7 +233,7 @@ int  ImageBase::readIMAGIC(size_t select_img)
         return 0;
 
     size_t pad = 0;
-    readData(fimg, select_img, datatype, pad );
+    readData(hFile->fimg, select_img, datatype, pad );
 
     return(0);
 }
@@ -397,7 +398,7 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
     }
 
     memcpy(header.lastpr, "Xmipp", 5);
-    memcpy(header.name, filename.c_str(), 80);
+    memcpy(header.name, hFile->fileName.c_str(), 80);
 
     size_t  imgStart = IMG_INDEX(select_img);
 
@@ -418,8 +419,8 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
      * BLOCK HEADER IF NEEDED
      */
     FileLock flockHead, flockImg;
-    flockHead.lock(fhed);
-    flockImg.lock(fimg);
+    flockHead.lock(hFile->fhed);
+    flockImg.lock(hFile->fimg);
 
     if (replaceNsize == 0) // Header written first time
     {
@@ -427,26 +428,26 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
         {
             IMAGIChead headTemp = header;
             swapPage((char *) &headTemp, IMAGICSIZE - 916, DT_Float);
-            fwrite( &headTemp, IMAGICSIZE, 1, fhed );
+            fwrite( &headTemp, IMAGICSIZE, 1, hFile->fhed );
         }
-        fwrite( &header, IMAGICSIZE, 1, fhed );
+        fwrite( &header, IMAGICSIZE, 1, hFile->fhed );
     }
     else if( header.ifn + 1 > (int)replaceNsize && imgStart > 0 ) // Update number of images when needed
     {
-        fseek( fhed, sizeof(int), SEEK_SET);
+        fseek( hFile->fhed, sizeof(int), SEEK_SET);
         if ( swapWrite )
         {
             int ifnswp = header.ifn;
             swapPage((char *) &ifnswp, SIZEOF_INT, DT_Int);
-            fwrite(&(ifnswp),SIZEOF_INT,1,fhed);
+            fwrite(&(ifnswp),SIZEOF_INT,1,hFile->fhed);
         }
         else
-            fwrite(&(header.ifn),SIZEOF_INT,1,fhed);
+            fwrite(&(header.ifn),SIZEOF_INT,1,hFile->fhed);
     }
 
     // Jump to the selected imgStart position
-    fseek(fimg, datasize   * imgStart, SEEK_SET);
-    fseek(fhed, IMAGICSIZE * imgStart, SEEK_SET);
+    fseek(hFile->fimg, datasize   * imgStart, SEEK_SET);
+    fseek(hFile->fhed, IMAGICSIZE * imgStart, SEEK_SET);
 
     std::vector<MDRow>::iterator it = MD.begin();
 
@@ -472,22 +473,22 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
 
         if ( swapWrite )
             swapPage((char *) &header, IMAGICSIZE - 916, DT_Float);
-        fwrite( &header, IMAGICSIZE, 1, fhed );
+        fwrite( &header, IMAGICSIZE, 1, hFile->fhed );
 
         if (dataMode >= DATA)
         {
             if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
             {
-                mappedOffset = ftell(fimg);
+                mappedOffset = ftell(hFile->fimg);
                 mappedSize = mappedOffset + datasize;
-                fseek(fimg, datasize-1, SEEK_CUR);
-                fputc(0, fimg);
+                fseek(hFile->fimg, datasize-1, SEEK_CUR);
+                fputc(0, hFile->fimg);
             }
             else
-                writeData(fimg, i*datasize_n, wDType, datasize_n, castMode);
+                writeData(hFile->fimg, i*datasize_n, wDType, datasize_n, castMode);
         }
         else
-            fseek(fimg, datasize, SEEK_CUR);
+            fseek(hFile->fimg, datasize, SEEK_CUR);
     }
 
     //Unlock

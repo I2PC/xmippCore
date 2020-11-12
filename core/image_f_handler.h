@@ -1,6 +1,6 @@
 /***************************************************************************
- * Authors:     Joaquin Oton (joton@cnb.csic.es)
  *
+ * Authors:    David Strelak (davidstrelak@gmail.com)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,23 +23,29 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_RWHDF5_H_
-#define CORE_RWHDF5_H_
+#ifndef CORE_IMAGE_F_HANDLER_H_
+#define CORE_IMAGE_F_HANDLER_H_
 
-#include "hdf5.h"
+// Includes for rwTIFF which cannot be inside it
+#include <tiffio.h>
+#include <hdf5.h>
+#include "xmipp_filename.h"
+
+/** Open File struct
+ * This struct is used to share the File handlers with Image Collection class
+ */
+struct ImageFHandler
+{
+    FILE*     fimg;       // Image File handler
+    FILE*     fhed;       // Image File header handler
+    TIFF*     tif;        // TIFF Image file handler
+    hid_t     fhdf5;   // HDF5 File handler
+    FileName  fileName;   // Image file name
+    FileName  headName;   // Header file name
+    FileName  ext_name;   // Filename extension
+    bool     exist;       // Shows if the file exists. Equal 0 means file does not exist or not stack.
+    int        mode;   // Opening mode behavior
+};
 
 
-///@defgroup HDF5 HDF5 File format
-///@ingroup ImageFormats
-//@{
-
-
-/** Determine datatype of a HDF5 dataset.
-  * @ingroup TIFF
-  */
-DataType datatypeH5(hid_t dataset);
-
-hid_t H5Datatype(DataType datatype);
-
-//@}
-#endif /* RWHDF5_H_ */
+#endif /* CORE_IMAGE_F_HANDLER_H_ */

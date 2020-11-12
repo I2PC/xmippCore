@@ -26,6 +26,7 @@
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
 #include "xmipp_funcs.h"
+#include "xmipp_image_fhandler.h"
 
 #define EMHEADERSIZE 512 // size of EM file header
 
@@ -37,9 +38,9 @@ int ImageBase::readEM(size_t select_img, bool isStack)
 
     EMHead header;
 
-    if ( fread( &header, EMHEADERSIZE, 1, fimg ) != 1 )
+    if ( fread( &header, EMHEADERSIZE, 1, hFile->fimg ) != 1 )
         REPORT_ERROR(ERR_IO_NOREAD, formatString("rwEM: cannot read EM main header from file %s"
-                     ". Error message: %s", filename.c_str() ,strerror(errno)));
+                     ". Error message: %s", hFile->fileName.c_str() ,strerror(errno)));
 
     // endian: If machine is SGI, OS-9 or MAC: Big Endian, otherwise Litle Endian
     // Check Machine endianess
@@ -61,7 +62,7 @@ int ImageBase::readEM(size_t select_img, bool isStack)
     if (isStack)
     {
         if ( select_img > header.zdim )
-            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readEM: %s Image number %lu exceeds stack size %lu", this->filename.c_str(), select_img, header.zdim));
+            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readEM: %s Image number %lu exceeds stack size %lu", hFile->fileName.c_str(), select_img, header.zdim));
 
         aDim.ndim = (select_img > ALL_IMAGES)? 1 : header.zdim;
         aDim.zdim = 1;
@@ -137,7 +138,7 @@ int ImageBase::readEM(size_t select_img, bool isStack)
     if ( dataMode < DATA )   // Don't read the individual header and the data if not necessary
         return 0;
 
-    readData(fimg, select_img, datatype, 0);
+    readData(hFile->fimg, select_img, datatype, 0);
 
     return(0);
 }

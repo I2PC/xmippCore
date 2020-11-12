@@ -25,15 +25,16 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_image_fhandler.h"
 
 #define PIFHEADERSIZE sizeof(PIFDataHeader) // size of EM file header
 
 int  ImageBase::readPIF(size_t select_img)
 {
     PIFMainHeader  mainHeader;
-    if ( fread( &mainHeader, PIFHEADERSIZE, 1, fimg ) != 1 )
+    if ( fread( &mainHeader, PIFHEADERSIZE, 1, hFile->fimg ) != 1 )
         REPORT_ERROR(ERR_IO_NOREAD, formatString("rwPIF: cannot read Spider main header from file %s"
-                     ". Error message: %s", filename.c_str() ,strerror(errno)));
+                     ". Error message: %s", hFile->fileName.c_str() ,strerror(errno)));
 
     // Check Machine endianness
     bool isLE = IsLittleEndian();
@@ -88,7 +89,7 @@ int  ImageBase::readPIF(size_t select_img)
 
     // Check selected image
     if (select_img > (size_t)mainHeader.numImages)
-        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readPIF (%s): Image number %lu exceeds stack size %lu" ,filename.c_str(),select_img, mainHeader.numImages));
+        REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readPIF (%s): Image number %lu exceeds stack size %lu" ,hFile->fileName.c_str(),select_img, mainHeader.numImages));
 
     // Setting image dimensions
     ArrayDim aDim;
@@ -123,10 +124,10 @@ int  ImageBase::readPIF(size_t select_img)
 
     for (size_t n = 0, i = imgStart; i < imgEnd; ++i, ++n )
     {
-        if (fseek( fimg, headerOffset + i*imageSize, SEEK_SET ) != 0)//fseek return 0 on success
+        if (fseek( hFile->fimg, headerOffset + i*imageSize, SEEK_SET ) != 0)//fseek return 0 on success
             REPORT_ERROR(ERR_IO, formatString("rwPIF: error seeking %lu to read image %lu", headerOffset, i));
 
-        if ( fread( &dataHeader, PIFHEADERSIZE, 1, fimg ) != 1 )
+        if ( fread( &dataHeader, PIFHEADERSIZE, 1, hFile->fimg ) != 1 )
             REPORT_ERROR(ERR_IO_NOREAD, formatString("rwPIF: cannot read PIF image %lu header", i));
 
         if ( swap )
@@ -150,7 +151,7 @@ int  ImageBase::readPIF(size_t select_img)
         return 0;
 
     //offset should point to the begin of the data
-    readData(fimg, select_img, datatype, pad );
+    readData(hFile->fimg, select_img, datatype, pad );
 
     return(0);
 }

@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "args.h"
+#include "xmipp_image_fhandler.h"
 
 ///@defgroup INF INF File format
 ///@ingroup ImageFormats
@@ -45,20 +46,20 @@ int ImageBase::readINF(size_t select_img,bool isStack)
     size_t _nDim;
     bool __is_signed;
 
-    _xDim = textToInteger(getParameter(fhed, "Xdim"));
-    _yDim = textToInteger(getParameter(fhed, "Ydim"));
-    __depth = textToInteger(getParameter(fhed, "bitspersample"));
-    if (checkParameter(fhed, "offset"))
-        offset = textToInteger(getParameter(fhed, "offset"));
+    _xDim = textToInteger(getParameter(hFile->fhed, "Xdim"));
+    _yDim = textToInteger(getParameter(hFile->fhed, "Ydim"));
+    __depth = textToInteger(getParameter(hFile->fhed, "bitspersample"));
+    if (checkParameter(hFile->fhed, "offset"))
+        offset = textToInteger(getParameter(hFile->fhed, "offset"));
     else
         offset = 0;
-    if (checkParameter(fhed, "is_signed"))
-        __is_signed = (getParameter(fhed, "is_signed") == "true" ||
-                       getParameter(fhed, "is_signed") == "TRUE");
+    if (checkParameter(hFile->fhed, "is_signed"))
+        __is_signed = (getParameter(hFile->fhed, "is_signed") == "true" ||
+                       getParameter(hFile->fhed, "is_signed") == "TRUE");
     else
         __is_signed = false;
-    if (checkParameter(fhed, "endianess") &&
-        (getParameter(fhed, "endianess") == "big" || getParameter(fhed, "endianess") == "BIG"))
+    if (checkParameter(hFile->fhed, "endianess") &&
+        (getParameter(hFile->fhed, "endianess") == "big" || getParameter(hFile->fhed, "endianess") == "BIG"))
         swap = true;
     else
         swap = false;
@@ -118,7 +119,7 @@ int ImageBase::readINF(size_t select_img,bool isStack)
         return 0;
 
     size_t pad = 0;
-    readData(fimg, select_img, datatype, pad);
+    readData(hFile->fimg, select_img, datatype, pad);
     return(0);
 }
 
@@ -225,29 +226,29 @@ int ImageBase::writeINF(size_t select_img, bool isStack, int mode, String bitDep
 
     // Lock Header file
     FileLock flock;
-    flock.lock(fhed);
+    flock.lock(hFile->fhed);
 
     /* Write INF file ==================================*/
-    fprintf(fhed,"# Bits per sample\n");
-    fprintf(fhed,"bitspersample= %d\n",_depth*8);
-    fprintf(fhed,"# Samples per pixel\n");
-    fprintf(fhed,"samplesperpixel= 1\n");
-    fprintf(fhed,"# Image width\n");
-    fprintf(fhed,"Xdim= %d\n", (int)Xdim);
-    fprintf(fhed,"# Image length\n");
-    fprintf(fhed,"Ydim= %d\n",(int)Ydim);
-    fprintf(fhed,"# offset in bytes (zero by default)\n");
-    fprintf(fhed,"offset= 0\n");
-    fprintf(fhed,"# Is a signed or Unsigned int (by default true)\n");
+    fprintf(hFile->fhed,"# Bits per sample\n");
+    fprintf(hFile->fhed,"bitspersample= %d\n",_depth*8);
+    fprintf(hFile->fhed,"# Samples per pixel\n");
+    fprintf(hFile->fhed,"samplesperpixel= 1\n");
+    fprintf(hFile->fhed,"# Image width\n");
+    fprintf(hFile->fhed,"Xdim= %d\n", (int)Xdim);
+    fprintf(hFile->fhed,"# Image length\n");
+    fprintf(hFile->fhed,"Ydim= %d\n",(int)Ydim);
+    fprintf(hFile->fhed,"# offset in bytes (zero by default)\n");
+    fprintf(hFile->fhed,"offset= 0\n");
+    fprintf(hFile->fhed,"# Is a signed or Unsigned int (by default true)\n");
     if (_is_signed)
-        fprintf(fhed,"is_signed= true\n");
+        fprintf(hFile->fhed,"is_signed= true\n");
     else
-        fprintf(fhed,"is_signed= false\n");
-    fprintf(fhed,"# Byte order\n");
+        fprintf(hFile->fhed,"is_signed= false\n");
+    fprintf(hFile->fhed,"# Byte order\n");
     if ( swapWrite^IsBigEndian() )
-        fprintf(fhed,"endianess= big\n");
+        fprintf(hFile->fhed,"endianess= big\n");
     else
-        fprintf(fhed,"endianess= little\n");
+        fprintf(hFile->fhed,"endianess= little\n");
 
     //Unlock Header file
     flock.unlock();
@@ -258,18 +259,18 @@ int ImageBase::writeINF(size_t select_img, bool isStack, int mode, String bitDep
     datasize = datasize_n * gettypesize(wDType);
 
     // Lock Image file
-    flock.lock(fimg);
+    flock.lock(hFile->fimg);
 
     if (mmapOnWrite)
     {
         mappedOffset = 0;
         mappedSize = mappedOffset + datasize;
-        fseek(fimg, datasize-1, SEEK_SET);
-        fputc(0, fimg);
+        fseek(hFile->fimg, datasize-1, SEEK_SET);
+        fputc(0, hFile->fimg);
         mmapFile();
     }
     else
-        writeData(fimg, 0, wDType, datasize_n, castMode);
+        writeData(hFile->fimg, 0, wDType, datasize_n, castMode);
 
     // Unlock Image file
     flock.unlock();

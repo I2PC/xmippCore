@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_image_fhandler.h"
 
 ///@defgroup SPE Princeton Instruments File Format
 ///@ingroup ImageFormats
@@ -40,11 +41,11 @@ int ImageBase::readSPE(size_t select_img,bool isStack)
     size_t _nDim;
 
     short int aux;
-    fseek(fimg,42,SEEK_SET);
-    xmippFREAD(&aux, sizeof(short int), 1, fimg, swap );
+    fseek(hFile->fimg,42,SEEK_SET);
+    xmippFREAD(&aux, sizeof(short int), 1, hFile->fimg, swap );
     _xDim = aux;
-    fseek(fimg,656,SEEK_SET);
-    xmippFREAD(&aux, sizeof(short int), 1, fimg, swap );
+    fseek(hFile->fimg,656,SEEK_SET);
+    xmippFREAD(&aux, sizeof(short int), 1, hFile->fimg, swap );
     _yDim = aux;
 
     _zDim = 1;
@@ -73,7 +74,7 @@ int ImageBase::readSPE(size_t select_img,bool isStack)
 
     size_t pad = 0;
 
-    readData(fimg, select_img, datatype, pad);
+    readData(hFile->fimg, select_img, datatype, pad);
 
     return(0);
 }
