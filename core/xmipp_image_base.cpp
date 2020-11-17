@@ -26,6 +26,7 @@
 #include "xmipp_image_base.h"
 #include "xmipp_image.h"
 #include "xmipp_error.h"
+#include "metadata.h"
 
 //This is needed for static memory allocation
 
@@ -46,6 +47,7 @@ void ImageBase::init()
     _exists = mmapOnRead = mmapOnWrite = false;
     mFd        = 0;
     mappedSize = mappedOffset = virtualOffset = 0;
+    m_auxI = nullptr;
 }
 
 void ImageBase::clearHeader()
@@ -68,6 +70,29 @@ int ImageBase::read(const FileName &name, DataMode datamode, size_t select_img,
     int err = _read(name, hFile, datamode, select_img, mapData);
     closeFile(hFile);
     return err;
+}
+
+int ImageBase::readBatch(const FileName &name, size_t start_img, size_t batch_size,
+                     DataMode datamode /*= DATA*/, bool mapData /*= false*/, int mode /*= WRITE_READONLY*/)
+{
+    if (!mapData) {
+        mode = WRITE_READONLY;
+    }
+
+    hFile = openFile(name, mode);
+    int err = _readBatch(name, hFile, start_img, batch_size, datamode, mapData);
+    closeFile(hFile);
+    return err;
+}
+
+int ImageBase::readRange(const FileName &name, size_t start_img, size_t end_img,
+                     DataMode datamode /*= DATA*/, bool mapData /*= false*/, int mode /*= WRITE_READONLY*/)
+{
+    if (end_img < start_img) {
+        REPORT_ERROR(ERR_ARG_DEPENDENCE, formatString("readRange: end_img %lu is smaller than start_img %lu\n", end_img, start_img));
+    }
+
+    readBatch(name, start_img, end_img - start_img + 1, datamode, mapData, mode);
 }
 
 
@@ -703,7 +728,7 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     mmapOnRead = mapData;
 #endif
 
-    FileName ext_name = hFile->ext_name;
+    const auto &ext_name = hFile->ext_name;
     fimg = hFile->fimg;
     fhed = hFile->fhed;
     tif  = hFile->tif;
@@ -717,14 +742,14 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
         select_img = image_num;
 
 #undef DEBUG
-    //#define DEBUG
+    // #define DEBUG
 #ifdef DEBUG
 
     std::cerr << "READ\n" <<
     "name="<<name <<std::endl;
     std::cerr << "ext= "<<ext_name <<std::endl;
     std::cerr << " now reading: "<< filename <<" dataflag= "<<dataMode
-    << " select_img "  << select_img << std::endl;
+    << " select_img "  << select_img << ", image_num = " << image_num << std::endl;
 #endif
 #undef DEBUG
 
@@ -776,6 +801,60 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     return err;
 }
 
+int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t start_img, size_t batch_size, DataMode datamode,
+                     bool mapData)
+{
+
+    int err = 0;
+    dataMode = datamode;
+
+    // If MultidimArray pointer has been moved to a slice/image different from zero, then reset it.
+    // This check must be done prior to mappedSize check, since mappedSlice is a trick over data pointer
+    if ( virtualOffset != 0)
+        movePointerTo(ALL_SLICES);
+    // If Image has been previously used with mmap, then close the previous file
+    if (mappedSize != 0)
+        munmapFile();
+
+    // Check whether to map the data or not
+#ifdef XMIPP_MMAP
+
+    mmapOnRead = mapData;
+#endif
+
+    const auto &ext_name = hFile->ext_name;
+    fimg = hFile->fimg;
+    fhed = hFile->fhed;
+    tif  = hFile->tif;
+    fhdf5 = hFile->fhdf5;
+
+    filename = name;
+    dataFName = hFile->fileName;
+
+
+    //Just clear the header before reading
+    MDMainHeader.clear();
+    //Set the file pointer at beginning
+    if (fimg != NULL)
+        fseek(fimg, 0, SEEK_SET);
+    if (fhed != NULL)
+        fseek(fhed, 0, SEEK_SET);
+
+    if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
+        ext_name.contains("stk") || ext_name.contains("vol")) {
+        err = readSPIDER(start_img, batch_size);
+    } else if (ext_name.contains("mrcs")||ext_name.contains("st")) { //mrc stack MUST go BEFORE plain MRC
+        err = readMRC(start_img, batch_size, true);
+    } else if (ext_name.contains("mrc")||ext_name.contains("map")) {//mrc
+        err = readMRC(start_img, batch_size, false);
+    } else {
+        REPORT_ERROR(ERR_NOT_IMPLEMENTED, "Reading of a range of files is implemented only for SPIDER and MRC stack.");
+    }
+
+    // Negative errors are bad.
+    return err;
+}
+
 /* Internal write image file method.
  */
 void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select_img,
@@ -820,7 +899,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         filNamePlusExt = filNamePlusExt.substr(0, found) ;
     }
 
-    //#define DEBUG
+    // #define DEBUG
 #ifdef DEBUG
 
     std::cerr << "write" <<std::endl;
@@ -829,6 +908,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
     std::cerr<<"mode= "<<mode<<std::endl;
     std::cerr<<"isStack= "<<isStack<<std::endl;
     std::cerr<<"select_img= "<<select_img<<std::endl;
+    std::cerr << "exists=" << _exists << std::endl;
 #endif
 #undef DEBUG
     // Check that image is not empty
@@ -843,20 +923,22 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         // CHECK FOR INCONSISTENCIES BETWEEN data.xdim and x, etc???
         size_t Xdim, Ydim, Zdim, _Xdim, _Ydim, _Zdim, Ndim, _Ndim;
         Xdim = Ydim = Zdim = _Xdim = _Ydim = _Zdim = Ndim = _Ndim = 0;
-        Image<char> auxI;
-        auxI._read(filNamePlusExt, hFile, HEADER, ALL_IMAGES);
+        if (nullptr == m_auxI) {
+            m_auxI = new Image<char>();
+        }
+        m_auxI->_read(filNamePlusExt, hFile, HEADER, ALL_IMAGES);
 
         this->getDimensions(Xdim, Ydim, Zdim, Ndim);
-        auxI.getDimensions(_Xdim, _Ydim, _Zdim, _Ndim);
+        m_auxI->getDimensions(_Xdim, _Ydim, _Zdim, _Ndim);
 
-        if(auxI.getSize()>1)
+        if(m_auxI->getSize()>1)
         {
             replaceNsize = _Ndim;
 
             /** If we are going to changes all images, then swap of the file may be changed,
              *  otherwise, original swap remains. */
             if (select_img > ALL_IMAGES || Ndim < replaceNsize)
-                swapWrite = auxI.swap;
+                swapWrite = m_auxI->swap;
 
             if(Xdim != _Xdim ||
                Ydim != _Ydim ||
@@ -1031,4 +1113,9 @@ std::ostream& operator<<(std::ostream& o, const ImageBase& I)
         o << "--- Geometry ---" << std::endl << oGeo.str();
 
     return o;
+}
+
+ImageBase::~ImageBase()
+{
+    delete m_auxI;
 }

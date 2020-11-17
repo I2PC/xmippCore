@@ -24,6 +24,10 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "xmipp_error.h"
+#include "xmipp_memory.h"
+
+#include <memory>
 /*
         Base on rwMRC.h
         Header file for reading and writing MRC files
@@ -121,23 +125,20 @@ struct MRChead
     char labels[800];    // 56-255       10 80-character labels
 } ;
 
-// I/O prototypes
-/** MRC Reader
-  * @ingroup MRC
-*/
-int ImageBase::readMRC(size_t select_img, bool isStack)
+int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = false */)
 {
+
 #undef DEBUG
     //#define DEBUG
 #ifdef DEBUG
     printf("DEBUG readMRC: Reading MRC file\n");
 #endif
 
-    MRChead* header = new MRChead;
+    std::unique_ptr< MRChead > header( new MRChead() );
 
     int errCode = 0;
 
-    if ( fread( header, MRCSIZE, 1, fimg ) < 1 )
+    if ( fread( header.get(), MRCSIZE, 1, fimg ) < 1 )
         return(-2);
 
     // Determine byte order and swap bytes if from little-endian machine
@@ -147,7 +148,7 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
         fprintf(stderr, "Warning: Swapping header byte order for 4-byte types\n");
 #endif
 
-        swapPage((char *) header, MRCSIZE - 800, DT_Float); // MRCSIZE - 800 is to exclude labels from swapping
+        swapPage((char *) header.get(), MRCSIZE - 800, DT_Float); // MRCSIZE - 800 is to exclude labels from swapping
     }
 
     // Convert VAX floating point types if necessary
@@ -155,6 +156,7 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
     //    REPORT_ERROR(ERR_IMG_NOREAD,"readMRC: amin > max: VAX floating point conversion unsupported");
 
     size_t _xDim,_yDim,_zDim,_nDim;
+    size_t _nDimSet;
 
     _xDim = header->nx;
     _yDim = header->ny;
@@ -167,6 +169,8 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
      * then we also ignore the stack behavior in header */
     if ( !isStack && (isVolStk || !filename.contains(":")))
         isStack = ((header->ispg == 0 || isVolStk ) && (header->nsymbt == 0));
+
+    // std::cout << "isStack = " << isStack << std::endl;
 
     if(isStack)
     {
@@ -181,16 +185,22 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
             _zDim = 1;
         }
 
-        if ( select_img > _nDim )
-            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readMRC: %s Image number %lu exceeds stack size %lu", this->filename.c_str(), select_img, _nDim));
+        if (batch_size == ALL_IMAGES) {
+            _nDimSet = _nDim - start_img + 1;
+        } else {
+        _nDimSet = std::min( start_img + batch_size - 1, _nDim ) - start_img + 1;
+        }
 
-        if (select_img > ALL_IMAGES)
-            _nDim = 1;
+
+        if ( start_img > _nDim )
+            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readMRC: %s Image number %lu exceeds stack size %lu", this->filename.c_str(), start_img, _nDim));
+
     }
     else // If the reading is not like a stack, then the select_img is not taken into account and must be selected the only image
     {
-        select_img = ALL_IMAGES;
+        start_img = 1;
         _nDim = 1;
+        _nDimSet = 1;
     }
 
     DataType datatype;
@@ -225,7 +235,7 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
     }
 
     replaceNsize = _nDim;
-    setDimensions(_xDim, _yDim, _zDim, _nDim);
+    setDimensions(_xDim, _yDim, _zDim, _nDimSet);
 
 
     offset = MRCSIZE + header->nsymbt;
@@ -259,12 +269,11 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
 
     if (dataMode==HEADER || (dataMode == _HEADER_ALL && _nDim > 1)) // Stop reading if not necessary
     {
-        delete header;
         return errCode;
     }
 
-    size_t   imgStart = IMG_INDEX(select_img);
-    size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : _nDim;
+    const size_t   imgStart = IMG_INDEX(start_img);
+    const size_t   imgEnd = start_img + _nDimSet - 1;
 
     MD.clear();
     MD.resize(imgEnd - imgStart,MDL::emptyHeader);
@@ -298,8 +307,6 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
         }
     }
 
-    delete header;
-
     if ( dataMode < DATA )   // Don't read the individual header and the data if not necessary
         return errCode;
 
@@ -308,13 +315,31 @@ int ImageBase::readMRC(size_t select_img, bool isStack)
 
     // 4-bits mode: Here is the magic to expand the compressed images
     if (datatype == DT_UHalfByte){
-        readData4bit(fimg, select_img, datatype, 0);
+        readData4bit(fimg, start_img, datatype, 0);
     }
     else{
-        readData(fimg, select_img, datatype, 0);
+        readData(fimg, start_img, datatype, 0);
     }
 
     return errCode;
+}
+
+// I/O prototypes
+/** MRC Reader
+  * @ingroup MRC
+*/
+int ImageBase::readMRC(size_t select_img, bool isStack /* = false*/)
+{
+#undef DEBUG
+    //#define DEBUG
+#ifdef DEBUG
+    printf("DEBUG readMRC: Reading MRC file\n");
+#endif
+
+    if (select_img == ALL_IMAGES) {
+        return readMRC(1, ALL_IMAGES, isStack);
+    }
+    return readMRC(select_img, 1, isStack);
 }
 
 /** MRC Writer
@@ -602,24 +627,30 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
 
     size_t imgEnd = (isStack)? Ndim : 1;
 
-    for ( size_t i = 0; i < imgEnd; i++ )
-    {
-        // If to also write the image data or jump its size
-        if (dataMode >= DATA)
+    if (checkMmapT(wDType) && !mmapOnWrite && dataMode >= DATA) {
+        writeData(fimg, 0, wDType, datasize_n * imgEnd, castMode);
+    } else {
+        for ( size_t i = 0; i < imgEnd; i++ )
         {
-            if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
+            // If to also write the image data or jump its size
+            if (dataMode >= DATA)
             {
-                mappedOffset = ftell(fimg);
-                mappedSize = mappedOffset + datasize;
-                fseek(fimg, datasize-1, SEEK_CUR);
-                fputc(0, fimg);
+                if (mmapOnWrite && Ndim == 1) // Can map one image at a time only
+                {
+                    mappedOffset = ftell(fimg);
+                    mappedSize = mappedOffset + datasize;
+                    fseek(fimg, datasize-1, SEEK_CUR);
+                    fputc(0, fimg);
+                }
+                else
+                    writeData(fimg, i*datasize_n, wDType, datasize_n, castMode);
             }
             else
-                writeData(fimg, i*datasize_n, wDType, datasize_n, castMode);
-        }
-        else
-            fseek(fimg, datasize, SEEK_CUR);
+                fseek(fimg, datasize, SEEK_CUR);
+        }    
     }
+
+    
 
     // Unlock the file
     flock.unlock();

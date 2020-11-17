@@ -110,6 +110,22 @@ struct SPIDERhead
 int  readSPIDER(size_t select_img);
 
 /************************************************************************
+@Function: readSPIDER
+@Description:
+ Reading a SPIDER image file format in batches.
+@Arguments:
+ size_t start_img  Number of first image in the batch.
+ size_t batch_size Specifies how many sub-images will be read.
+    If batch_size = ALL_IMAGES, then images from `start_img` to the last one will be read.
+@Returns:
+ int     error code (<0 means failure).
+**************************************************************************/
+/** Spider Reader
+  * @ingroup Spider
+*/
+int  readSPIDER(size_t start_img, size_t batch_size);
+
+/************************************************************************
 @Function: writeSPIDER
 @Description:
  Writing a SPIDER image file format.

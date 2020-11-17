@@ -29,6 +29,7 @@
 #include "geometry.h"
 #include "xmipp_funcs.h"
 #include "transformations.h"
+#include "bilib/kernel.h"
 
 /* ######################################################################### */
 /* Geometrical Operations                                                    */
@@ -1238,6 +1239,85 @@ double intersection_unit_cube(
         return fabs(t1 -t2);
     else
         return 0;
+}
+
+double Bspline_model::evaluate(double x, double y) const
+{
+    int SplineDegree_1 = SplineDegree - 1;
+    double x_arg = (x - x0) / h_x;
+    double y_arg = (y - y0) / h_y;
+
+    int l1 = CLIP(CEIL(x_arg - SplineDegree_1), l0, lF);
+    int l2 = CLIP(l1 + SplineDegree, l0, lF);
+    int m1 = CLIP(CEIL(y_arg - SplineDegree_1), m0, mF);
+    int m2 = CLIP(m1 + SplineDegree, m0, mF);
+    double columns = 0.0;
+    for (int m = m1; m <= m2; m++)
+    {
+        double rows = 0.0;
+        for (int l = l1; l <= l2; l++)
+        {
+            double xminusl = x_arg - (double)l;
+            double Coeff = c_ml(m, l);
+            switch (SplineDegree)
+            {
+            case 2:
+                rows += Coeff * Bspline02(xminusl);
+                break;
+            case 3:
+                rows += Coeff * Bspline03(xminusl);
+                break;
+            case 4:
+                rows += Coeff * Bspline04(xminusl);
+                break;
+            case 5:
+                rows += Coeff * Bspline05(xminusl);
+                break;
+            case 6:
+                rows += Coeff * Bspline06(xminusl);
+                break;
+            case 7:
+                rows += Coeff * Bspline07(xminusl);
+                break;
+            case 8:
+                rows += Coeff * Bspline08(xminusl);
+                break;
+            case 9:
+                rows += Coeff * Bspline09(xminusl);
+                break;
+            }
+        }
+
+        double yminusm = y_arg - (double)m;
+        switch (SplineDegree)
+        {
+        case 2:
+            columns += rows * Bspline02(yminusm);
+            break;
+        case 3:
+            columns += rows * Bspline03(yminusm);
+            break;
+        case 4:
+            columns += rows * Bspline04(yminusm);
+            break;
+        case 5:
+            columns += rows * Bspline05(yminusm);
+            break;
+        case 6:
+            columns += rows * Bspline06(yminusm);
+            break;
+        case 7:
+            columns += rows * Bspline07(yminusm);
+            break;
+        case 8:
+            columns += rows * Bspline08(yminusm);
+            break;
+        case 9:
+            columns += rows * Bspline09(yminusm);
+            break;
+        }
+    }
+    return columns;
 }
 
 // explicit instantiation

@@ -27,15 +27,23 @@
 #define CORE_IMAGE_BASE_H_
 
 #include "xmipp_image_macros.h"
-#include "multidim_array.h"
-#include "transformations.h"
-#include "metadata.h"
 #include "xmipp_datatype.h"
+#include "metadata_label.h"
+#include "multidim_array_base.h"
+#include "xmipp_filename.h"
+#include "transformations_defines.h"
+#include "xmipp_funcs.h"
+
 //
 //// Includes for rwTIFF which cannot be inside it
 #include <tiffio.h>
 #include <hdf5.h>
 
+template<typename T>
+class Matrix2D;
+class MetaData;
+template<typename T>
+class Image;
 
 /* Minimum size of a TIFF file to be mapped to a tempfile in case of mapping from
  * image file is required
@@ -279,8 +287,7 @@ public:
     }
 
     /** Destructor.*/
-    virtual ~ImageBase()
-    {}
+    virtual ~ImageBase();
 
     /** Is this file an image
      *
@@ -343,6 +350,18 @@ public:
      */
     int read(const FileName &name, DataMode datamode = DATA, size_t select_img = ALL_IMAGES,
              bool mapData = false, int mode = WRITE_READONLY);
+
+    /**
+    * Reads `batch_size` images from a single image file starting from image with index `start_img`.
+    * If batch_size == ALL_IMAGES, then all images starting from `start_img` to last image are read.
+    */
+    int readBatch(const FileName &name, size_t start_img, size_t batch_size, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
+
+    /**
+    * Reads range of images form a single image file starting from image with index `start_img` and ending with
+    * image with index `end_img` inclusive.
+    */
+    int readRange(const FileName &name, size_t start_img, size_t end_img, DataMode datamode = DATA, bool mapData = false, int mode = WRITE_READONLY);
 
     /** General read function
      * you can read a single image from a single image file
@@ -812,6 +831,9 @@ protected:
     int _read(const FileName &name, ImageFHandler* hFile, DataMode datamode = DATA, size_t select_img = ALL_IMAGES,
               bool mapData = false);
 
+    int _readBatch(const FileName &name, ImageFHandler* hFile, size_t start_img, size_t batch_size, DataMode datamode = DATA,
+              bool mapData = false);
+
     /** Internal write image file method.
      */
     void _write(const FileName &name, ImageFHandler* hFile, size_t select_img = ALL_IMAGES,
@@ -848,7 +870,9 @@ protected:
 
     /** Show ImageBase */
     friend std::ostream& operator<<(std::ostream& o, const ImageBase& I);
-
+private:
+    // Auxiliary image used for special write case
+    Image<char> *m_auxI;
 };
 //@}
 #endif /* IMAGE_BASE_H_ */

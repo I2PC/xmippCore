@@ -27,12 +27,8 @@
 #define CORE_METADATALABEL_H
 
 #include <map>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <fstream>
-#include "xmipp_funcs.h"
 #include "xmipp_strings.h"
+#include <vector>
 
 class MDLabelData;
 class MDObject;
@@ -1067,18 +1063,6 @@ public:
     void  setValue(const size_t &lv);
     void  setValue(const float &floatvalue);
     void  setValue(const char*  &charvalue);
-
-#define DOUBLE2STREAM(d) \
-        if (withFormat) {\
-                (os) << std::setw(12); \
-                (os) << (((d) != 0. && ABS(d) < 0.001) ? std::scientific : std::fixed);\
-            } os << d;
-
-#define INT2STREAM(i) \
-        if (withFormat) os << std::setw(20); \
-        os << i;
-        //this must have 20 since SIZE_MAX = 18446744073709551615 size
-
     void toStream(std::ostream &os, bool withFormat = false, bool isSql=false, bool escape=true) const;
     String toString(bool withFormat = false, bool isSql=false) const;
     bool fromStream(std::istream &is, bool fromString=false);
@@ -1119,7 +1103,12 @@ public:
     /** Destructor */
     ~MDRow();
     /** True if this row contains this label */
-    bool containsLabel(MDLabel label) const;
+    inline bool containsLabel(MDLabel label) const {
+        return objects[label] != NULL;
+    }
+
+    /** Returns all labels defined for this row */
+    std::vector<MDLabel> getLabels() const;
 
     /** Add a new label */
     void addLabel(MDLabel label);
@@ -1216,7 +1205,7 @@ public:
     static void str2LabelVector(const String &labelsStr, std::vector<MDLabel> &labels);
     static MDLabel str2Label(const String &labelName);
     /** Converts MDLabel to string */
-    static String label2Str(const MDLabel label);
+    static String label2Str(const MDLabel &label);
     /** Same as label2Str but escaping with '' to use in Sqlite. */
     static String label2StrSql(const MDLabel label);
     /** Converts MDLabel to string representing SQL column*/
@@ -1236,7 +1225,7 @@ public:
     static bool isDouble(const MDLabel label);
     static bool isVector(const MDLabel label);
     static bool isVectorLong(const MDLabel label);
-    static bool isValidLabel(const MDLabel label);
+    static bool isValidLabel(const MDLabel &label);
     static bool isValidLabel(const String &labelName);
     static MDLabelType labelType(const MDLabel label);
     static MDLabelType labelType(const String &labelName);

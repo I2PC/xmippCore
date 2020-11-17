@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
+#include <algorithm>
 
 #include "histogram.h"
 #include "metadata.h"

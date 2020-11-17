@@ -23,282 +23,42 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <fstream>
+#include <algorithm>
+#include "bilib/kernel.h"
+#include "matrix2d.h"
 #include "multidim_array.h"
+#include "multidim_array_base.h"
+#include "numerical_recipes.h"
+#include "xmipp_funcs.h"
+#include "xmipp_filename.h"
 
-void MultidimArrayBase::setNdim(int Ndim)
+template<typename T>
+void MultidimArray<T>::getSliceAsMatrix(size_t k, Matrix2D<T> &m) const
 {
-    ndim = Ndim;
-    nzyxdim=zyxdim*ndim;
+//    there's wrong bracket somewhere, and I don't want to think about it now
+//    m.resizeNoCopy(YSIZE(*this),XSIZE(*this));
+//    memcpy(&MAT_ELEM(m,0,0),&A3D_ELEM(*this,k,0,0),YSIZE(*this),XSIZE(*this)*sizeof(double));
+    REPORT_ERROR(ERR_NOT_IMPLEMENTED,"Please contact developers");
 }
 
-/** Sets new Z dimension.
- *
- *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
- *
- */
-void MultidimArrayBase::setZdim(int Zdim)
+template<typename T>
+MultidimArray<T>& MultidimArray<T>::operator=(const Matrix2D<T>& op1)
 {
-    zdim = Zdim;
-    zyxdim=yxdim*zdim;
-    nzyxdim=zyxdim*ndim;
+    resizeNoCopy(MAT_YSIZE(op1), MAT_XSIZE(op1));
+    memcpy(data,MATRIX2D_ARRAY(op1), MAT_SIZE(op1)*sizeof(T));
+
+    return *this;
 }
 
-/** Sets new Y dimension.
- *
- *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
- *
- */
-void MultidimArrayBase::setYdim(int Ydim)
+template<typename T>
+void MultidimArray<T>::copy(Matrix2D<T>& op1) const
 {
-    ydim = Ydim;
-    yxdim=(size_t)ydim*xdim;
-    zyxdim=yxdim*zdim;
-    nzyxdim=zyxdim*ndim;
+    op1.resizeNoCopy(YSIZE(*this), XSIZE(*this));
+    memcpy(MATRIX2D_ARRAY(op1), MULTIDIM_ARRAY(*this), MULTIDIM_SIZE(*this)*sizeof(T));
 }
 
-/** Sets new X dimension.
-  *
-  *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
-  *
-  */
-void MultidimArrayBase::setXdim(int Xdim)
-{
-    xdim = Xdim;
-    yxdim=(size_t)ydim*xdim;
-    zyxdim=yxdim*zdim;
-    nzyxdim=zyxdim*ndim;
-}
 
-/** Sets new 4D dimensions.
-  *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
-  */
-void MultidimArrayBase::setDimensions(int Xdim, int Ydim, int Zdim, int Ndim)
-{
-    if (((size_t)Xdim)*Ydim*Zdim*Ndim < 1)
-        REPORT_ERROR(ERR_MULTIDIM_SIZE, "Dimensions' size cannot be zero nor negative.");
-    ndim=Ndim;
-    zdim=Zdim;
-    ydim=Ydim;
-    xdim=Xdim;
-    yxdim=ydim*xdim;
-    zyxdim=zdim*yxdim;
-    nzyxdim=ndim*zyxdim;
-}
-
-/** Sets new 4D dimensions.
- *  Note that the dataArray is NOT resized. This should be done separately with coreAllocate()
- */
-void MultidimArrayBase::setDimensions(ArrayDim &newDim)
-{
-    if (newDim.ndim*newDim.zdim*newDim.ydim*newDim.xdim < 1)
-        REPORT_ERROR(ERR_MULTIDIM_SIZE, "Dimensions' size cannot be zero nor negative.");
-    ndim = newDim.ndim;
-    zdim = newDim.zdim;
-    ydim = newDim.ydim;
-    xdim = newDim.xdim;
-
-    newDim.yxdim   = yxdim   = ydim*xdim;
-    newDim.zyxdim  = zyxdim  = zdim*yxdim;
-    newDim.nzyxdim = nzyxdim = ndim*zyxdim;
-}
-
-/** Returns the multidimArray N,Z, Y and X dimensions.
- *
- * @code
- * V.getDimensions(Xdim, Ydim, Zdim, Ndim);
- * @endcode
- */
-void MultidimArrayBase::getDimensions(size_t& Xdim, size_t& Ydim, size_t& Zdim, size_t &Ndim) const
-{
-    Xdim = xdim;
-    Ydim = ydim;
-    Zdim = zdim;
-    Ndim = ndim;
-}
-
-void MultidimArrayBase::getDimensions(ArrayDim &adim) const
-{
-    adim.xdim = xdim;
-    adim.ydim = ydim;
-    adim.zdim = zdim;
-    adim.ndim = ndim;
-    adim.yxdim = yxdim;
-    adim.zyxdim = zyxdim;
-    adim.nzyxdim = nzyxdim;
-}
-
-ArrayDim MultidimArrayBase::getDimensions() const
-{
-    ArrayDim adim;
-    adim.xdim = xdim;
-    adim.ydim = ydim;
-    adim.zdim = zdim;
-    adim.ndim = ndim;
-    adim.yxdim = yxdim;
-    adim.zyxdim = zyxdim;
-    adim.nzyxdim = nzyxdim;
-
-    return adim;
-}
-
-/** Get dimensions.
- *
- * Returns the size of the object in a 4D vector. If the object is a matrix
- * or a vector, then the higher order dimensions will be set to 1, ie,
- * (Xdim, 1, 1) or (Xdim, Ydim, 1).
- *
- * This function is not ported to Python.
- */
-void MultidimArrayBase::getDimensions(int* size) const
-{
-    size[0] = xdim;
-    size[1] = ydim;
-    size[2] = zdim;
-    size[3] = ndim;
-}
-
-/** Returns the total size of the multidimArray
- *
- * @code
- * if (V.getSize() > 1) ...
- * @endcode
- */
-size_t MultidimArrayBase::getSize() const
-{
-    return nzyxdim;
-}
-
-/** Resize the multidimarray from an ArrayDim struct
- *
- */
-void MultidimArrayBase::resize(ArrayDim &adim, bool copy)
-{
-    setDimensions(adim);
-    resize(adim.ndim, adim.zdim, adim.ydim, adim.xdim, copy);
-}
-
-/** Copy the shape parameters
-  *
-  */
-void MultidimArrayBase::copyShape(const MultidimArrayBase &m)
-{
-    ndim=m.ndim;
-    zdim=m.zdim;
-    ydim=m.ydim;
-    xdim=m.xdim;
-    yxdim=m.yxdim;
-    zyxdim=m.zyxdim;
-    nzyxdim=m.nzyxdim;
-    zinit=m.zinit;
-    yinit=m.yinit;
-    xinit=m.xinit;
-}
-
-void MultidimArrayBase::setXmippOrigin()
-{
-    zinit = FIRST_XMIPP_INDEX(zdim);
-    yinit = FIRST_XMIPP_INDEX(ydim);
-    xinit = FIRST_XMIPP_INDEX(xdim);
-}
-
-void MultidimArrayBase::resetOrigin()
-{
-    zinit = yinit = xinit = 0;
-}
-
-void MultidimArrayBase::moveOriginTo(int k, int i, int j)
-{
-    zinit = k + FIRST_XMIPP_INDEX(zdim);
-    yinit = i + FIRST_XMIPP_INDEX(ydim);
-    xinit = j + FIRST_XMIPP_INDEX(xdim);
-}
-
-void MultidimArrayBase::moveOriginTo(int i, int j)
-{
-    yinit = i + FIRST_XMIPP_INDEX(ydim);
-    xinit = j + FIRST_XMIPP_INDEX(xdim);
-}
-
-/** IsCorner (in 2D or 3D matrix)
-         *
-         * TRUE if the logical index given is a corner of the definition region of this
-         * array.
-         */
-bool MultidimArrayBase::isCorner(const Matrix1D< double >& v) const
-{
-
-    if (v.size() < 2)
-        REPORT_ERROR(ERR_MATRIX_SIZE, "isCorner: index vector has got not enough components");
-
-    else if (ZSIZE(*this)==1)
-        return ((XX(v) == STARTINGX(*this)  && YY(v) == STARTINGY(*this))  ||
-                (XX(v) == STARTINGX(*this)  && YY(v) == FINISHINGY(*this)) ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == STARTINGY(*this))  ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == FINISHINGY(*this)));
-    else if (ZSIZE(*this)>1)
-        return ((XX(v) == STARTINGX(*this)  && YY(v) == STARTINGY(*this)  && ZZ(v) == STARTINGZ(*this)) ||
-                (XX(v) == STARTINGX(*this)  && YY(v) == FINISHINGY(*this) && ZZ(v) == STARTINGZ(*this)) ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == STARTINGY(*this)  && ZZ(v) == STARTINGZ(*this))  ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == FINISHINGY(*this) && ZZ(v) == STARTINGZ(*this)) ||
-                (XX(v) == STARTINGX(*this)  && YY(v) == STARTINGY(*this)  && ZZ(v) == FINISHINGZ(*this)) ||
-                (XX(v) == STARTINGX(*this)  && YY(v) == FINISHINGY(*this) && ZZ(v) == FINISHINGZ(*this)) ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == STARTINGY(*this)  && ZZ(v) == FINISHINGZ(*this))  ||
-                (XX(v) == FINISHINGX(*this) && YY(v) == FINISHINGY(*this) && ZZ(v) == FINISHINGZ(*this)));
-    else
-        REPORT_ERROR(ERR_MATRIX_SIZE, formatString("isCorner: index vector has too many components. dimV= %lu matrix dim = %i", v.size(), XSIZE(*this)));
-}
-
-/** Outside
-     *
-     * TRUE if the logical index given is outside the definition region of this
-     * array.
-     */
-bool MultidimArrayBase::outside(const Matrix1D<double> &r) const
-{
-    if (r.size() < 1)
-    {
-        REPORT_ERROR(ERR_MATRIX_SIZE, "Outside: index vector has not got enough components");
-    }
-    else if (r.size()==1)
-    {
-        return (XX(r) < STARTINGX(*this) || XX(r) > FINISHINGX(*this));
-    }
-    else if (r.size()==2)
-    {
-        return (XX(r) < STARTINGX(*this) || XX(r) > FINISHINGX(*this) ||
-                YY(r) < STARTINGY(*this) || YY(r) > FINISHINGY(*this));
-    }
-    else if (r.size()==3)
-    {
-        return (XX(r) < STARTINGX(*this) || XX(r) > FINISHINGX(*this) ||
-                YY(r) < STARTINGY(*this) || YY(r) > FINISHINGY(*this) ||
-                ZZ(r) < STARTINGZ(*this) || ZZ(r) > FINISHINGZ(*this));
-    }
-    else
-        REPORT_ERROR(ERR_MATRIX_SIZE,"Outside: index vector has too many components");
-}
-
-void MultidimArrayBase::printShape(std::ostream& out) const
-{
-    if (NSIZE(*this) > 1)
-        out << " Number of images = "<<NSIZE(*this);
-
-    if (ZSIZE(*this)>1)
-        out<< " Size(Z,Y,X): " << ZSIZE(*this) << "x" << YSIZE(*this) << "x" << XSIZE(*this)
-        << " k=[" << STARTINGZ(*this) << ".." << FINISHINGZ(*this) << "]"
-        << " i=[" << STARTINGY(*this) << ".." << FINISHINGY(*this) << "]"
-        << " j=[" << STARTINGX(*this) << ".." << FINISHINGX(*this) << "]";
-    else if (YSIZE(*this)>1)
-        out<< " Size(Y,X): " << YSIZE(*this) << "x" << XSIZE(*this)
-        << " i=[" << STARTINGY(*this) << ".." << FINISHINGY(*this) << "]"
-        << " j=[" << STARTINGX(*this) << ".." << FINISHINGX(*this) << "]";
-    else if (XSIZE(*this)>1)
-        out<< " Size(X): " << XSIZE(*this)
-        << " j=[" << STARTINGX(*this) << ".." << FINISHINGX(*this) << "]";
-    else
-        out << " Empty MultidimArray!";
-    out<<"\n";
-}
 
 // Window in 2D -----------------------------------------------------------
 template<typename T>
@@ -658,3 +418,768 @@ void planeFit(const MultidimArray<double> &z, const MultidimArray<double> &x, co
 	 p2 = c(1);
 	 p1 = c(0);
 }
+
+template<typename T>
+T MultidimArray<T>::interpolatedElementBSpline3D(double x, double y, double z,
+                               int SplineDegree) const
+{
+    int SplineDegree_1 = SplineDegree - 1;
+
+    // Logical to physical
+    z -= STARTINGZ(*this);
+    y -= STARTINGY(*this);
+    x -= STARTINGX(*this);
+
+    int l1 = (int)ceil(x - SplineDegree_1);
+    int l2 = l1 + SplineDegree;
+
+    int m1 = (int)ceil(y - SplineDegree_1);
+    int m2 = m1 + SplineDegree;
+
+    int n1 = (int)ceil(z - SplineDegree_1);
+    int n2 = n1 + SplineDegree;
+
+    double zyxsum = 0.0;
+    double aux;
+    int Xdim=(int)XSIZE(*this);
+    int Ydim=(int)YSIZE(*this);
+    int Zdim=(int)ZSIZE(*this);
+    for (int nn = n1; nn <= n2; nn++)
+    {
+        int equivalent_nn=nn;
+        if      (nn<0)
+            equivalent_nn=-nn-1;
+        else if (nn>=Zdim)
+            equivalent_nn=2*Zdim-nn-1;
+        double yxsum = 0.0;
+        for (int m = m1; m <= m2; m++)
+        {
+            int equivalent_m=m;
+            if      (m<0)
+                equivalent_m=-m-1;
+            else if (m>=Ydim)
+                equivalent_m=2*Ydim-m-1;
+            double xsum = 0.0;
+            for (int l = l1; l <= l2; l++)
+            {
+                double xminusl = x - (double) l;
+                int equivalent_l=l;
+                if      (l<0)
+                    equivalent_l=-l-1;
+                else if (l>=Xdim)
+                    equivalent_l=2*Xdim-l-1;
+                double Coeff = (double) DIRECT_A3D_ELEM(*this,
+                                                        equivalent_nn,equivalent_m,equivalent_l);
+                switch (SplineDegree)
+                {
+                case 2:
+                    xsum += Coeff * Bspline02(xminusl);
+                    break;
+                case 3:
+                    BSPLINE03(aux,xminusl);
+                    xsum += Coeff * aux;
+                    break;
+                case 4:
+                    xsum += Coeff * Bspline04(xminusl);
+                    break;
+                case 5:
+                    xsum += Coeff * Bspline05(xminusl);
+                    break;
+                case 6:
+                    xsum += Coeff * Bspline06(xminusl);
+                    break;
+                case 7:
+                    xsum += Coeff * Bspline07(xminusl);
+                    break;
+                case 8:
+                    xsum += Coeff * Bspline08(xminusl);
+                    break;
+                case 9:
+                    xsum += Coeff * Bspline09(xminusl);
+                    break;
+                }
+            }
+
+            double yminusm = y - (double) m;
+            switch (SplineDegree)
+            {
+            case 2:
+                yxsum += xsum * Bspline02(yminusm);
+                break;
+            case 3:
+                BSPLINE03(aux,yminusm);
+                yxsum += xsum * aux;
+                break;
+            case 4:
+                yxsum += xsum * Bspline04(yminusm);
+                break;
+            case 5:
+                yxsum += xsum * Bspline05(yminusm);
+                break;
+            case 6:
+                yxsum += xsum * Bspline06(yminusm);
+                break;
+            case 7:
+                yxsum += xsum * Bspline07(yminusm);
+                break;
+            case 8:
+                yxsum += xsum * Bspline08(yminusm);
+                break;
+            case 9:
+                yxsum += xsum * Bspline09(yminusm);
+                break;
+            }
+        }
+
+        double zminusn = z - (double) nn;
+        switch (SplineDegree)
+        {
+        case 2:
+            zyxsum += yxsum * Bspline02(zminusn);
+            break;
+        case 3:
+            BSPLINE03(aux,zminusn);
+            zyxsum += yxsum * aux;
+            break;
+        case 4:
+            zyxsum += yxsum * Bspline04(zminusn);
+            break;
+        case 5:
+            zyxsum += yxsum * Bspline05(zminusn);
+            break;
+        case 6:
+            zyxsum += yxsum * Bspline06(zminusn);
+            break;
+        case 7:
+            zyxsum += yxsum * Bspline07(zminusn);
+            break;
+        case 8:
+            zyxsum += yxsum * Bspline08(zminusn);
+            break;
+        case 9:
+            zyxsum += yxsum * Bspline09(zminusn);
+            break;
+        }
+    }
+
+    return (T) zyxsum;
+}
+
+template<typename T>
+T MultidimArray<T>::interpolatedElementBSpline2D(double x, double y, int SplineDegree) const
+{
+    int SplineDegree_1 = SplineDegree - 1;
+
+    // Logical to physical
+    y -= STARTINGY(*this);
+    x -= STARTINGX(*this);
+
+    int l1 = (int)ceil(x - SplineDegree_1);
+    int l2 = l1 + SplineDegree;
+    int m1 = (int)ceil(y - SplineDegree_1);
+    int m2 = m1 + SplineDegree;
+
+    double columns = 0.0;
+    double aux;
+    int Ydim=(int)YSIZE(*this);
+    int Xdim=(int)XSIZE(*this);
+    for (int m = m1; m <= m2; m++)
+    {
+        int equivalent_m=m;
+        if      (m<0)
+            equivalent_m=-m-1;
+        else if (m>=Ydim)
+            equivalent_m=2*Ydim-m-1;
+        double rows = 0.0;
+        for (int l = l1; l <= l2; l++)
+        {
+            double xminusl = x - (double) l;
+            int equivalent_l=l;
+            if      (l<0)
+                equivalent_l=-l-1;
+            else if (l>=Xdim)
+                equivalent_l=2*Xdim-l-1;
+            double Coeff = DIRECT_A2D_ELEM(*this, equivalent_m,equivalent_l);
+            switch (SplineDegree)
+            {
+            case 2:
+                rows += Coeff * Bspline02(xminusl);
+                break;
+
+            case 3:
+                BSPLINE03(aux,xminusl);
+                rows += Coeff * aux;
+                break;
+
+            case 4:
+                rows += Coeff * Bspline04(xminusl);
+                break;
+
+            case 5:
+                rows += Coeff * Bspline05(xminusl);
+                break;
+
+            case 6:
+                rows += Coeff * Bspline06(xminusl);
+                break;
+
+            case 7:
+                rows += Coeff * Bspline07(xminusl);
+                break;
+
+            case 8:
+                rows += Coeff * Bspline08(xminusl);
+                break;
+
+            case 9:
+                rows += Coeff * Bspline09(xminusl);
+                break;
+            }
+        }
+
+        double yminusm = y - (double) m;
+        switch (SplineDegree)
+        {
+        case 2:
+            columns += rows * Bspline02(yminusm);
+            break;
+
+        case 3:
+            BSPLINE03(aux,yminusm);
+            columns += rows * aux;
+            break;
+
+        case 4:
+            columns += rows * Bspline04(yminusm);
+            break;
+
+        case 5:
+            columns += rows * Bspline05(yminusm);
+            break;
+
+        case 6:
+            columns += rows * Bspline06(yminusm);
+            break;
+
+        case 7:
+            columns += rows * Bspline07(yminusm);
+            break;
+
+        case 8:
+            columns += rows * Bspline08(yminusm);
+            break;
+
+        case 9:
+            columns += rows * Bspline09(yminusm);
+            break;
+        }
+    }
+    return (T) columns;
+}
+
+template<typename T>
+T MultidimArray<T>::interpolatedElementBSpline2D_Degree3(double x, double y) const
+{
+    bool    firstTime=true;         // Inner loop first time execution flag.
+    double  *ref;
+
+    // Logical to physical
+    y -= STARTINGY(*this);
+    x -= STARTINGX(*this);
+
+    int l1 = (int)ceil(x - 2);
+    int l2 = l1 + 3;
+    int m1 = (int)ceil(y - 2);
+    int m2 = m1 + 3;
+
+    double columns = 0.0;
+    double aux;
+    int Ydim=(int)YSIZE(*this);
+    int Xdim=(int)XSIZE(*this);
+
+    int     equivalent_l_Array[LOOKUP_TABLE_LEN]; // = new int [l2 - l1 + 1];
+    double  aux_Array[LOOKUP_TABLE_LEN];// = new double [l2 - l1 + 1];
+
+    for (int m = m1; m <= m2; m++)
+    {
+        int equivalent_m=m;
+        if      (m<0)
+            equivalent_m=-m-1;
+        else if (m>=Ydim)
+            equivalent_m=2*Ydim-m-1;
+        double rows = 0.0;
+        int index=0;
+        ref = &DIRECT_A2D_ELEM(*this, equivalent_m,0);
+        for (int l = l1; l <= l2; l++)
+        {
+            int equivalent_l;
+            // Check if it is first time executing inner loop.
+            if (firstTime)
+            {
+                double xminusl = x - (double) l;
+                equivalent_l=l;
+                if (l<0)
+                {
+                    equivalent_l=-l-1;
+                }
+                else if (l>=Xdim)
+                {
+                    equivalent_l=2*Xdim-l-1;
+                }
+
+                equivalent_l_Array[index] = equivalent_l;
+                BSPLINE03(aux,xminusl);
+                aux_Array[index] = aux;
+                index++;
+            }
+            else
+            {
+                equivalent_l = equivalent_l_Array[index];
+                aux = aux_Array[index];
+                index++;
+            }
+
+            //double Coeff = DIRECT_A2D_ELEM(*this, equivalent_m,equivalent_l);
+            double Coeff = ref[equivalent_l];
+            rows += Coeff * aux;
+        }
+
+        // Set first time inner flag is executed to false.
+        firstTime = false;
+
+        double yminusm = y - (double) m;
+        BSPLINE03(aux,yminusm);
+        columns += rows * aux;
+    }
+
+    return (T) columns;
+}
+
+template<typename T>
+T MultidimArray<T>::interpolatedElementBSpline1D(double x, int SplineDegree) const
+{
+    int SplineDegree_1 = SplineDegree - 1;
+
+    // Logical to physical
+    x -= STARTINGX(*this);
+
+    int l1 = (int)ceil(x - SplineDegree_1);
+    int l2 = l1 + SplineDegree;
+    int Xdim=(int)XSIZE(*this);
+    double sum = 0.0;
+    for (int l = l1; l <= l2; l++)
+    {
+        double xminusl = x - (double) l;
+        int equivalent_l=l;
+        if      (l<0)
+            equivalent_l=-l-1;
+        else if (l>=Xdim)
+            equivalent_l=2*Xdim-l-1;
+        double Coeff = (double) DIRECT_A1D_ELEM(*this, equivalent_l);
+        double aux;
+        switch (SplineDegree)
+        {
+        case 2:
+            sum += Coeff * Bspline02(xminusl);
+            break;
+
+        case 3:
+            BSPLINE03(aux,xminusl);
+            sum += Coeff * aux;
+            break;
+
+        case 4:
+            sum += Coeff * Bspline04(xminusl);
+            break;
+
+        case 5:
+            sum += Coeff * Bspline05(xminusl);
+            break;
+
+        case 6:
+            sum += Coeff * Bspline06(xminusl);
+            break;
+
+        case 7:
+            sum += Coeff * Bspline07(xminusl);
+            break;
+
+        case 8:
+            sum += Coeff * Bspline08(xminusl);
+            break;
+
+        case 9:
+            sum += Coeff * Bspline09(xminusl);
+            break;
+        }
+    }
+    return (T) sum;
+}
+
+template<typename T>
+void MultidimArray<T>::initRandom(double op1, double op2, RandomMode mode)
+{
+    T* ptr=NULL;
+    size_t n;
+    if (mode == RND_UNIFORM)
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr = static_cast< T >(rnd_unif(op1, op2));
+    else if (mode == RND_GAUSSIAN)
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr = static_cast< T >(rnd_gaus(op1, op2));
+    else
+        REPORT_ERROR(ERR_VALUE_INCORRECT,
+                     formatString("InitRandom: Mode not supported"));
+}
+
+template<typename T>
+void MultidimArray<T>::addNoise(double op1,
+              double op2,
+              const String& mode,
+              double df) const
+{
+    T* ptr=NULL;
+    size_t n;
+    if (mode == "uniform")
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr += static_cast< T >(rnd_unif(op1, op2));
+    else if (mode == "gaussian")
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr += static_cast< T >(rnd_gaus(op1, op2));
+    else if (mode == "student")
+        FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+        *ptr += static_cast< T >(rnd_student_t(df, op1, op2));
+    else
+        REPORT_ERROR(ERR_VALUE_INCORRECT,
+                     formatString("AddNoise: Mode not supported (%s)", mode.c_str()));
+}
+
+template<typename T>
+FILE* MultidimArray<T>::mmapFile(T* &_data, size_t nzyxDim) const
+{
+#ifdef XMIPP_MMAP
+    FILE* fMap = tmpfile();
+    int Fd = fileno(fMap);
+
+    if ((lseek(Fd, nzyxDim*sizeof(T)-1, SEEK_SET) == -1) || (::write(Fd,"",1) == -1))
+    {
+        fclose(fMap);
+        REPORT_ERROR(ERR_IO_NOWRITE,"MultidimArray::resize: Error 'stretching' the map file.");
+    }
+    if ( (_data = (T*) mmap(0,nzyxDim*sizeof(T), PROT_READ | PROT_WRITE, MAP_SHARED, Fd, 0)) == (void*) MAP_FAILED )
+        REPORT_ERROR(ERR_MMAP_NOTADDR,formatString("MultidimArray::resize: mmap failed. Error %s", strerror(errno)));
+
+    return fMap;
+#else
+
+    REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
+
+}
+
+template<typename T>
+void MultidimArray<T>::indexSort(MultidimArray< int > &indx) const
+{
+    checkDimension(1);
+
+    MultidimArray< double > temp;
+    indx.clear();
+
+    if (xdim == 0)
+        return;
+
+    if (xdim == 1)
+    {
+        indx.resizeNoCopy(1);
+        DIRECT_A1D_ELEM(indx,0) = 1;
+        return;
+    }
+
+    // Initialise data
+    indx.resizeNoCopy(xdim);
+    typeCast(*this, temp);
+
+    // Sort indexes
+    double* temp_array = temp.adaptForNumericalRecipes1D();
+    int* indx_array = indx.adaptForNumericalRecipes1D();
+    indexx(XSIZE(*this), temp_array, indx_array);
+}
+
+template<typename T>
+void MultidimArray<T>::selfNormalizeInterval(double minPerc, double maxPerc, int Npix)
+{
+    std::vector<double> randValues; // Vector with random chosen values
+
+    for(int i=0; i<Npix; i++)
+    {
+        size_t indx = (size_t)rnd_unif(0, MULTIDIM_SIZE(*this));
+        randValues.push_back(DIRECT_MULTIDIM_ELEM(*this,indx));
+    }
+    std::sort(randValues.begin(),randValues.end());
+
+    double m = randValues[(size_t)(minPerc*Npix)];
+    double M = randValues[(size_t)(maxPerc*Npix)];
+
+    T* ptr=NULL;
+    size_t n;
+    FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+    *ptr = 2/(M-m)*(*ptr-m)-1;
+}
+
+template<typename T>
+void MultidimArray<T>::showWithGnuPlot(const String& xlabel, const String& title)
+{
+    checkDimension(1);
+
+    FileName fn_tmp;
+    fn_tmp.initRandom(10);
+    const char * fnStr = fn_tmp.c_str();
+    MultidimArray<T>::write(formatString("PPP%s.txt", fnStr));
+
+    std::ofstream fh_gplot;
+    fh_gplot.open(formatString("PPP%s.gpl", fnStr).c_str());
+    if (!fh_gplot)
+        REPORT_ERROR(ERR_IO_NOTOPEN,
+                     formatString("vector::showWithGnuPlot: Cannot open PPP%s.gpl for output", fnStr));
+    fh_gplot << "set xlabel \"" + xlabel + "\"\n";
+    fh_gplot << "plot \"PPP" + fn_tmp + ".txt\" title \"" + title +
+    "\" w l\n";
+    fh_gplot << "pause 300 \"\"\n";
+    fh_gplot.close();
+    if (0 != system(formatString("(gnuplot PPP%s.gpl; rm PPP%s.txt PPP%s.gpl) &", fnStr, fnStr, fnStr).c_str()) ) {
+        REPORT_ERROR(ERR_IO, "Cannot open gnuplot");
+    }
+}
+
+template<typename T>
+void MultidimArray<T>::edit()
+{
+    FileName nam;
+    nam.initRandom(15);
+
+    nam = formatString("PPP%s.txt", nam.c_str());
+    write(nam);
+
+    if (0 != system(formatString("xmipp_edit -i %s -remove &", nam.c_str()).c_str())) {
+        REPORT_ERROR(ERR_IO, "Cannot open xmipp_edit");
+    }
+}
+
+template<typename T>
+void MultidimArray<T>::write(const FileName& fn) const
+{
+    std::ofstream out;
+    out.open(fn.c_str(), std::ios::out);
+    if (!out)
+        REPORT_ERROR(ERR_IO_NOTOPEN,
+                     formatString("MultidimArray::write: File %s cannot be opened for output", fn.c_str()));
+
+    out << *this;
+    out.close();
+}
+
+template<typename T>
+void MultidimArray<T>::resize(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim, bool copy)
+{
+    if (Ndim*Zdim*Ydim*Xdim == nzyxdimAlloc && data != NULL)
+    {
+        ndim = Ndim;
+        xdim = Xdim;
+        ydim = Ydim;
+        zdim = Zdim;
+        yxdim = Ydim * Xdim;
+        zyxdim = Zdim * yxdim;
+        nzyxdim = Ndim * zyxdim;
+        return;
+    }
+    else if (!destroyData)
+        REPORT_ERROR(ERR_MULTIDIM_SIZE, "Cannot resize array when accessing through alias.");
+
+    if (Xdim <= 0 || Ydim <= 0 || Zdim <= 0 || Ndim <= 0)
+    {
+        clear();
+        return;
+    }
+
+    // data can be NULL while xdim etc are set to non-zero values
+    // (This can happen for reading of images...)
+    // In that case, initialize data to zeros.
+    if (NZYXSIZE(*this) > 0 && data == NULL)
+    {
+        ndim = Ndim;
+        xdim = Xdim;
+        ydim = Ydim;
+        zdim = Zdim;
+        yxdim = Ydim * Xdim;
+        zyxdim = Zdim * yxdim;
+        nzyxdim = Ndim * zyxdim;
+
+        coreAllocate();
+        return;
+    }
+
+    // Ask for memory
+    size_t YXdim=(size_t)Ydim*Xdim;
+    size_t ZYXdim=YXdim*Zdim;
+    size_t NZYXdim=ZYXdim*Ndim;
+    FILE*  new_mFd=NULL;
+
+    T * new_data=NULL;
+
+    try
+    {
+        if (mmapOn)
+            new_mFd = mmapFile(new_data, NZYXdim);
+        else
+            new_data = new T [NZYXdim];
+
+        memset(new_data,0,NZYXdim*sizeof(T));
+    }
+    catch (std::bad_alloc &)
+    {
+        if (!mmapOn)
+        {
+            setMmap(true);
+            resize(Ndim, Zdim, Ydim, Xdim, copy);
+            return;
+        }
+        else
+        {
+            std::ostringstream sstream;
+            sstream << "Allocate: No space left to allocate ";
+            sstream << (NZYXdim * sizeof(T)/1024/1024/1024) ;
+            sstream << "Gb." ;
+            REPORT_ERROR(ERR_MEM_NOTENOUGH, sstream.str());
+        }
+    }
+    // Copy needed elements, fill with 0 if necessary
+    if (copy)
+    {
+        T zero=0; // Very useful for complex matrices
+        T *val=NULL;
+        for (size_t l = 0; l < Ndim; l++)
+            for (size_t k = 0; k < Zdim; k++)
+                for (size_t i = 0; i < Ydim; i++)
+                    for (size_t j = 0; j < Xdim; j++)
+                    {
+                        if (l >= NSIZE(*this))
+                            val = &zero;
+                        else if (k >= ZSIZE(*this))
+                            val = &zero;
+                        else if (i >= YSIZE(*this))
+                            val = &zero;
+                        else if (j >= XSIZE(*this))
+                            val = &zero;
+                        else
+                            val = &DIRECT_NZYX_ELEM(*this, l, k, i, j);
+                        new_data[l*ZYXdim + k*YXdim+i*Xdim+j] = *val;
+                    }
+    }
+
+    // deallocate old array
+    coreDeallocate();
+
+    // assign *this vector to the newly created
+    data = new_data;
+    ndim = Ndim;
+    xdim = Xdim;
+    ydim = Ydim;
+    zdim = Zdim;
+    yxdim = Ydim * Xdim;
+    zyxdim = Zdim * yxdim;
+    nzyxdim = Ndim * zyxdim;
+    mFd = new_mFd;
+    nzyxdimAlloc = nzyxdim;
+}
+
+template<typename T>
+void MultidimArray<T>::sort(MultidimArray<T> &result) const
+{
+    checkDimension(1);
+
+    result = *this;
+    std::sort(result.data, result.data + result.nzyxdim);
+}
+
+template<typename T>
+void MultidimArray<T>::computeMedian_within_binary_mask(const MultidimArray< int >& mask, double& median) const
+{
+    std::vector<double> bgI;
+
+    FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY(*this)
+    {
+        if (DIRECT_MULTIDIM_ELEM(mask, n) != 0)
+        {
+            double aux = DIRECT_MULTIDIM_ELEM(*this, n);
+            bgI.push_back(aux);
+        }
+    }
+
+    std::sort(bgI.begin(), bgI.end());
+    if (bgI.size() % 2 != 0)
+        median = bgI[bgI.size() / 2];
+    else
+        median = (bgI[(bgI.size() - 1) / 2] + bgI[bgI.size() / 2]) / 2.0;
+}
+
+template<typename T>
+void MultidimArray<T>::randomSubstitute(T oldv,
+                      T avgv,
+                      T sigv,
+                      double accuracy,
+                      MultidimArray<int> * mask)
+{
+    T* ptr=NULL;
+    size_t n;
+    FOR_ALL_DIRECT_ELEMENTS_IN_MULTIDIMARRAY_ptr(*this,n,ptr)
+    if (mask == NULL || DIRECT_MULTIDIM_ELEM(*mask,n) > 0 )
+        if (ABS(*ptr - oldv) <= accuracy)
+            *ptr = rnd_gaus(avgv, sigv);
+}
+
+// explicit instantiation
+template class MultidimArray<double>;
+
+// mmapFile
+template FILE* MultidimArray<bool>::mmapFile(bool*&, unsigned long) const;
+template FILE* MultidimArray<float>::mmapFile(float*&, unsigned long) const;
+template FILE* MultidimArray<char>::mmapFile(char*&, unsigned long) const;
+template FILE* MultidimArray<int>::mmapFile(int*&, unsigned long) const;
+template FILE* MultidimArray<long>::mmapFile(long*&, unsigned long) const;
+template FILE* MultidimArray<short>::mmapFile(short*&, unsigned long) const;
+template FILE* MultidimArray<unsigned char>::mmapFile(unsigned char*&, unsigned long) const;
+template FILE* MultidimArray<unsigned int>::mmapFile(unsigned int*&, unsigned long) const;
+template FILE* MultidimArray<unsigned long>::mmapFile(unsigned long*&, unsigned long) const;
+template FILE* MultidimArray<unsigned short>::mmapFile(unsigned short*&, unsigned long) const;
+template FILE* MultidimArray<std::complex<double>>::mmapFile(std::complex<double>*&, unsigned long) const;
+
+// resize
+template void MultidimArray<bool>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<float>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<char>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<int>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<unsigned char>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<unsigned int>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<unsigned long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<unsigned short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<std::complex<double>>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+
+// index sort
+template void MultidimArray<float>::indexSort(MultidimArray<int>&) const;
+template void MultidimArray<int>::indexSort(MultidimArray<int>&) const;
+
+// init random
+template void MultidimArray<float>::initRandom(double, double, RandomMode);
+template void MultidimArray<char>::initRandom(double, double, RandomMode);
+template void MultidimArray<long>::initRandom(double, double, RandomMode);
+template void MultidimArray<int>::initRandom(double, double, RandomMode);
+template void MultidimArray<short>::initRandom(double, double, RandomMode);
+template void MultidimArray<unsigned char>::initRandom(double, double, RandomMode);
+template void MultidimArray<unsigned int>::initRandom(double, double, RandomMode);
+template void MultidimArray<unsigned long>::initRandom(double, double, RandomMode);
+template void MultidimArray<unsigned short>::initRandom(double, double, RandomMode);
+
+// write
+template void MultidimArray<bool>::write(FileName const&) const;

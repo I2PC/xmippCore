@@ -25,6 +25,7 @@
 
 #include "xmipp_image_extension.h"
 #include "xmipp_error.h"
+#include "xmipp_image_generic.h"
 
 
 void getImageSize(const FileName &filename, size_t &Xdim, size_t &Ydim, size_t &Zdim, size_t &Ndim)

@@ -24,6 +24,8 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
+#include "metadata.h"
+#include "metadata_sql.h"
 
 ///@defgroup DM4 DM4 File format
 ///@ingroup ImageFormats
@@ -664,4 +666,9 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
     readData(fimg, select_img, datatype, pad);
 
     return(0);
+}
+
+int ImageBase::writeDM4(size_t img_select, bool isStack, int mode)
+{
+    REPORT_ERROR(ERR_IO_NOWRITE, "ERROR: writeDM4 is not implemented.");
 }

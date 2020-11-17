@@ -31,10 +31,10 @@
 #ifndef CORE_IMAGE_H
 #define CORE_IMAGE_H
 
-#include "xmipp_image_base.h"
-#include "xmipp_image_generic.h"
-#include "xmipp_color.h"
+#include <typeinfo>
 #include "multidim_array.h"
+#include "xmipp_image_base.h"
+#include "xmipp_memory.h"
 
 /// @addtogroup Images
 //@{
@@ -643,7 +643,7 @@ public:
     /** Check if file Datatype is the same as the declared image object (T type) to use mmap.
      */
     bool
-    checkMmapT(DataType datatype)
+    checkMmapT(DataType datatype) override
     {
 
         switch (datatype)
@@ -651,80 +651,31 @@ public:
             case DT_Unknown:
                 REPORT_ERROR(ERR_TYPE_INCORRECT, "ERROR: datatype is Unknown_Type");
             case DT_UHalfByte:
-            {
                 return 0;
-            }
             case DT_UChar:
-            {
-                if (typeid(T) == typeid(unsigned char))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned char);
             case DT_SChar:
-            {
-                if (typeid(T) == typeid(char))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(char);
             case DT_UShort:
-            {
-                if (typeid(T) == typeid(unsigned short))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned short);
             case DT_Short:
-            {
-                if (typeid(T) == typeid(short))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(short);
             case DT_UInt:
-            {
-                if (typeid(T) == typeid(unsigned int))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(unsigned int);
             case DT_Int:
-            {
-                if (typeid(T) == typeid(int))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(int);
             case DT_Long:
-            {
-                if (typeid(T) == typeid(long))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(long);
             case DT_Float:
-            {
-                if (typeid(T) == typeid(float))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(float);
             case DT_Double:
-            {
-                if (typeid(T) == typeid(double))
-                    return 1;
-                else
-                    return 0;
-            }
+                return typeid(T) == typeid(double);
             default:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;
                 REPORT_ERROR(ERR_TYPE_INCORRECT, " ERROR: cannot cast datatype to T");
             }
         }
-        //               int * iTemp = (int*) map;
-        //                ptrDest = reinterpret_cast<T*> (iTemp);
     }
 
     /** flip image around X axis
@@ -783,22 +734,7 @@ public:
 
     void
     selfApplyGeometry(int SplineDegree, bool wrap = WRAP,
-                      bool only_apply_shifts = false)
-    {
-        //apply geo has not been defined for volumes
-        //and only make sense when reading data
-        if (data.getDim() < 3 && dataMode >= DATA)
-        {
-            Matrix2D<double> A;
-            getTransformationMatrix(A, only_apply_shifts);
-            if (!A.isIdentity())
-            {
-                MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
-                applyGeometry(SplineDegree, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
-                              wrap);
-            }
-        }
-    }
+                      bool only_apply_shifts = false);
 
     /* Read an image with a lower resolution as a preview image.
      * If Zdim parameter is not passed, then all slices are rescaled.
@@ -806,59 +742,7 @@ public:
      */
     int
     readPreview(const FileName &name, size_t Xdim, size_t Ydim = 0,
-                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE)
-    {
-        // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
-
-        ImageGeneric im;
-        size_t imXdim, imYdim, imZdim, Zdim;
-        int err;
-        err = im.readMapped(name, select_img);
-        im.getDimensions(imXdim, imYdim, imZdim);
-        ImageInfo imgInfo;
-        im.getInfo(imgInfo);
-
-        //Set information from image file
-        setName(name);
-        setDatatype(imgInfo.datatype);
-        aDimFile = imgInfo.adim;
-
-        im().setXmippOrigin();
-
-        double scale;
-
-        // If only Xdim is passed, it is the higher allowable size, for any dimension
-        if (Ydim == 0 && imXdim < imYdim)
-        {
-            Ydim = Xdim;
-            scale = ((double) Ydim) / ((double) imYdim);
-            Xdim = (int) (scale * imXdim);
-        }
-        else
-        {
-            scale = ((double) Xdim) / ((double) imXdim);
-            if (Ydim == 0)
-                Ydim = (int) (scale * imYdim);
-        }
-
-        int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
-
-        if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
-        {
-            MultidimArrayGeneric array(im(), select_slice - 1);
-            array.setXmippOrigin();
-
-            scaleToSize(mode, IMGMATRIX(*this), array, Xdim, Ydim);
-        }
-        else // Otherwise, All slices or Central slice is selected
-        {
-            Zdim = (select_slice == ALL_SLICES) ? imZdim : 1;
-            scaleToSize(mode, IMGMATRIX(*this), im(), Xdim, Ydim, Zdim);
-        }
-
-        IMGMATRIX(*this).resetOrigin();
-        return err;
-    }
+                int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
 
     /** Returns an image with a lower resolution as a preview image.
      * If Zdim parameter is not passed, then all slices are rescaled.
@@ -866,54 +750,7 @@ public:
      */
     void
     getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim = 0,
-               int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE)
-    {
-        // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
-
-        size_t Zdim;
-        ArrayDim imAdim;
-        MULTIDIM_ARRAY(*this).getDimensions(imAdim);
-        MULTIDIM_ARRAY(*this).setXmippOrigin();
-
-        double scale;
-
-        // If only Xdim is passed, it is the higher allowable size, for any dimension
-        if (Ydim == 0 && imAdim.xdim < imAdim.ydim)
-        {
-            Ydim = Xdim;
-            scale = ((double) Ydim) / ((double) imAdim.ydim);
-            Xdim = (int) (scale * imAdim.xdim);
-        }
-        else
-        {
-            scale = ((double) Xdim) / ((double) imAdim.xdim);
-            if (Ydim == 0)
-                Ydim = (int) (scale * imAdim.ydim);
-        }
-
-        Image<T> &imgOut = *((Image<T>*) imgBOut);
-
-        int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
-
-        if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
-        {
-            movePointerTo(select_slice, select_img);
-            scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim);
-        }
-        else // Otherwise, All slices or Central slice is selected
-        {
-            movePointerTo(ALL_SLICES, select_img);
-            Zdim = (select_slice == ALL_SLICES) ? imAdim.zdim : 1;
-            scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim,
-                        Zdim);
-        }
-
-        movePointerTo();
-        IMGMATRIX(*this).resetOrigin();
-
-        // We set the actual dimesions of th MDA to the imageOut as if it were read from file.
-        imgOut.setADimFile(IMGMATRIX(imgOut).getDimensions());
-    }
+               int select_slice = CENTRAL_SLICE, size_t select_img = FIRST_IMAGE);
 
     /** It changes the behavior of the internal multidimarray so it points to a specific slice/image
      *  from a stack, volume or stack of volumes. No information is deallocated from memory, so it is
@@ -1113,13 +950,7 @@ public:
      */
     void
     getTransformationMatrix(Matrix2D<double> &A, bool only_apply_shifts = false,
-                            const size_t n = 0)
-    {
-        // This has only been implemented for 2D images...
-        MULTIDIM_ARRAY(*this).checkDimension(2);
-        A.resizeNoCopy(3, 3);
-        geo2TransformationMatrix(MD[n], A, only_apply_shifts);
-    }
+                            const size_t n = 0);
 
     /** Sum this object with other file and keep in this object
      */
@@ -1139,74 +970,7 @@ protected:
 
     /** Apply geometry in referring metadata to the image */
     void
-    applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP)
-    {
-        //This implementation does not handle stacks,
-        //read in a block
-        if (data.ndim != 1)
-            REPORT_ERROR(ERR_MULTIDIM_SIZE,
-                         "Geometric transformation cannot be applied to stacks!!!");
-        if (MD.size() == 0)
-            MD.push_back(MDL::emptyHeader);
-        MDRow &rowAux = MD[0];
-
-        if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
-        {
-            double aux;
-            //origins
-            if (row.getValue(MDL_ORIGIN_X, aux))
-                rowAux.setValue(MDL_ORIGIN_X, aux);
-            if (row.getValue(MDL_ORIGIN_Y, aux))
-                rowAux.setValue(MDL_ORIGIN_Y, aux);
-            if (row.getValue(MDL_ORIGIN_Z, aux))
-                rowAux.setValue(MDL_ORIGIN_Z, aux);
-            //shifts
-            if (row.getValue(MDL_SHIFT_X, aux))
-                rowAux.setValue(MDL_SHIFT_X, aux);
-            if (row.getValue(MDL_SHIFT_Y, aux))
-                rowAux.setValue(MDL_SHIFT_Y, aux);
-            if (row.getValue(MDL_SHIFT_Z, aux))
-                rowAux.setValue(MDL_SHIFT_Z, aux);
-            //rotations
-            if (row.getValue(MDL_ANGLE_ROT, aux))
-                rowAux.setValue(MDL_ANGLE_ROT, aux);
-            if (row.getValue(MDL_ANGLE_TILT, aux))
-                rowAux.setValue(MDL_ANGLE_TILT, aux);
-            if (row.getValue(MDL_ANGLE_PSI, aux))
-                rowAux.setValue(MDL_ANGLE_PSI, aux);
-            //scale
-            if (row.getValue(MDL_SCALE, aux))
-                rowAux.setValue(MDL_SCALE, aux);
-            //weight
-            if (row.getValue(MDL_WEIGHT, aux))
-                rowAux.setValue(MDL_WEIGHT, aux);
-            bool auxBool;
-            if (row.getValue(MDL_FLIP, auxBool))
-                rowAux.setValue(MDL_FLIP, auxBool);
-        }
-
-        //apply geo has not been defined for volumes
-        //and only make sense when reading data
-        if (data.getDim() < 3 && dataMode >= DATA)
-        {
-            Matrix2D<double> A;
-            if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
-                getTransformationMatrix(A, only_apply_shifts);
-            else
-            {
-                String matrixStr;
-                row.getValue(MDL_TRANSFORM_MATRIX, matrixStr);
-                string2TransformationMatrix(matrixStr, A, 3);
-            }
-
-            if (!A.isIdentity())
-            {
-                MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
-                applyGeometry(BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
-                              wrap);
-            }
-        }
-    }
+    applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP);
 
     /** Set the image dimensions
      */
@@ -1227,7 +991,7 @@ private:
     /** Read the raw data
      */
     void
-    readData(FILE* fimg, size_t select_img, DataType datatype, size_t pad)
+    readData(FILE* fimg, size_t select_img, DataType datatype, size_t pad) override
     {
         //#define DEBUG
 #ifdef DEBUG
@@ -1290,21 +1054,50 @@ private:
         }
         else
         {
-            char* page = NULL;
-
             // Allocate memory for image data (Assume xdim, ydim, zdim and ndim are already set
             //if memory already allocated use it (no resize allowed)
             data.coreAllocateReuse();
             //ROB
-            //#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 
             data.printShape();
         printf("DEBUG: Page size: %ld offset= %ld \n", pagesize, offset);
         printf("DEBUG: Swap = %d  Pad = %ld  Offset = %ld\n", swap, pad, offset);
-        printf("DEBUG: myoffset = %ld select_img= %ld \n", selectImgOffset, selectImgSizeT);
+        printf("DEBUG: myoffset = %ld select_img= %ld \n", selectImgOffset, select_img);
+        printf("DEBUG: NSIZE = %lu \n", NSIZE(data));
 #endif
 #undef DEBUG
+
+        if (checkMmapT(datatype) && !swap) {
+            // printf( "type is same, reading without cast\n" );
+
+            size_t slice_elements = ZYXSIZE(data);
+
+            if (fseek(fimg, selectImgOffset, SEEK_SET) == -1)
+                REPORT_ERROR(ERR_IO_SIZE, "readData: can not seek the file pointer");
+
+            if (pad == 0) {
+                // printf( "pad == 0, reading with one fread \n" );
+                if (fread(MULTIDIM_ARRAY(data), pagesize * NSIZE(data), 1, fimg) != 1) {
+                        REPORT_ERROR(ERR_IO_NOREAD, "readData: cannot read the whole image slice");
+                    }
+            } else {
+                for (size_t n = 0; n < NSIZE(data); ++n) {
+                    if (fread(MULTIDIM_ARRAY(data) + slice_elements * n, pagesize, 1, fimg) != 1) {
+                        REPORT_ERROR(ERR_IO_NOREAD, "readData: cannot read the whole image slice");
+                    }
+
+                    if (fseek(fimg, pad, SEEK_CUR) == -1) {
+                            REPORT_ERROR(ERR_IO_SIZE, "readData: cannot seek the file pointer");
+                    }
+                }
+            }
+
+            
+        } else {
+            // std::cout << "original read" << std::endl;
+            char* page = NULL;
 
             if (pagesize > pagemax)
                 page = (char *) askMemory(pagemax * sizeof(char));
@@ -1344,6 +1137,8 @@ private:
             //    freeMemory(padpage, pad*sizeof(char));
             if (page > 0)
                 freeMemory(page, pagesize * sizeof(char));
+
+        }
 
 #ifdef DEBUG
 
@@ -1461,6 +1256,11 @@ private:
 
         if (castMode != CW_CAST)
             data.computeDoubleMinMaxRange(min0, max0, offset, datasize_n);
+
+        if ( checkMmapT(wDType) ) {
+            fwrite( MULTIDIM_ARRAY(data) + offset, datasize, 1, fimg );
+            return;
+        }
 
         if (datasize > rw_max_page_size)
             fdata = (char *) askMemory(rw_max_page_size * sizeof(char));

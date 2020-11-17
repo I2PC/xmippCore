@@ -27,23 +27,13 @@
 #ifndef CORE_TRANSFORMATIONS_H
 #define CORE_TRANSFORMATIONS_H
 
-#include "bilib/tboundaryconvention.h"
-#include "bilib/kerneldiff1.h"
-#include "bilib/changebasis.h"
-#include "bilib/pyramidtools.h"
-
 #include "matrix2d.h"
 #include "multidim_array.h"
 #include "multidim_array_generic.h"
-#include "geometry.h"
-#include "metadata.h"
-#define IS_INV true
-#define IS_NOT_INV false
-#define DONT_WRAP false
-#define WRAP true
-#ifndef DBL_EPSILON
-#define DBL_EPSILON 1e-50
-#endif
+#include "transformations_defines.h"
+
+
+class MDRow;
 
 /// @defgroup GeometricalTransformations Geometrical transformations
 /// @ingroup DataLibrary
@@ -210,6 +200,266 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
 #define BSPLINE3 3
 #define BSPLINE4 4
 
+namespace applyGeometryImpl {
+
+template<typename T1,typename T, bool wrap>
+void applyGeometry2DDegree1(
+                   MultidimArray<T>& __restrict__ V2,
+                   const MultidimArray<T1>& __restrict__ V1,
+                   const Matrix2D<double> &Aref)
+{
+    // 2D transformation
+    const double Aref00=MAT_ELEM(Aref,0,0);
+    const double Aref10=MAT_ELEM(Aref,1,0);
+
+    // Find center and limits of image
+    const double cen_y  = (int)(YSIZE(V2) / 2);
+    const double cen_x  = (int)(XSIZE(V2) / 2);
+    const double cen_yp = (int)(YSIZE(V1) / 2);
+    const double cen_xp = (int)(XSIZE(V1) / 2);
+    const double minxp  = -cen_xp;
+    const double minyp  = -cen_yp;
+    const double minxpp = minxp-XMIPP_EQUAL_ACCURACY;
+    const double minypp = minyp-XMIPP_EQUAL_ACCURACY;
+    const double maxxp  = XSIZE(V1) - cen_xp - 1;
+    const double maxyp  = YSIZE(V1) - cen_yp - 1;
+    const double maxxpp = maxxp+XMIPP_EQUAL_ACCURACY;
+    const double maxypp = maxyp+XMIPP_EQUAL_ACCURACY;
+    const int Xdim   = XSIZE(V1);
+    const int Ydim   = YSIZE(V1);
+
+    // Now we go from the output image to the input image, ie, for any pixel
+    // in the output image we calculate which are the corresponding ones in
+    // the original image, make an interpolation with them and put this value
+    // at the output pixel
+
+#ifdef DEBUG_APPLYGEO
+    std::cout << "A\n" << Aref << std::endl
+    << "(cen_x ,cen_y )=(" << cen_x  << "," << cen_y  << ")\n"
+    << "(cen_xp,cen_yp)=(" << cen_xp << "," << cen_yp << ")\n"
+    << "(min_xp,min_yp)=(" << minxp  << "," << minyp  << ")\n"
+    << "(max_xp,max_yp)=(" << maxxp  << "," << maxyp  << ")\n";
+#endif
+    // Calculate position of the beginning of the row in the output image
+    const double x = -cen_x;
+    double y = -cen_y;
+    for (size_t i = 0; i < YSIZE(V2); i++)
+    {
+        // Calculate this position in the input image according to the
+        // geometrical transformation
+        // they are related by
+        // coords_output(=x,y) = A * coords_input (=xp,yp)
+        double xp = x * MAT_ELEM(Aref, 0, 0) + y * MAT_ELEM(Aref, 0, 1) + MAT_ELEM(Aref, 0, 2);
+        double yp = x * MAT_ELEM(Aref, 1, 0) + y * MAT_ELEM(Aref, 1, 1) + MAT_ELEM(Aref, 1, 2);
+
+        // Loop over j is splitted according to wrap (wrap==true is not
+        // vectorizable) and also according to SplineDegree value
+        // (I have not fully analyzed vector dependences for
+        // SplineDegree==3 and else branch)
+        if (wrap)
+        {
+            // This is original implementation
+            for (int j=0; j<XSIZE(V2) ;j++)
+            {
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "Computing (" << i << "," << j << ")\n";
+                std::cout << "   (y, x) =(" << y << "," << x << ")\n"
+                << "   before wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+#endif
+                bool x_isOut = XMIPP_RANGE_OUTSIDE_FAST(xp, minxpp, maxxpp);
+                bool y_isOut = XMIPP_RANGE_OUTSIDE_FAST(yp, minypp, maxypp);
+
+                if (x_isOut)
+                {
+                    xp = realWRAP(xp, minxp - 0.5, maxxp + 0.5);
+                }
+
+                if (y_isOut)
+                {
+                    yp = realWRAP(yp, minyp - 0.5, maxyp + 0.5);
+                }
+
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "   after wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+                std::cout << "   Interp = " << interp << std::endl;
+                // The following line sounds dangerous...
+                //x++;
+#endif
+
+                // Linear interpolation
+                // Calculate the integer position in input image, be
+                // careful that it is not the nearest but the one
+                // at the top left corner of the interpolation square.
+                // Ie, (0.7,0.7) would give (0,0)
+                // Calculate also weights for point m1+1,n1+1
+                double wx = xp + cen_xp;
+                double wy = yp + cen_yp;
+                int m1 = (int) wx;
+                int n1 = (int) wy;
+                int n2 = n1 + 1;
+                int m2 = m1 + 1;
+                wx = wx - m1;
+                wy = wy - n1;
+                double wx_1 = 1 - wx;
+                double wy_1 = 1 - wy;
+
+                // m2 and n2 can be out by 1 so wrap must be check here
+                if (m2 >= Xdim)
+                    m2 = 0;
+                if (n2 >= Ydim)
+                    n2 = 0;
+
+#ifdef DEBUG_APPLYGEO
+                std::cout << "   From (" << n1 << "," << m1 << ") and ("
+                        << n2 << "," << m2 << ")\n";
+                std::cout << "   wx= " << wx << " wy= " << wy
+                        << std::endl;
+#endif
+
+                // Perform interpolation
+                double v1 = wy_1 * wx_1 * DIRECT_A2D_ELEM(V1, n1, m1);
+                double v2 = wy_1 * wx * DIRECT_A2D_ELEM(V1, n1, m2);
+                double v3 = wx_1 * wy * DIRECT_A2D_ELEM(V1, n2, m1);
+                double v4 = wx * wy * DIRECT_A2D_ELEM(V1, n2, m2);
+
+                dAij(V2, i, j) = (T) (v1 + v2 + v3 + v4);
+#ifdef DEBUG_APPYGEO
+                std::cout << "   val= " << dAij(V2, i, j) << std::endl;
+#endif
+
+                // Compute new point inside input image
+                xp += Aref00;
+                yp += Aref10;
+            }
+        } /* wrap == true */
+        else
+        {
+
+            // Inner loop boundaries.
+            int globalMin=0, globalMax=XSIZE(V2);
+
+            // First and last iteration with valid values for x and y coordinates.
+            int minX, maxX, minY, maxY;
+
+            // Compute valid iterations in x and y coordinates. If one of them is always out
+            // of boundaries then the inner loop is not executed this iteration.
+            if (!getLoopRange( xp, minxpp, maxxpp, Aref00, XSIZE(V2), minX, maxX) ||
+                !getLoopRange( yp, minypp, maxypp, Aref10, XSIZE(V2), minY, maxY))
+            {
+                y++;
+                continue;
+            }
+            else
+            {
+                // Compute initial iteration.
+                globalMin = minX;
+                if (minX < minY)
+                {
+                    globalMin = minY;
+                }
+
+                // Compute last iteration.
+                globalMax = maxX;
+                if (maxX > maxY)
+                {
+                    globalMax = maxY;
+                }
+                globalMax++;
+
+                // Check max iteration is not higher than image.
+                if ((globalMax >= 0) && ((size_t)globalMax > XSIZE(V2)))
+                {
+                    globalMax = XSIZE(V2);
+                }
+
+                xp += globalMin*Aref00;
+                yp += globalMin*Aref10;
+            }
+
+
+            #pragma simd reduction (+:xp,yp)
+            for (int j=globalMin; j<globalMax ;j++)
+            {
+#ifdef DEBUG_APPLYGEO
+
+                std::cout << "Computing (" << i << "," << j << ")\n";
+                std::cout << "   (y, x) =(" << y << "," << x << ")\n"
+                << "   before wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+
+                std::cout << "   after wrapping (y',x')=(" << yp << "," << xp << ") "
+                << std::endl;
+                std::cout << "   Interp = " << interp << std::endl;
+                // The following line sounds dangerous...
+                //x++;
+#endif
+
+                // Linear interpolation
+
+                // Calculate the integer position in input image, be careful
+                // that it is not the nearest but the one at the top left corner
+                // of the interpolation square. Ie, (0.7,0.7) would give (0,0)
+                // Calculate also weights for point m1+1,n1+1
+                double wx = xp + cen_xp;
+                int m1 = (int) wx;
+                wx = wx - m1;
+                int m2 = m1 + 1;
+                double wy = yp + cen_yp;
+                int n1 = (int) wy;
+                wy = wy - n1;
+                int n2 = n1 + 1;
+
+#ifdef DEBUG_APPLYGEO
+                std::cout << "   From (" << n1 << "," << m1 << ") and ("
+                    << n2 << "," << m2 << ")\n";
+                std::cout << "   wx= " << wx << " wy= " << wy << std::endl;
+#endif
+
+                // Perform interpolation
+                // if wx == 0 means that the rightest point is useless for this
+                // interpolation, and even it might not be defined if m1=xdim-1
+                // The same can be said for wy.
+                double wx_1 = (1-wx);
+                double wy_1 = (1-wy);
+                double aux2=wy_1* wx_1 ;
+                double tmp  = aux2 * DIRECT_A2D_ELEM(V1, n1, m1);
+
+                if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
+                    tmp += (wy_1-aux2) * DIRECT_A2D_ELEM(V1, n1, m2);
+
+                if ((wy != 0) && ((n2 < 0) || ((size_t)n2 < V1.ydim)))
+                {
+                    aux2=wy * wx_1;
+                    tmp += aux2 * DIRECT_A2D_ELEM(V1, n2, m1);
+
+                    if ((wx != 0) && ((m2 < 0) || ((size_t)m2 < V1.xdim)))
+                        tmp += (wy-aux2) * DIRECT_A2D_ELEM(V1, n2, m2);
+                }
+
+                dAij(V2, i, j) = (T) tmp;
+
+#ifdef DEBUG_APPYGEO
+                std::cout << "   val= " << dAij(V2, i, j) << std::endl;
+#endif
+
+                // Compute new point inside input image
+                xp += Aref00;
+                yp += Aref10;
+            }
+        } /* wrap == false */
+
+        y++;
+    }
+}
+
+
+} // namespace applyGeometryImpl
+
+
 /** Applies a geometrical transformation.
  * @ingroup GeometricalTransformations
  *
@@ -342,6 +592,16 @@ void applyGeometry(int SplineDegree,
 
     if (V1.getDim() == 2)
     {
+        // this version should be slightly more optimized than the general one bellow
+        if (1 == SplineDegree) {
+            if (wrap) {
+                applyGeometryImpl::applyGeometry2DDegree1<T1, T, true>(V2, V1, Aref);
+            } else {
+                applyGeometryImpl::applyGeometry2DDegree1<T1, T, false>(V2, V1, Aref);
+            }
+            return;
+        }
+
         // 2D transformation
         double Aref00=MAT_ELEM(Aref,0,0);
         double Aref10=MAT_ELEM(Aref,1,0);
@@ -1038,25 +1298,7 @@ void applyGeometry(int SplineDegree,
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,
                                MultidimArray< double > &coeffs,
-                               const MultidimArray< T > &V1)
-{
-
-    coeffs.initZeros(ZSIZE(V1), YSIZE(V1), XSIZE(V1));
-    STARTINGX(coeffs) = STARTINGX(V1);
-    STARTINGY(coeffs) = STARTINGY(V1);
-    STARTINGZ(coeffs) = STARTINGZ(V1);
-
-    int Status;
-    MultidimArray< double > aux;
-    typeCast(V1, aux); // This will create a single volume!
-
-    ChangeBasisVolume(MULTIDIM_ARRAY(aux), MULTIDIM_ARRAY(coeffs),
-                      XSIZE(V1), YSIZE(V1), ZSIZE(V1),
-                      CardinalSpline, BasicSpline, SplineDegree,
-                      MirrorOffBounds, DBL_EPSILON, &Status);
-    if (Status)
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Error in produceSplineCoefficients...");
-}
+                               const MultidimArray< T > &V1);
 
 // Special case for complex arrays
 void produceSplineCoefficients(int SplineDegree,
@@ -1070,25 +1312,7 @@ void produceSplineCoefficients(int SplineDegree,
 template <typename T>
 void produceImageFromSplineCoefficients(int SplineDegree,
                                         MultidimArray< T >& img,
-                                        const MultidimArray< double > &coeffs)
-{
-    MultidimArray< double > imgD;
-    imgD.initZeros(ZSIZE(coeffs), YSIZE(coeffs), XSIZE(coeffs));
-    STARTINGX(img) = STARTINGX(coeffs);
-    STARTINGY(img) = STARTINGY(coeffs);
-    STARTINGZ(img) = STARTINGZ(coeffs);
-
-    int Status;
-    MultidimArray< double > aux(coeffs);
-
-    ChangeBasisVolume(MULTIDIM_ARRAY(aux), MULTIDIM_ARRAY(imgD),
-                      XSIZE(coeffs), YSIZE(coeffs), ZSIZE(coeffs),
-                      BasicSpline, CardinalSpline, SplineDegree,
-                      MirrorOnBounds, DBL_EPSILON, &Status);
-    if (Status)
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Error in ImageFromSplineCoefficients...");
-    typeCast(imgD, img);
-}
+                                        const MultidimArray< double > &coeffs);
 
 /** Rotate an array around a given system axis.
  * @ingroup GeometricalTransformations
@@ -1359,59 +1583,7 @@ void selfScaleToSize(int SplineDegree,
 template<typename T>
 void reduceBSpline(int SplineDegree,
                    MultidimArray< double >& V2,
-                   const MultidimArray<T> &V1)
-{
-    double g[200]; // Coefficients of the reduce filter
-    long ng; // Number of coefficients of the reduce filter
-    double h[200]; // Coefficients of the expansion filter
-    long nh; // Number of coefficients of the expansion filter
-    short IsCentered; // Equal TRUE if the filter is a centered spline
-
-    // Get the filter
-    const char *splineType="Centered Spline";
-    if (GetPyramidFilter(splineType, SplineDegree,
-                         g, &ng, h, &nh, &IsCentered))
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Unable to load the filter coefficients");
-
-    MultidimArray< double>  aux;
-    typeCast(V1, aux);
-    if (V1.getDim() == 2)
-    {
-        if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (YSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 != 0)
-            aux.resize(YSIZE(aux), XSIZE(aux) - 1);
-
-        V2.initZeros(YSIZE(aux) / 2, XSIZE(aux) / 2);
-        Reduce_2D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux),
-                  MULTIDIM_ARRAY(V2), g, ng, IsCentered);
-    }
-    else if (V1.getDim() == 3)
-    {
-        if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux - 1), YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux) - 1, XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux), XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 != 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux), XSIZE(aux) - 1);
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 != 0 && ZSIZE(aux) % 2 == 0)
-            aux.resize(ZSIZE(aux), YSIZE(aux) - 1, XSIZE(aux));
-        else if (XSIZE(aux) % 2 == 0 && YSIZE(aux) % 2 == 0 && ZSIZE(aux) % 2 != 0)
-            aux.resize(ZSIZE(aux) - 1, YSIZE(aux), XSIZE(aux));
-
-        V2.initZeros(ZSIZE(aux) / 2, YSIZE(aux) / 2, XSIZE(aux) / 2);
-        Reduce_3D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux), ZSIZE(aux),
-                  MULTIDIM_ARRAY(V2), g, ng, IsCentered);
-    }
-    else
-        REPORT_ERROR(ERR_MULTIDIM_DIM,"reduceBSpline ERROR: only valid for 2D or 3D arrays");
-}
+                   const MultidimArray<T> &V1);
 
 /** Expand a set of B-spline coefficients.
  * @ingroup GeometricalTransformations
@@ -1422,37 +1594,7 @@ void reduceBSpline(int SplineDegree,
 template<typename T>
 void expandBSpline(int SplineDegree,
                    MultidimArray< double >& V2,
-                   const MultidimArray<T> &V1)
-{
-    double g[200]; // Coefficients of the reduce filter
-    long ng; // Number of coefficients of the reduce filter
-    double h[200]; // Coefficients of the expansion filter
-    long nh; // Number of coefficients of the expansion filter
-    short IsCentered; // Equal TRUE if the filter is a centered spline, FALSE otherwise */
-
-    // Get the filter
-    if (GetPyramidFilter("Centered Spline", SplineDegree, g, &ng, h, &nh,
-                         &IsCentered))
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Unable to load the filter coefficients");
-
-    MultidimArray< double > aux;
-    typeCast(V1, aux);
-
-    if (V1.getDim() == 2)
-    {
-        V2.initZeros(2 * YSIZE(aux), 2 * XSIZE(aux));
-        Expand_2D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux),
-                  MULTIDIM_ARRAY(V2), h, nh, IsCentered);
-    }
-    else if (V1.getDim() == 3)
-    {
-        V2.initZeros(2 * ZSIZE(aux), 2 * YSIZE(aux), 2 * XSIZE(aux));
-        Expand_3D(MULTIDIM_ARRAY(aux), XSIZE(aux), YSIZE(aux), ZSIZE(aux),
-                  MULTIDIM_ARRAY(V2), h, nh, IsCentered);
-    }
-    else
-        REPORT_ERROR(ERR_MULTIDIM_DIM,"expandBSpline ERROR: only valid for 2D or 3D arrays");
-}
+                   const MultidimArray<T> &V1);
 
 /** Reduce the nth volume by 2 using a BSpline pyramid.
  * @ingroup GeometricalTransformations
@@ -1636,7 +1778,7 @@ void radialAverage(const MultidimArray< T >& m,
         double module = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
         int distance = (rounding) ? (int) round(module) : (int) floor(module);
 
-        // Sum te value to the pixels with the same distance
+        // Sum the value to the pixels with the same distance
         DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
 
         // Count the pixel
@@ -1738,6 +1880,38 @@ void fastRadialAverage(const MultidimArray< T >& m,
     FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
       if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
         DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+}
+
+template<typename T>
+void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< double >& out)
+{
+	MultidimArray<double> inCentered;
+	inCentered.alias(in);
+	inCentered.setXmippOrigin();
+	if (axis=='z')
+	{
+		out.initZeros(ZSIZE(in),XSIZE(in));
+		out.setXmippOrigin();
+		for (int i=STARTINGY(inCentered); i<=FINISHINGY(inCentered); ++i)
+		{
+			double z=i;
+			for (int j=0; j<XSIZE(out)/2; ++j)
+			{
+				for (double ang=0; ang<TWOPI; ang+=TWOPI/72)
+				{
+					double x=j*cos(ang);
+					double y=j*sin(ang);
+					double val=inCentered.interpolatedElement3D(x,y,z);
+					A2D_ELEM(out,i,j)+=val;
+				}
+				A2D_ELEM(out,i,j)/=73;
+				A2D_ELEM(out,i,-j)=A2D_ELEM(out,i,j);
+			}
+		}
+	}
+
+	else
+		REPORT_ERROR(ERR_ARG_INCORRECT,"Not implemented yet");
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
