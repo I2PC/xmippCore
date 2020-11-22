@@ -27,17 +27,15 @@
 #ifndef CORE_METADATA_H
 #define CORE_METADATA_H
 
-// TODO: add needed includes
-// #include <regex.h>
-// #include <cmath>
-// #include "metadata_label.h"
-// #include "metadata_sql_operations.h"
-// #include "utils/sql_utils.h"
-// #include "xmipp_error.h"
-// #include "xmipp_filename.h"
-// #include "metadata_writemode.h"
+#include <cstddef>
+#include <map>
+#include <cmath>
 
-class MetaData;
+#include "xmipp_error.h"
+#include "xmipp_filename.h"
+#include "metadata_label.h"
+#include "metadata_writemode.h"
+#include "metadata_base_it.h"
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary
@@ -71,11 +69,11 @@ class MetaData;
  */
 
 #define FOR_ALL_OBJECTS_IN_METADATA(__md) \
-        for(MDIterator __iter(__md); __iter.hasNext(); __iter.moveNext())
+        for(MDBaseIterator __iter = (__md).begin_all(); __iter != (__md).end_all(); ++__iter)
 
 
 #define FOR_ALL_ROWS_IN_METADATA(__md) \
-        for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
+        for(MDRowIterator __iter = (__md).begin_rows(); __iter != (__md).end_rows(); ++__iter)
 
 /** Iterate over all elements of two MetaData at same time.
  *
@@ -111,8 +109,6 @@ void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
 bool existsBlockInMetaDataFile(const FileName &inFile, const String& inBlock);
 bool existsBlockInMetaDataFile(const FileName &inFileWithBlock);
 
-class MDQuery;
-class MDSql;
 class MDValueGenerator;
 
 /** Struct to hold a char * pointer and a size
@@ -228,7 +224,7 @@ public:
 
     /**Clear all data
      */
-    virtual void clear();
+    virtual void clear() = 0;
     /** @} */
 
     /** @name Getters and setters
@@ -262,17 +258,6 @@ public:
 
     bool nextBlock(mdBuffer &buffer, mdBlock &block); // TODO
 
-    /** Check if there is any other block to read with the name
-     * given by the regular expression.
-     *  returns pointer do first two data_entries and first loop
-     */
-    bool nextBlockToRead(regex_t &re, // TODO
-                         char * startingPoint,
-                         size_t remainingSize,
-                         String &blockName,
-                         char *& firstData,
-                         char *& secondData,
-                         char *& firstloop);
     /** Export medatada to xml file.
      *
      */
@@ -321,17 +306,12 @@ public:
     /**Get unsafe pointer to active labels.
      */
     virtual std::vector<MDLabel> *getActiveLabelsAddress() const {
-        return (std::vector<MDLabel>*) (%activeLabels);
+        return (std::vector<MDLabel>*) (&activeLabels);
     }
 
     /**Get maximum string length of column values.
     */
-    virtual int getMaxStringLength( const MDLabel thisLabel) const {
-        if (!containsLabel(thisLabel))
-            return -1;
-
-        return myMDSql->columnMaxLength(thisLabel);
-    }
+    virtual int getMaxStringLength( const MDLabel thisLabel) const;
 
     /** @} */
 
@@ -342,7 +322,7 @@ public:
 
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
-    bool setValueCol(const MDObject &mdValueIn); // TODO
+    virtual bool setValueCol(const MDObject &mdValueIn);
 
     /**Set the value of all objects in an specified column.
      * @code
@@ -372,7 +352,7 @@ public:
     bool setValue(const MDLabel label, const T &valueIn, size_t id) {
         return setValue(MDObject(label, valueIn), id);
     }
-    //private:
+
     /** This functions are using MDObject for set real values
      * there is an explicit function signature
      * foreach type supported in Metadata.
@@ -387,8 +367,6 @@ public:
     FileName eFilename; // TODO
     String extFile; //Filename extension TODO
     bool isMetadataFile; // TODO
-
-    //public:
 
     /** Get the value of some label.
      * from the object that has id 'objectId'
@@ -443,11 +421,11 @@ public:
         }
     }
 
-    bool getRowValues(size_t id, std::vector<MDObject> &values) const;
+    virtual bool getRowValues(size_t id, std::vector<MDObject> &values) const;
 
     /** Get all values of a column as a vector.
      */
-    void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
+    virtual void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
 
     /** Get all values of a column as a vector.
      */
@@ -463,25 +441,21 @@ public:
         if (size()==0)
             addObjects=true;
         if (valuesIn.size()!=size() && !addObjects)
-            REPORT_ERROR(ERR_MD_OBJECTNUMBER,"Input vector must be of the same size as the metadata");
+            REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Input vector must be of the same size as the metadata");
         size_t n=0;
-        if (!addObjects)
+        if (!addObjects) {
             FOR_ALL_OBJECTS_IN_METADATA(*this)
-            setValue(label,valuesIn[n++],__iter.objId);
-        else
-        {
+                setValue(label, valuesIn[n++], __iter.objId);
+        } else {
             size_t nmax=valuesIn.size();
             for (size_t n=0; n<nmax; ++n)
                 setValue(label,valuesIn[n],addObject());
         }
     }
 
-    /** Get all values of a column as a vector.
-     */
-    void setColumnValues(const std::vector<MDObject> &valuesIn);
+    virtual void setColumnValues(const std::vector<MDObject> &valuesIn);
 
-    /** Get all values of an MetaData row of an specified objId*/
-    bool bindValue( size_t id) const;
+    /*bool bindValue(size_t id) const;
 
     bool initGetRow(bool addWhereClause) const;
     bool execGetRow(MDRow &row) const;
@@ -490,14 +464,14 @@ public:
     bool getAllRows(std::vector<MDRow> &rows) const;
     bool getRow2(MDRow &row, size_t id) const;
 
-    /** Copy all the values in the input row in the current metadata*/
+    ** Copy all the values in the input row in the current metadata
     bool initSetRow(const MDRow &row);
     bool execSetRow(const MDRow &row, size_t id);
     void finalizeSetRow(void);
     bool setRow(const MDRow &row, size_t id);
     bool setRow2(const MDRow &row, size_t id);
 
-    /** Add a new Row and set values, return the objId of newly added object */
+    ** Add a new Row and set values, return the objId of newly added object
     bool initAddRow(const MDRow &row);
     bool execAddRow(const MDRow &row);
     void finalizeAddRow(void);
@@ -505,7 +479,7 @@ public:
     void addRowOpt(const MDRow &row);
     void addRows(const std::vector<MDRow> &rows);
     void addMissingLabels(const MDRow &row);
-    size_t addRow2(const MDRow &row);
+    size_t addRow2(const MDRow &row);*/
 
     /** Set label values from string representation.
      */
@@ -517,33 +491,33 @@ public:
 
     /**Check whether the metadata is empty.
      */
-    bool isEmpty() const;
+    virtual bool isEmpty() const;
 
     /**Number of objects contained in the metadata.
      */
-    size_t size() const;
+    virtual size_t size() const;
 
     /** Check whether a label is contained in metadata.
      */
-    bool containsLabel(const MDLabel label) const;
+    virtual bool containsLabel(const MDLabel label) const;
 
     /** Add a new label to the metadata.
      * By default the label is added at the end,
      * if the position is specified and is between 0 and n-1
      * the new label is inserted at that position.
      */
-    bool addLabel(const MDLabel label, int pos = -1);
+    virtual bool addLabel(const MDLabel label, int pos = -1);
 
     /** Remove a label from the metadata.
      * The data is still in the table. If you want to remove the data,
      * make a copy of the MetaData.
      */
-    bool removeLabel(const MDLabel label);
+    virtual bool removeLabel(const MDLabel label);
 
     /** Remove all the labels from the metadata but the
      * ones given in labels vector.
      */
-    bool keepLabels(const std::vector<MDLabel> &labels);
+    virtual bool keepLabels(const std::vector<MDLabel> &labels);
 
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else
@@ -551,7 +525,7 @@ public:
      * objectId == input objectId, just removes it and creates an empty
      * one
      */
-    size_t addObject();
+    virtual size_t addObject();
 
     /** Import objects from another metadata.
      * @code
@@ -563,21 +537,20 @@ public:
      * A.importObjects(B);     *
      * @endcode
      */
-    void importObject(const MetaData &md, const size_t id, bool doClear=true);
-    void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true);
-    void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true);
+    virtual void importObject(const MetaData &md, const size_t id, bool doClear=true);
+    virtual void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true);
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if
     * the object did not exist
     */
-    bool removeObject(size_t id);
+    virtual bool removeObject(size_t id);
 
     /** Removes the collection of objects of given vector id's
      * NOTE: The iterator will point to the first object after any of these
      * operations
      */
-    void removeObjects(const std::vector<size_t> &toRemove);
+    virtual void removeObjects(const std::vector<size_t> &toRemove);
 
     /** Removes objects from metadata.
      * return the number of deleted rows
@@ -585,8 +558,7 @@ public:
      * Queries can be used in the same way
      * as in the importObjects function
      */
-    int removeObjects(const MDQuery &query);
-    int removeObjects();
+    virtual int removeObjects();
 
     /** Add and remove indexes for fast search
      * in other labels, but insert are more expensive
@@ -612,8 +584,6 @@ public:
 
     /** Return the object id of the first element in metadata. */
     size_t firstObject() const;
-    /** Return the object id of the first element result from query */
-    size_t firstObject(const MDQuery&) const;
 
     /** Goto last metadata object.*/
     size_t lastObject() const;
@@ -626,20 +596,12 @@ public:
      * if called without query, all objects are returned
      * if limit is provided only return a maximun of 'limit'
      */
-    void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const;
     void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const;
-
-    /**Count all objects that match a query.
-     */
-    size_t countObjects(const MDQuery &query);
 
     /** Find if the object with this id is present in the metadata
      */
     bool containsObject(size_t objectId);
 
-    /**Check if exists at least one object that match query.
-     */
-    bool containsObject(const MDQuery &query);
     /** @} */
 
     /** @name I/O functions
@@ -718,123 +680,12 @@ public:
      * @{
      */
 
-    /** Aggregate metadata objects,
-     * result in calling metadata object (except for aggregateSingle)
-     * thisLabel label is used for aggregation, second. Valid operations are:
-     *
-     * MDL_AVG:  The avg function returns the average value of all  operationLabel within a group.
-      The result of avg is always a floating point value as long as at there
-      is at least one non-NULL input even if all inputs are integers.
-       The result of avg is NULL if and only if there are no non-NULL inputs.
-
-      AGGR_COUNT: The count function returns a count of the number of times that operationLabel is in a group.
-
-      AGGR_MAX       The max aggregate function returns the maximum value of all values in the group.
-
-      AGGR_MIN       The min aggregate function returns the minimum  value of all values in the group.
-
-     AGGRL_SUM The total aggregate functions return sum of all values in the group.
-     If there are no non-NULL input rows then returns 0.0.
-
-
-     */
-
-    void aggregate(const MetaData &mdIn, AggregateOperation op,
-                   MDLabel aggregateLabel, MDLabel operateLabel, MDLabel resultLabel);
-    void aggregate(const MetaData &mdIn, const std::vector<AggregateOperation> &ops,
-                   const std::vector<MDLabel> &operateLabels, const std::vector<MDLabel> &resultLabels);
-    void aggregateGroupBy(const MetaData &mdIn,
-                          AggregateOperation op,
-                          const std::vector<MDLabel> &groupByLabels,
-                          MDLabel operateLabel,
-                          MDLabel resultLabel);
-    /** This function performs aggregation operations.
-        without grouping. (i.e. absolute maximum of a metadata column)
-        for double
-     */
-    void aggregateSingle(MDObject &mdValueOut, AggregateOperation op,
-                         MDLabel aggregateLabel);
-    /** This function performs aggregation operations.
-        without grouping. (i.e. absolute maximum of a metadata column)
-        for int
-     */
-    void aggregateSingleInt(MDObject &mdValueOut, AggregateOperation op,
-                            MDLabel aggregateLabel);
-    /** This function performs aggregation operations.
-        without grouping. (i.e. absolute maximum of a metadata column)
-        for size_t
-     */
-    void aggregateSingleSizeT(MDObject &mdValueOut, AggregateOperation op,
-                              MDLabel aggregateLabel);
-
-
-
     /** Returns Max and Min values from a column in metadata
      * These functions can only be used for labels of type double
      */
     double getColumnMax(MDLabel column);
 
     double getColumnMin(MDLabel column);
-
-
-    /** Union of elements in two Metadatas, without duplicating.
-     * Result in calling metadata object
-     * union is a reserved word so I called this method unionDistinct
-     */
-    void unionDistinct(const MetaData &mdIn, const MDLabel label=MDL_OBJID);
-
-    /** Union of all elements in two Metadata, duplicating common elements.
-     * Result in calling metadata object
-     * Repetition are allowed
-     */
-    void unionAll(const MetaData &mdIn);
-
-    /** Merge of two Metadata.
-     * This function reads another metadata and add all columns values.
-     * The size of the two Metadatas should be the same. If there are
-     * common columns, the values in md2 will be setted.
-     */
-    void merge(const MetaData &md2);
-
-    /** Intersects two Metadatas.
-     * Result in "calling" Metadata
-     */
-    void intersection(const MetaData &mdIn, const MDLabel label);
-
-    /** Subtract two Metadatas.
-     * Result in "calling" metadata
-     */
-    void subtraction(const MetaData &mdIn, const MDLabel label);
-
-    /** Return only distinct (different) values of column label.
-     * Result in "calling" metadata with a single column
-     */
-    void distinct(MetaData &MDin, MDLabel label);
-
-    /** Join two Metadatas
-     * Result in "calling" metadata
-     */
-    void join1(const MetaData &mdInLeft, const MetaData &mdInRight, const MDLabel label, JoinType type=LEFT);
-
-    /** Join two Metadatas
-     * Result in "calling" metadata. join may be done using different labels in each metadata
-     */
-    void join2(const MetaData &mdInLeft, const MetaData &mdInRight, const MDLabel labelLeft, const MDLabel labelRight , JoinType type=LEFT);
-
-    /** Join two Metadatas
-     * Result in "calling" metadata
-     */
-    void join1(const MetaData &mdInLeft, const MetaData &mdInRight, const std::vector<MDLabel> &labels, JoinType type=LEFT);
-
-    /** Join two Metadatas
-     * Result in "calling" metadata. join may be done using different labels in each metadata
-     */
-    void join2(const MetaData &mdInLeft, const MetaData &mdInRight, const std::vector<MDLabel> &labelsLeft, const std::vector<MDLabel> &labelsRight,
-    		JoinType type=LEFT);
-
-    /** Join two Metadatas using all common labels (NATURAL_JOIN)
-     */
-    void joinNatural(const MetaData &mdInLeft, const MetaData &mdInRight);
 
     /** Basic operations on columns data.
      * Mainly perform replacements on string values and
@@ -932,7 +783,18 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    friend class MDIterator;
+    friend class MDBaseIterator;
+    friend class MDBaseRowIterator;
+
+    // Default iterator = rows iterator
+    virtual MDBaseRowIterator begin() { return this->begin_rows(); }
+    virtual MDBaseRowIterator end() { return this->end_rows(); }
+
+    virtual MDBaseIterator begin_all();
+    virtual MDBaseIterator end_all();
+
+    virtual MDBaseRowIterator begin_rows();
+    virtual MDBaseRowIterator end_rows();
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
