@@ -787,14 +787,14 @@ public:
     friend class MDBaseRowIterator;
 
     // Default iterator = rows iterator
-    virtual MDBaseRowIterator begin() { return this->begin_rows(); }
-    virtual MDBaseRowIterator end() { return this->end_rows(); }
+    virtual MDBaseRowIterator begin() const { return this->begin_rows(); }
+    virtual MDBaseRowIterator end() const { return this->end_rows(); }
 
-    virtual MDBaseIterator begin_all();
-    virtual MDBaseIterator end_all();
+    virtual MDBaseIterator begin_all() const;
+    virtual MDBaseIterator end_all() const;
 
-    virtual MDBaseRowIterator begin_rows();
-    virtual MDBaseRowIterator end_rows();
+    virtual MDBaseRowIterator begin_rows() const;
+    virtual MDBaseRowIterator end_rows() const;
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
