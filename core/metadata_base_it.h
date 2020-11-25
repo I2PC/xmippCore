@@ -1,5 +1,5 @@
-#ifndef IT_VEC_METADATA_H
-#define IT_VEC_METADATA_H
+#ifndef IT_BASE_METADATA_H
+#define IT_BASE_METADATA_H
 
 class MetaData;
 
