@@ -29,6 +29,9 @@
 #include <regex.h>
 #include <cmath>
 #include "metadata_label.h"
+#include "metadata_object.h"
+#include "metadata_row_base.h"
+#include "metadata_static.h"
 #include "metadata_sql_operations.h"
 #include "utils/sql_utils.h"
 #include "xmipp_error.h"
