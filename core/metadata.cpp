@@ -340,7 +340,7 @@ std::vector<MDObject> MetaData::getObjectsForActiveLabels() const {
     return values;
 }
 
-bool MetaData::getAllRows(std::vector<MDRow> &rows) const
+bool MetaData::getAllRows(std::vector<MDRowSql> &rows) const
 {
     std::vector<std::vector<MDObject>> rawRows;
     rawRows.reserve(this->size());
@@ -409,10 +409,9 @@ bool MetaData::getRow2(MDRow &row, size_t id) const
 
 //TODO: could be improve in a query for update the entire row
 #define SET_ROW_VALUES(row) \
-    for (int i = 0; i < row._size; ++i){\
-        const MDLabel &label = row.order[i];\
-        if (row.containsLabel(label))\
-            setValue(*(row.getObject(label)), id);}\
+    for (MDObject* obj : row) {\
+        setValue(obj->label, id);\
+    }\
 
 bool MetaData::initSetRow(const MDRow &row)
 {
@@ -421,27 +420,21 @@ bool MetaData::initSetRow(const MDRow &row)
     std::vector<MDLabel>   labels;		// Columns labels.
 
     // Set label vector size.
-    labels.resize(row._size);
+    labels.resize(row.size());
 
     // Build labels vector:
-    j=0;
-    for (i=0; i<row._size; ++i)
-    {
-        const MDLabel &label = row.order[i];
-
-        if (row.containsLabel(label))
-        {
-        	addLabel( label);
-        	labels[j] = label;
-        	j++;
-        }
+    j = 0;
+    for (const MDObject* obj : row) {
+        addLabel(obj->label);
+        labels[j] = obj->label;
+        j++;
     }
     labels.resize(j);
 
     // Prepare statement.
-    if (!myMDSql->initializeUpdate( labels))
+    if (!myMDSql->initializeUpdate(labels))
     {
-    	success = false;
+        success = false;
     }
 
     return(success);
@@ -450,40 +443,32 @@ bool MetaData::initSetRow(const MDRow &row)
 
 bool MetaData::execSetRow(const MDRow &row, size_t id)
 {
-	int		i=0, j=0;					// Loop counters.
-	bool	success=true;				// Return value.
-    std::vector<MDObject*> mdValues;	// Vector to store values.
+    int i = 0, j = 0;
+    bool success = true;
+    std::vector<MDObject*> mdValues;
 
     // Set values vector size.
-    mdValues.resize(row._size);
+    mdValues.resize(row.size());
 
     // Build values vector.
-    j=0;
-    for (i=0; i<row._size; ++i)
-    {
-        const MDLabel &label = row.order[i];
-
-        if (row.containsLabel(label))
-        {
-        	addLabel( label);
-        	mdValues[i] = row.getObject( label);
-        	j++;
-        }
+    j = 0;
+    for (MDObject* obj : row) {
+        addLabel(obj->label);
+        mdValues[i] = obj;
+        j++;
     }
     mdValues.resize(j);
 
-	// Execute statement.
-	if (!myMDSql->setObjectValues( id, mdValues))
-	{
-		success = false;
-	}
+    // Execute statement.
+    if (!myMDSql->setObjectValues(id, mdValues))
+        success = false;
 
-	return(success);
+    return success;
 }
 
-void 	MetaData::finalizeSetRow(void)
+void MetaData::finalizeSetRow(void)
 {
-	myMDSql->finalizePreparedStmt();
+    myMDSql->finalizePreparedStmt();
 }
 
 
@@ -521,69 +506,57 @@ bool MetaData::initAddRow(const MDRow &row)
     std::vector<MDObject*> 	mdValues;	// Vector to store values.
 
     // Set vector size.
-    labels.resize(row._size);
+    labels.resize(row.size());
 
     // Get labels.
     j=0;
-    for (i=0; i<row._size; ++i)
-    {
-        const MDLabel &label = row.order[i];
-
-        if (row.containsLabel(label))
-        {
-        	addLabel( label);
-        	labels[j] = label;
-        	j++;
-        }
+    for (const MDObject* obj : row) {
+        addLabel(obj->label);
+        labels[j] = obj->label;
+        j++;
     }
     labels.resize(j);
 
     // Prepare statement (mdValues is not used).
     if (!myMDSql->initializeInsert( &labels, mdValues))
     {
-    	std::cout << "initAddRow: error executing myMDSql->initializeInsert" << std::endl;
-		success = false;
+        std::cout << "initAddRow: error executing myMDSql->initializeInsert" << std::endl;
+        success = false;
     }
 
-    return(success);
+    return success;
 }
 
 
 bool MetaData::execAddRow(const MDRow &row)
 {
-    int 	i=0,j=0;					// Loop counter.
-    bool	success=true;				// Return value.
-    std::vector<MDObject*> 	mdValues;	// Vector to store values.
+    int i = 0,j = 0;
+    bool success = true;
+    std::vector<MDObject*> mdValues;
 
     // Set values vector size.
-    mdValues.resize(row._size);
+    mdValues.resize(row.size());
 
     // Get values to insert.
-    j=0;
-    for (i=0; i<row._size; ++i)
-    {
-        const MDLabel &label = row.order[i];
-
-        if (row.containsLabel(label))
-        {
-        	addLabel( label);
-        	mdValues[j] = row.getObject( label);
-        	j++;
-        }
+    j = 0;
+    for (const MDObject* obj : row) {
+        addLabel(obj->label);
+        mdValues[j] = row.getObject(obj->label);
+        j++;
     }
     mdValues.resize(j);
 
-	// Execute statement.
-	if (!myMDSql->setObjectValues( -1, mdValues))
-	{
-		std::cout << "execAddRow: error executing myMDSql->setObjectValues" << std::endl;
-		success = false;
-	}
+    // Execute statement.
+    if (!myMDSql->setObjectValues( -1, mdValues))
+    {
+        std::cout << "execAddRow: error executing myMDSql->setObjectValues" << std::endl;
+        success = false;
+    }
 
     return(success);
 }
 
-void 	MetaData::finalizeAddRow(void)
+void MetaData::finalizeAddRow(void)
 {
 	myMDSql->finalizePreparedStmt();
 }
@@ -609,7 +582,7 @@ bool MetaData::getRowValues(size_t id, std::vector<MDObject> &values) const {
             values);
 }
 
-void MetaData::addRowOpt(const MDRow &row)
+void MetaData::addRowOpt(const MDRowSql &row)
 {
     addRows({row});
 }
@@ -617,7 +590,7 @@ void MetaData::addRowOpt(const MDRow &row)
 void MetaData::addMissingLabels(const MDRow &row) {
     // find missing labels
     std::vector<MDLabel> missingLabels;
-    auto definedLabels = row.getLabels();
+    auto definedLabels = row.labels();
     for (const auto &l : definedLabels){
         if ( ! containsLabel(l)) {
             missingLabels.push_back(l);
@@ -632,7 +605,7 @@ void MetaData::addMissingLabels(const MDRow &row) {
     }
 }
 
-void MetaData::addRows(const std::vector<MDRow> &rows)
+void MetaData::addRows(const std::vector<MDRowSql> &rows)
 {
     const auto noOfRows = rows.size();
     if (0 == noOfRows) {
@@ -645,13 +618,9 @@ void MetaData::addRows(const std::vector<MDRow> &rows)
 
     // create mask of valid labels
     std::vector<MDLabel> labels;
-    labels.reserve(firstRow._size);
-    for (int i = 0; i < firstRow._size; ++i) {
-        const MDLabel &label = firstRow.order[i];
-        if (firstRow.containsLabel(label)) {
-            labels.emplace_back(label);
-        }
-    }
+    labels.reserve(firstRow.size());
+    for (const MDObject* obj : firstRow)
+        labels.emplace_back(obj->label);
     const auto noOfLabels = labels.size();
 
     // extract values to be added
@@ -1880,7 +1849,7 @@ void MetaData::merge(const MetaData &md2)
     if (size() != md2.size())
         REPORT_ERROR(ERR_MD, "Size of two metadatas should coincide for merging.");
 
-    MDRow row;
+    MDRowSql row;
     FOR_ALL_OBJECTS_IN_METADATA2(*this, md2)
     {
         md2.getRow(row, __iter2.objId);
@@ -1898,7 +1867,7 @@ void MetaData::fillExpand(MDLabel label)
     //read file-metadatas in new metadata
     MetaData ctfModel;
     FileName fn;
-    MDRow row;
+    MDRowSql row;
     size_t id;
 
     FOR_ALL_OBJECTS_IN_METADATA(mdCTFs)
@@ -2351,7 +2320,7 @@ void MetaData::sort(MetaData &MDin, const String &sortLabel,bool asc, int limit,
         size_t id;
         FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(idx)
         {
-            MDRow row;
+            MDRowSql row;
             MDin.getRow(row,DIRECT_A1D_ELEM(idx,i));
             id = addObject();
             setRow(row, id);
@@ -2508,9 +2477,9 @@ void MetaData::writeText(const FileName fn,  const std::vector<MDLabel>* desired
     ofs.close();
 }
 
-void MetaData::metadataToVec(std::vector<MDRow> &vd)
+void MetaData::metadataToVec(std::vector<MDRowSql> &vd)
 {
-    MDRow row;
+    MDRowSql row;
     FOR_ALL_OBJECTS_IN_METADATA(*this)
     {
         (*this).getRow(row,__iter.objId);
@@ -2520,7 +2489,7 @@ void MetaData::metadataToVec(std::vector<MDRow> &vd)
 
 void MetaData::vecToMetadata(const std::vector<MDRow> &rowMetadata)
 {
-    const MDRow row;
+    const MDRowSql row;
 
     for (size_t i=0;i<rowMetadata.size();i++)
         this->addRow(rowMetadata[i]);
@@ -2636,7 +2605,7 @@ MDRowIterator::MDRowIterator(MetaData &md)
 	}
 }
 
-MDRow *MDRowIterator::getRow(void)
+MDRowSql *MDRowIterator::getRow(void)
 {
 	return(&this->currentRow);
 }

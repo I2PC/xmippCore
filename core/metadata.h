@@ -192,7 +192,7 @@ class MDRowIterator
 protected:
 
 	// Current row data.
-	MDRow	currentRow;
+	MDRowSql currentRow;
 
 	// Flag set to true if a new row has been retrieved.
 	bool 	rowReturned;
@@ -203,7 +203,7 @@ public:
     MDRowIterator(MetaData &md);
 
     // Get current row data.
-    MDRow *getRow(void);
+    MDRowSql *getRow(void);
 
     /** Function to move to next element.
      * return false if there aren't more elements to iterate.
@@ -215,7 +215,7 @@ public:
 }
 ;//class MDRowIterator
 
-typedef std::vector<MDRow> VMetaData;
+typedef std::vector<MDRowSql> VMetaData;
 
 /** Class to manage data files.
  *
@@ -670,7 +670,7 @@ public:
     bool 	execGetRow(MDRow &row) const;
     void 	finalizeGetRow(void) const;
     bool 	getRow(MDRow &row, size_t id) const;
-    bool    getAllRows(std::vector<MDRow> &rows) const;
+    bool    getAllRows(std::vector<MDRowSql> &rows) const;
     bool 	getRow2(MDRow &row, size_t id) const;
 
     /** Copy all the values in the input row in the current metadata*/
@@ -685,8 +685,8 @@ public:
     bool 	execAddRow(const MDRow &row);
     void 	finalizeAddRow(void);
     size_t 	addRow(const MDRow &row);
-    void    addRowOpt(const MDRow &row);
-    void    addRows(const std::vector<MDRow> &rows);
+    void    addRowOpt(const MDRowSql &row);
+    void    addRows(const std::vector<MDRowSql> &rows);
     void    addMissingLabels(const MDRow &row);
     size_t 	addRow2(const MDRow &row);
 
@@ -1168,7 +1168,7 @@ public:
     void renameColumn(const std::vector<MDLabel> &oldLabel,
             const std::vector<MDLabel> &newLabel);
 
-    void metadataToVec(std::vector<MDRow> &vd);
+    void metadataToVec(std::vector<MDRowSql> &vd);
 
     void vecToMetadata(const std::vector<MDRow> &rowMetadata);
 
