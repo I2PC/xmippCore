@@ -31,61 +31,47 @@
 #include "metadata_label.h"
 #include "metadata_object.h"
 
-/** Class for holding an entire row of posible MDObject */
-class MDRow
-{
+struct MDRowIterator {
+};
+
+/** Abstract class (API) for holding an entire row of posible MDObject */
+class MDRow {
 public:
-    //Reserve space for the maximum different labels
-    //this will allows constant access to each object indexing by labels
-    MDObject * objects[MDL_LAST_LABEL];
-    MDLabel order[MDL_LAST_LABEL];
-    int _size; //Number of active labels
+    using iterator = MDRowIterator;
 
-public:
-    /** Empty constructor */
-    MDRow();
-    /** Copy constructor */
-    MDRow(const MDRow & row);
+    virtual bool empty() const = 0;
+    virtual int size() const = 0; /** Return number of labels present */
+    virtual void clear() = 0;
 
-    /** Assignment */
-    MDRow& operator = (const MDRow &row);
-
-    /** Destructor */
-    ~MDRow();
-    /** True if this row contains this label */
-    inline bool containsLabel(MDLabel label) const {
-        return objects[label] != NULL;
-    }
-
-    /** Returns all labels defined for this row */
-    std::vector<MDLabel> getLabels() const;
-
-    /** Add a new label */
-    void addLabel(MDLabel label);
-
-    /** Clear elements of the row */
-    void clear();
-    /** Return number of labels present */
-    int size() const;
-    /** Function to test whether is empty */
-    bool empty() const;
+    virtual bool containsLabel(MDLabel label) const = 0;
+    virtual std::vector<MDLabel> labels() const = 0;
+    virtual void addLabel(MDLabel label) = 0;
 
     /** Reset the values of the labels related to
      *  geometry to their default values
      */
-    void resetGeo(bool addLabels = true);
+    virtual void resetGeo(bool addLabels = true) {
+        setValue(MDL_ORIGIN_X,  0., addLabels);
+        setValue(MDL_ORIGIN_Y,  0., addLabels);
+        setValue(MDL_ORIGIN_Z,  0., addLabels);
+        setValue(MDL_SHIFT_X,   0., addLabels);
+        setValue(MDL_SHIFT_Y,   0., addLabels);
+        setValue(MDL_SHIFT_Z,   0., addLabels);
+        setValue(MDL_ANGLE_ROT, 0., addLabels);
+        setValue(MDL_ANGLE_TILT,0., addLabels);
+        setValue(MDL_ANGLE_PSI, 0., addLabels);
+        setValue(MDL_WEIGHT,   1., addLabels);
+        setValue(MDL_FLIP,     false, addLabels);
+        setValue(MDL_SCALE,    1., addLabels);
+    }
 
-    /** Get object */
-    MDObject * getObject(MDLabel label) const;
+    virtual MDObject *getObject(MDLabel label) const = 0;
 
-    /** Get value */
     template <typename T>
-    bool getValue(MDLabel label, T &d) const
-    {
-        if (objects[label] == NULL)
+    bool getValue(MDLabel label, T &d) const {
+        if (getObject(label) == nullptr)
             return false;
-
-        objects[label]->getValue(d);
+        getObject(label)->getValue(d);
         return true;
     }
 
@@ -102,15 +88,13 @@ public:
         if (!__row.getValue(__label, __d))\
          REPORT_ERROR(ERR_ARG_MISSING,(String)"Cannot find label: " + MDL::label2Str(__label) );
 
-    /** Get value */
     template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const
-    {
+    void getValueOrDefault(MDLabel label, T &d, T1 def) const {
         if (!getValue(label, d))
             d = (T) def;
     }
 
-    bool getValue(MDObject &object) const;
+    virtual bool getValue(MDObject &object) const = 0;
 
     /** Set value
      *
@@ -119,27 +103,30 @@ public:
      * @param addLabel Add label if is not already contained
      */
     template <typename T>
-    void setValue(MDLabel label, const T &d, bool addLabel = true)
-    {
-        if (objects[label] != NULL)
-            objects[label]->setValue(d);
-        else if (addLabel)
-        {
-            objects[label] = new MDObject(label, d);
-            order[_size] = label;
-            ++_size;
+    void setValue(MDLabel label, const T &d, bool addLabel = true) {
+        MDObject *obj = getObject(label);
+        if (obj == nullptr && addLabel) {
+            this->addLabel(label);
+            obj = getObject(label);
         }
+
+        if (obj != nullptr)
+            obj->setValue(d);
     }
 
-    void setValue(const MDObject &object);
+    virtual void setValue(const MDObject &object) = 0;
 
-    void setValueFromStr(MDLabel label, const String &value);
+    virtual void setValueFromStr(MDLabel label, const String &value) {
+        MDObject mdValue(label);
+        mdValue.fromString(value);
+        setValue(mdValue);
+    }
 
-    /** Show */
     friend std::ostream& operator << (std::ostream &out, const MDRow &row);
 
 private:
-    void copy(const MDRow &row);
+
+    virtual const MDLabel& order(size_t i) const = 0;
 };
 
 #endif
