@@ -31,14 +31,9 @@
 #include "metadata_label.h"
 #include "metadata_object.h"
 
-struct MDRowIterator {
-};
-
 /** Abstract class (API) for holding an entire row of posible MDObject */
 class MDRow {
 public:
-    using iterator = MDRowIterator;
-
     virtual bool empty() const = 0;
     virtual int size() const = 0; /** Return number of labels present */
     virtual void clear() = 0;
@@ -123,6 +118,30 @@ public:
     }
 
     friend std::ostream& operator << (std::ostream &out, const MDRow &row);
+
+    class iterator_ptr {
+        size_t i;
+        const MDRow* row;
+
+    public:
+        iterator_ptr(size_t i, const MDRow& row) : i(i), row(&row) {}
+        iterator_ptr(iterator_ptr const& right) : i(right.i), row(right.row) {}
+        iterator_ptr& operator=(iterator_ptr const& right) {
+            i = right.i;
+            row = right.row;
+            return *this;
+        }
+        iterator_ptr& operator++() {
+            ++i;
+            return *this;
+        }
+        MDObject* operator * () { return row->getObject(row->order(i)); }
+        bool operator==(const iterator_ptr& other) { return other.i == this->i; }
+        bool operator!=(const iterator_ptr& other) { return !(*this == other); }
+    };
+
+    iterator_ptr begin() const { return iterator_ptr(0, *this); }
+    iterator_ptr end() const { return iterator_ptr(this->size(), *this); }
 
 private:
 

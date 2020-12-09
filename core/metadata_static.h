@@ -27,7 +27,7 @@
 #define CORE_METADATA_STATIC_H
 
 #include "metadata_label.h"
-#include "metadata_row_base.h"
+#include "metadata_row_sql.h"
 
 /** Static class to group some functions with labels.
  * This class holds several function to work with labels.
@@ -77,7 +77,6 @@ public:
     static bool isMicrograph(const MDLabel label);
     static bool isPSD(const MDLabel label);
     static std::map<String, MDLabel>& getLabelDict();
-    static MDRow emptyHeader;
     /** @} */
 
     /** Add an alias for an existing label.
@@ -107,6 +106,8 @@ public:
      * metadata could change and write wrong values to file.
      */
     static void resetBufferIndex();
+
+    static MDRowSql emptyHeader();
 
 private:
     //Array of MDLabelData pointers
@@ -1132,10 +1133,6 @@ private:
         MDL::addLabel(BUFFER_97, LABEL_STRING, "buffer_97");
         MDL::addLabel(BUFFER_98, LABEL_STRING, "buffer_98");
         MDL::addLabel(BUFFER_99, LABEL_STRING, "buffer_99");
-        //Create an static empty header for image initialization
-        MDL::emptyHeader.resetGeo();
-        MDL::emptyHeader.setValue(MDL_ANGLE_ROT, 0.);
-        MDL::emptyHeader.setValue(MDL_ANGLE_TILT,0.);
 
         // Add user-defined label aliases for allow use Xmipp-MetaData
         // with other labels
