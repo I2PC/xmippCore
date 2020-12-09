@@ -28,6 +28,8 @@
 
 #include <sqlite3.h>
 #include "../metadata_label.h"
+#include "../metadata_object.h"
+#include "../metadata_static.h"
 
 class sqlUtils {
 public:

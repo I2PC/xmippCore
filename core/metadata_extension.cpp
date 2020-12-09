@@ -546,13 +546,3 @@ void bsoftRestoreLoopBlock(const FileName &_inFile, const FileName &_outFile)
         out << line << '\n';
     }
 }
-
-MDRow firstRow(const FileName &fnMetadata)
-{
-	MetaData md;
-	md.setMaxRows(1);
-	md.read(fnMetadata);
-	MDRow row;
-	md.getRow(row,md.firstObject());
-	return row;
-}

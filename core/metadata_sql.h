@@ -31,6 +31,7 @@
 #include "metadata_label.h"
 #include "xmipp_error.h"
 #include "metadata_sql_operations.h"
+#include "metadata_static.h"
 
 class MDSqlStaticInit;
 class MDQuery;
@@ -321,7 +322,7 @@ public:
         this->orderLabel = orderLabel;
         this->asc=asc;
     }
-    
+
     /** Destructor */
     virtual ~MDQuery() {}
 

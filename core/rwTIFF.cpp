@@ -255,7 +255,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     int imReaded = 0;
 
     MD.clear();
-    MD.resize(aDim.ndim,MDL::emptyHeader);
+    MD.resize(aDim.ndim, MDL::emptyHeader());
 
     uint32 rowsperstrip;
     tsize_t scanline;

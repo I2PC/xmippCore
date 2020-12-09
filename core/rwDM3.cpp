@@ -611,7 +611,7 @@ int ImageBase::readDM3(size_t select_img,bool isStack)
     }
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
     offset = dataHeaders[imgStart].headerSize;
     delete header;
 

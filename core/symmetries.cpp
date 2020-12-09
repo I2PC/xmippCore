@@ -1158,7 +1158,7 @@ void SymList::computeDistance(MetaData &md,
                               bool projdir_mode, bool check_mirrors,
                               bool object_rotation)
 {
-    MDRow row;
+    MDRowSql row;
     double rot1, tilt1, psi1;
     double rot2, tilt2, psi2;
     double angDistance;

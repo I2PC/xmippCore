@@ -31,7 +31,6 @@
 //This is needed for static memory allocation
 MDLabelData * MDL::data[MDL_LAST_LABEL+1];
 std::map<std::string, MDLabel> MDL::names;
-MDRow MDL::emptyHeader;
 MDLabelStaticInit MDL::initialization; //Just for initialization
 MDLabel MDL::bufferIndex;
 

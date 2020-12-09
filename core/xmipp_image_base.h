@@ -29,6 +29,8 @@
 #include "xmipp_image_macros.h"
 #include "xmipp_datatype.h"
 #include "metadata_label.h"
+#include "metadata_row_sql.h"
+#include "metadata_static.h"
 #include "multidim_array_base.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
@@ -237,8 +239,8 @@ class ImageBase
 {
 public:
     MultidimArrayBase * mdaBase;    // Pointer to data from Image<template T> casted as MultidimArrayBase
-    std::vector<MDRow>  MD;                     // data for each subimage
-    MDRow               MDMainHeader;           // data for the file
+    std::vector<MDRowSql> MD;                   // data for each subimage
+    MDRowSql            MDMainHeader;           // data for the file
 
 protected:
     FileName            filename;    // File name
@@ -390,7 +392,7 @@ public:
     /** Set geo.
      * Copy the input geometry row into the image metadata row n.
      */
-    void setGeo(const MDRow &row, size_t n=0);
+    void setGeo(const MDRowSql &row, size_t n=0);
 
     /* Read an image with a lower resolution as a preview image.
      * If Zdim parameter is not passed, then all slices are rescaled.
@@ -547,7 +549,7 @@ public:
      */
     void initGeometry(const size_t n = 0)
     {
-        MD[n]=MDL::emptyHeader;
+        MD[n] = MDL::emptyHeader();
     }
 
     /* Check if the label is in the individual header

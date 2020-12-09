@@ -343,7 +343,7 @@ void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
     size_t objId;
-    MDRow rowIn, rowOut;
+    MDRowSql rowIn, rowOut;
     mdOut->clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing

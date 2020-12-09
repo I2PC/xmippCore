@@ -127,7 +127,7 @@ int ImageBase::readRAW(size_t select_img, bool isStack)
     size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : _nDim;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
 
     if( dataMode < DATA )
         return 0;

@@ -130,7 +130,7 @@ void Histogram1D::write(const FileName &fn,
                         MDLabel mdlCount)
 {
     MetaData auxMD;
-    MDRow row;
+    MDRowSql row;
     double auxD;
     size_t auxT;
     FOR_ALL_ELEMENTS_IN_ARRAY1D(*this)

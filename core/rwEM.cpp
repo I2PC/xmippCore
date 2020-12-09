@@ -117,7 +117,7 @@ int ImageBase::readEM(size_t select_img, bool isStack)
     size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : aDim.ndim;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
 
     /* As MRC does not support stacks, we use the geometry stored in the header
     for any image when we simulate the file is a stack.*/

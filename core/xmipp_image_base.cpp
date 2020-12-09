@@ -180,7 +180,7 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 /** General read function
  */
 /** Macros for don't type */
-#define GET_ROW()               MDRow row; md.getRow(row, objId)
+#define GET_ROW()               MDRowSql row; md.getRow(row, objId)
 
 #define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name);\
                                   int err = _read(name, hFile, params.datamode, params.select_img); \
@@ -188,7 +188,7 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
                                   closeFile(hFile); \
                                   return err
 
-#define APPLY_GEO()        MDRow row; md.getRow(row, objId); \
+#define APPLY_GEO()        MDRowSql row; md.getRow(row, objId); \
                            applyGeo(row, params.only_apply_shifts, params.wrap) \
 
 void ImageBase::applyGeo(const MetaData &md, size_t objId,
@@ -197,7 +197,7 @@ const ApplyGeoParams &params)
     APPLY_GEO();
 }
 
-void ImageBase::setGeo(const MDRow &row, size_t n)
+void ImageBase::setGeo(const MDRowSql &row, size_t n)
 {
     if (n<MD.size())
         MD[n]=row;

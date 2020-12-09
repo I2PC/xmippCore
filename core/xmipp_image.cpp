@@ -233,7 +233,7 @@ void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
         REPORT_ERROR(ERR_MULTIDIM_SIZE,
                      "Geometric transformation cannot be applied to stacks!!!");
     if (MD.size() == 0)
-        MD.push_back(MDL::emptyHeader);
+        MD.push_back(MDL::emptyHeader());
     MDRow &rowAux = MD[0];
 
     if (!row.containsLabel(MDL_TRANSFORM_MATRIX))

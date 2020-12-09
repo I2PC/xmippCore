@@ -30,6 +30,7 @@
 #include "xmipp_datatype.h"
 #include "xmipp_filename.h"
 #include "metadata_label.h"
+#include "metadata_row_sql.h"
 #include "metadata_writemode.h"
 
 class MetaData;
@@ -136,7 +137,7 @@ protected:
     virtual void readParams();
     virtual void preProcess();
     virtual void postProcess();
-    virtual void processImage(const FileName &fnImg, const FileName &fnImgOut, const MDRow &rowIn, MDRow &rowOut) = 0;
+    virtual void processImage(const FileName &fnImg, const FileName &fnImgOut, const MDRowSql &rowIn, MDRowSql &rowOut) = 0;
     virtual void show();
     /** Do some stuff before starting processing
      * in a parallel environment usually this only be executed

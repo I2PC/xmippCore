@@ -117,7 +117,7 @@ int  ImageBase::readPIF(size_t select_img)
     size_t headerOffset  = PIFHEADERSIZE;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
 
     PIFDataHeader dataHeader;
 

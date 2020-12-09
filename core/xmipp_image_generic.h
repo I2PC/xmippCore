@@ -107,7 +107,7 @@ public:
      */
     void initGeometry(const size_t n = 0)
     {
-        image->MD[n]=MDL::emptyHeader;
+        image->MD[n] = MDL::emptyHeader();
     }
 
     /** Return geometry row

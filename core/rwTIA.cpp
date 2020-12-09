@@ -211,7 +211,7 @@ int ImageBase::readTIA(int select_img,bool isStack)
     }
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
     double aux;
     for ( size_t i = 0; i < imgEnd - imgStart; ++i )
     {

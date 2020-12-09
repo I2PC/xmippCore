@@ -226,7 +226,7 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
     size_t   img_seek = header_size + imgStart * image_size;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
     double daux;
 
     //std::cerr << formatString("DEBUG_JM: header_size: %10lu, datasize_n: %10lu, image_size: %10lu, imgStart: %10lu, img_seek: %10lu",
@@ -540,7 +540,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
         fseek( fimg,offset + (offset+datasize)*imgStart, SEEK_SET);
 
         //for ( size_t i=0; i<Ndim; i++ )
-        std::vector<MDRow>::iterator it = MD.begin();
+        std::vector<MDRowSql>::iterator it = MD.begin();
 
         for (size_t i = 0; i < Ndim; ++it, ++i)
         {

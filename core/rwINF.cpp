@@ -105,7 +105,7 @@ int ImageBase::readINF(size_t select_img,bool isStack)
         return 0;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
 
     //#define DEBUG
 #ifdef DEBUG

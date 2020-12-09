@@ -276,7 +276,7 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     const size_t   imgEnd = start_img + _nDimSet - 1;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
 
     /* As MRC does not support stacks, we use the geometry stored in the header
     for any image when we simulate the file is a stack.*/

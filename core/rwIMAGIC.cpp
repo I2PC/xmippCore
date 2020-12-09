@@ -203,7 +203,7 @@ int  ImageBase::readIMAGIC(size_t select_img)
     fseek( fhed, IMG_INDEX(select_img) * IMAGICSIZE, SEEK_SET );
 
     MD.clear();
-    MD.resize(_nDim,MDL::emptyHeader);
+    MD.resize(_nDim, MDL::emptyHeader());
     double daux=1.;
     for ( size_t i = 0; i < _nDim; ++i )
     {
@@ -448,7 +448,7 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
     fseek(fimg, datasize   * imgStart, SEEK_SET);
     fseek(fhed, IMAGICSIZE * imgStart, SEEK_SET);
 
-    std::vector<MDRow>::iterator it = MD.begin();
+    std::vector<MDRowSql>::iterator it = MD.begin();
 
     for (size_t i = 0; i < Ndim; ++i, ++it)
     {
