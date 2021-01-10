@@ -30,12 +30,14 @@
 #include <cstddef>
 #include <map>
 #include <cmath>
+#include <memory>
 
 #include "xmipp_error.h"
 #include "xmipp_filename.h"
 #include "metadata_label.h"
 #include "metadata_writemode.h"
 #include "metadata_base_it.h"
+#include "metadata_static.h"
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary
@@ -69,11 +71,10 @@
  */
 
 #define FOR_ALL_OBJECTS_IN_METADATA(__md) \
-        for(MDBaseIterator __iter = (__md).begin_all(); __iter != (__md).end_all(); ++__iter)
+        for (MetaData::iterator __iter(__md); __iter.hasNext(); __iter.moveNext())
 
-
-#define FOR_ALL_ROWS_IN_METADATA(__md) \
-        for(MDRowIterator __iter = (__md).begin_rows(); __iter != (__md).end_rows(); ++__iter)
+// #define FOR_ALL_ROWS_IN_METADATA(__md) \
+//         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
 
 /** Iterate over all elements of two MetaData at same time.
  *
@@ -442,14 +443,14 @@ public:
             addObjects=true;
         if (valuesIn.size()!=size() && !addObjects)
             REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Input vector must be of the same size as the metadata");
-        size_t n=0;
         if (!addObjects) {
-            FOR_ALL_OBJECTS_IN_METADATA(*this)
-                setValue(label, valuesIn[n++], __iter.objId);
+            size_t n = 0;
+            for (auto row : *this)
+                row.setValue(label, valuesIn[n++]);
         } else {
             size_t nmax=valuesIn.size();
             for (size_t n=0; n<nmax; ++n)
-                setValue(label,valuesIn[n],addObject());
+                setValue(label, valuesIn[n], addObject());
         }
     }
 
@@ -783,18 +784,30 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    friend class MDBaseIterator;
     friend class MDBaseRowIterator;
 
-    // Default iterator = rows iterator
-    virtual MDBaseRowIterator begin() const { return this->begin_rows(); }
-    virtual MDBaseRowIterator end() const { return this->end_rows(); }
+    class rowIterator {
+        std::unique_ptr<MDBaseRowIterator> impl;
+    public:
+        rowIterator(std::unique_ptr<MDBaseRowIterator> impl) : impl(std::move(impl)) {}
+        rowIterator(rowIterator const& right) : impl(std::move(right.impl->clone())) {}
+        rowIterator& operator=(rowIterator const& right) {
+            impl = std::move(right.impl->clone());
+            return *this;
+        }
+        rowIterator& operator++() {
+            impl->increment();
+            return *this;
+        }
+        bool operator==(const rowIterator& other) { return other.impl == this->impl; }
+        bool operator!=(const rowIterator& other) { return !(*this == other); }
+        MDRow& operator*() const { return **impl; }
+    };
 
-    virtual MDBaseIterator begin_all() const;
-    virtual MDBaseIterator end_all() const;
+    using iterator = rowIterator;
 
-    virtual MDBaseRowIterator begin_rows() const;
-    virtual MDBaseRowIterator end_rows() const;
+    virtual iterator begin() const = 0;
+    virtual iterator end() const = 0;
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
