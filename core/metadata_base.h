@@ -215,7 +215,7 @@ public:
      *
      * Copies MetaData from an existing MetaData object.
      */
-    MetaData& operator =(const MetaData &md);
+    MetaData& operator=(const MetaData &md);
 
     /** Destructor
      *
