@@ -62,6 +62,17 @@ public:
     void setValue(const MDObject &object) override;
 
     friend std::ostream& operator << (std::ostream &out, const MDRowSql &row);
+
+    // Templated functions from based class must be retemplated
+
+    template <typename T>
+    bool getValue(MDLabel label, T &d) const { return MDRow::getValue(label, d); }
+
+    template <typename T, typename T1>
+    void getValueOrDefault(MDLabel label, T &d, T1 def) const { return MDRow::getValueOrDefault(label, d, def); }
+
+    template <typename T>
+    void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
 };
 
 #endif
