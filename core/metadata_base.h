@@ -806,8 +806,8 @@ public:
 
     using iterator = rowIterator;
 
-    virtual iterator begin() const = 0;
-    virtual iterator end() const = 0;
+    virtual iterator begin() = 0;
+    virtual iterator end() = 0;
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx

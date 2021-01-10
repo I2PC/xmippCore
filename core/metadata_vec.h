@@ -28,6 +28,7 @@
 
 #include <memory>
 #include "metadata_base.h"
+#include "metadata_row_vec.h"
 
 using MetaDataVecRow = std::vector<MDObject>;
 
@@ -41,7 +42,7 @@ using MetaDataVecRow = std::vector<MDObject>;
 class MetaDataVec: public MetaData {
 protected:
     std::vector<MetaDataVecRow> rows;
-    std::map<MDLabel, int> label_to_col;
+    std::array<size_t, MDL_LAST_LABEL> label_to_col;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
@@ -527,15 +528,20 @@ public:
 
     struct MDVecRowIterator : public MDBaseRowIterator {
     private:
-        const MetaDataVec& _mdv;
+        MetaDataVec& _mdv;
         size_t _i;
+        MDRowVec _row;
 
     public:
-        MDVecRowIterator(const MetaDataVec &mdv, size_t i) : _mdv(mdv), _i(i), MDBaseRowIterator(mdv) {}
+        MDVecRowIterator(MetaDataVec &mdv, size_t i)
+            : _mdv(mdv), _i(i), _row(mdv.rows.at(i), i, mdv.label_to_col), MDBaseRowIterator(mdv) {}
 
         std::unique_ptr<MDBaseRowIterator> clone() override { return std::make_unique<MDVecRowIterator>(_mdv, _i); }
 
-        void increment() override { _i++; }
+        void increment() override {
+            _i++;
+            _row = MDRowVec(_mdv.rows.at(_i), _i, _mdv.label_to_col);
+        }
 
         bool operator==(const MDBaseRowIterator& other) override {
             const MDVecRowIterator* vri = dynamic_cast<const MDVecRowIterator*>(&other);
@@ -544,12 +550,12 @@ public:
             return false;
         }
 
-        MDRow& operator*() const override { /* TODO MdRowVec */ }
+        MDRow& operator*() override { return _row; }
     };
 
 
-    iterator begin() const override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, 0)); }
-    iterator end() const override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, this->size())); }
+    iterator begin() override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, 0)); }
+    iterator end() override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, this->size())); }
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx

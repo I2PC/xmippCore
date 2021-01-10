@@ -23,7 +23,7 @@ struct MDBaseRowIterator {
     virtual void increment() = 0;
     virtual bool operator==(const MDBaseRowIterator& other) = 0;
     virtual bool operator!=(const MDBaseRowIterator& other) { return !(*this == other); }
-    virtual MDRow& operator*() const = 0;
+    virtual MDRow& operator*() = 0;
 };
 
 #endif
