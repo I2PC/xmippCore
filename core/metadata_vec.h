@@ -500,7 +500,10 @@ public:
         MDVecRowIterator(MetaDataVec &mdv, size_t i)
             : MDBaseRowIterator(mdv), _mdv(mdv), _i(i), _row(mdv.rows.at(i), i, mdv.label_to_col) {}
 
-        std::unique_ptr<MDBaseRowIterator> clone() override { return std::make_unique<MDVecRowIterator>(_mdv, _i); }
+        // TODO: use std::make_unique when ported to C++14
+        std::unique_ptr<MDBaseRowIterator> clone() override {
+            return std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(_mdv, _i));
+        }
 
         void increment() override {
             _i++;
@@ -517,8 +520,13 @@ public:
         MDRow& operator*() override { return _row; }
     };
 
-    iterator begin() override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, 0)); }
-    iterator end() override { return rowIterator(std::make_unique<MDVecRowIterator>(*this, this->size())); }
+    // TODO: use std::make_unique when ported to C++14
+    iterator begin() override {
+        return rowIterator(std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(*this, 0)));
+    }
+    iterator end() override {
+        return rowIterator(std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(*this, this->size())));
+    }
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
