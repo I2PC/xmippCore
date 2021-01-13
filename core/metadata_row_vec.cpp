@@ -41,6 +41,7 @@ MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
     _row = other._row;
     _rowi = other._rowi;
     _label_to_col = other._label_to_col;
+    return *this;
 }
 
 bool MDRowVec::empty() const {

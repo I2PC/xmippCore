@@ -137,7 +137,7 @@ private:
 
     /** Insert a new register inserting input columns.
      */
-    bool setObjectValues( size_t id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
+    bool setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
 
     /**Set the value of an object in an specified column.
      */

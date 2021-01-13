@@ -153,7 +153,7 @@ MDObject* MDRowSql::iteratorValue(size_t i) const {
 }
 
 std::ostream& operator << (std::ostream &out, const MDRowSql &row) {
-    for (int i = 0; i < row._size; ++i) {
+    for (size_t i = 0; i < row._size; ++i) {
         row._objects[row._order[i]]->toStream(out);
         out << " ";
     }

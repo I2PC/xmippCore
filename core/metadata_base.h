@@ -73,8 +73,9 @@
 #define FOR_ALL_OBJECTS_IN_METADATA(__md) \
         for (MetaData::iterator __iter(__md); __iter.hasNext(); __iter.moveNext())
 
-// #define FOR_ALL_ROWS_IN_METADATA(__md) \
-//         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
+/* #define FOR_ALL_ROWS_IN_METADATA(__md) \
+ *         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
+ */
 
 /** Iterate over all elements of two MetaData at same time.
  *

@@ -415,7 +415,7 @@ bool MetaData::getRow2(MDRow &row, size_t id) const
 
 bool MetaData::initSetRow(const MDRow &row)
 {
-    int 	i=0,j=0;					// Loop counter.
+    int 	j=0;					// Loop counter.
     bool	success=true;				// Return value.
     std::vector<MDLabel>   labels;		// Columns labels.
 
@@ -500,7 +500,7 @@ bool MetaData::setRow2(const MDRow &row, size_t id)
 
 bool MetaData::initAddRow(const MDRow &row)
 {
-    int 	i=0,j=0;					// Loop counter.
+    int 	j=0;					// Loop counter.
     bool	success=true;				// Return value.
     std::vector<MDLabel>   	labels;		// Columns labels.
     std::vector<MDObject*> 	mdValues;	// Vector to store values.
@@ -530,7 +530,7 @@ bool MetaData::initAddRow(const MDRow &row)
 
 bool MetaData::execAddRow(const MDRow &row)
 {
-    int i = 0,j = 0;
+    int j = 0;
     bool success = true;
     std::vector<MDObject*> mdValues;
 
