@@ -785,9 +785,10 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    friend class MDBaseRowIterator;
+    friend struct MDBaseRowIterator;
 
-    class rowIterator {
+    struct rowIterator {
+    private:
         std::unique_ptr<MDBaseRowIterator> impl;
     public:
         rowIterator(std::unique_ptr<MDBaseRowIterator> impl) : impl(std::move(impl)) {}
