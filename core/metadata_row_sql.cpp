@@ -148,8 +148,8 @@ void MDRowSql::copy(const MDRowSql &row) {
     memcpy(_order, row._order, sizeof(int)*_size);
 }
 
-const MDLabel& MDRowSql::order(size_t i) const {
-    return _order[i];
+MDObject* MDRowSql::iteratorValue(size_t i) const {
+    return _objects[_order[i]];
 }
 
 std::ostream& operator << (std::ostream &out, const MDRowSql &row) {

@@ -135,7 +135,7 @@ public:
             ++i;
             return *this;
         }
-        MDObject* operator * () { return row->getObject(row->order(i)); }
+        MDObject* operator*() { return row->iteratorValue(i); }
         bool operator==(const iterator_ptr& other) { return other.i == this->i; }
         bool operator!=(const iterator_ptr& other) { return !(*this == other); }
     };
@@ -145,7 +145,7 @@ public:
 
 private:
 
-    virtual const MDLabel& order(size_t i) const = 0;
+    virtual MDObject* iteratorValue(size_t i) const = 0;
 };
 
 #endif

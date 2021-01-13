@@ -42,7 +42,7 @@ using MetaDataVecRow = std::vector<MDObject>;
 class MetaDataVec: public MetaData {
 protected:
     std::vector<MetaDataVecRow> rows;
-    std::array<size_t, MDL_LAST_LABEL> label_to_col;
+    std::array<int, MDL_LAST_LABEL> label_to_col;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors

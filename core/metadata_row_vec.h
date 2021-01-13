@@ -1,7 +1,6 @@
 /***************************************************************************
  *
- * Authors:     J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
- *              Jan Horacek (xhorace4@fi.muni.cz)
+ * Authors:     Jan Horacek (xhorace4@fi.muni.cz)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  * Institute of Computer Science MUNI
@@ -25,28 +24,25 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#ifndef CORE_METADATA_ROW_SQL_H
-#define CORE_METADATA_ROW_SQL_H
+#ifndef CORE_METADATA_ROW_VEC_H
+#define CORE_METADATA_ROW_VEC_H
 
 #include "metadata_row_base.h"
 
 /** Class for holding an entire row of posible MDObject */
-class MDRowSql : public MDRow {
+class MDRowVec : public MDRow {
 private:
-    //Reserve space for the maximum different labels
-    //this will allow constant access to each object indexing by labels
-    MDObject *_objects[MDL_LAST_LABEL];
-    MDLabel _order[MDL_LAST_LABEL];
-    size_t _size; //Number of active labels
+    std::vector<MDObject>& _row;
+    size_t _rowi;
+    std::array<int, MDL_LAST_LABEL>& _label_to_col;
 
-    void copy(const MDRowSql &row);
     MDObject* iteratorValue(size_t i) const override;
 
 public:
-    MDRowSql();
-    MDRowSql(const MDRowSql &row);
-    MDRowSql& operator = (const MDRowSql &row);
-    ~MDRowSql();
+    MDRowVec() = delete;
+    MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col);
+    MDRowVec(const MDRowVec&);
+    MDRowVec& operator = (const MDRowVec&);
 
     bool empty() const override;
     int size() const override;
@@ -61,7 +57,7 @@ public:
     bool getValue(MDObject &object) const override;
     void setValue(const MDObject &object) override;
 
-    friend std::ostream& operator << (std::ostream &out, const MDRowSql &row);
+    friend std::ostream& operator << (std::ostream &out, const MDRowVec &row);
 
     // Templated functions from based class must be retemplated
 
