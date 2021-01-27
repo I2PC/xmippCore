@@ -68,6 +68,7 @@ enum MDLabel
     MDL_AVG_CHANGES_OFFSETS, /// Average change in offset (double pixels)
     MDL_AVG_CHANGES_CLASSES, /// Average change in class assignment(double dimensionaless)
     MDL_AVGPMAX, ///< Average (per class) of the maximum value of normalized probability function) (double)
+    MDL_BFACTOR, /// <Bfactor of a map, or even a local bfactor
     MDL_BGMEAN, ///< Mean background value for an image
     MDL_BLOCK_NUMBER, ///< Current block number (for incremental EM)
 
@@ -360,6 +361,7 @@ enum MDLabel
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
+    MDL_RESIDUE,        //<residue of an atomic model (int)
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)
@@ -367,6 +369,7 @@ enum MDLabel
     MDL_RESOLUTION_FREQ, ///<Frequency in 1/A (double)
     MDL_RESOLUTION_FREQ2, ///< Frequency in 1/A squared (double)
     MDL_RESOLUTION_FREQREAL, ///< Frequency in A (double)
+    MDL_RESOLUTION_LOCAL_RESIDUE, ///< Frequency in A of the local resolution of a residue (double)
     MDL_RESOLUTION_LOG_STRUCTURE_FACTOR, ///<Logarithm of the structure factor
     MDL_RESOLUTION_SSNR, ///<Fourier shell correlation (double)
     MDL_RESOLUTION_STRUCTURE_FACTOR, ///<Structure factor
@@ -1321,6 +1324,7 @@ private:
         MDL::addLabel(MDL_AVG_CHANGES_CLASSES, LABEL_DOUBLE, "avgChanClass");
         MDL::addLabel(MDL_AVGPMAX, LABEL_DOUBLE, "avgPMax");
 
+        MDL::addLabel(MDL_BFACTOR, LABEL_DOUBLE, "bFactor");
         MDL::addLabel(MDL_BGMEAN, LABEL_DOUBLE, "bgMean");
         MDL::addLabel(MDL_BLOCK_NUMBER, LABEL_INT, "blockNumber");
 
@@ -1705,6 +1709,7 @@ private:
         MDL::addLabelAlias(MDL_REF, "Ref");
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
 
+        MDL::addLabel(MDL_RESIDUE, LABEL_INT, "residue");
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
         MDL::addLabel(MDL_RESOLUTION_FRC, LABEL_DOUBLE, "resolutionFRC");
@@ -1712,6 +1717,7 @@ private:
         MDL::addLabel(MDL_RESOLUTION_FREQ, LABEL_DOUBLE, "resolutionFreqFourier");
         MDL::addLabel(MDL_RESOLUTION_FREQ2, LABEL_DOUBLE, "resolutionFreqFourier2");
         MDL::addLabel(MDL_RESOLUTION_FREQREAL, LABEL_DOUBLE, "resolutionFreqReal");
+        MDL::addLabel(MDL_RESOLUTION_LOCAL_RESIDUE, LABEL_DOUBLE, "localresolutionResidue");
         MDL::addLabel(MDL_RESOLUTION_LOG_STRUCTURE_FACTOR, LABEL_DOUBLE, "resolutionLogStructure");
         MDL::addLabel(MDL_RESOLUTION_STRUCTURE_FACTOR, LABEL_DOUBLE, "resolutionStructure");
         MDL::addLabel(MDL_RESOLUTION_SSNR, LABEL_DOUBLE, "resolutionSSNR");
