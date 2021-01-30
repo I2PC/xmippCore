@@ -55,6 +55,7 @@ public:
     bool empty() const override;
     int size() const override;
     void clear() override;
+    bool inMetadata() const;
 
     bool containsLabel(MDLabel label) const override;
     std::vector<MDLabel> labels() const override;
@@ -77,6 +78,8 @@ public:
 
     template <typename T>
     void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
+
+    friend class MetaDataVec;
 };
 
 #endif

@@ -27,9 +27,17 @@
 #define VEC_METADATA_H
 
 #include <memory>
+#include <exception>
 #include "metadata_base.h"
 #include "metadata_base_it.h"
 #include "metadata_row_vec.h"
+
+class NotImplemented : public std::logic_error
+{
+public:
+    NotImplemented() : std::logic_error("Function not yet implemented") { };
+};
+
 
 using MetaDataVecRow = std::vector<MDObject>;
 
@@ -42,13 +50,15 @@ using MetaDataVecRow = std::vector<MDObject>;
  */
 class MetaDataVec: public MetaData {
 protected:
-    std::vector<MetaDataVecRow> rows;
-    std::array<int, MDL_LAST_LABEL> label_to_col;
+    std::vector<MetaDataVecRow> _rows;
+    std::array<int, MDL_LAST_LABEL> _label_to_col;
+    std::vector<MDLabel> _col_to_label;
+    size_t _no_columns = 0;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
      */
-    void init(const std::vector<MDLabel> *labelsVector = NULL);
+    void init(const std::vector<MDLabel>& labelsVector);
 
     /** Copy info variables from another metadata
      * @ingroup MetaDataConstructors
@@ -106,14 +116,14 @@ public:
      * if labels vectors is passed this labels are created on metadata
      */
     MetaDataVec();
-    MetaDataVec(const std::vector<MDLabel> *labelsVector);
+    MetaDataVec(const std::vector<MDLabel> &labelsVector);
 
     /** From File Constructor.
      *
      * The MetaData is created and data is read from provided FileName. Optionally, a vector
      * of labels can be provided to read just those required labels
      */
-    MetaDataVec(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = NULL);
+    MetaDataVec(const FileName &fileName, const std::vector<MDLabel> &desiredLabels);
 
     /** Copy constructor
      *
@@ -178,6 +188,8 @@ public:
     /** @name MetaData Manipulation
      * @{
      */
+
+    size_t addRow(const MDRowVec &row);
 
 
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
@@ -371,7 +383,7 @@ public:
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true);
+    void read(const FileName &inFile);
     /** @} */
 
     /** Try to read a metadata from plain text with some columns.
@@ -498,7 +510,7 @@ public:
 
     public:
         MDVecRowIterator(MetaDataVec &mdv, size_t i)
-            : MDBaseRowIterator(mdv), _mdv(mdv), _i(i), _row(mdv.rows.at(i), i, mdv.label_to_col) {}
+            : MDBaseRowIterator(mdv), _mdv(mdv), _i(i), _row(mdv._rows.at(i), i, mdv._label_to_col) {}
 
         // TODO: use std::make_unique when ported to C++14
         std::unique_ptr<MDBaseRowIterator> clone() override {
@@ -507,7 +519,7 @@ public:
 
         void increment() override {
             _i++;
-            _row = MDRowVec(_mdv.rows.at(_i), _i, _mdv.label_to_col);
+            _row = MDRowVec(_mdv._rows.at(_i), _i, _mdv._label_to_col);
         }
 
         bool operator==(const MDBaseRowIterator& other) override {
