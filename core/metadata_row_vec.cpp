@@ -27,83 +27,110 @@
 #include <sstream>
 #include "metadata_row_vec.h"
 
-/*bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel label) {
-    std::vector<MDLabel>::const_iterator location;
-    location = std::find(labelsVector.begin(), labelsVector.end(), label);
-    return (location != labelsVector.end());
-}*/
+MDRowVec::MDRowVec()
+    : _in_metadata(false) {
+    _row = new std::vector<MDObject>();
+    _label_to_col = new std::array<int, MDL_LAST_LABEL>();
+}
 
-MDRowVec::MDRowVec(const MDRowVec &other)
-    : _row(other._row), _rowi(other._rowi), _label_to_col(other._label_to_col)
+MDRowVec::MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col)
+    : _row(&row), _rowi(rowi), _label_to_col(&label_to_col), _in_metadata(true)
     {}
 
+MDRowVec::MDRowVec(const MDRowVec &other)
+    : _rowi(other._rowi), _in_metadata(other._in_metadata)
+    {
+    if (_in_metadata) {
+        _row = other._row;
+        _label_to_col = other._label_to_col;
+    } else {
+        _row = new std::vector<MDObject>(*(other._row));
+        _label_to_col = new std::array<int, MDL_LAST_LABEL>(*(other._label_to_col));
+    }
+}
+
 MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
-    _row = other._row;
     _rowi = other._rowi;
-    _label_to_col = other._label_to_col;
+    _in_metadata = other._in_metadata;
+
+    if (_in_metadata) {
+        _row = other._row;
+        _label_to_col = other._label_to_col;
+    } else {
+        _row = new std::vector<MDObject>(*(other._row));
+        _label_to_col = new std::array<int, MDL_LAST_LABEL>(*(other._label_to_col));
+    }
+
     return *this;
 }
 
+MDRowVec::~MDRowVec() {
+    if (!_in_metadata) {
+        delete _row;
+        delete _label_to_col;
+    }
+}
+
 bool MDRowVec::empty() const {
-    return _row.size() == 0;
+    return _row->size() == 0;
 }
 
 int MDRowVec::size() const {
-    return _row.size();
+    return _row->size();
 }
 
 void MDRowVec::clear() {
-    _row.clear();
+    _row->clear();
 }
 
 bool MDRowVec::containsLabel(MDLabel label) const {
-    return _label_to_col[label] >= 0;
+    return (*_label_to_col)[label] >= 0;
 }
 
 std::vector<MDLabel> MDRowVec::labels() const {
     std::vector<MDLabel> res;
-    res.reserve(_row.size());
-    for (const auto mdObj: _row)
+    res.reserve(_row->size());
+    for (const auto mdObj: *_row)
         res.push_back(mdObj.label);
     return res;
 }
 
 void MDRowVec::addLabel(MDLabel label) {
     // Warning: not adding to all rows!
-    if (_label_to_col[label] < 0) {
-        _label_to_col[label] = _row.size();
-        _row.push_back(MDObject(label));
+    if ((*_label_to_col)[label] < 0) {
+        (*_label_to_col)[label] = _row->size();
+        _row->push_back(MDObject(label));
     }
 }
 
 MDObject *MDRowVec::getObject(MDLabel label) const {
-    return &_row.at(_label_to_col[label]);
+    return &_row->at((*_label_to_col)[label]);
 }
 
 bool MDRowVec::getValue(MDObject &object) const {
     MDLabel _label = object.label;
-    if (_label_to_col[_label] < 0)
+    if ((*_label_to_col)[_label] < 0)
         return false;
-    object.copy(_row.at(_label_to_col[_label]));
+    object.copy(_row->at((*_label_to_col)[_label]));
     return true;
 }
 
 void MDRowVec::setValue(const MDObject &object) {
     MDLabel _label = object.label;
-    if (_label_to_col[_label] < 0) {
-        _label_to_col[_label] = _row.size();
-        _row.push_back(object);
+    if ((*_label_to_col)[_label] < 0) {
+        (*_label_to_col)[_label] = _row->size();
+        _row->push_back(object);
     } else
-        _row[_label_to_col[_label]] = object;
+        (*_row)[(*_label_to_col)[_label]] = object;
 }
 
 MDObject* MDRowVec::iteratorValue(size_t i) const {
-    return &_row[i];
+    return &(*_row)[i];
 }
 
 std::ostream& operator << (std::ostream &out, const MDRowVec &row) {
     for (int i = 0; i < row.size(); ++i) {
-        row._row[i].toStream(out);
+        (*(row._row))[i].toStream(out);
         out << " ";
     }
     return out;

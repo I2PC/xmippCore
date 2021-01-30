@@ -30,19 +30,27 @@
 #include "metadata_row_base.h"
 
 /** Class for holding an entire row of posible MDObject */
+/* Row could be attached to OR detached from metadata
+ * - Detached row: holds its own _row & _label_to_col. When copied, content of
+ *   these objects is copied, not just pointer.
+ * - Attached row: _row and _label_to_col points directly to Metadata object.
+ *   When copied, just pointers are copied. Assumed to be read-only.
+ */
 class MDRowVec : public MDRow {
 private:
-    std::vector<MDObject>& _row;
+    std::vector<MDObject>* _row;
     size_t _rowi;
-    std::array<int, MDL_LAST_LABEL>& _label_to_col;
+    std::array<int, MDL_LAST_LABEL>* _label_to_col;
+    bool _in_metadata;
 
     MDObject* iteratorValue(size_t i) const override;
 
 public:
-    MDRowVec() = delete;
+    MDRowVec();
     MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col);
     MDRowVec(const MDRowVec&);
     MDRowVec& operator = (const MDRowVec&);
+    virtual ~MDRowVec();
 
     bool empty() const override;
     int size() const override;
