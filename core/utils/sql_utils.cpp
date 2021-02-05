@@ -280,12 +280,13 @@ int sqlUtils::bindValue(sqlite3_stmt *stmt, const int position, const MDObject &
 bool sqlUtils::checkError(sqlite3 *db) {
         auto err = sqlite3_errcode(db);
         if (0 != err 
-            || 100 != err || 101 != err) { // probably not an error in case of the sqlite3_step (fingers crossed)
+            && 100 != err && 101 != err) { // probably not an error in case of the sqlite3_step (fingers crossed)
             auto msg = sqlite3_errmsg(db);
             std::cerr << "SQLite3 error: " << err
                 << "\n"
                 << msg << std::endl;
             return false;
         }
+
         return true;
     }
