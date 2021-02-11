@@ -106,41 +106,6 @@
              __iter.hasNext() && __iter2.hasNext(); \
              __iter.moveNext(), __iter2.moveNext())
 
-/** Which are the blocks available in a metadata */
-void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
-bool existsBlockInMetaDataFile(const FileName &inFile, const String& inBlock);
-bool existsBlockInMetaDataFile(const FileName &inFileWithBlock);
-
-class MDValueGenerator;
-
-/** Struct to hold a char * pointer and a size
- * this will be useful for parsing metadata
- */
-typedef struct {
-    char * begin;
-    size_t size;
-}
-mdBuffer;
-
-/// Some macros to use the buffer
-#define BUFFER_CREATE(b) mdBuffer b; b.begin = NULL; b.size = 0
-#define BUFFER_COPY(b1, b2) mdBuffer b2; b2.begin = b1.begin; b2.size = b1.size
-#define BUFFER_MOVE(b, n) b.begin += n; b.size -= n
-#define BUFFER_FIND(b, str, n) (char*) _memmem(b.begin, b.size, str, n)
-
-typedef struct {
-    char * begin; //Position of _dataXXX on buffer
-    size_t nameSize; //Number of charater of block name, counting after _data
-    char * end; //Position just before next _dataXXX or end of buffer
-    char * loop; //Position of _loop if exists, NULL otherwise
-}
-mdBlock;
-/// Some macros to use the block pointers
-#define BLOCK_CREATE(b) mdBlock b; b.begin = b.end = b.loop = NULL; b.nameSize = 0
-#define BLOCK_INIT(b) b.begin = b.end = b.loop = NULL; b.nameSize = 0
-#define BLOCK_NAME(b, s) s.assign(b.begin, b.nameSize)
-
-
 /** Class to manage data files.
  *
  * The MetaData class manages all procedures related to
@@ -257,8 +222,6 @@ public:
      *  set to true  for column format (this is the default) (docfiles)
      */
     virtual void setColumnFormat(bool column) { _isColumnFormat = column; }
-
-    bool nextBlock(mdBuffer &buffer, mdBlock &block); // TODO
 
     /** Export medatada to xml file.
      *
