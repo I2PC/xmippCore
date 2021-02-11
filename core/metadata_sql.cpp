@@ -29,7 +29,7 @@
 #include "metadata_sql.h"
 #include "xmipp_threads.h"
 #include "xmipp_filename.h"
-#include "metadata.h"
+#include "metadata_db.h"
 
 //#define DEBUG
 

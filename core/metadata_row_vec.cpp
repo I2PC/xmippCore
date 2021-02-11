@@ -136,4 +136,4 @@ std::ostream& operator << (std::ostream &out, const MDRowVec &row) {
     return out;
 }
 
-bool MDRowVec::inMetadata const { return _in_metadata; }
+bool MDRowVec::inMetadata() const { return _in_metadata; }

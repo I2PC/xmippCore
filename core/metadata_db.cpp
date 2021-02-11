@@ -27,7 +27,7 @@
 #include <fstream>
 #include <random>
 #include <algorithm>
-#include "metadata.h"
+#include "metadata_db.h"
 #include "xmipp_image.h"
 #include "metadata_sql.h"
 
