@@ -867,83 +867,11 @@ public:
  */
 std::ostream& operator<<(std::ostream& o, const MetaData & mD);
 
-////////////////////////////// MetaData Value Generator ////////////////////////
-/** Class to generate values for columns of a metadata*/
-class MDValueGenerator
-{
-public:
-    MDLabel label; //label to which generate values
+/** @} */
 
-    /* Destructor*/
-    virtual ~MDValueGenerator()
-    {}
-
-    /* Method to be implemented in concrete generators */
-    virtual void fillValue(MetaData &md, size_t objId) = 0;
-    /* Fill whole metadata */
-    void fill(MetaData &md);
-}
-;//end of class MDValueGenerator
-
-///////// Some concrete generators ////////////////
-typedef enum { GTOR_UNIFORM, GTOR_GAUSSIAN, GTOR_STUDENT } RandMode;
-
-/** MDGenerator to generate random values on columns */
-class MDRandGenerator: public MDValueGenerator
-{
-protected:
-    double op1, op2, op3;
-    RandMode mode;
-
-    inline double getRandValue();
-public:
-    MDRandGenerator(double op1, double op2, const String &mode, double op3=0.);
-    void fillValue(MetaData &md, size_t objId);
-}
-;//end of class MDRandGenerator
-
-/** Class to fill columns with constant values */
-class MDConstGenerator: public MDValueGenerator
-{
-public:
-    String value;
-
-    MDConstGenerator(const String &value);
-    void fillValue(MetaData &md, size_t objId);
-}
-;//end of class MDConstGenerator
-
-#ifdef NEVERDEFINED
-/** Class to fill columns with another metadata in row format */
-class MDExpandGenerator: public MDValueGenerator
-{
-public:
-    MetaData expMd;
-    FileName fn;
-    MDRow row;
-
-    void fillValue(MetaData &md, size_t objId);
-}
-;//end of class MDExpandGenerator
-#endif
-
-/** Class to fill columns with a lineal serie */
-class MDLinealGenerator: public MDValueGenerator
-{
-public:
-    double initValue, step;
-    size_t counter;
-
-    MDLinealGenerator(double initial, double step);
-    void fillValue(MetaData &md, size_t objId);
-}
-;//end of class MDExpandGenerator
 /** Convert string to write mode metadata enum.
  *
  */
 WriteModeMetaData metadataModeConvert (String mode);
-
-
-/** @} */
 
 #endif
