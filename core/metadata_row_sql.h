@@ -33,11 +33,11 @@
 /** Class for holding an entire row of posible MDObject */
 class MDRowSql : public MDRow {
 private:
-    //Reserve space for the maximum different labels
-    //this will allow constant access to each object indexing by labels
+    // Reserve space for the maximum different labels
+    // this will allow constant access to each object indexing by labels
     MDObject *_objects[MDL_LAST_LABEL];
     MDLabel _order[MDL_LAST_LABEL];
-    size_t _size; //Number of active labels
+    size_t _size; // Number of active labels
 
     void copy(const MDRowSql &row);
     MDObject* iteratorValue(size_t i) const override;
@@ -63,7 +63,7 @@ public:
 
     friend std::ostream& operator << (std::ostream &out, const MDRowSql &row);
 
-    // Templated functions from based class must be retemplated
+    // Templated functions from base class must be retemplated
 
     template <typename T>
     bool getValue(MDLabel label, T &d) const { return MDRow::getValue(label, d); }
