@@ -263,12 +263,12 @@ public:
     /** Export medatada to xml file.
      *
      */
-    virtual void writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const;
+    virtual void writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const = 0;
 
     /** Write metadata in text file as plain data without header.
      *
      */
-    virtual void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const;
+    virtual void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const = 0;
 
     /**Get path.
      */
@@ -313,7 +313,7 @@ public:
 
     /**Get maximum string length of column values.
     */
-    virtual int getMaxStringLength( const MDLabel thisLabel) const;
+    virtual int getMaxStringLength(const MDLabel thisLabel) const = 0;
 
     /** @} */
 
@@ -361,8 +361,8 @@ public:
      * This is done for some type checking of Metadata labels
      * and values
      */
-    bool setValue(const MDObject &mdValueIn, size_t id);
-    bool getValue(MDObject &mdValueOut, size_t id) const;
+    virtual bool setValue(const MDObject &mdValueIn, size_t id);
+    virtual bool getValue(MDObject &mdValueOut, size_t id) const;
     /** Filename used in the read command, useful to write Error messages
      *
      */
@@ -423,16 +423,11 @@ public:
         }
     }
 
-    virtual bool getRowValues(size_t id, std::vector<MDObject> &values) const;
+    virtual bool getRowValues(size_t id, std::vector<MDObject> &values) const = 0;
 
     /** Get all values of a column as a vector.
      */
-    virtual void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
-
-    /** Get all values of a column as a vector.
-     */
-    template<typename T>
-    bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const;
+    virtual void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const = 0;
 
     /** Set all values of a column as a vector.
      * The input vector must have the same size as the Metadata.
@@ -455,7 +450,7 @@ public:
         }
     }
 
-    virtual void setColumnValues(const std::vector<MDObject> &valuesIn);
+    virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
 
     /*bool bindValue(size_t id) const;
 
@@ -485,41 +480,43 @@ public:
 
     /** Set label values from string representation.
      */
-    bool setValueFromStr(const MDLabel label, const String &value, size_t id);
+    virtual bool setValueFromStr(const MDLabel label, const String &value, size_t id);
 
     /** Get string representation from label value.
      */
-    bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;
+    virtual bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;
 
     /**Check whether the metadata is empty.
      */
-    virtual bool isEmpty() const;
+    virtual bool isEmpty() const { return size() == 0; }
 
     /**Number of objects contained in the metadata.
      */
-    virtual size_t size() const;
+    virtual size_t size() const = 0;
 
     /** Check whether a label is contained in metadata.
      */
-    virtual bool containsLabel(const MDLabel label) const;
+    virtual bool containsLabel(const MDLabel label) const {
+        return vectorContainsLabel(activeLabels, label);
+    }
 
     /** Add a new label to the metadata.
      * By default the label is added at the end,
      * if the position is specified and is between 0 and n-1
      * the new label is inserted at that position.
      */
-    virtual bool addLabel(const MDLabel label, int pos = -1);
+    virtual bool addLabel(const MDLabel label, int pos = -1) = 0;
 
     /** Remove a label from the metadata.
      * The data is still in the table. If you want to remove the data,
      * make a copy of the MetaData.
      */
-    virtual bool removeLabel(const MDLabel label);
+    virtual bool removeLabel(const MDLabel label) = 0;
 
     /** Remove all the labels from the metadata but the
      * ones given in labels vector.
      */
-    virtual bool keepLabels(const std::vector<MDLabel> &labels);
+    virtual bool keepLabels(const std::vector<MDLabel> &labels) = 0;
 
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else
@@ -527,7 +524,7 @@ public:
      * objectId == input objectId, just removes it and creates an empty
      * one
      */
-    virtual size_t addObject();
+    virtual size_t addObject() = 0;
 
     /** Import objects from another metadata.
      * @code
@@ -539,20 +536,20 @@ public:
      * A.importObjects(B);     *
      * @endcode
      */
-    virtual void importObject(const MetaData &md, const size_t id, bool doClear=true);
-    virtual void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true);
+    virtual void importObject(const MetaData &md, const size_t id, bool doClear=true) = 0;
+    virtual void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) = 0;
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if
     * the object did not exist
     */
-    virtual bool removeObject(size_t id);
+    virtual bool removeObject(size_t id) = 0;
 
     /** Removes the collection of objects of given vector id's
      * NOTE: The iterator will point to the first object after any of these
      * operations
      */
-    virtual void removeObjects(const std::vector<size_t> &toRemove);
+    virtual void removeObjects(const std::vector<size_t> &toRemove) = 0;
 
     /** Removes objects from metadata.
      * return the number of deleted rows
@@ -560,23 +557,15 @@ public:
      * Queries can be used in the same way
      * as in the importObjects function
      */
-    virtual int removeObjects();
-
-    /** Add and remove indexes for fast search
-     * in other labels, but insert are more expensive
-     */
-    void addIndex(MDLabel label) const;
-    void addIndex(const std::vector<MDLabel> &desiredLabels) const;
-    void removeIndex(MDLabel label);
-    void removeIndex(const std::vector<MDLabel> &desiredLabels);
+    virtual int removeObjects() = 0;
 
     /** Add item id.
      * From 1 to last.
      */
-    void addItemId();
+    // void addItemId();
 
     /** Remove item id.*/
-    void removeItemId();
+    // void removeItemId();
 
     /** @} */
 
@@ -585,10 +574,10 @@ public:
      */
 
     /** Return the object id of the first element in metadata. */
-    size_t firstObject() const;
+    // size_t firstObject() const;
 
     /** Goto last metadata object.*/
-    size_t lastObject() const;
+    // size_t lastObject() const;
 
     /** @name Search operations
      * @{
@@ -598,11 +587,11 @@ public:
      * if called without query, all objects are returned
      * if limit is provided only return a maximun of 'limit'
      */
-    void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const;
+    virtual void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const = 0;
 
     /** Find if the object with this id is present in the metadata
      */
-    bool containsObject(size_t objectId);
+    // bool containsObject(size_t objectId);
 
     /** @} */
 
@@ -610,25 +599,9 @@ public:
      * @{
      */
 
-    /** Write rows data to disk. */
-    void _writeRows(std::ostream &os) const;
-
-    /** Write metadata to disk.
-     * This will write the metadata content to disk.
-     */
-    void writeStar(const FileName &outFile,const String & blockName="", WriteModeMetaData mode=MD_OVERWRITE) const;
-    /** Write metadata to disk. Guess blockname from filename
-     * @code
-     * outFilename="first@md1.doc" -> filename = md1.doc, blockname = first
-     * @endcode
-     */
-    void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const;
-
-
-    /** Write metadata to out stream
-     */
-    void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const;
-    void print() const;
+    virtual void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const = 0;
+    virtual void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const = 0;
+    virtual void print() const = 0;
 
     /** Append data lines to file.
      * This function can be used to add new data to
@@ -637,46 +610,21 @@ public:
      * For now it will not check any compatibility beetween the
      * existent metadata and the new data to append.
      */
-    void append(const FileName &outFile) const;
+    // void append(const FileName &outFile) const;
 
     /** Check if block exists in metadata file
      * input full parh block@filename
      * return false if metadata block does not exits
      */
-    bool existsBlock(const FileName &_inFile);
-
-    /** Read data from file.
-     */
-    void readStar(const FileName &inFile,
-                  const std::vector<MDLabel> *desiredLabels = NULL,
-                  const String & blockName=DEFAULT_BLOCK_NAME,
-                  bool decomposeStack=true);
-    /** Read metadata from xml file
-     *
-     */
-    void readXML(const FileName &inFile,
-                 const std::vector<MDLabel> *desiredLabels= NULL,
-                 const String & blockRegExp=DEFAULT_BLOCK_NAME,
-                 bool decomposeStack=true);
+    // bool existsBlock(const FileName &_inFile);
 
     /** Read data from file. Guess the blockname from the filename
      * @code
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true);
+    virtual void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true) = 0;
     /** @} */
-
-    /** Try to read a metadata from plain text with some columns.
-     * Labels for each columns should be provided in an string separated by spaces.
-     *  Return false if couldn't read
-     */
-    void readPlain(const FileName &inFile, const String &labelsString, const String &separator = " ");
-    /** Same as readPlain, but instead of cleanning data, the
-     * readed values will be added. If there are common columns in metadata
-     * and the plain text, the lattest will be setted
-     */
-    void addPlain(const FileName &inFile, const String &labelsString, const String &separator=" ");
 
     /** @name Set Operations
      * @{
@@ -685,35 +633,35 @@ public:
     /** Returns Max and Min values from a column in metadata
      * These functions can only be used for labels of type double
      */
-    double getColumnMax(MDLabel column);
+    // double getColumnMax(MDLabel column);
 
-    double getColumnMin(MDLabel column);
+    // double getColumnMin(MDLabel column);
 
     /** Basic operations on columns data.
      * Mainly perform replacements on string values and
      * basic algebraic operations on numerical ones.
      */
-    void operate(const String &expression);
+    // void operate(const String &expression);
 
     /** Replace an string in some column(label).
      * The type of the column should be string. This function is a shortcut
      * of the more genereal function operate
      */
-    void replace(const MDLabel label, const String &oldStr, const String &newStr);
+    // void replace(const MDLabel label, const String &oldStr, const String &newStr);
 
     /** Randomize a metadata.
      * MDin is input and the "randomized"
      * result will be in the "calling" Metadata.
     */
-    void randomize(const MetaData &MDin);
+    // void randomize(const MetaData &MDin);
 
     /**Remove duplicate entries for attribute in label
      */
-    void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
+    // void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
 
     /**Remove rows with MDL_ENABLED = -1 if this label is present
      */
-    void removeDisabled();
+    // void removeDisabled();
 
     /*
     * Sort a Metadata by a label.
@@ -723,11 +671,11 @@ public:
     * Limit fixes the maximum number of returned rows
     * Offset skips the first N rows
     */
-    void sort(MetaData &MDin,
+    /*void sort(MetaData &MDin,
               const MDLabel sortLabel,
               bool asc=true,
               int limit=-1,
-              int offset=0);
+              int offset=0);*/
 
 
     /*
@@ -742,7 +690,7 @@ public:
     * Offset skips the first N rows
     *
     */
-    void sort(MetaData &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
+    // void sort(MetaData &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
 
     /** Split Metadata in several Metadatas.
      * The Metadata will be divided in 'n'
@@ -755,20 +703,20 @@ public:
      *   imageMD.split(10, imagesGroups);
      * @endcode
      */
-    void split(size_t n, std::vector<MetaData> &results,
-               const MDLabel sortLabel=MDL_OBJID);
+    //void split(size_t n, std::vector<MetaData> &results,
+    //           const MDLabel sortLabel=MDL_OBJID);
 
     /** Take a part from MetaData.
      * This function is equivallent to divide
      * the input MetaData in n parts and take one.
      * The result will be in "calling" MetaData.
      */
-    void selectSplitPart(const MetaData &mdIn,
-                         size_t n, size_t part,
-                         const MDLabel sortLabel=MDL_OBJID);
+    //void selectSplitPart(const MetaData &mdIn,
+    //                     size_t n, size_t part,
+    //                     const MDLabel sortLabel=MDL_OBJID);
 
     /** Select random subset */
-    void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+    // void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
 
     /** Select some part from Metadata.
      * Select elements from input Metadata
@@ -776,13 +724,13 @@ public:
      * if the numberOfObjects is -1, all objects
      * will be returned from startPosition to the end.
     */
-    void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-                    const MDLabel sortLabel=MDL_OBJID);
+    //void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
+    //                const MDLabel sortLabel=MDL_OBJID);
 
     /** Makes filenames with absolute paths
     *
     */
-    void makeAbsPath(const MDLabel label=MDL_IMAGE);
+    // void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
     friend struct MDBaseRowIterator;
@@ -815,11 +763,11 @@ public:
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
      * add the columns in mdxx to md1
      */
-    void fillExpand(MDLabel label);
+    // void fillExpand(MDLabel label);
 
     /** Fill column with constant value
      */
-    void fillConstant(MDLabel label, const String &value);
+    // void fillConstant(MDLabel label, const String &value);
 
     /** Fill column with random value
      * mode should be: uniform, gaussian or student
@@ -828,37 +776,37 @@ public:
      * gaussian: op1 and op2 are mean and std
      * student: same as gaussian and use op3
      */
-    void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.);
+    // void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.);
 
     /** Fill lineal, starting at some value and with some step */
-    void fillLinear(MDLabel label, double initial, double step);
+    // void fillLinear(MDLabel label, double initial, double step);
 
     /** Copy all values from one column to another.
      * Source column should exist
      */
-    void copyColumn(MDLabel labelDest, MDLabel labelSrc);
+    // void copyColumn(MDLabel labelDest, MDLabel labelSrc);
 
     /** Same as previous, but copy to another metadata */
-    void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc);
+    // void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc);
 
     /** Rename column.
      *
      */
-    void renameColumn(MDLabel oldLabel, MDLabel newLabel);
+    // void renameColumn(MDLabel oldLabel, MDLabel newLabel);
 
     /** Rename several columns. This is an expensive operations so if several
      * columns need to be changed do it using this function instead one by one
      *
      */
-    void renameColumn(const std::vector<MDLabel> &oldLabel,
-            const std::vector<MDLabel> &newLabel);
+    // void renameColumn(const std::vector<MDLabel> &oldLabel,
+    //         const std::vector<MDLabel> &newLabel);
 
-    void metadataToVec(std::vector<MDRow> &vd);
+    // void metadataToVec(std::vector<MDRow> &vd);
 
-    void vecToMetadata(const std::vector<MDRow> &rowMetadata);
+    // void vecToMetadata(const std::vector<MDRow> &rowMetadata);
 
     /** 'is equal to' (equality).*/
-    bool operator==(const MetaData& op) const;
+    // bool operator==(const MetaData& op) const;
 }
 ;//class MetaData
 
@@ -873,5 +821,7 @@ std::ostream& operator<<(std::ostream& o, const MetaData & mD);
  *
  */
 WriteModeMetaData metadataModeConvert (String mode);
+
+bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel label);
 
 #endif

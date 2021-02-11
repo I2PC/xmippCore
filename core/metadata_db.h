@@ -28,192 +28,17 @@
 
 #include <regex.h>
 #include <cmath>
+#include "metadata_base.h"
 #include "metadata_label.h"
 #include "metadata_object.h"
 #include "metadata_row_base.h"
 #include "metadata_static.h"
+#include "metadata_sql.h"
 #include "metadata_sql_operations.h"
 #include "utils/sql_utils.h"
 #include "xmipp_error.h"
 #include "xmipp_filename.h"
 #include "metadata_writemode.h"
-
-class MetaData;
-
-/** @defgroup MetaData Metadata Stuff
- * @ingroup DataLibrary
- * @{
- */
-
-#define BAD_OBJID 0
-#define BAD_INDEX -1
-
-#define FILENAME_XMIPP_STAR "# XMIPP_STAR_1"
-#define FILENAME_XMIPP_SQLITE "SQLite format 3"
-#define DEFAULT_BLOCK_NAME "noname"
-
-
-/** Iterate over all elements in MetaData
- *
- * This macro is used to generate loops over all elements in the MetaData.
- * At each iteration the 'active object' is changed so you can perform
- * the set and get default method on the MetaData.
- *
- * @code
- * MetaData md;
- *   //...
- * FOR_ALL_OBJECTS_IN_METADATA(md)
- * {
- *     String imageFile;
- *     md.getValue(MDL_IMAGE, imageFile);
- *     std::cout << "Image file: " << imageFile << " ";
- * }
- * @endcode
- */
-
-#define FOR_ALL_OBJECTS_IN_METADATA(__md) \
-        for(MDIterator __iter(__md); __iter.hasNext(); __iter.moveNext())
-
-
-#define FOR_ALL_ROWS_IN_METADATA(__md) \
-        for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
-
-/** Iterate over all elements of two MetaData at same time.
- *
- * This macro is useful to iterate over two MetaData with the same
- * number of elements and performs operations to elements in both of them.
- * At each iteration the 'active objects' in both MetaData are changed.
- *
- * @code
- * MetaData mdA, mdB, mdC;
- *  //Iterate over MetaData mdA and mdB
- *  //take image from the first and tilt angle from the second
- *  //and create a new MetaData.
- * FOR_ALL_OBJECTS_IN_METADATA2(mdA, mdB)
- * {
- *     String imageFile;
- *     double angle;
- *     mdA.getValue(MDL_IMAGE, imageFile,__iter.objId);
- *     mdB.getValue(MDL_ANGLE_TILT, angle,__iter2.objId);
- *     size_t objId=mdC.addObject();
- *     mdC.setValue(MDL_IMAGE, imageFile,objId);
- *     mdC.setValue(MDL_ANGLE_TILT, angle,objId);
- * }
- * @endcode
- */
-
-#define FOR_ALL_OBJECTS_IN_METADATA2(__md, __md2) \
-        for(MDIterator __iter(__md), __iter2(__md2);\
-             __iter.hasNext() && __iter2.hasNext(); \
-             __iter.moveNext(), __iter2.moveNext())
-
-/** Which are the blocks available in a metadata */
-void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
-bool existsBlockInMetaDataFile(const FileName &inFile, const String& inBlock);
-bool existsBlockInMetaDataFile(const FileName &inFileWithBlock);
-
-class MDQuery;
-class MDSql;
-class MDValueGenerator;
-
-/** Struct to hold a char * pointer and a size
- * this will be useful for parsing metadata
- */
-typedef struct
-{
-    char * begin;
-    size_t size;
-}
-mdBuffer;
-
-/// Some macros to use the buffer
-#define BUFFER_CREATE(b) mdBuffer b; b.begin = NULL; b.size = 0
-#define BUFFER_COPY(b1, b2) mdBuffer b2; b2.begin = b1.begin; b2.size = b1.size
-#define BUFFER_MOVE(b, n) b.begin += n; b.size -= n
-#define BUFFER_FIND(b, str, n) (char*) _memmem(b.begin, b.size, str, n)
-
-typedef struct
-{
-    char * begin; //Position of _dataXXX on buffer
-    size_t nameSize; //Number of charater of block name, counting after _data
-    char * end; //Position just before next _dataXXX or end of buffer
-    char * loop; //Position of _loop if exists, NULL otherwise
-}
-mdBlock;
-/// Some macros to use the block pointers
-#define BLOCK_CREATE(b) mdBlock b; b.begin = b.end = b.loop = NULL; b.nameSize = 0
-#define BLOCK_INIT(b) b.begin = b.end = b.loop = NULL; b.nameSize = 0
-#define BLOCK_NAME(b, s) s.assign(b.begin, b.nameSize)
-
-////////////////////////////// MetaData Iterator ////////////////////////////
-/** Iterates over metadatas */
-class MDIterator
-{
-protected:
-    size_t * objects;
-    size_t size;
-
-    /** Clear internal values to be used again*/
-    void clear();
-    /** Initialize internal values to NULL */
-    void reset();
-public:
-
-    /** Internal function to initialize the iterator */
-    void init(const MetaData &md, const MDQuery * pQuery=NULL);
-    /** Empty constructor */
-    MDIterator();
-    /** Empty constructor, creates an iterator from metadata */
-    MDIterator(const MetaData &md);
-    /** Same as before but iterating over a query */
-    MDIterator(const MetaData &md, const MDQuery &query);
-    /** Destructor */
-    ~MDIterator();
-
-    /** This is the object ID in the metadata, usually starts at 1 */
-    size_t objId;
-    /** This is the index of the object, starts at 0 */
-    size_t objIndex;
-    /** Function to move to next element.
-     * return false if there aren't more elements to iterate.
-     */
-    bool moveNext();
-    /** Function to check if exist next element
-     */
-    bool hasNext();
-}
-;//class MDIterator
-
-
-////////////////////////////// MetaData Row Iterator ////////////////////////////
-/** Iterates over metadata rows */
-class MDRowIterator
-{
-protected:
-
-	// Current row data.
-	MDRowSql currentRow;
-
-	// Flag set to true if a new row has been retrieved.
-	bool 	rowReturned;
-
-public:
-
-    /** Empty constructor, creates an iterator from metadata */
-    MDRowIterator(MetaData &md);
-
-    // Get current row data.
-    MDRowSql *getRow(void);
-
-    /** Function to move to next element.
-     * return false if there aren't more elements to iterate.
-     */
-    bool moveNext(MetaData &md);
-
-    /** Function to check if exist next element */
-    bool hasNext();
-}
-;//class MDRowIterator
 
 typedef std::vector<MDRowSql> VMetaData;
 
@@ -224,8 +49,7 @@ typedef std::vector<MDRowSql> VMetaData;
  * Xmipp specific files like Docfiles, Selfiles, etc..
  *
  */
-class MetaData
-{
+class MetaDataDb : public MetaData {
 protected:
     // Allows a fast search for pairs where the value is
     // a string, i.e. looking for filenames which is quite
@@ -236,26 +60,6 @@ protected:
     String comment; ///< A general comment for the MetaData file
     ///comment is wraped in char_max length lines
 #define line_max 70
-
-    bool _isColumnFormat; ///< Format for the file, column or row formatted
-    int precision;
-    /**Input file name
-     * Where does this MetaData come from/go to be stored?
-     */
-    FileName inFile;
-
-    /** What labels have been read from a docfile/metadata file
-     * and/or will be stored on a new metadata file when "save" is
-     * called
-     **/
-    std::vector<MDLabel> activeLabels;
-
-    /** When reading a column formatted file, if a label is found that
-     * does not exist as a MDLabel, it is ignored. For further
-     * file processing, such columns must be ignored and this structure
-     * allows to do that
-     **/
-    std::vector<unsigned int> ignoreLabels;
 
     /** This variables should only be used by MDSql
      * for handling db status of metadata
@@ -271,17 +75,17 @@ protected:
     /** Copy info variables from another metadata
      * @ingroup MetaDataConstructors
      */
-    void copyInfo(const MetaData &md);
+    void copyInfo(const MetaDataDb &md);
 
     /** Copy all data from another metadata
      * @ingroup MetaDataConstructors
      */
-    void copyMetadata(const MetaData &md, bool copyObjects = true);
+    void copyMetadata(const MetaDataDb &md, bool copyObjects = true);
 
     /** This have the same logic of the public one,
      * but doesn't perform any range(which implies do a size()) checks.
      */
-    void _selectSplitPart(const MetaData &mdIn,
+    void _selectSplitPart(const MetaDataDb &mdIn,
                           int n, int part, size_t mdSize,
                           const MDLabel sortLabel);
 
@@ -290,10 +94,10 @@ protected:
      * which can be expressed in terms of
      * ADD, SUBSTRACT of intersection part
      */
-    void _setOperates(const MetaData &mdIn, const MDLabel label, SetOperation operation);
-    void _setOperates(const MetaData &mdIn, const std::vector<MDLabel> &labels, SetOperation operation);
-    void _setOperates(const MetaData &mdInLeft,
-                      const MetaData &mdInRight,
+    void _setOperates(const MetaDataDb &mdIn, const MDLabel label, SetOperation operation);
+    void _setOperates(const MetaDataDb &mdIn, const std::vector<MDLabel> &labels, SetOperation operation);
+    void _setOperates(const MetaDataDb &mdInLeft,
+                      const MetaDataDb &mdInRight,
                       const std::vector<MDLabel> &labelsLeft,
                       const std::vector<MDLabel> &labelsRight,
                       SetOperation operation);
@@ -301,7 +105,7 @@ protected:
      * in which the output has a single label
      * a vector of labels instead of a single label may be implemented in the future
      */
-    void _setOperatesLabel(const MetaData &mdIn, const MDLabel label, SetOperation operation);
+    void _setOperatesLabel(const MetaDataDb &mdIn, const MDLabel label, SetOperation operation);
     /** clear data and table structure */
     void _clear(bool onlyData=false);
 
@@ -323,12 +127,6 @@ protected:
      */
     std::vector<MDObject> getObjectsForActiveLabels() const;
 
-
-    /** This two variables will be used to read the metadata information (labels and size)
-     * or maybe a few rows only
-     */
-    size_t _maxRows, _parsedLines;
-
 public:
     /** @name Constructors
      *  @{
@@ -336,80 +134,49 @@ public:
 
     /** Empty Constructor.
      *
-     * The MetaData is created with no data stored on it. You can fill in it programmatically
-     * or by a later reading from a MetaData file or old Xmipp formatted type.
+     * The MetaDataDb is created with no data stored on it. You can fill in it programmatically
+     * or by a later reading from a MetaDataDb file or old Xmipp formatted type.
      * if labels vectors is passed this labels are created on metadata
      */
-    MetaData();
-    MetaData(const std::vector<MDLabel> *labelsVector);
+    MetaDataDb();
+    MetaDataDb(const std::vector<MDLabel> *labelsVector);
 
     /** From File Constructor.
      *
      * The MetaData is created and data is read from provided FileName. Optionally, a vector
      * of labels can be provided to read just those required labels
      */
-    MetaData(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = NULL);
+    MetaDataDb(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = NULL);
 
     /** Copy constructor
      *
      * Created a new metadata by copying all data from an existing MetaData object.
      */
-    MetaData(const MetaData &md);
+    MetaDataDb(const MetaData &md);
 
     /** Assignment operator
      *
-     * Copies MetaData from an existing MetaData object.
+     * Copies MetaDataDb from an existing MetaData object.
      */
-    MetaData& operator =(const MetaData &md);
+    MetaDataDb& operator =(const MetaData &md);
 
 
     /** Destructor
      *
      * Frees all used memory and destroys object.
      */
-    ~MetaData();
+    ~MetaDataDb();
 
     /**Clear all data
      */
-    void clear();
+    void clear() override;
     /** @} */
 
     /** @name Getters and setters
      * @{
      */
 
-    /**Return true if the metadata is in column format.
-     */
-    bool isColumnFormat() const;
-
-    /** Prevent from parsing all rows from the metadata.
-     * When reading from file, only maxRows will be read.
-     */
-    void setMaxRows(size_t maxRows=0)
-    {
-      _maxRows = maxRows;
-    }
-
-    /** Return the number of lines in the metadata file.
-     * Serves to know the number of items even is read with
-     * maxRows != 0
-     */
-    size_t getParsedLines()
-    {
-      return _parsedLines;
-    }
-
-    MDSql * getDatabase() {
-    	return myMDSql;
-    }
-
-    /**Set precision (number of decimal digits) use by operator == when comparing
-     * metadatas with double data. "2" is a good value for angles
-     */
-    void setPrecission(int _precision)
-    {
-        precision = (int)pow (10,_precision);
-    }
+    MDSql * getDatabase() { return myMDSql; }
 
     /** As Vector Metadata.
      * This avoids many thread unsafe issues. All rows of the metadata are returned
@@ -418,13 +185,8 @@ public:
     void asVMetaData(VMetaData &vmdOut);
 
     /** Import from Vector Metadata.
-     */
-    void fromVMetaData(VMetaData &vmdIn);
-
-    /** Set to false for row format (parameter files).
-     *  set to true  for column format (this is the default) (docfiles)
-     */
-    void setColumnFormat(bool column);
+ */
+void fromVMetaData(VMetaData &vmdIn);
 
     bool nextBlock(mdBuffer &buffer, mdBlock &block);
 
@@ -442,7 +204,7 @@ public:
     /** Export medatada to xml file.
      *
      */
-    void writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const;
+    void writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const override;
 
     /** Write metadata in sqlite3 file.
      *
@@ -452,7 +214,7 @@ public:
     /** Write metadata in text file as plain data without header.
      *
      */
-    void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const;
+    void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const override;
 
     void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues, const std::vector<MDLabel> *desiredLabels, bool firstTime);
 
@@ -470,44 +232,10 @@ public:
                           const std::vector<MDLabel>* desiredLabels,
                           bool addColumns = true,
                           size_t id = BAD_OBJID);
-    /**Get path.
-     */
-    String getPath() const ;
-
-    /**Set Path.
-     * the path will appear in first line
-     */
-    void setPath(const String &newPath = "");
-
-    /**Get Header Comment.
-     * the comment will appear in second line.
-     */
-    String getComment() const;
-
-    /**Set Header Comment.
-     * the comment will appear in second line
-     */
-    void setComment(const String &newComment = "No comment");
-
-    /**Get metadata filename.
-     */
-    FileName getFilename() const;
-
-    /**Set metadata filename.
-     */
-    void setFilename(const FileName &_filename);
-
-    /**Get safe access to active labels.
-     */
-    std::vector<MDLabel> getActiveLabels() const;
-
-    /**Get unsafe pointer to active labels.
-     */
-    std::vector<MDLabel> *getActiveLabelsAddress() const;
 
     /**Get maximum string length of column values.
     */
-    int getMaxStringLength( const MDLabel thisLabel) const;
+    int getMaxStringLength( const MDLabel thisLabel) const override;
 
     /** @} */
 
@@ -518,38 +246,8 @@ public:
 
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
-    bool setValueCol(const MDObject &mdValueIn);
+    bool setValueCol(const MDObject &mdValueIn) override;
 
-    /**Set the value of all objects in an specified column.
-     * @code
-     * MetaData md;
-     * md.setValueCol(MDL_IMAGE, "images/image00011.xmp");
-     * @endcode
-     */
-
-    template<class T>
-    bool setValueCol(const MDLabel label, const T &valueIn)
-    {
-        return setValueCol(MDObject(label, valueIn));
-    }
-
-    /** Set the value for some label.
-     * to the object that has id 'objectId'
-     * or to 'activeObject' if is objectId=-1.
-     * This is one of the most used functions to programatically
-     * fill a metadata.
-     * @code
-     * MetaData md;
-     * size_t id = md.addObject();
-     * md.setValue(MDL_IMAGE, "images/image00011.xmp",id);
-     * md.setValue(MDL_ANGLE_ROT, 0.,id);
-     * @endcode
-     */
-    template<class T>
-    bool setValue(const MDLabel label, const T &valueIn, size_t id)
-    {
-        return setValue(MDObject(label, valueIn), id);
-    }
     //private:
     /** This functions are using MDObject for set real values
      * there is an explicit function signature
@@ -557,176 +255,71 @@ public:
      * This is done for some type checking of Metadata labels
      * and values
      */
-    bool setValue(const MDObject &mdValueIn, size_t id);
-    bool getValue(MDObject &mdValueOut, size_t id) const;
-    /** Filename used in the read command, useful to write Error messages
-     *
-     */
-    FileName eFilename;
-    String extFile; //Filename extension
-    bool isMetadataFile;
-
-    //public:
-
-    /** Get the value of some label.
-     * from the object that has id 'objectId'
-     * or from 'activeObject' if objectId=-1.
-     * @code
-     * MetaData md;
-     * md.read("images.xmd");
-     * FileName imageFn;     *
-     * FOR_ALL_OBJECTS_IN_METADATA(md)
-     * {
-     *      md.getValue(MDL_IMAGE, imageFn);
-     *      std::out << "Image: " << imageFn);
-     * }
-     * @endcode
-     */
-    template<class T>
-    bool getValue(const MDLabel label, T &valueOut, size_t id) const
-    {
-        MDObject mdValueOut(label);
-        if (!getValue(mdValueOut, id))
-            return false;
-        mdValueOut.getValue(valueOut);
-        return true;
-    }
-
-    template<class T>
-    void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const
-    {
-        if (!getValue(label, valueOut,id))
-            REPORT_ERROR(ERR_ARG_MISSING,(String)"Cannot find label: " + MDL::label2Str(label));
-    }
-
-    template <typename T, typename T1>
-    void getValueOrDefault(const MDLabel label, T &valueOut, size_t id, const T1 &_default) const
-    {
-        if (!getValue(label, valueOut,id))
-            valueOut = (T) _default;
-    }
+    bool setValue(const MDObject &mdValueIn, size_t id) override;
+    bool getValue(MDObject &mdValueOut, size_t id) const override;
+    bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
 
     /** Get all values of a column as a vector.
      */
-    template<class T>
-    void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const
-    {
-        T value;
-        MDObject mdValueOut(label);
-        std::vector<size_t> objectsId;
-        findObjects(objectsId);
-        size_t n = objectsId.size();
-        valuesOut.resize(n);
-        for (size_t i = 0; i < n; ++i)
-        {
-            getValue(mdValueOut, objectsId[i]);
-            mdValueOut.getValue(value);
-            valuesOut[i] = value;
-        }
-    }
-
-    bool getRowValues(size_t id, std::vector<MDObject> &values) const;
-
-    /** Get all values of a column as a vector.
-     */
-    void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const;
+    void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
 
     /** Get all values of a column as a vector.
      */
     template<typename T>
     bool getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const;
 
-    /** Set all values of a column as a vector.
-     * The input vector must have the same size as the Metadata.
-     */
-    template<class T>
-    void setColumnValues(const MDLabel label, const std::vector<T> &valuesIn)
-    {
-        bool addObjects=false;
-        if (size()==0)
-            addObjects=true;
-        if (valuesIn.size()!=size() && !addObjects)
-            REPORT_ERROR(ERR_MD_OBJECTNUMBER,"Input vector must be of the same size as the metadata");
-        size_t n=0;
-        if (!addObjects)
-            FOR_ALL_OBJECTS_IN_METADATA(*this)
-            setValue(label,valuesIn[n++],__iter.objId);
-        else
-        {
-            size_t nmax=valuesIn.size();
-            for (size_t n=0; n<nmax; ++n)
-                setValue(label,valuesIn[n],addObject());
-        }
-    }
-
     /** Get all values of a column as a vector.
      */
-    void setColumnValues(const std::vector<MDObject> &valuesIn);
+    void setColumnValues(const std::vector<MDObject> &valuesIn) override;
 
     /** Get all values of an MetaData row of an specified objId*/
-    bool	bindValue( size_t id) const;
+    bool bindValue(size_t id) const;
 
-    bool 	initGetRow(bool addWhereClause) const;
-    bool 	execGetRow(MDRow &row) const;
-    void 	finalizeGetRow(void) const;
-    bool 	getRow(MDRow &row, size_t id) const;
-    bool    getAllRows(std::vector<MDRowSql> &rows) const;
-    bool 	getRow2(MDRow &row, size_t id) const;
+    bool initGetRow(bool addWhereClause) const;
+    bool execGetRow(MDRow &row) const;
+    void finalizeGetRow(void) const;
+    bool getRow(MDRow &row, size_t id) const;
+    bool getAllRows(std::vector<MDRowSql> &rows) const;
+    bool getRow2(MDRow &row, size_t id) const;
 
     /** Copy all the values in the input row in the current metadata*/
-    bool 	initSetRow(const MDRow &row);
-    bool 	execSetRow(const MDRow &row, size_t id);
-    void 	finalizeSetRow(void);
-    bool 	setRow(const MDRow &row, size_t id);
-    bool 	setRow2(const MDRow &row, size_t id);
+    bool initSetRow(const MDRow &row);
+    bool execSetRow(const MDRow &row, size_t id);
+    void finalizeSetRow(void);
+    bool setRow(const MDRow &row, size_t id);
+    bool setRow2(const MDRow &row, size_t id);
 
     /** Add a new Row and set values, return the objId of newly added object */
-    bool 	initAddRow(const MDRow &row);
-    bool 	execAddRow(const MDRow &row);
-    void 	finalizeAddRow(void);
-    size_t 	addRow(const MDRow &row);
-    void    addRowOpt(const MDRowSql &row);
-    void    addRows(const std::vector<MDRowSql> &rows);
-    void    addMissingLabels(const MDRow &row);
-    size_t 	addRow2(const MDRow &row);
-
-    /** Set label values from string representation.
-     */
-    bool setValueFromStr(const MDLabel label, const String &value, size_t id);
-
-    /** Get string representation from label value.
-     */
-    bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;
-
-    /**Check whether the metadata is empty.
-     */
-    bool isEmpty() const;
+    bool initAddRow(const MDRow &row);
+    bool execAddRow(const MDRow &row);
+    void finalizeAddRow(void);
+    size_t addRow(const MDRow &row);
+    void addRowOpt(const MDRowSql &row);
+    void addRows(const std::vector<MDRowSql> &rows);
+    void addMissingLabels(const MDRow &row);
+    size_t addRow2(const MDRow &row);
 
     /**Number of objects contained in the metadata.
      */
-    size_t size() const;
-
-    /** Check whether a label is contained in metadata.
-     */
-    bool containsLabel(const MDLabel label) const;
+    size_t size() const override;
 
     /** Add a new label to the metadata.
      * By default the label is added at the end,
      * if the position is specified and is between 0 and n-1
      * the new label is inserted at that position.
      */
-    bool addLabel(const MDLabel label, int pos = -1);
+    bool addLabel(const MDLabel label, int pos = -1) override;
 
     /** Remove a label from the metadata.
      * The data is still in the table. If you want to remove the data,
      * make a copy of the MetaData.
      */
-    bool removeLabel(const MDLabel label);
+    bool removeLabel(const MDLabel label) override;
 
     /** Remove all the labels from the metadata but the
      * ones given in labels vector.
      */
-    bool keepLabels(const std::vector<MDLabel> &labels);
+    bool keepLabels(const std::vector<MDLabel> &labels) override;
 
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else
@@ -734,7 +327,7 @@ public:
      * objectId == input objectId, just removes it and creates an empty
      * one
      */
-    size_t addObject();
+    size_t addObject() override;
 
     /** Import objects from another metadata.
      * @code
@@ -746,21 +339,21 @@ public:
      * A.importObjects(B);     *
      * @endcode
      */
-    void importObject(const MetaData &md, const size_t id, bool doClear=true);
-    void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true);
+    void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
+    void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
     void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true);
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if
     * the object did not exist
     */
-    bool removeObject(size_t id);
+    bool removeObject(size_t id) override;
 
     /** Removes the collection of objects of given vector id's
      * NOTE: The iterator will point to the first object after any of these
      * operations
      */
-    void removeObjects(const std::vector<size_t> &toRemove);
+    void removeObjects(const std::vector<size_t> &toRemove) override;
 
     /** Removes objects from metadata.
      * return the number of deleted rows
@@ -769,7 +362,7 @@ public:
      * as in the importObjects function
      */
     int removeObjects(const MDQuery &query);
-    int removeObjects();
+    int removeObjects() override;
 
     /** Add and remove indexes for fast search
      * in other labels, but insert are more expensive
@@ -810,7 +403,7 @@ public:
      * if limit is provided only return a maximun of 'limit'
      */
     void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const;
-    void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const;
+    void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const override;
 
     /**Count all objects that match a query.
      */
@@ -841,13 +434,9 @@ public:
      * outFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const;
-
-
-    /** Write metadata to out stream
-     */
-    void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const;
-    void print() const;
+    void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const override;
+    void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const override;
+    void print() const override;
 
     /** Append data lines to file.
      * This function can be used to add new data to
@@ -891,7 +480,7 @@ public:
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true);
+    void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true) override;
     /** @} */
 
     /** Try to read a metadata from plain text with some columns.
@@ -1123,8 +712,90 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    friend class MDSql;
-    friend class MDIterator;
+
+    struct MDIdIterator {
+    protected:
+        size_t * objects;
+        size_t size;
+
+        /** Clear internal values to be used again*/
+        void clear();
+        /** Initialize internal values to NULL */
+        void reset();
+    public:
+
+        /** Internal function to initialize the iterator */
+        void init(const MetaDataDb &md, const MDQuery * pQuery=NULL);
+        /** Empty constructor */
+        MDIdIterator();
+        /** Empty constructor, creates an iterator from metadata */
+        MDIdIterator(const MetaDataDb &md);
+        /** Same as before but iterating over a query */
+        MDIdIterator(const MetaDataDb &md, const MDQuery &query);
+        /** Destructor */
+        ~MDIdIterator();
+
+        /** This is the object ID in the metadata, usually starts at 1 */
+        size_t objId;
+        /** This is the index of the object, starts at 0 */
+        size_t objIndex;
+        /** Function to move to next element.
+         * return false if there aren't more elements to iterate.
+         */
+        bool moveNext();
+        /** Function to check if exist next element
+         */
+        bool hasNext();
+    };
+
+    struct MDDbRowIterator : public MDBaseRowIterator {
+    private:
+        MetaDataDb& _mdd;
+        MDRowSql _row;
+        bool _end;
+
+    public:
+        MDDbRowIterator(MetaDataDb &mdd, bool _end = false)
+            : MDBaseRowIterator(mdd), _mdd(mdd), _end(_end) {
+            if (_end)
+                return;
+
+            // Read first row
+            _mdd.initGetRow(false);
+            this->increment();
+        }
+
+        // TODO: use std::make_unique when ported to C++14
+        std::unique_ptr<MDBaseRowIterator> clone() override {
+            return std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(_mdd, _end));
+        }
+
+        void increment() override {
+            bool success = _mdd.execGetRow(this->_row);
+            if (!success) {
+                _mdd.finalizeGetRow();
+                _end = true;
+            }
+        }
+
+        bool operator==(const MDBaseRowIterator& other) override {
+            const MDDbRowIterator* dri = dynamic_cast<const MDDbRowIterator*>(&other);
+            if (dri != nullptr)
+                return _end && dri->_end; // iterators are equal only at end!
+            return false;
+        }
+
+        MDRow& operator*() override { return _row; }
+    };
+
+    // TODO: use std::make_unique when ported to C++14
+    iterator begin() override {
+        return rowIterator(std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(*this)));
+    }
+    iterator end() override {
+        return rowIterator(std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(*this, true)));
+    }
+
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx

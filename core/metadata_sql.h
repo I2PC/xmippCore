@@ -292,7 +292,7 @@ private:
     MDCache *myCache;
 
     friend class MDSqlStaticInit;
-    friend class MetaData;
+    friend class MetaDataDb;
     friend class MDIterator;
     ///similar to "operator"
     bool equals(const MDSql &op);

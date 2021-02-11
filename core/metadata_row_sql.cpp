@@ -28,12 +28,6 @@
 #include <sstream>
 #include "metadata_row_sql.h"
 
-bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel label) {
-    std::vector<MDLabel>::const_iterator location;
-    location = std::find(labelsVector.begin(), labelsVector.end(), label);
-    return (location != labelsVector.end());
-}
-
 MDRowSql::MDRowSql() {
     _size = 0;
     //Just initialize all pointers with NULL value
