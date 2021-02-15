@@ -3,27 +3,19 @@
 
 #include <memory>
 #include "metadata_row_base.h"
+#include "choose.h"
 
 class MetaData;
 
-////////////////////////////// MetaData Iterator ////////////////////////////
-/** Iterates over metadata rows indexes */
-/*struct MDBaseIterator {
-    virtual std::unique_ptr<MDBaseIterator> clone() = 0;
-    virtual void increment() = 0;
-    virtual bool operator==(const MDBaseIterator& other);
-    virtual bool operator!=(const MDBaseIterator& other) { return !(*this == other); }
-};*/
-
 ////////////////////////////// MetaData Row Iterator ////////////////////////////
 /** Iterates over metadata rows */
+template <bool IsConst>
 struct MDBaseRowIterator {
-    MDBaseRowIterator(const MetaData &md) {}
     virtual std::unique_ptr<MDBaseRowIterator> clone() = 0;
     virtual void increment() = 0;
-    virtual bool operator==(const MDBaseRowIterator& other) = 0;
-    virtual bool operator!=(const MDBaseRowIterator& other) { return !(*this == other); }
-    virtual MDRow& operator*() = 0;
+    virtual bool operator==(const MDBaseRowIterator& other) const = 0;
+    virtual bool operator!=(const MDBaseRowIterator& other) const { return !(*this == other); }
+    virtual typename choose<IsConst, const MDRow&, MDRow&>::type operator*() = 0;
 };
 
 #endif

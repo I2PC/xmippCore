@@ -713,50 +713,16 @@ void fromVMetaData(VMetaData &vmdIn);
 
     /** @} */
 
-    struct MDIdIterator {
-    protected:
-        size_t * objects;
-        size_t size;
-
-        /** Clear internal values to be used again*/
-        void clear();
-        /** Initialize internal values to NULL */
-        void reset();
-    public:
-
-        /** Internal function to initialize the iterator */
-        void init(const MetaDataDb &md, const MDQuery * pQuery=NULL);
-        /** Empty constructor */
-        MDIdIterator();
-        /** Empty constructor, creates an iterator from metadata */
-        MDIdIterator(const MetaDataDb &md);
-        /** Same as before but iterating over a query */
-        MDIdIterator(const MetaDataDb &md, const MDQuery &query);
-        /** Destructor */
-        ~MDIdIterator();
-
-        /** This is the object ID in the metadata, usually starts at 1 */
-        size_t objId;
-        /** This is the index of the object, starts at 0 */
-        size_t objIndex;
-        /** Function to move to next element.
-         * return false if there aren't more elements to iterate.
-         */
-        bool moveNext();
-        /** Function to check if exist next element
-         */
-        bool hasNext();
-    };
-
-    struct MDDbRowIterator : public MDBaseRowIterator {
+    template <bool IsConst>
+    struct MDDbRowIterator : public MDBaseRowIterator<IsConst> {
     private:
-        MetaDataDb& _mdd;
+        typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
         MDRowSql _row;
         bool _end;
 
     public:
-        MDDbRowIterator(MetaDataDb &mdd, bool _end = false)
-            : MDBaseRowIterator(mdd), _mdd(mdd), _end(_end) {
+        MDDbRowIterator(typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, bool _end = false)
+            : _mdd(mdd), _end(_end) {
             if (_end)
                 return;
 
@@ -766,8 +732,8 @@ void fromVMetaData(VMetaData &vmdIn);
         }
 
         // TODO: use std::make_unique when ported to C++14
-        std::unique_ptr<MDBaseRowIterator> clone() override {
-            return std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(_mdd, _end));
+        std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
+            return std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator<IsConst>(_mdd, _end));
         }
 
         void increment() override {
@@ -778,23 +744,60 @@ void fromVMetaData(VMetaData &vmdIn);
             }
         }
 
-        bool operator==(const MDBaseRowIterator& other) override {
-            const MDDbRowIterator* dri = dynamic_cast<const MDDbRowIterator*>(&other);
+        bool operator==(const MDBaseRowIterator<IsConst>& other) const override {
+            const MDDbRowIterator<IsConst>* dri = dynamic_cast<const MDDbRowIterator<IsConst>*>(&other);
             if (dri != nullptr)
                 return _end && dri->_end; // iterators are equal only at end!
             return false;
         }
 
-        MDRow& operator*() override { return _row; }
+        typename choose<IsConst, const MDRow&, MDRow&>::type operator*() override { return _row; }
     };
 
     // TODO: use std::make_unique when ported to C++14
     iterator begin() override {
-        return rowIterator(std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(*this)));
+        return rowIterator<false>(std::unique_ptr<MDDbRowIterator<false>>(new MDDbRowIterator<false>(*this)));
     }
     iterator end() override {
-        return rowIterator(std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator(*this, true)));
+        return rowIterator<false>(std::unique_ptr<MDDbRowIterator<false>>(new MDDbRowIterator<false>(*this, true)));
     }
+
+    const_iterator begin() const override {
+        return rowIterator<true>(std::unique_ptr<MDDbRowIterator<true>>(new MDDbRowIterator<true>(*this)));
+    }
+    const_iterator end() const override {
+        return rowIterator<true>(std::unique_ptr<MDDbRowIterator<true>>(new MDDbRowIterator<true>(*this, true)));
+    }
+
+
+    struct MDIdIterator {
+    private:
+        std::vector<size_t> _ids;
+        size_t _i;
+
+    public:
+        MDIdIterator(MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr) {
+            mdd.myMDSql->selectObjects(_ids, pQuery);
+            _i = last ? this->_ids.size()-1 : 0;
+        }
+
+        bool operator==(const MDIdIterator& other) { return this->_i == other._i; }
+        bool operator!=(const MDIdIterator& other) { return !(*this == other); }
+
+        size_t operator*() { return _ids[_i]; }
+
+        MDIdIterator& operator++() { this->_i++; }
+    };
+
+    struct IdIteratorProxy {
+        MetaDataDb& _mdd;
+
+        IdIteratorProxy(MetaDataDb& mdd) : _mdd(mdd) { }
+        MDIdIterator begin() { return MDIdIterator(_mdd, false); };
+        MDIdIterator end() { return MDIdIterator(_mdd, true); };
+    };
+
+    IdIteratorProxy ids() { return IdIteratorProxy(*this); };
 
 
     /** Expand Metadata with metadata pointed by label

@@ -38,6 +38,7 @@
 #include "metadata_writemode.h"
 #include "metadata_base_it.h"
 #include "metadata_static.h"
+#include "choose.h"
 
 /** @defgroup MetaData Metadata Stuff
  * @ingroup DataLibrary
@@ -70,8 +71,8 @@
  * @endcode
  */
 
-#define FOR_ALL_OBJECTS_IN_METADATA(__md) \
-        for (MetaData::iterator __iter(__md); __iter.hasNext(); __iter.moveNext())
+#define FOR_ALL_OBJECTS_IN_METADATA(__md)   for (auto& row : __md)
+// auto due to const/non-const
 
 /* #define FOR_ALL_ROWS_IN_METADATA(__md) \
  *         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
@@ -733,13 +734,15 @@ public:
     // void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    friend struct MDBaseRowIterator;
+    friend struct MDBaseRowIterator<false>;
+    friend struct MDBaseRowIterator<true>;
 
+    template <bool IsConst>
     struct rowIterator {
     private:
-        std::unique_ptr<MDBaseRowIterator> impl;
+        std::unique_ptr<MDBaseRowIterator<IsConst>> impl;
     public:
-        rowIterator(std::unique_ptr<MDBaseRowIterator> impl) : impl(std::move(impl)) {}
+        rowIterator(std::unique_ptr<MDBaseRowIterator<IsConst>> impl) : impl(std::move(impl)) {}
         rowIterator(rowIterator const& right) : impl(std::move(right.impl->clone())) {}
         rowIterator& operator=(rowIterator const& right) {
             impl = std::move(right.impl->clone());
@@ -751,13 +754,17 @@ public:
         }
         bool operator==(const rowIterator& other) { return other.impl == this->impl; }
         bool operator!=(const rowIterator& other) { return !(*this == other); }
-        MDRow& operator*() const { return **impl; }
+        typename choose<IsConst, const MDRow&, MDRow&>::type operator*() const { return **impl; }
     };
 
-    using iterator = rowIterator;
+    using iterator = rowIterator<false>;
+    using const_iterator = rowIterator<true>;
 
     virtual iterator begin() = 0;
     virtual iterator end() = 0;
+
+    virtual const_iterator begin() const = 0;
+    virtual const_iterator end() const = 0;
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
