@@ -38,6 +38,12 @@ public:
     virtual int size() const = 0; /** Return number of labels present */
     virtual void clear() = 0;
 
+    virtual size_t id() const {
+        size_t id;
+        getObject(MDL_OBJID)->getValue(id);
+        return id;
+    }
+
     virtual bool containsLabel(MDLabel label) const = 0;
     virtual std::vector<MDLabel> labels() const = 0;
     virtual void addLabel(MDLabel label) = 0;
