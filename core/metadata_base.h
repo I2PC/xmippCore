@@ -150,41 +150,43 @@ mdBlock;
  *
  */
 class MetaData {
-protected:
+public:
     // Allows a fast search for pairs where the value is
     // a string, i.e. looking for filenames which is quite
     // usual
-    std::map<String, size_t> fastStringSearch;
-    MDLabel fastStringSearchLabel;
-    String path; ///< A parameter stored on MetaData Files
-    String comment; ///< A general comment for the MetaData file
+    std::map<String, size_t> _fastStringSearch;
+    MDLabel _fastStringSearchLabel;
+    String _path; ///< A parameter stored on MetaData Files
+    String _comment; ///< A general comment for the MetaData file
     ///comment is wraped in char_max length lines
 #define line_max 70
 
     bool _isColumnFormat; ///< Format for the file, column or row formatted
-    int precision;
+    int _precision;
     /**Input file name
      * Where does this MetaData come from/go to be stored?
      */
-    FileName inFile;
+    FileName _inFile;
 
     /** What labels have been read from a docfile/metadata file
      * and/or will be stored on a new metadata file when "save" is
      * called
      **/
-    std::vector<MDLabel> activeLabels;
+    std::vector<MDLabel> _activeLabels;
 
     /** When reading a column formatted file, if a label is found that
      * does not exist as a MDLabel, it is ignored. For further
      * file processing, such columns must be ignored and this structure
      * allows to do that
      **/
-    std::vector<unsigned int> ignoreLabels;
+    std::vector<unsigned int> _ignoreLabels;
 
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
     size_t _maxRows, _parsedLines;
+
+    void copyInfo(const MetaData& md);
 
 public:
     /** @name Constructors
@@ -252,7 +254,7 @@ public:
     /**Set precision (number of decimal digits) use by operator == when comparing
      * metadatas with double data. "2" is a good value for angles
      */
-    virtual void setPrecission(int _precision) { precision = (int)pow (10,_precision); }
+    virtual void setPrecission(int _precision) { this->_precision = (int)pow (10,_precision); }
 
     /** Set to false for row format (parameter files).
      *  set to true  for column format (this is the default) (docfiles)
@@ -273,7 +275,7 @@ public:
 
     /**Get path.
      */
-    virtual String getPath() const { return path; }
+    virtual String getPath() const { return this->_path; }
 
     /**Set Path.
      * the path will appear in first line
@@ -281,35 +283,35 @@ public:
     virtual void setPath(const String &newPath = "") {
         const size_t length = 512;
         char _buffer[length];
-        path = (newPath == "") ? String(getcwd(_buffer, length)) : newPath;
+        this->_path = (newPath == "") ? String(getcwd(_buffer, length)) : newPath;
     }
 
     /**Get Header Comment.
      * the comment will appear in second line.
      */
-    virtual String getComment() const { return comment; }
+    virtual String getComment() const { return this->_comment; }
 
     /**Set Header Comment.
      * the comment will appear in second line
      */
-    virtual void setComment(const String &newComment = "No comment") { comment = newComment; }
+    virtual void setComment(const String &newComment = "No comment") { this->_comment = newComment; }
 
     /**Get metadata filename.
      */
-    virtual FileName getFilename() const { return inFile; }
+    virtual FileName getFilename() const { return this->_inFile; }
 
     /**Set metadata filename.
      */
-    virtual void setFilename(const FileName &_filename) { inFile = _filename; }
+    virtual void setFilename(const FileName &_filename) { this->_inFile = _filename; }
 
     /**Get safe access to active labels.
      */
-    virtual std::vector<MDLabel> getActiveLabels() const { return activeLabels; }
+    virtual std::vector<MDLabel> getActiveLabels() const { return this->_activeLabels; }
 
     /**Get unsafe pointer to active labels.
      */
     virtual std::vector<MDLabel> *getActiveLabelsAddress() const {
-        return (std::vector<MDLabel>*) (&activeLabels);
+        return (std::vector<MDLabel>*) (&this->_activeLabels);
     }
 
     /**Get maximum string length of column values.
@@ -498,7 +500,7 @@ public:
     /** Check whether a label is contained in metadata.
      */
     virtual bool containsLabel(const MDLabel label) const {
-        return vectorContainsLabel(activeLabels, label);
+        return vectorContainsLabel(this->_activeLabels, label);
     }
 
     /** Add a new label to the metadata.

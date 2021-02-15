@@ -51,16 +51,6 @@ typedef std::vector<MDRowSql> VMetaData;
  */
 class MetaDataDb : public MetaData {
 protected:
-    // Allows a fast search for pairs where the value is
-    // a string, i.e. looking for filenames which is quite
-    // usual
-    std::map<String, size_t> fastStringSearch;
-    MDLabel fastStringSearchLabel;
-    String path; ///< A parameter stored on MetaData Files
-    String comment; ///< A general comment for the MetaData file
-    ///comment is wraped in char_max length lines
-#define line_max 70
-
     /** This variables should only be used by MDSql
      * for handling db status of metadata
      */
@@ -71,11 +61,6 @@ protected:
      * @ingroup MetaDataConstructors
      */
     void init(const std::vector<MDLabel> *labelsVector = NULL);
-
-    /** Copy info variables from another metadata
-     * @ingroup MetaDataConstructors
-     */
-    void copyInfo(const MetaDataDb &md);
 
     /** Copy all data from another metadata
      * @ingroup MetaDataConstructors
@@ -152,13 +137,13 @@ public:
      *
      * Created a new metadata by copying all data from an existing MetaData object.
      */
-    MetaDataDb(const MetaData &md);
+    MetaDataDb(const MetaDataDb &md);
 
     /** Assignment operator
      *
      * Copies MetaDataDb from an existing MetaData object.
      */
-    MetaDataDb& operator =(const MetaData &md);
+    MetaDataDb& operator =(const MetaDataDb &md);
 
 
     /** Destructor
@@ -341,7 +326,7 @@ void fromVMetaData(VMetaData &vmdIn);
      */
     void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
     void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
-    void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true);
+    void importObjects(const MetaDataDb &md, const MDQuery &query, bool doClear=true);
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if
