@@ -23,20 +23,20 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <algorithm>
 #include "metadata_base.h"
 
 MetaData::MetaData(const MetaData &md) {
     this->copyInfo(md);
 }
 
-MetaData operator=(const MetaData &md) {
-    if (md == *this)
-        return;
+MetaData& MetaData::operator=(const MetaData &md) {
     this->copyInfo(md);
+    return *this;
 }
 
 void MetaData::copyInfo(const MetaData& md) {
-    this->_fastStringSearch = ...
+    this->_fastStringSearch = md._fastStringSearch;
     this->_fastStringSearchLabel = md._fastStringSearchLabel;
     this->_path = md._path;
     this->_comment = md._comment;
@@ -60,7 +60,7 @@ bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t 
     }
     MDObject mdValue(label);
     mdValue.fromString(value);
-    return myMDSql->setObjectValue(id, mdValue);
+    this->setValue(mdValue, id);
 }
 
 bool MetaData::getStrFromValue(const MDLabel label, String &strOut, size_t id) const

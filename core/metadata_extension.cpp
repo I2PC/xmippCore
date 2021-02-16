@@ -20,7 +20,6 @@
 //Copy of the Metadata is required to remove disabled objects before computing stats
 void getStatistics(MetaData md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
 {
-
     bool first = true;
     int n = 0;
     //Remove disabled images if present

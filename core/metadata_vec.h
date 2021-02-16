@@ -82,7 +82,7 @@ protected:
 
     /** Some private reading functions */
     void _readColumns(std::istream& is, std::vector<MDObject*> & columnValues,
-                      const std::vector<MDLabel>* desiredLabels = NULL);
+                      const std::vector<MDLabel>* desiredLabels = nullptr);
     void _readRows(std::istream& is, std::vector<MDObject*> & columnValues, bool useCommentAsImage);
     /** This function will be used to parse the rows data in START format
      * @param[out] columnValues MDRow with values to fill in
@@ -190,6 +190,8 @@ public:
      */
 
     size_t addRow(const MDRowVec &row);
+
+    int getMaxStringLength(const MDLabel thisLabel) const override;
 
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
@@ -366,14 +368,14 @@ public:
     /** Read data from file.
      */
     void readStar(const FileName &inFile,
-                  const std::vector<MDLabel> *desiredLabels = NULL,
+                  const std::vector<MDLabel> *desiredLabels = nullptr,
                   const String & blockName=DEFAULT_BLOCK_NAME,
                   bool decomposeStack=true);
     /** Read metadata from xml file
      *
      */
     void readXML(const FileName &inFile,
-                 const std::vector<MDLabel> *desiredLabels= NULL,
+                 const std::vector<MDLabel> *desiredLabels= nullptr,
                  const String & blockRegExp=DEFAULT_BLOCK_NAME,
                  bool decomposeStack=true);
 
@@ -382,7 +384,7 @@ public:
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    void read(const FileName &inFile);
+    void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack = true) override;
     /** @} */
 
     /** Try to read a metadata from plain text with some columns.

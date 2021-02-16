@@ -124,7 +124,7 @@ typedef struct {
 mdBuffer;
 
 /// Some macros to use the buffer
-#define BUFFER_CREATE(b) mdBuffer b; b.begin = NULL; b.size = 0
+#define BUFFER_CREATE(b) mdBuffer b; b.begin = nullptr; b.size = 0
 #define BUFFER_COPY(b1, b2) mdBuffer b2; b2.begin = b1.begin; b2.size = b1.size
 #define BUFFER_MOVE(b, n) b.begin += n; b.size -= n
 #define BUFFER_FIND(b, str, n) (char*) _memmem(b.begin, b.size, str, n)
@@ -137,8 +137,8 @@ typedef struct {
 }
 mdBlock;
 /// Some macros to use the block pointers
-#define BLOCK_CREATE(b) mdBlock b; b.begin = b.end = b.loop = NULL; b.nameSize = 0
-#define BLOCK_INIT(b) b.begin = b.end = b.loop = NULL; b.nameSize = 0
+#define BLOCK_CREATE(b) mdBlock b; b.begin = b.end = b.loop = nullptr; b.nameSize = 0
+#define BLOCK_INIT(b) b.begin = b.end = b.loop = nullptr; b.nameSize = 0
 #define BLOCK_NAME(b, s) s.assign(b.begin, b.nameSize)
 
 
@@ -207,7 +207,7 @@ public:
      * The MetaData is created and data is read from provided FileName. Optionally, a vector
      * of labels can be provided to read just those required labels
      */
-    MetaData(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = NULL);
+    MetaData(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = nullptr);
 
     /** Copy constructor
      *
@@ -219,7 +219,7 @@ public:
      *
      * Copies MetaData from an existing MetaData object.
      */
-    MetaData& operator=(const MetaData &md);
+    virtual MetaData& operator=(const MetaData &md);
 
     /** Destructor
      *
@@ -626,7 +626,7 @@ public:
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
      * @endcode
      */
-    virtual void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = NULL, bool decomposeStack=true) = 0;
+    virtual void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack=true) = 0;
     /** @} */
 
     /** @name Set Operations
