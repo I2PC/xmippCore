@@ -241,8 +241,20 @@ void fromVMetaData(VMetaData &vmdIn);
      * and values
      */
     bool setValue(const MDObject &mdValueIn, size_t id) override;
+
+
+    template<class T>
+    bool setValue(const MDLabel label, const T &valueIn, size_t id) {
+        return MetaData::setValue(label, valueIn, id);
+    }
+
     bool getValue(MDObject &mdValueOut, size_t id) const override;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
+
+    template<class T>
+    bool getValue(const MDLabel label, T &valueOut, size_t id) const {
+        return MetaData::getValue(label, valueOut, id);
+    }
 
     /** Get all values of a column as a vector.
      */
@@ -504,11 +516,11 @@ void fromVMetaData(VMetaData &vmdIn);
 
      */
 
-    void aggregate(const MetaData &mdIn, AggregateOperation op,
+    void aggregate(const MetaDataDb &mdIn, AggregateOperation op,
                    MDLabel aggregateLabel, MDLabel operateLabel, MDLabel resultLabel);
-    void aggregate(const MetaData &mdIn, const std::vector<AggregateOperation> &ops,
+    void aggregate(const MetaDataDb &mdIn, const std::vector<AggregateOperation> &ops,
                    const std::vector<MDLabel> &operateLabels, const std::vector<MDLabel> &resultLabels);
-    void aggregateGroupBy(const MetaData &mdIn,
+    void aggregateGroupBy(const MetaDataDb &mdIn,
                           AggregateOperation op,
                           const std::vector<MDLabel> &groupByLabels,
                           MDLabel operateLabel,
@@ -546,13 +558,13 @@ void fromVMetaData(VMetaData &vmdIn);
      * Result in calling metadata object
      * union is a reserved word so I called this method unionDistinct
      */
-    void unionDistinct(const MetaData &mdIn, const MDLabel label=MDL_OBJID);
+    void unionDistinct(const MetaDataDb &mdIn, const MDLabel label=MDL_OBJID);
 
     /** Union of all elements in two Metadata, duplicating common elements.
      * Result in calling metadata object
      * Repetition are allowed
      */
-    void unionAll(const MetaData &mdIn);
+    void unionAll(const MetaDataDb &mdIn);
 
     /** Merge of two Metadata.
      * This function reads another metadata and add all columns values.
@@ -564,42 +576,42 @@ void fromVMetaData(VMetaData &vmdIn);
     /** Intersects two Metadatas.
      * Result in "calling" Metadata
      */
-    void intersection(const MetaData &mdIn, const MDLabel label);
+    void intersection(const MetaDataDb &mdIn, const MDLabel label);
 
     /** Subtract two Metadatas.
      * Result in "calling" metadata
      */
-    void subtraction(const MetaData &mdIn, const MDLabel label);
+    void subtraction(const MetaDataDb &mdIn, const MDLabel label);
 
     /** Return only distinct (different) values of column label.
      * Result in "calling" metadata with a single column
      */
-    void distinct(MetaData &MDin, MDLabel label);
+    void distinct(MetaDataDb &MDin, MDLabel label);
 
     /** Join two Metadatas
      * Result in "calling" metadata
      */
-    void join1(const MetaData &mdInLeft, const MetaData &mdInRight, const MDLabel label, JoinType type=LEFT);
+    void join1(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight, const MDLabel label, JoinType type=LEFT);
 
     /** Join two Metadatas
      * Result in "calling" metadata. join may be done using different labels in each metadata
      */
-    void join2(const MetaData &mdInLeft, const MetaData &mdInRight, const MDLabel labelLeft, const MDLabel labelRight , JoinType type=LEFT);
+    void join2(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight, const MDLabel labelLeft, const MDLabel labelRight , JoinType type=LEFT);
 
     /** Join two Metadatas
      * Result in "calling" metadata
      */
-    void join1(const MetaData &mdInLeft, const MetaData &mdInRight, const std::vector<MDLabel> &labels, JoinType type=LEFT);
+    void join1(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight, const std::vector<MDLabel> &labels, JoinType type=LEFT);
 
     /** Join two Metadatas
      * Result in "calling" metadata. join may be done using different labels in each metadata
      */
-    void join2(const MetaData &mdInLeft, const MetaData &mdInRight, const std::vector<MDLabel> &labelsLeft, const std::vector<MDLabel> &labelsRight,
+    void join2(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight, const std::vector<MDLabel> &labelsLeft, const std::vector<MDLabel> &labelsRight,
     		JoinType type=LEFT);
 
     /** Join two Metadatas using all common labels (NATURAL_JOIN)
      */
-    void joinNatural(const MetaData &mdInLeft, const MetaData &mdInRight);
+    void joinNatural(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight);
 
     /** Basic operations on columns data.
      * Mainly perform replacements on string values and
@@ -617,11 +629,11 @@ void fromVMetaData(VMetaData &vmdIn);
      * MDin is input and the "randomized"
      * result will be in the "calling" Metadata.
     */
-    void randomize(const MetaData &MDin);
+    void randomize(const MetaDataDb &MDin);
 
     /**Remove duplicate entries for attribute in label
      */
-    void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
+    void removeDuplicates(MetaDataDb &MDin, MDLabel label=MDL_UNDEFINED);
 
     /**Remove rows with MDL_ENABLED = -1 if this label is present
      */
@@ -635,7 +647,7 @@ void fromVMetaData(VMetaData &vmdIn);
     * Limit fixes the maximum number of returned rows
     * Offset skips the first N rows
     */
-    void sort(MetaData &MDin,
+    void sort(MetaDataDb &MDin,
               const MDLabel sortLabel,
               bool asc=true,
               int limit=-1,
@@ -654,7 +666,7 @@ void fromVMetaData(VMetaData &vmdIn);
     * Offset skips the first N rows
     *
     */
-    void sort(MetaData &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
+    void sort(MetaDataDb &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
 
     /** Split Metadata in several Metadatas.
      * The Metadata will be divided in 'n'
@@ -667,7 +679,7 @@ void fromVMetaData(VMetaData &vmdIn);
      *   imageMD.split(10, imagesGroups);
      * @endcode
      */
-    void split(size_t n, std::vector<MetaData> &results,
+    void split(size_t n, std::vector<MetaDataDb> &results,
                const MDLabel sortLabel=MDL_OBJID);
 
     /** Take a part from MetaData.
@@ -675,12 +687,12 @@ void fromVMetaData(VMetaData &vmdIn);
      * the input MetaData in n parts and take one.
      * The result will be in "calling" MetaData.
      */
-    void selectSplitPart(const MetaData &mdIn,
+    void selectSplitPart(const MetaDataDb &mdIn,
                          size_t n, size_t part,
                          const MDLabel sortLabel=MDL_OBJID);
 
     /** Select random subset */
-    void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+    void selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
 
     /** Select some part from Metadata.
      * Select elements from input Metadata
@@ -688,8 +700,8 @@ void fromVMetaData(VMetaData &vmdIn);
      * if the numberOfObjects is -1, all objects
      * will be returned from startPosition to the end.
     */
-    void selectPart (const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-                     const MDLabel sortLabel=MDL_OBJID);
+    void selectPart(const MetaDataDb &mdIn, size_t startPosition, size_t numberOfObjects,
+                    const MDLabel sortLabel=MDL_OBJID);
 
     /** Makes filenames with absolute paths
     *
@@ -761,28 +773,30 @@ void fromVMetaData(VMetaData &vmdIn);
         size_t _i;
 
     public:
-        MDIdIterator(MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr) {
+        MDIdIterator(const MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr) {
             mdd.myMDSql->selectObjects(_ids, pQuery);
             _i = last ? this->_ids.size()-1 : 0;
         }
 
-        bool operator==(const MDIdIterator& other) { return this->_i == other._i; }
-        bool operator!=(const MDIdIterator& other) { return !(*this == other); }
+        bool operator==(const MDIdIterator& other) const { return this->_i == other._i; }
+        bool operator!=(const MDIdIterator& other) const { return !(*this == other); }
 
-        size_t operator*() { return _ids[_i]; }
+        size_t operator*() const { return _ids[_i]; }
 
         MDIdIterator& operator++() { this->_i++; }
     };
 
+    template <bool IsConst>
     struct IdIteratorProxy {
-        MetaDataDb& _mdd;
+        typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
 
-        IdIteratorProxy(MetaDataDb& mdd) : _mdd(mdd) { }
+        IdIteratorProxy(typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type mdd) : _mdd(mdd) { }
         MDIdIterator begin() { return MDIdIterator(_mdd, false); };
         MDIdIterator end() { return MDIdIterator(_mdd, true); };
     };
 
-    IdIteratorProxy ids() { return IdIteratorProxy(*this); };
+    IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
+    IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
 
 
     /** Expand Metadata with metadata pointed by label
@@ -832,7 +846,7 @@ void fromVMetaData(VMetaData &vmdIn);
     void vecToMetadata(const std::vector<MDRow> &rowMetadata);
 
     /** 'is equal to' (equality).*/
-    bool operator==(const MetaData& op) const;
+    bool operator==(const MetaDataDb& op) const;
 }
 ;//class MetaData
 
