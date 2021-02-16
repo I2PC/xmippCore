@@ -191,7 +191,6 @@ public:
 
     size_t addRow(const MDRowVec &row);
 
-
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
     bool setValueCol(const MDObject &mdValueIn) override;
@@ -502,28 +501,29 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
-    struct MDVecRowIterator : public MDBaseRowIterator {
+    template <bool IsConst>
+    struct MDVecRowIterator : public MDBaseRowIterator<IsConst> {
     private:
-        MetaDataVec& _mdv;
+        typename choose<IsConst, const MetaDataVec&, MetaDataVec&>::type _mdv;
         size_t _i;
-        MDRowVec _row;
+        typename choose<IsConst, MDRowVecConst, MDRowVec>::type _row;
 
     public:
-        MDVecRowIterator(MetaDataVec &mdv, size_t i)
-            : MDBaseRowIterator(mdv), _mdv(mdv), _i(i), _row(mdv._rows.at(i), i, mdv._label_to_col) {}
+        MDVecRowIterator(typename choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
+            : _mdv(mdv), _i(i), _row(mdv._rows.at(i), i, mdv._label_to_col) {}
 
         // TODO: use std::make_unique when ported to C++14
-        std::unique_ptr<MDBaseRowIterator> clone() override {
+        std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
             return std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(_mdv, _i));
         }
 
         void increment() override {
             _i++;
-            _row = MDRowVec(_mdv._rows.at(_i), _i, _mdv._label_to_col);
+            _row = typename choose<IsConst, MDRowVecConst, MDRowVec>::type(_mdv._rows.at(_i), _i, _mdv._label_to_col);
         }
 
-        bool operator==(const MDBaseRowIterator& other) override {
-            const MDVecRowIterator* vri = dynamic_cast<const MDVecRowIterator*>(&other);
+        bool operator==(const MDBaseRowIterator<IsConst>& other) const override {
+            const MDVecRowIterator* vri = dynamic_cast<const MDVecRowIterator<IsConst>*>(&other);
             if (vri != nullptr)
                 return _i == vri->_i;
             return false;
@@ -534,10 +534,17 @@ public:
 
     // TODO: use std::make_unique when ported to C++14
     iterator begin() override {
-        return rowIterator(std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(*this, 0)));
+        return rowIterator<false>(std::unique_ptr<MDVecRowIterator<false>>(new MDVecRowIterator<false>(*this, 0)));
     }
     iterator end() override {
-        return rowIterator(std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(*this, this->size())));
+        return rowIterator<false>(std::unique_ptr<MDVecRowIterator<false>>(new MDVecRowIterator<false>(*this, this->size())));
+    }
+
+    const_iterator begin() const override {
+        return rowIterator<true>(std::unique_ptr<MDVecRowIterator<true>>(new MDVecRowIterator<true>(*this, 0)));
+    }
+    const_iterator end() const override {
+        return rowIterator<true>(std::unique_ptr<MDVecRowIterator<true>>(new MDVecRowIterator<true>(*this, this->size())));
     }
 
     /** Expand Metadata with metadata pointed by label

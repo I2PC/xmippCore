@@ -137,3 +137,73 @@ std::ostream& operator << (std::ostream &out, const MDRowVec &row) {
 }
 
 bool MDRowVec::inMetadata() const { return _in_metadata; }
+
+///////////////////////////////////////////////////////////////////////////////
+
+MDRowVec::MDRowVecConst()
+    : _in_metadata(false) {
+    _row = new std::vector<MDObject>();
+    _label_to_col = new std::array<int, MDL_LAST_LABEL>();
+}
+
+MDRowVec::MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
+    : _row(row), _rowi(rowi), _label_to_col(label_to_col)
+    {}
+
+MDRowVec::MDRowVecConst(const MDRowVec &other)
+    : _row(other._row), _rowi(other.rowi), _label_to_col(other._label_to_col)
+    {}
+
+MDRowVecConst &MDRowVecConst::operator = (const MDRowVecConst &other) {
+    _rowi = other._rowi;
+    _in_metadata = other._in_metadata;
+    _row = other._row;
+    _label_to_col = other._label_to_col;
+    return *this;
+}
+
+bool MDRowVecConst::empty() const {
+    return _row.size() == 0;
+}
+
+int MDRowVecConst::size() const {
+    return _row.size();
+}
+
+bool MDRowVecConst::containsLabel(MDLabel label) const {
+    return _label_to_col[label] >= 0;
+}
+
+std::vector<MDLabel> MDRowVecConst::labels() const {
+    std::vector<MDLabel> res;
+    res.reserve(_row.size());
+    for (const auto mdObj: _row)
+        res.push_back(mdObj.label);
+    return res;
+}
+
+MDObject *MDRowVecConst::getObject(MDLabel label) const {
+    return &_row.at(_label_to_col[label]);
+}
+
+bool MDRowVecConst::getValue(MDObject &object) const {
+    MDLabel _label = object.label;
+    if (_label_to_col[_label] < 0)
+        return false;
+    object.copy(_row->at(_label_to_col[_label]));
+    return true;
+}
+
+MDObject* MDRowVecConst::iteratorValue(size_t i) const {
+    return &_row[i];
+}
+
+std::ostream& operator << (std::ostream &out, const MDRowVecConst &row) {
+    for (int i = 0; i < row.size(); ++i) {
+        row._row[i].toStream(out);
+        out << " ";
+    }
+    return out;
+}
+
+bool MDRowVecConst::inMetadata() const { return _in_metadata; }
