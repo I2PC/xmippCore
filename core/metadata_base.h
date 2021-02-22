@@ -768,6 +768,48 @@ public:
     virtual const_iterator begin() const = 0;
     virtual const_iterator end() const = 0;
 
+
+    template <bool IsConst>
+    struct idIterator {
+    private:
+        std::unique_ptr<MDBaseIdIterator<IsConst>> impl;
+    public:
+        idIterator(std::unique_ptr<MDBaseIdIterator<IsConst>> impl) : impl(std::move(impl)) {}
+        idIterator(idIterator const& right) : impl(std::move(right.impl->clone())) {}
+        idIterator& operator=(idIterator const& right) {
+            impl = std::move(right.impl->clone());
+            return *this;
+        }
+        idIterator& operator++() {
+            impl->increment();
+            return *this;
+        }
+        bool operator==(const idIterator& other) { return other.impl == this->impl; }
+        bool operator!=(const idIterator& other) { return !(*this == other); }
+        size_t operator*() const { return **impl; }
+    };
+
+    using id_iterator = idIterator<false>;
+    using id_const_iterator = idIterator<true>;
+
+    template <bool IsConst>
+    struct IdIteratorProxy {
+        typename choose<IsConst, const MetaData&, MetaData&>::type _md;
+
+        IdIteratorProxy(typename choose<IsConst, const MetaData&, MetaData&>::type md) : _md(md) { }
+        typename choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type begin() { return _md.id_begin(); };
+        typename choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type end() { return _md.id_end(); };
+    };
+
+    virtual id_iterator id_begin() = 0;
+    virtual id_iterator id_end() = 0;
+
+    virtual id_const_iterator id_begin() const = 0;
+    virtual id_const_iterator id_end() const = 0;
+
+    virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
+    virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
+
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx
      * add the columns in mdxx to md1

@@ -767,37 +767,54 @@ void fromVMetaData(VMetaData &vmdIn);
     }
 
 
-    struct MDIdIterator {
+    template <bool IsConst>
+    struct MDDbIdIterator : public MDBaseIdIterator<IsConst> {
     private:
+        const MetaDataDb& _mdd;
+        bool _last;
+        const MDQuery& _pQuery;
         std::vector<size_t> _ids;
         size_t _i;
 
     public:
-        MDIdIterator(const MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr) {
+        MDDbIdIterator(const MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr)
+            : _mdd(mdd), _last(last), _pQuery(pQuery) {
             mdd.myMDSql->selectObjects(_ids, pQuery);
             _i = last ? this->_ids.size()-1 : 0;
         }
 
-        bool operator==(const MDIdIterator& other) const { return this->_i == other._i; }
-        bool operator!=(const MDIdIterator& other) const { return !(*this == other); }
+        bool operator==(const MDBaseIdIterator<IsConst>& other) const override {
+            const MDDbIdIterator<IsConst>* dri = dynamic_cast<const MDDbIdIterator<IsConst>*>(&other);
+            if (dri != nullptr)
+                return this->_i == dri._i;
+            return false;
+        }
 
-        size_t operator*() const { return _ids[_i]; }
+        size_t operator*() override { return _ids[_i]; }
 
-        MDIdIterator& operator++() { this->_i++; }
+        void increment() override { this->_i++; }
+
+        // TODO: use std::make_unique when ported to C++14
+        std::unique_ptr<MDBaseIdIterator<IsConst>> clone() override {
+            return std::unique_ptr<MDDbIdIterator>(new MDDbIdIterator<IsConst>(_mdd, _last, _pQuery));
+        }
     };
 
-    template <bool IsConst>
-    struct IdIteratorProxy {
-        typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
+    id_iterator id_begin() override {
+        return idIterator<false>(std::unique_ptr<MDDbIdIterator<false>>(new MDDbIdIterator<false>(*this)));
+    }
 
-        IdIteratorProxy(typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type mdd) : _mdd(mdd) { }
-        MDIdIterator begin() { return MDIdIterator(_mdd, false); };
-        MDIdIterator end() { return MDIdIterator(_mdd, true); };
-    };
+    id_iterator id_end() override {
+        return idIterator<false>(std::unique_ptr<MDDbIdIterator<false>>(new MDDbIdIterator<false>(*this, true)));
+    }
 
-    IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
-    IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
+    id_const_iterator id_begin() const override {
+        return idIterator<true>(std::unique_ptr<MDDbIdIterator<true>>(new MDDbIdIterator<true>(*this)));
+    }
 
+    id_const_iterator id_end() const override {
+        return idIterator<true>(std::unique_ptr<MDDbIdIterator<true>>(new MDDbIdIterator<true>(*this, true)));
+    }
 
     /** Expand Metadata with metadata pointed by label
      * Given a metadata md1, with a column containing the name of another column metdata file mdxx

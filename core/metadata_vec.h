@@ -207,6 +207,7 @@ public:
     bool setValue(const MDObject &mdValueIn, size_t id);
     bool getValue(MDObject &mdValueOut, size_t id) const;
 
+    bool getRow(MDRowVec &row, size_t id) const;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
@@ -547,6 +548,20 @@ public:
     }
     const_iterator end() const override {
         return rowIterator<true>(std::unique_ptr<MDVecRowIterator<true>>(new MDVecRowIterator<true>(*this, this->size())));
+    }
+
+
+    // TODO
+    id_iterator id_begin() override {
+    }
+
+    id_iterator id_end() override {
+    }
+
+    id_const_iterator id_begin() const override {
+    }
+
+    id_const_iterator id_end() const override {
     }
 
     /** Expand Metadata with metadata pointed by label
