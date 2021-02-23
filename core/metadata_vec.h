@@ -206,12 +206,28 @@ public:
      * and values
      */
     bool setValue(const MDObject &mdValueIn, size_t id);
+
+    template<class T>
+    bool setValue(const MDLabel label, const T &valueIn, size_t id) {
+        return MetaData::setValue(label, valueIn, id);
+    }
+
     bool getValue(MDObject &mdValueOut, size_t id) const;
+
+    template<class T>
+    bool getValue(const MDLabel label, T &valueOut, size_t id) const {
+        return MetaData::getValue(label, valueOut, id);
+    }
 
     bool getRow(MDRowVec &row, size_t id) const;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
+
+    template<class T>
+    void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
+        return MetaData::getColumnValues(label, valuesOut);
+    }
 
     /** Set label values from string representation.
      */

@@ -31,6 +31,7 @@
 #include "metadata_label.h"
 #include "metadata_row_sql.h"
 #include "metadata_static.h"
+#include "metadata.h"
 #include "multidim_array_base.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
@@ -43,7 +44,6 @@
 
 template<typename T>
 class Matrix2D;
-class MetaData;
 template<typename T>
 class Image;
 

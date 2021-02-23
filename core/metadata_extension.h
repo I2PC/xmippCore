@@ -11,6 +11,8 @@
 #include "xmipp_filename.h"
 #include "xmipp_image.h"
 #include "metadata.h"
+#include "metadata_vec.h"
+#include "metadata_db.h"
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
@@ -27,7 +29,9 @@
  */
 /** Get the image statistics of a metadata.
  * Note that the mean and stddev are images, not values.*/
-void getStatistics(MetaData md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
+void getStatistics(MetaDataVec md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
+void getStatistics(MetaDataDb md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
+void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
 
 /** Write images in MetaData into a stack */
 void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
@@ -35,15 +39,21 @@ void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo,
 /** Get the average of a Metadata applying the header.
  * The md is not cleaned from disabled images (this option makes the call faster).
  */
-void getAverageApplyGeo(MetaData md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
+void getAverageApplyGeo(MetaDataVec md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
+void getAverageApplyGeo(MetaDataDb md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
+void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
 
 /** Get the image statistics of a metadata.
  */
-void getStatistics(MetaData md, double& _ave, double& _sd, double& _min,
+void getStatistics(MetaDataVec md, double& _ave, double& _sd, double& _min,
+        double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
+void getStatistics(MetaDataDb md, double& _ave, double& _sd, double& _min,
+        double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
+void _getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
         double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
 
 /** Get Fourier statistics */
-void getFourierStatistics(MetaData &MDin, double sam, MetaData &Mdout,
+void getFourierStatistics(MetaDataDb &MDin, double sam, MetaData &Mdout,
                           bool do_dpr, double max_sam, MDLabel image_label=MDL_IMAGE);
 
 /** Get image size
@@ -72,7 +82,7 @@ bool compareTwoMetadataFiles(const FileName &fn1, const FileName &fn2);
 int maxFileNameLength(const MetaData &md, MDLabel image_label=MDL_IMAGE);
 
 /** Choose a part of the metadata for MPI */
-void mpiSelectPart(MetaData &md, int rank, int size, int &num_img_tot);
+void mpiSelectPart(MetaDataDb &md, int rank, int size, int &num_img_tot);
 
 /** Read a 1 or two column list of micrographs.
  *  Two column files are interpreted as Random Conical Tilt pairs.
@@ -99,13 +109,12 @@ void bsoftRestoreLoopBlock(const FileName &_inFile, const FileName &block);
 
 Matrix2D<double> getMatrix(char* matrix);
 
-template <typename T>
-T firstRow(const FileName &fnMetadata) {
-    MetaData md;
+MDRowVec firstRow(const FileName &fnMetadata) {
+    MetaDataVec md;
     md.setMaxRows(1);
     md.read(fnMetadata);
-    T row;
-    md.getRow(row,md.firstObject());
+    MDRowVec row;
+    md.getRow(row, md.firstRowId());
     return row;
 }
 //@}

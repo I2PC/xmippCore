@@ -18,12 +18,23 @@
 
 /*----------   Statistics --------------------------------------- */
 //Copy of the Metadata is required to remove disabled objects before computing stats
-void getStatistics(MetaData md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
+void getStatistics(MetaDataVec md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getStatistics(md, _ave, _sd, apply_geo, wrap, image_label);
+}
+
+void getStatistics(MetaDataDb md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getStatistics(md, _ave, _sd, apply_geo, wrap, image_label);
+}
+
+void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
 {
     bool first = true;
     int n = 0;
-    //Remove disabled images if present
-    md.removeDisabled();
+
     // Calculate Mean
     if (md.isEmpty())
         REPORT_ERROR(ERR_MD_OBJECTNUMBER, "There is no selected images in Metadata.");
@@ -32,11 +43,11 @@ void getStatistics(MetaData md, Image<double> & _ave, Image<double> & _sd, bool 
     FileName fnImg;
     ApplyGeoParams params;
     params.wrap = wrap;
-    FOR_ALL_OBJECTS_IN_METADATA(md)
+    for (size_t id : md.ids())
     {
-        md.getValue(image_label,fnImg,__iter.objId);
+        md.getValue(image_label, fnImg, id);
         if (apply_geo)
-            image.readApplyGeo(fnImg, md,__iter.objId, params);
+            image.readApplyGeo(fnImg, md, id, params);
         else
             image.read(fnImg);
         if (first)
@@ -54,11 +65,12 @@ void getStatistics(MetaData md, Image<double> & _ave, Image<double> & _sd, bool 
     _sd = _ave;
     _sd().initZeros();
     // Calculate SD
+    for (size_t id : md.ids())
     FOR_ALL_OBJECTS_IN_METADATA(md)
     {
-        md.getValue(image_label,fnImg,__iter.objId);
+        md.getValue(image_label, fnImg, id);
         if (apply_geo)
-            image.readApplyGeo(fnImg, md,__iter.objId, params);
+            image.readApplyGeo(fnImg, md, id, params);
         else
             image.read(fnImg);
         tmpImg() = ((image() - _ave()));
@@ -87,27 +99,25 @@ void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo,
 
     int mode = WRITE_OVERWRITE;
 
-    FOR_ALL_OBJECTS_IN_METADATA(md)
+    for (size_t id : md.ids())
     {
+        if (containsEnabled)
+            md.getValue(MDL_ENABLED, enabled, id);
+        else
+            enabled = 1;
 
-    	if (containsEnabled)
-    		md.getValue(MDL_ENABLED, enabled, __iter.objId);
-    	else
-    		enabled = 1;
-
-        
         if (enabled == 1)
         {
-        	i++;
+            i++;
 
-        	md.getValue(image_label, fnImg, __iter.objId);
+            md.getValue(image_label, fnImg, id);
 
-        	if (apply_geo)
-            	image.readApplyGeo(fnImg, md, __iter.objId, params);
-        	else
-            	image.read(fnImg);
-        	image.write(fnStack, i, false, mode);
-        	mode = WRITE_APPEND;
+            if (apply_geo)
+                image.readApplyGeo(fnImg, md, id, params);
+            else
+                image.read(fnImg);
+            image.write(fnStack, i, false, mode);
+            mode = WRITE_APPEND;
         }
     }
 } /* function writeMdToStack */
@@ -117,38 +127,50 @@ void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo,
 
 Matrix2D<double> getMatrix(char* matrix)
 {
-		 // Parse the string values as floats
-		 std::stringstream ss(matrix);
-		 double values[16];
-		 for (int i = 0; i < 16; i++)
-		   ss >> values[i];
+    // Parse the string values as floats
+    std::stringstream ss(matrix);
+    double values[16];
+    for (int i = 0; i < 16; i++)
+      ss >> values[i];
 
-		 //build the matrix from the parsed values
+    //build the matrix from the parsed values
 
 
-		 Matrix2D<double> transformM(3, 3);
-		 dMij(transformM, 0, 2) = 0;
-		 dMij(transformM, 1, 2) = 0;
-		 dMij(transformM, 2, 0) = 0;
-		 dMij(transformM, 2, 1) = 0;
-		 dMij(transformM, 2, 2) = 1;
-		 dMij(transformM, 0, 0) = values[0]; // cosine
-		 dMij(transformM, 0, 1) = values[1]; // sine
-		 dMij(transformM, 1, 0) = values[4]; // -sine
-		 dMij(transformM, 1, 1) = values[5]; // cosine
-		 dMij(transformM, 0, 2) = values[3]; // shiftx;
-		 dMij(transformM, 1, 2) = values[7]; // shifty;
-		 return transformM;
+    Matrix2D<double> transformM(3, 3);
+    dMij(transformM, 0, 2) = 0;
+    dMij(transformM, 1, 2) = 0;
+    dMij(transformM, 2, 0) = 0;
+    dMij(transformM, 2, 1) = 0;
+    dMij(transformM, 2, 2) = 1;
+    dMij(transformM, 0, 0) = values[0]; // cosine
+    dMij(transformM, 0, 1) = values[1]; // sine
+    dMij(transformM, 1, 0) = values[4]; // -sine
+    dMij(transformM, 1, 1) = values[5]; // cosine
+    dMij(transformM, 0, 2) = values[3]; // shiftx;
+    dMij(transformM, 1, 2) = values[7]; // shifty;
+    return transformM;
 }
 
 
 
 //Copy of the Metadata is required to remove disabled objects before computing stats
-void getAverageApplyGeo(MetaData md, MultidimArray<double> & _ave, MDLabel image_label)
+void getAverageApplyGeo(MetaDataVec md, MultidimArray<double> & _ave, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getAverageApplyGeo(md, _ave, image_label);
+}
+
+void getAverageApplyGeo(MetaDataDb md, MultidimArray<double> & _ave, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getAverageApplyGeo(md, _ave, image_label);
+}
+
+void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label)
 {
     bool first = true;
     int n = 0;
-    md.removeDisabled();
+
     // Calculate Mean
     if (md.isEmpty())
         return;
@@ -156,10 +178,10 @@ void getAverageApplyGeo(MetaData md, MultidimArray<double> & _ave, MDLabel image
     Image<double> image;
     FileName fnImg;
 
-    FOR_ALL_OBJECTS_IN_METADATA(md)
+    for (size_t id : md.ids())
     {
-        md.getValue(image_label,fnImg,__iter.objId);
-        image.readApplyGeo(fnImg, md,__iter.objId);
+        md.getValue(image_label, fnImg, id);
+        image.readApplyGeo(fnImg, md, id);
 
         if (first)
         {
@@ -176,15 +198,29 @@ void getAverageApplyGeo(MetaData md, MultidimArray<double> & _ave, MDLabel image
 
 /*----------   Statistics --------------------------------------- */
 //Copy of the Metadata is required to remove disabled objects before computing stats
-void getStatistics(MetaData md, double& _ave, double& _sd, double& _min,
+
+void getStatistics(MetaDataVec md, double& _ave, double& _sd, double& _min,
+                   double& _max, bool apply_geo, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getStatistics(md, _ave, _sd, _min, _max, apply_geo, image_label);
+}
+
+void getStatistics(MetaDataDb md, double& _ave, double& _sd, double& _min,
+                   double& _max, bool apply_geo, MDLabel image_label)
+{
+    md.removeDisabled();
+    _getStatistics(md, _ave, _sd, _min, _max, apply_geo, image_label);
+}
+
+void _getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
                    double& _max, bool apply_geo, MDLabel image_label)
 {
     _min = MAXDOUBLE;
     _max = -MAXDOUBLE;
     _ave = _sd = 0;
     int n = 0;
-    //Remove disabled images if present
-    md.removeDisabled();
+
     // Calculate Mean
     if (md.isEmpty())
         REPORT_ERROR(ERR_MD_OBJECTNUMBER, "There is no selected images in Metadata.");
@@ -192,11 +228,11 @@ void getStatistics(MetaData md, double& _ave, double& _sd, double& _min,
     ImageGeneric image;
     double min, max, avg, stddev;
     FileName fnImg;
-    FOR_ALL_OBJECTS_IN_METADATA(md)
+    for (size_t id : md.ids())
     {
-        md.getValue(image_label,fnImg,__iter.objId);
+        md.getValue(image_label, fnImg, id);
         if (apply_geo)
-            image.readApplyGeo(fnImg, md,__iter.objId);
+            image.readApplyGeo(fnImg, md, id);
         else
             image.read(fnImg, DATA, ALL_IMAGES, true);
         image().computeStats(avg, stddev, min, max);
@@ -217,15 +253,15 @@ void getStatistics(MetaData md, double& _ave, double& _sd, double& _min,
 }
 
 /* Get Fourier statistics ------------------------------------------------- */
-void getFourierStatistics(MetaData &MDin, double sam, MetaData &MDout,
+void getFourierStatistics(MetaDataDb &MDin, double sam, MetaData &MDout,
                           bool do_dpr, double max_sam, MDLabel image_label)
 {
-    MetaData MDaux;
-    std::vector<MetaData> vMD;
+    MetaDataDb MDaux;
+    std::vector<MetaDataDb> vMD;
     MDaux.randomize(MDin);
     MDaux.split(2,vMD,image_label);
-    MetaData &MD1 = vMD.at(0);
-    MetaData &MD2 = vMD.at(1);
+    MetaDataDb &MD1 = vMD.at(0);
+    MetaDataDb &MD2 = vMD.at(1);
 
     Image<double> I1, I2, Id;
     getStatistics(MD1,I1,Id,true, image_label);
@@ -264,7 +300,7 @@ void getImageSize(const MetaData &md, size_t &Xdim, size_t &Ydim, size_t &Zdim, 
     if (!md.isEmpty())
     {
         FileName fn_img;
-        md.getValue(image_label, fn_img, md.firstObject());
+        md.getValue(image_label, fn_img, md.firstRowId());
         getImageSize(fn_img, Xdim, Ydim, Zdim, Ndim);
 
     }
@@ -277,7 +313,7 @@ void getImageInfo(const MetaData &md, size_t &Xdim, size_t &Ydim, size_t &Zdim, 
     if (!md.isEmpty())
     {
         FileName fn_img;
-        md.getValue(image_label, fn_img, md.firstObject());
+        md.getValue(image_label, fn_img, md.firstRowId());
         getImageInfo(fn_img, Xdim, Ydim, Zdim, Ndim, datatype);
 
     }
@@ -290,7 +326,7 @@ void getImageInfo(const MetaData &md, ImageInfo &imgInfo, MDLabel image_label)
     if (!md.isEmpty())
     {
         FileName fn_img;
-        md.getValue(image_label, fn_img, md.firstObject());
+        md.getValue(image_label, fn_img, md.firstRowId());
         getImageInfo(fn_img, imgInfo);
     }
     else
@@ -303,7 +339,7 @@ void getImageSizeFromFilename(const FileName &filename, size_t &Xdim, size_t &Yd
         getImageSize(filename, Xdim, Ydim, Zdim, Ndim);
     else
     {
-        MetaData mdi;
+        MetaDataVec mdi;
         mdi.setMaxRows(1);
         mdi.read(filename);
         getImageSize(mdi, Xdim, Ydim, Zdim, Ndim, image_label);
@@ -332,7 +368,7 @@ bool compareTwoMetadataFiles(const FileName &fn1, const FileName &fn2)
     StringVector blockList;
     getBlocksInMetaDataFile(fn1,blockList);
     FileName fn_1aux, fn_2aux;
-    MetaData md1, md2;
+    MetaDataVec md1, md2;
 
     for (StringVector::iterator it= blockList.begin();
          it!=blockList.end(); it++)
@@ -354,21 +390,21 @@ bool compareTwoMetadataFiles(const FileName &fn1, const FileName &fn2)
 
 int maxFileNameLength(const MetaData &md, MDLabel image_label)
 {
-    int maxLength=0;
-    FOR_ALL_OBJECTS_IN_METADATA(md)
+    int maxLength = 0;
+    for (size_t id : md.ids())
     {
         FileName fnImg;
-        md.getValue(image_label, fnImg, __iter.objId);
-        int length=fnImg.length();
-        maxLength=XMIPP_MAX(length,maxLength);
+        md.getValue(image_label, fnImg, id);
+        int length = fnImg.length();
+        maxLength = XMIPP_MAX(length, maxLength);
     }
     return maxLength;
 }
 
-void mpiSelectPart(MetaData &md, int rank, int size, int &num_img_tot)
+void mpiSelectPart(MetaDataDb &md, int rank, int size, int &num_img_tot)
 {
     num_img_tot = md.size();
-    MetaData aux(md);
+    MetaDataDb aux(md);
     md.selectSplitPart(aux, size, rank);
 }
 
@@ -418,7 +454,7 @@ void substituteOriginalImages(const FileName &fn, const FileName &fnOrig, const 
                               MDLabel label, bool skipFirstBlock)
 {
     // Read the original files
-    MetaData mdorig(fnOrig);
+    MetaDataVec mdorig(fnOrig);
     if (mdorig.containsLabel(MDL_ENABLED))
         mdorig.removeObjects(MDValueEQ(MDL_ENABLED, -1));
     StringVector filesOrig;
@@ -436,18 +472,18 @@ void substituteOriginalImages(const FileName &fn, const FileName &fnOrig, const 
     // Process each block
     for (size_t b=0; b<blocks.size(); b++)
     {
-        MetaData md;
+        MetaDataVec md;
         md.read(blocks[b]+"@"+fn);
         if (md.containsLabel(label) && (!skipFirstBlock || b!=0))
         {
             FileName fnImg;
             size_t stkNo;
             String stkName;
-            FOR_ALL_OBJECTS_IN_METADATA(md)
+            for (size_t id : md.ids())
             {
-                md.getValue(label, fnImg, __iter.objId);
+                md.getValue(label, fnImg, id);
                 fnImg.decompose(stkNo,stkName);
-                md.setValue(label, filesOrig[stkNo], __iter.objId);
+                md.setValue(label, filesOrig[stkNo], id);
             }
         }
         auxFn.compose(blocks[b],fnOut);
