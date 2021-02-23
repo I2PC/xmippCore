@@ -873,19 +873,19 @@ void MetaDataDb::findObjects(std::vector<size_t> &objectsOut, int limit) const
     myMDSql->selectObjects(objectsOut, &query);
 }
 
-size_t MetaDataDb::countObjects(const MDQuery &query)
+size_t MetaDataDb::countObjects(const MDQuery &query) const
 {
     std::vector<size_t> objects;
     findObjects(objects, query);
     return objects.size();
 }
 
-bool MetaDataDb::containsObject(size_t objectId)
+bool MetaDataDb::containsObject(size_t objectId) const
 {
     return containsObject(MDValueEQ(MDL_OBJID, objectId));
 }
 
-bool MetaDataDb::containsObject(const MDQuery &query)
+bool MetaDataDb::containsObject(const MDQuery &query) const
 {
     std::vector<size_t> objects;
     findObjects(objects, query);

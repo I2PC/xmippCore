@@ -124,6 +124,7 @@ public:
      * of labels can be provided to read just those required labels
      */
     MetaDataVec(const FileName &fileName, const std::vector<MDLabel> &desiredLabels);
+    MetaDataVec(const FileName &fileName);
 
     /** Copy constructor
      *
@@ -290,26 +291,16 @@ public:
      * as in the importObjects function
      */
     int removeObjects() override;
+    int removeObjects(const MDQuery&) override;
 
     /** Add item id.
      * From 1 to last.
      */
     void addItemId();
 
-    /** Remove item id.*/
-    void removeItemId();
-
-    /** @} */
-
-    /** @name Iteration functions
-     * @{
-     */
-
-    /** Return the object id of the first element in metadata. */
-    size_t firstObject() const;
-
-    /** Goto last metadata object.*/
-    size_t lastObject() const;
+    size_t firstRowId() const override;
+    size_t firstObject(const MDQuery&) const override;
+    size_t lastRowId() const override;
 
     /** @name Search operations
      * @{
@@ -319,7 +310,12 @@ public:
      * if called without query, all objects are returned
      * if limit is provided only return a maximun of 'limit'
      */
-    void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const;
+    void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const override;
+    void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const override;
+
+    size_t countObjects(const MDQuery&) const override;
+    bool containsObject(size_t objectId) const override;
+    bool containsObject(const MDQuery&) const override;
 
     /** Find if the object with this id is present in the metadata
      */

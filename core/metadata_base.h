@@ -38,6 +38,7 @@
 #include "metadata_writemode.h"
 #include "metadata_base_it.h"
 #include "metadata_static.h"
+#include "metadata_query.h"
 #include "choose.h"
 
 /** @defgroup MetaData Metadata Stuff
@@ -560,6 +561,7 @@ public:
      * Queries can be used in the same way
      * as in the importObjects function
      */
+    virtual int removeObjects(const MDQuery&) = 0;
     virtual int removeObjects() = 0;
 
     /** Add item id.
@@ -579,6 +581,7 @@ public:
     /** Return the object id of the first element in metadata. */
     virtual size_t firstRowId() const;
     virtual size_t firstObject() const { return firstRowId(); } // deprecated: bad name
+    virtual size_t firstObject(const MDQuery&) const = 0;
 
     /** Goto last metadata object.*/
     virtual size_t lastRowId() const;
@@ -592,11 +595,12 @@ public:
      * if called without query, all objects are returned
      * if limit is provided only return a maximun of 'limit'
      */
+    virtual void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const = 0;
     virtual void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const = 0;
 
-    /** Find if the object with this id is present in the metadata
-     */
-    // bool containsObject(size_t objectId);
+    virtual size_t countObjects(const MDQuery&) const = 0;
+    virtual bool containsObject(size_t objectId) const = 0;
+    virtual bool containsObject(const MDQuery&) const = 0;
 
     /** @} */
 

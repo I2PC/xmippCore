@@ -358,7 +358,7 @@ void fromVMetaData(VMetaData &vmdIn);
      * Queries can be used in the same way
      * as in the importObjects function
      */
-    int removeObjects(const MDQuery &query);
+    int removeObjects(const MDQuery &query) override;
     int removeObjects() override;
 
     /** Add and remove indexes for fast search
@@ -384,7 +384,7 @@ void fromVMetaData(VMetaData &vmdIn);
      */
 
     size_t firstRowId() const override;
-    size_t firstObject(const MDQuery&) const;
+    size_t firstObject(const MDQuery&) const override;
     size_t lastRowId() const override;
 
     /** @name Search operations
@@ -395,20 +395,13 @@ void fromVMetaData(VMetaData &vmdIn);
      * if called without query, all objects are returned
      * if limit is provided only return a maximun of 'limit'
      */
-    void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const;
+    void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const override;
     void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const override;
 
-    /**Count all objects that match a query.
-     */
-    size_t countObjects(const MDQuery &query);
+    size_t countObjects(const MDQuery &query) const override;
+    bool containsObject(size_t objectId) const override;
+    bool containsObject(const MDQuery &query) const override;
 
-    /** Find if the object with this id is present in the metadata
-     */
-    bool containsObject(size_t objectId);
-
-    /**Check if exists at least one object that match query.
-     */
-    bool containsObject(const MDQuery &query);
     /** @} */
 
     /** @name I/O functions
