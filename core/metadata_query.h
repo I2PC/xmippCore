@@ -26,6 +26,12 @@
 #ifndef CORE_METADATAQUERY_H
 #define CORE_METADATAQUERY_H
 
+#include <sstream>
+
+#include "metadata_label.h"
+#include "xmipp_error.h"
+#include "metadata_static.h"
+
 
 /** This is the base class for queries on MetaData.
  * It is abstract, so it can not be instanciated. Queries will be very
