@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 #include "metadata_generator.h"
+#include "xmipp_funcs.h"
 
 inline double MDRandGenerator::getRandValue() {
     switch (mode)
@@ -93,10 +94,8 @@ void MDLinealGenerator::fillValue(MetaData &md, size_t objId) {
 
 /* Class to generate values for columns of a metadata*/
 void MDValueGenerator::fill(MetaData &md) {
-    FOR_ALL_OBJECTS_IN_METADATA(md)
-    {
-        fillValue(md, __iter.objId);
-    }
+    for (size_t id: md.ids())
+        fillValue(md, id);
 }
 
 #ifdef NEVERDEFINED
@@ -113,3 +112,4 @@ void MDExpandGenerator::fillValue(MetaData &md, size_t objId) {
     else
         REPORT_ERROR(ERR_MD_BADLABEL, formatString("Can't expand missing label '%s'", MDL::label2Str(label).c_str()));
 }
+#endif
