@@ -841,7 +841,7 @@ void MetaDataDb::removeItemId()
 
 //----------Iteration functions -------------------
 
-size_t MetaDataDb::firstObject() const
+size_t MetaDataDb::firstRowId() const
 {
     return myMDSql->firstRow();
 }
@@ -854,7 +854,7 @@ size_t MetaDataDb::firstObject(const MDQuery & query) const
     return id;
 }
 
-size_t MetaDataDb::lastObject() const
+size_t MetaDataDb::lastRowId() const
 {
     return myMDSql->lastRow();
 }
@@ -1097,7 +1097,7 @@ void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaDa
         os << _szBlockName << '\n';
 
         // Get first object. In this case (row format) there is a single object
-        size_t id = firstObject();
+        size_t id = firstRowId();
 
         if (id != BAD_OBJID)
         {
@@ -1759,7 +1759,7 @@ void MetaDataDb::fillExpand(MDLabel label)
             ctfModel.read(fn);
             if (ctfModel.isEmpty())
                 REPORT_ERROR(ERR_VALUE_INCORRECT, "Only can expand non empty metadatas");
-            ctfModel.getRow(row, ctfModel.firstObject());
+            ctfModel.getRow(row, ctfModel.firstRowId());
             mdCTFs.setRow(row, id);
         }
     }
@@ -2282,7 +2282,7 @@ void MetaDataDb::makeAbsPath(const MDLabel label)
         REPORT_ERROR(ERR_UNCLASSIFIED,"Cannot get the current directory");
     String path_str(buffer);
     path_str += "/";
-    getValue(label, aux_string, firstObject());
+    getValue(label, aux_string, firstRowId());
 
     if (aux_string[0] == '/')
         return;

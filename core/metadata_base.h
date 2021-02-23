@@ -577,10 +577,12 @@ public:
      */
 
     /** Return the object id of the first element in metadata. */
-    // size_t firstObject() const;
+    virtual size_t firstRowId() const;
+    virtual size_t firstObject() const { return firstRowId(); } // deprecated: bad name
 
     /** Goto last metadata object.*/
-    // size_t lastObject() const;
+    virtual size_t lastRowId() const;
+    virtual size_t lastObject() const { return lastRowId(); } // deprecated: bad name
 
     /** @name Search operations
      * @{

@@ -383,13 +383,9 @@ void fromVMetaData(VMetaData &vmdIn);
      * @{
      */
 
-    /** Return the object id of the first element in metadata. */
-    size_t firstObject() const;
-    /** Return the object id of the first element result from query */
+    size_t firstRowId() const override;
     size_t firstObject(const MDQuery&) const;
-
-    /** Goto last metadata object.*/
-    size_t lastObject() const;
+    size_t lastRowId() const override;
 
     /** @name Search operations
      * @{
@@ -772,7 +768,7 @@ void fromVMetaData(VMetaData &vmdIn);
     private:
         const MetaDataDb& _mdd;
         bool _last;
-        const MDQuery& _pQuery;
+        const MDQuery* _pQuery;
         std::vector<size_t> _ids;
         size_t _i;
 
@@ -786,7 +782,7 @@ void fromVMetaData(VMetaData &vmdIn);
         bool operator==(const MDBaseIdIterator<IsConst>& other) const override {
             const MDDbIdIterator<IsConst>* dri = dynamic_cast<const MDDbIdIterator<IsConst>*>(&other);
             if (dri != nullptr)
-                return this->_i == dri._i;
+                return this->_i == dri->_i;
             return false;
         }
 
