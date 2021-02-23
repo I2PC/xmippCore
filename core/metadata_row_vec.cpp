@@ -140,18 +140,12 @@ bool MDRowVec::inMetadata() const { return _in_metadata; }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-MDRowVec::MDRowVecConst()
-    : _in_metadata(false) {
-    _row = new std::vector<MDObject>();
-    _label_to_col = new std::array<int, MDL_LAST_LABEL>();
-}
-
-MDRowVec::MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
+MDRowVecConst::MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
     : _row(row), _rowi(rowi), _label_to_col(label_to_col)
     {}
 
-MDRowVec::MDRowVecConst(const MDRowVec &other)
-    : _row(other._row), _rowi(other.rowi), _label_to_col(other._label_to_col)
+MDRowVecConst::MDRowVecConst(const MDRowVecConst &other)
+    : _row(other._row), _rowi(other._rowi), _label_to_col(other._label_to_col)
     {}
 
 MDRowVecConst &MDRowVecConst::operator = (const MDRowVecConst &other) {
@@ -182,7 +176,7 @@ std::vector<MDLabel> MDRowVecConst::labels() const {
     return res;
 }
 
-MDObject *MDRowVecConst::getObject(MDLabel label) const {
+const MDObject *MDRowVecConst::getObject(MDLabel label) const {
     return &_row.at(_label_to_col[label]);
 }
 
@@ -190,11 +184,11 @@ bool MDRowVecConst::getValue(MDObject &object) const {
     MDLabel _label = object.label;
     if (_label_to_col[_label] < 0)
         return false;
-    object.copy(_row->at(_label_to_col[_label]));
+    object.copy(_row.at(_label_to_col[_label]));
     return true;
 }
 
-MDObject* MDRowVecConst::iteratorValue(size_t i) const {
+const MDObject* MDRowVecConst::iteratorValue(size_t i) const {
     return &_row[i];
 }
 
@@ -205,5 +199,3 @@ std::ostream& operator << (std::ostream &out, const MDRowVecConst &row) {
     }
     return out;
 }
-
-bool MDRowVecConst::inMetadata() const { return _in_metadata; }

@@ -85,34 +85,29 @@ public:
 // Const row could only be attached
 // (It makes no sense to attach const row as this row could be changed in non-const Metadata)
 // Const row is used only for itearting over const metadata.
-class MDRowVecConst : public MDRow {
+class MDRowVecConst : public MDRowConst {
 private:
     const std::vector<MDObject>& _row;
     size_t _rowi;
     const std::array<int, MDL_LAST_LABEL>& _label_to_col;
 
-    MDObject* iteratorValue(size_t i) const override;
+    const MDObject* iteratorValue(size_t i) const override;
 
 public:
-    MDRowVecConst();
     MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col);
-    MDRowVecConst(const MDRowVec&);
+    MDRowVecConst(const MDRowVecConst&);
     MDRowVecConst& operator = (const MDRowVecConst&);
     virtual ~MDRowVecConst();
 
     bool empty() const override;
     int size() const override;
-    void clear() override {}
-    bool inMetadata() const;
 
     bool containsLabel(MDLabel label) const override;
     std::vector<MDLabel> labels() const override;
-    void addLabel(MDLabel label) override {}
 
-    MDObject *getObject(MDLabel label) const override;
+    const MDObject *getObject(MDLabel label) const override;
 
     bool getValue(MDObject &object) const override;
-    void setValue(const MDObject &object) override {}
 
     friend std::ostream& operator << (std::ostream &out, const MDRowVecConst &row);
 

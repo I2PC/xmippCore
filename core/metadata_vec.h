@@ -544,7 +544,7 @@ public:
             return false;
         }
 
-        MDRow& operator*() override { return _row; }
+        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
     };
 
     // TODO: use std::make_unique when ported to C++14
