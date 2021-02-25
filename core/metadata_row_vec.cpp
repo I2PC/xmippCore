@@ -148,14 +148,6 @@ MDRowVecConst::MDRowVecConst(const MDRowVecConst &other)
     : _row(other._row), _rowi(other._rowi), _label_to_col(other._label_to_col)
     {}
 
-MDRowVecConst &MDRowVecConst::operator = (const MDRowVecConst &other) {
-    _rowi = other._rowi;
-    _in_metadata = other._in_metadata;
-    _row = other._row;
-    _label_to_col = other._label_to_col;
-    return *this;
-}
-
 bool MDRowVecConst::empty() const {
     return _row.size() == 0;
 }

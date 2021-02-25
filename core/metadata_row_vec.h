@@ -96,7 +96,6 @@ private:
 public:
     MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col);
     MDRowVecConst(const MDRowVecConst&);
-    MDRowVecConst& operator = (const MDRowVecConst&);
     virtual ~MDRowVecConst();
 
     bool empty() const override;

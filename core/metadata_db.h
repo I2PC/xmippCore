@@ -274,6 +274,7 @@ void fromVMetaData(VMetaData &vmdIn);
 
     bool initGetRow(bool addWhereClause) const;
     bool execGetRow(MDRow &row) const;
+    bool execGetRow(MDRowConst &row) const;
     void finalizeGetRow(void) const;
     bool getRow(MDRow &row, size_t id) const;
     bool getAllRows(std::vector<MDRowSql> &rows) const;
@@ -284,6 +285,7 @@ void fromVMetaData(VMetaData &vmdIn);
     bool execSetRow(const MDRow &row, size_t id);
     void finalizeSetRow(void);
     bool setRow(const MDRow &row, size_t id);
+    bool setRow(const MDRowConst &row, size_t id);
     bool setRow2(const MDRow &row, size_t id);
 
     /** Add a new Row and set values, return the objId of newly added object */
@@ -703,7 +705,7 @@ void fromVMetaData(VMetaData &vmdIn);
     struct MDDbRowIterator : public MDBaseRowIterator<IsConst> {
     private:
         typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
-        MDRowSql _row;
+        typename choose<IsConst, MDRowSqlConst, MDRowSql>::type _row;
         bool _end;
 
     public:
@@ -737,7 +739,7 @@ void fromVMetaData(VMetaData &vmdIn);
             return false;
         }
 
-        typename choose<IsConst, const MDRow&, MDRow&>::type operator*() override { return _row; }
+        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
     };
 
     // TODO: use std::make_unique when ported to C++14

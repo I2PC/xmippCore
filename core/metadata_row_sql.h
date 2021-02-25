@@ -75,4 +75,40 @@ public:
     void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
 };
 
+
+/** Class for holding an entire row of const MDObject */
+class MDRowSqlConst : public MDRowConst {
+private:
+    std::vector<MDObject> _values;
+    std::array<int, MDL_LAST_LABEL> _order;
+
+    const MDObject* iteratorValue(size_t i) const override;
+
+public:
+    MDRowSqlConst();
+    MDRowSqlConst(const MDRowSqlConst &row);
+    MDRowSqlConst(const std::vector<MDObject> &values);
+    MDRowSqlConst& operator = (const MDRowSqlConst &row);
+
+    bool empty() const override;
+    int size() const override;
+
+    bool containsLabel(MDLabel label) const override;
+    std::vector<MDLabel> labels() const override;
+
+    const MDObject* getObject(MDLabel label) const override;
+
+    bool getValue(MDObject &object) const override;
+
+    friend std::ostream& operator << (std::ostream &out, const MDRowSqlConst &row);
+
+    // Templated functions from base class must be retemplated
+
+    template <typename T>
+    bool getValue(MDLabel label, T &d) const { return MDRowConst::getValue(label, d); }
+
+    template <typename T, typename T1>
+    void getValueOrDefault(MDLabel label, T &d, T1 def) const { return MDRowConst::getValueOrDefault(label, d, def); }
+};
+
 #endif

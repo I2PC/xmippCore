@@ -762,7 +762,7 @@ public:
         }
         bool operator==(const rowIterator& other) { return other.impl == this->impl; }
         bool operator!=(const rowIterator& other) { return !(*this == other); }
-        typename choose<IsConst, const MDRow&, MDRow&>::type operator*() const { return **impl; }
+        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() const { return **impl; }
     };
 
     using iterator = rowIterator<false>;

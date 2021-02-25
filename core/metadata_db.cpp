@@ -264,7 +264,7 @@ void MetaDataDb::setColumnValues(const std::vector<MDObject> &valuesIn)
     }
 }
 
-bool MetaDataDb::bindValue( size_t id) const
+bool MetaDataDb::bindValue(size_t id) const
 {
     bool success=true;
 
@@ -274,10 +274,10 @@ bool MetaDataDb::bindValue( size_t id) const
         success = false;
     }
 
-    return(success);
+    return success;
 }
 
-bool MetaDataDb::initGetRow( bool addWhereClause) const
+bool MetaDataDb::initGetRow(bool addWhereClause) const
 {
     bool success=true;
 
@@ -287,27 +287,34 @@ bool MetaDataDb::initGetRow( bool addWhereClause) const
         success = false;
     }
 
-    return(success);
+    return success;
 }
 
 bool MetaDataDb::execGetRow(MDRow &row) const
 {
-    std::vector<MDObject> mdValues;     // Vector to store values.
+    std::vector<MDObject> mdValues;
     mdValues.reserve(this->_activeLabels.size());
 
-    // Clear row.
     row.clear();
 
-    // Execute statement.
     bool success = myMDSql->getObjectsValues(this->_activeLabels, mdValues);
-    if (success) {
-        // Set values in row.
-        for (const auto &obj : mdValues) {
+    if (success)
+        for (const auto &obj : mdValues)
             row.setValue(obj);
-        }
-    }
 
-    return(success);
+    return success;
+}
+
+bool MetaDataDb::execGetRow(MDRowConst &row) const
+{
+    std::vector<MDObject> mdValues;
+    mdValues.reserve(this->_activeLabels.size());
+
+    bool success = myMDSql->getObjectsValues(this->_activeLabels, mdValues);
+    if (success)
+        row = MDRowSqlConst(mdValues);
+
+    return success;
 }
 
 void MetaDataDb::finalizeGetRow(void) const
@@ -395,7 +402,7 @@ bool MetaDataDb::getRow2(MDRow &row, size_t id) const
 
 //TODO: could be improve in a query for update the entire row
 #define SET_ROW_VALUES(row) \
-    for (MDObject* obj : row) {\
+    for (auto obj : row) {\
         setValue(obj->label, id);\
     }\
 
@@ -431,14 +438,14 @@ bool MetaDataDb::execSetRow(const MDRow &row, size_t id)
 {
     int i = 0, j = 0;
     bool success = true;
-    std::vector<MDObject*> mdValues;
+    std::vector<const MDObject*> mdValues;
 
     // Set values vector size.
     mdValues.resize(row.size());
 
     // Build values vector.
     j = 0;
-    for (MDObject* obj : row) {
+    for (const MDObject* obj : row) {
         addLabel(obj->label);
         mdValues[i] = obj;
         j++;
@@ -461,8 +468,13 @@ void MetaDataDb::finalizeSetRow(void)
 bool MetaDataDb::setRow(const MDRow &row, size_t id)
 {
     SET_ROW_VALUES(row);
+    return true;
+}
 
-    return(true);
+bool MetaDataDb::setRow(const MDRowConst &row, size_t id)
+{
+    SET_ROW_VALUES(row);
+    return true;
 }
 
 bool MetaDataDb::setRow2(const MDRow &row, size_t id)
@@ -518,7 +530,7 @@ bool MetaDataDb::execAddRow(const MDRow &row)
 {
     int j = 0;
     bool success = true;
-    std::vector<MDObject*> mdValues;
+    std::vector<const MDObject*> mdValues;
 
     // Set values vector size.
     mdValues.resize(row.size());
@@ -1151,7 +1163,7 @@ void MetaDataDb::_readColumns(std::istream& is, std::vector<MDObject*> & columnV
 }
 
 
-void MetaDataDb::_parseObjects(std::istream &is, std::vector<MDObject*> & columnValues, const std::vector<MDLabel> *desiredLabels, bool firstTime)
+void MetaDataDb::_parseObjects(std::istream &is, std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels, bool firstTime)
 {
     size_t i=0;             // Loop counter.
     size_t size=0;          // Column values vector size.
