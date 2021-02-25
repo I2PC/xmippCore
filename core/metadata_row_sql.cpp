@@ -46,7 +46,6 @@ MDRowSql& MDRowSql::operator = (const MDRowSql &row) {
     return *this;
 }
 
-
 MDRowSql::~MDRowSql() {
     MDObject **ptrObjectsLabel = &(_objects[0]);
     FOR_ALL_LABELS() {
@@ -71,8 +70,6 @@ void MDRowSql::clear() {
     }
 }
 
-
-
 bool MDRowSql::containsLabel(MDLabel label) const {
     return _objects[label] != nullptr;
 }
@@ -95,7 +92,6 @@ void MDRowSql::addLabel(MDLabel label) {
         ++_size;
     }
 }
-
 
 MDObject *MDRowSql::getObject(MDLabel label) const {
     return _objects[label];

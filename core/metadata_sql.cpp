@@ -283,7 +283,11 @@ size_t MDSql::size(void)
     return execSingleIntStmt(ss);
 }
 
-bool MDSql::setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels)
+template MDSql::setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+template MDSql::setObjectValues(int id, const std::vector<const MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+
+template <typename T>
+bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const std::vector<MDLabel> *desiredLabels)
 {
     bool r = true;          // Return value.
     int rc;
