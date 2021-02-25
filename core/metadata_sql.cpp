@@ -110,7 +110,7 @@ int MDSql::getUniqueId()
     return ++table_counter;
 }
 
-MDSql::MDSql(MetaData *md)
+MDSql::MDSql(MetaDataDb *md)
 {
     sqlMutex.lock();
     tableId = getUniqueId();
@@ -131,7 +131,7 @@ bool MDSql::createMd()
 {
     sqlMutex.lock();
     //std::cerr << "creating md" <<std::endl;
-    bool result = createTable(&(myMd->activeLabels));
+    bool result = createTable(&(myMd->_activeLabels));
     //std::cerr << "leave creating md" <<std::endl;
     sqlMutex.unlock();
 
@@ -230,7 +230,7 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     //1 Create an new table that matches your original table,
     // but with the changed columns.
     bool result;
-    std::vector<MDLabel> v1(myMd->activeLabels);
+    std::vector<MDLabel> v1(myMd->_activeLabels);
     std::vector<MDLabel>::const_iterator itOld;
     std::vector<MDLabel>::const_iterator itNew;
     for( itOld = oldLabel.begin(), itNew = newlabel.begin();
@@ -246,9 +246,9 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     //2 Now we can copy the original data to the new table:
     String oldLabelString=" objID";
     String newLabelString=" objID";
-    for(std::vector<MDLabel>::const_iterator  it = (myMd->activeLabels)
+    for(std::vector<MDLabel>::const_iterator  it = (myMd->_activeLabels)
             .begin();
-        it != (myMd->activeLabels).end();
+        it != (myMd->_activeLabels).end();
         ++it)
         oldLabelString += ", " + MDL::label2StrSql(*it);
     for(std::vector<MDLabel>
@@ -272,7 +272,7 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     << " RENAME TO " << tableName(oldTableId);
     result = execSingleStmt(sqlCommand);
     tableId=oldTableId;
-    myMd->activeLabels=v1;
+    myMd->_activeLabels=v1;
     return result;
 }
 
@@ -283,8 +283,8 @@ size_t MDSql::size(void)
     return execSingleIntStmt(ss);
 }
 
-template MDSql::setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
-template MDSql::setObjectValues(int id, const std::vector<const MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+template bool MDSql::setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+template bool MDSql::setObjectValues(int id, const std::vector<const MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
 
 template <typename T>
 bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const std::vector<MDLabel> *desiredLabels)
@@ -662,7 +662,7 @@ size_t MDSql::deleteObjects(const MDQuery *queryPtr)
 
 }
 
-size_t MDSql::copyObjects(MetaData *mdPtrOut, const MDQuery *queryPtr) const
+size_t MDSql::copyObjects(MetaDataDb *mdPtrOut, const MDQuery *queryPtr) const
 {
     return copyObjects(mdPtrOut->myMDSql, queryPtr);
 }
@@ -677,11 +677,11 @@ size_t MDSql::copyObjects(MDSql * sqlOut, const MDQuery *queryPtr) const
     //Add columns names to the insert and also to select
     //* couldn't be used because maybe are duplicated objID's
     std::string sep = " ";
-    int size = myMd->activeLabels.size();
+    int size = myMd->_activeLabels.size();
 
     for (int i = 0; i < size; i++)
     {
-        ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
         sep = ", ";
     }
     ss << "(" << ss2.str() << ") SELECT " << ss2.str();
@@ -699,13 +699,13 @@ size_t MDSql::copyObjects(MDSql * sqlOut, const MDQuery *queryPtr) const
     return 0;
 }
 
-void MDSql::aggregateMd(MetaData *mdPtrOut,
+void MDSql::aggregateMd(MetaDataDb *mdPtrOut,
                         const std::vector<AggregateOperation> &operations,
                         const std::vector<MDLabel>            &operateLabel)
 {
     std::stringstream ss;
     std::stringstream ss2;
-    std::string aggregateStr = MDL::label2StrSql(mdPtrOut->activeLabels[0]);
+    std::string aggregateStr = MDL::label2StrSql(mdPtrOut->_activeLabels[0]);
     ss << "INSERT INTO " << tableName(mdPtrOut->myMDSql->tableId)
     << "(" << aggregateStr;
     ss2 << aggregateStr;
@@ -713,7 +713,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
     //aggregating one
     for (size_t i = 0; i < operations.size(); i++)
     {
-        ss << ", " << MDL::label2StrSql(mdPtrOut->activeLabels[i+1]);
+        ss << ", " << MDL::label2StrSql(mdPtrOut->_activeLabels[i+1]);
         ss2 << ", " ;
         switch (operations[i])
         {
@@ -736,7 +736,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
             REPORT_ERROR(ERR_MD_SQL, "Invalid aggregate operation.");
         }
         ss2 << "(" << MDL::label2StrSql(operateLabel[i])
-        << ") AS " << MDL::label2StrSql(mdPtrOut->activeLabels[i+1]);
+        << ") AS " << MDL::label2StrSql(mdPtrOut->_activeLabels[i+1]);
     }
     ss << ") SELECT " << ss2.str();
     ss << " FROM " << tableName(tableId);
@@ -747,7 +747,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
 }
 
 
-void MDSql::aggregateMdGroupBy(MetaData *mdPtrOut,
+void MDSql::aggregateMdGroupBy(MetaDataDb *mdPtrOut,
                                AggregateOperation operation,
                                const std::vector<MDLabel> &groupByLabels ,
                                MDLabel operateLabel,
@@ -931,7 +931,7 @@ int MDSql::columnMaxLength(MDLabel column)
     return execSingleIntStmt(ss);
 }
 
-void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation)
+void MDSql::setOperate(MetaDataDb *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation)
 {
     std::stringstream ss, ss2;
     bool execStmt = true;
@@ -948,11 +948,11 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
 
     case UNION_DISTINCT: //unionDistinct
         //Create string with columns list
-        size = mdPtrOut->activeLabels.size();
+        size = mdPtrOut->_activeLabels.size();
         //std::cerr << "LABEL" <<  MDL::label2StrSql(column) <<std::endl;
         for (int i = 0; i < size; i++)
         {
-            ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+            ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
             sep = ", ";
         }
         ss << "INSERT INTO " << tableName(mdPtrOut->myMDSql->tableId)
@@ -974,9 +974,9 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
     case DISTINCT:
     case REMOVE_DUPLICATE:
         //Create string with columns list
-        size = mdPtrOut->activeLabels.size();
+        size = mdPtrOut->_activeLabels.size();
         sep = ' ';
-        labelVector = &(mdPtrOut->activeLabels);
+        labelVector = &(mdPtrOut->_activeLabels);
         for (int i = 0; i < size; i++)
         {
             ss2 << sep << MDL::label2StrSql( labelVector->at(i));
@@ -1028,33 +1028,33 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
 
 bool MDSql::equals(const MDSql &op)
 {
-    std::vector<MDLabel> v1(myMd->activeLabels),v2(op.myMd->activeLabels);
+    std::vector<MDLabel> v1(myMd->_activeLabels),v2(op.myMd->_activeLabels);
     std::sort(v1.begin(),v1.end());
     std::sort(v2.begin(),v2.end());
 
     if(v1 != v2)
         return (false);
-    int size  = myMd->activeLabels.size();
+    int size  = myMd->_activeLabels.size();
     std::stringstream sqlQuery,ss2,ss2Group;
 
     ss2 << MDL::label2StrSql(MDL_OBJID);
     ss2Group << MDL::label2StrSql(MDL_OBJID);
-    int precision = myMd->precision;
+    int precision = myMd->_precision;
     for (int i = 0; i < size; i++)
     {
         //when metadata  is double compare
-        if(MDL::isDouble(myMd->activeLabels[i]))
+        if(MDL::isDouble(myMd->_activeLabels[i]))
         {
-            ss2 << ", CAST (" << MDL::label2StrSql( myMd->activeLabels[i])
+            ss2 << ", CAST (" << MDL::label2StrSql( myMd->_activeLabels[i])
             << "*" << precision
-            << " as INTEGER) as " << MDL::label2StrSql( myMd->activeLabels[i]);
+            << " as INTEGER) as " << MDL::label2StrSql( myMd->_activeLabels[i]);
 
         }
         else
         {
-            ss2 << ", "       << MDL::label2StrSql( myMd->activeLabels[i]);
+            ss2 << ", "       << MDL::label2StrSql( myMd->_activeLabels[i]);
         }
-        ss2Group<< ", "       << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2Group<< ", "       << MDL::label2StrSql( myMd->_activeLabels[i]);
     }
     sqlQuery
     << "SELECT count(*) FROM ("
@@ -1073,8 +1073,8 @@ bool MDSql::equals(const MDSql &op)
     return (execSingleIntStmt(sqlQuery)==0);
 }
 
-void MDSql::setOperate(const MetaData *mdInLeft,
-                       const MetaData *mdInRight,
+void MDSql::setOperate(const MetaDataDb *mdInLeft,
+                       const MetaDataDb *mdInRight,
                        const std::vector<MDLabel> &columnsLeft,
                        const std::vector<MDLabel> &columnsRight,
                        SetOperation operation)
@@ -1104,11 +1104,11 @@ void MDSql::setOperate(const MetaData *mdInLeft,
     {
         std::vector<MDLabel> intersectLabels;
         std::vector<MDLabel>::const_iterator left, right;
-        for (right=(mdInRight->activeLabels).begin();
-             right!=(mdInRight->activeLabels).end();
+        for (right=(mdInRight->_activeLabels).begin();
+             right!=(mdInRight->_activeLabels).end();
              ++right)
-            for (left=(mdInLeft->activeLabels).begin();
-                 left!=(mdInLeft->activeLabels).end();
+            for (left=(mdInLeft->_activeLabels).begin();
+                 left!=(mdInLeft->_activeLabels).end();
                  ++left)
             {
                 if (*left == *right)
@@ -1128,18 +1128,18 @@ void MDSql::setOperate(const MetaData *mdInLeft,
             mdInLeft->addIndex(columnsLeft[0]);
         }
     }
-    size = myMd->activeLabels.size();
-    size_t sizeLeft = mdInLeft->activeLabels.size();
+    size = myMd->_activeLabels.size();
+    size_t sizeLeft = mdInLeft->_activeLabels.size();
 
     for (size_t i = 0; i < size; i++)
     {
-        ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
         ss3 << sep;
-        if (i < sizeLeft && mdInLeft->activeLabels[i] == myMd->activeLabels[i])
+        if (i < sizeLeft && mdInLeft->_activeLabels[i] == myMd->_activeLabels[i])
             ss3 << tableName(mdInLeft->myMDSql->tableId) << ".";
         else
             ss3 << tableName(mdInRight->myMDSql->tableId) << ".";
-        ss3 << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss3 << MDL::label2StrSql( myMd->_activeLabels[i]);
         sep = ", ";
     }
     ss << "INSERT INTO " << tableName(tableId)
@@ -1164,17 +1164,17 @@ void MDSql::setOperate(const MetaData *mdInLeft,
     {
         sep = " ";
         ss << " WHERE ";
-        for (size_t i = 0; i < mdInRight->activeLabels.size(); i++)
+        for (size_t i = 0; i < mdInRight->_activeLabels.size(); i++)
             for (size_t j = 0; j < sizeLeft; j++)
             {
-                if(mdInRight->activeLabels[i] == mdInLeft->activeLabels[j])
+                if(mdInRight->_activeLabels[i] == mdInLeft->_activeLabels[j])
                 {
                     ss << sep
                     << tableName(mdInRight->myMDSql->tableId) << "."
-                    << MDL::label2StrSql(mdInRight->activeLabels[i])
+                    << MDL::label2StrSql(mdInRight->_activeLabels[i])
                     << " = "
                     << tableName(mdInLeft->myMDSql->tableId) << "."
-                    << MDL::label2StrSql(mdInLeft->activeLabels[j]);
+                    << MDL::label2StrSql(mdInLeft->_activeLabels[j]);
                     sep = " AND ";
                 }
             }
@@ -1264,7 +1264,7 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
     else if (desiredLabels != NULL)
     {
 
-        myMd->activeLabels = *desiredLabels;
+        myMd->_activeLabels = *desiredLabels;
         for(std::vector<MDLabel>::const_iterator  it = desiredLabels->
                 begin();
             it != desiredLabels->end();
@@ -1289,7 +1289,7 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
             }
             else
             {
-                myMd->activeLabels.push_back(label);
+                myMd->_activeLabels.push_back(label);
             }
         }
     }

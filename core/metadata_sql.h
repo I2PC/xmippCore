@@ -36,7 +36,7 @@
 
 class MDSqlStaticInit;
 class MDQuery;
-class MetaData;
+class MetaDataDb;
 class MDCache;
 class FileName;
 
@@ -180,18 +180,18 @@ private:
      * */
     size_t copyObjects(MDSql * sqlOut,
                        const MDQuery *queryPtr = NULL) const;
-    size_t copyObjects(MetaData * mdPtrOut,
+    size_t copyObjects(MetaDataDb * mdPtrOut,
                        const MDQuery *queryPtr = NULL) const;
 
     /** This function performs aggregation operations.
      */
-    void aggregateMd(MetaData *mdPtrOut,
+    void aggregateMd(MetaDataDb *mdPtrOut,
                      const std::vector<AggregateOperation> &operations,
                      const std::vector<MDLabel> &operateLabel);
 
     /** This function performs aggregation operations grouped by several labels.
      */
-    void aggregateMdGroupBy(MetaData *mdPtrOut,
+    void aggregateMdGroupBy(MetaDataDb *mdPtrOut,
                             const AggregateOperation operation,
                             const std::vector<MDLabel> &groupByLabels ,
                             const  MDLabel operateLabel,
@@ -227,8 +227,8 @@ private:
     int columnMaxLength(MDLabel column);
 
     /**Functions to implement set operations */
-    void setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation);
-    void setOperate(const MetaData *mdInLeft, const MetaData *mdInRight, const std::vector<MDLabel> &columnsLeft,
+    void setOperate(MetaDataDb *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation);
+    void setOperate(const MetaDataDb *mdInLeft, const MetaDataDb *mdInRight, const std::vector<MDLabel> &columnsLeft,
     		const std::vector<MDLabel> &columnsRight, SetOperation operation);
     /** Function to dump DB to file */
     bool operate(const String &expression);
@@ -243,7 +243,7 @@ private:
      * Now each MD should have an instance
      * of this class to interact with the DB
      */
-    MDSql(MetaData *md);
+    MDSql(MetaDataDb *md);
     ~MDSql();
 
     static int table_counter;
@@ -291,7 +291,7 @@ private:
 
     ///Non-static attributes
     int tableId;
-    MetaData *myMd;
+    MetaDataDb *myMd;
     MDCache *myCache;
 
     friend class MDSqlStaticInit;

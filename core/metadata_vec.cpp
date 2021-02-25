@@ -48,7 +48,7 @@ void MetaDataVec::init(const std::vector<MDLabel> &labelsVector) {
     _no_columns = col;
 }
 
-void MetaDataVec::read(const FileName &inFile) {
+void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
     throw NotImplemented();
 }
 

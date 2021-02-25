@@ -55,6 +55,7 @@ protected:
      * for handling db status of metadata
      */
     /** The table id to do db operations */
+    friend class MDSql;
     MDSql * myMDSql;
 
     /** Init, do some initializations tasks, used in constructors
