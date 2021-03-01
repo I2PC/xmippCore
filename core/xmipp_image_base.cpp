@@ -180,52 +180,47 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 /** General read function
  */
 /** Macros for don't type */
-#define GET_ROW()               MDRowSql row; md.getRow(row, objId)
-
-#define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name);\
+#define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name); \
                                   int err = _read(name, hFile, params.datamode, params.select_img); \
                                   applyGeo(row, params.only_apply_shifts, params.wrap); \
                                   closeFile(hFile); \
                                   return err
 
-#define APPLY_GEO()        MDRowSql row; md.getRow(row, objId); \
-                           applyGeo(row, params.only_apply_shifts, params.wrap) \
-
-void ImageBase::applyGeo(const MetaData &md, size_t objId,
-const ApplyGeoParams &params)
+void ImageBase::applyGeo(const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
 {
-    APPLY_GEO();
+    MDRowSql row;
+    md.getRow(row, objId);
+    applyGeo(row, params.only_apply_shifts, params.wrap);
 }
 
 void ImageBase::setGeo(const MDRowSql &row, size_t n)
 {
-    if (n<MD.size())
-        MD[n]=row;
+    if (n < MD.size())
+        MD[n] = row;
     else
-        REPORT_ERROR(ERR_MD_OBJECTNUMBER,"Trying to set a value outside the current metadata size");
+        REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Trying to set a value outside the current metadata size");
 }
 
-int ImageBase::readApplyGeo(const FileName &name, const MDRow &row,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const FileName &name, const MDRow &row, const ApplyGeoParams &params)
 {
     READ_AND_RETURN();
 }
 
 /** Read an image from metadata, filename is provided
 */
-int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const FileName &name, const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
 {
-    GET_ROW();
+    MDRowSql row;
+    md.getRow(row, objId);
     READ_AND_RETURN();
 }
 
 /** Read an image from metadata, filename is taken from MDL_IMAGE
  */
-int ImageBase::readApplyGeo(const MetaData &md, size_t objId,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
 {
-    GET_ROW();
+    MDRowSql row;
+    md.getRow(row, objId);
     FileName name;
     row.getValue(MDL_IMAGE, name);
     READ_AND_RETURN();
