@@ -24,8 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
-#include "metadata.h"
-#include "metadata_sql.h"
+#include "metadata_vec.h"
 
 ///@defgroup DM3 DM3 File format
 ///@ingroup ImageFormats
@@ -41,7 +40,7 @@ struct DM3head
     char sorted;
     char open;
     int nTags;
-    MetaData tags;
+    MetaDataVec tags;
     int nIm;
 };
 
@@ -395,7 +394,7 @@ int space;
 /** DM3 Print DM3 node
   * @ingroup DM3
 */
-void printDM3node(MetaData &MD, size_t id)
+void printDM3node(const MetaData &MD, size_t id)
 {
     std::string tag;
     MD.getValue(MDL_DM3_TAGNAME, tag, id);
@@ -423,7 +422,7 @@ void printDM3node(MetaData &MD, size_t id)
 /** DM3 Print DM3 header
   * @ingroup DM3
 */
-void printDM3(MetaData MD)
+void printDM3(const MetaData &MD)
 {
     std::vector<size_t> vObjs;
     space = 0;
@@ -505,18 +504,21 @@ int ImageBase::readDM3(size_t select_img,bool isStack)
     //Initialize query for later use
     MDValueEQ queryNodeId(MDL_DM3_NODEID, -1);
 
-    for (MDIterator iter(header->tags, MDValueEQ(MDL_DM3_TAGNAME,(String)"DataType")); iter.hasNext(); iter.moveNext())
+    std::vector<size_t> objIdsDataType;
+    header->tags.findObjects(objIdsDataType, MDValueEQ(MDL_DM3_TAGNAME,(String)"DataType"));
+
+    for (size_t objId : objIdsDataType)
         // Read all the image headers
         //for (int n = 0; n < vIm.size(); n++)
     {
         //header->tags.goToObject(vIm[n]);
-        header->tags.getValue(MDL_DM3_VALUE, vValue, iter.objId);
+        header->tags.getValue(MDL_DM3_VALUE, vValue, objId);
 
         if (vValue[0] != 23) //avoid thumb images
         {
             dataHeaders.push_back(dhRef);
 
-            parentID = parentDM3(header->tags, iter.objId, 2);
+            parentID = parentDM3(header->tags, objId, 2);
 
             nodeID = parentID;
             id = gotoTagDM3(header->tags, nodeID, "ImageData,Data");
@@ -551,9 +553,9 @@ int ImageBase::readDM3(size_t select_img,bool isStack)
             //            header->tags.nextObject();
             if (id != BAD_OBJID)
             {
-				header->tags.getValue(MDL_DM3_VALUE, vValue, id);
-				dataHeaders[header->nIm].pixelHeight = vValue[0]*1e4;
-				dataHeaders[header->nIm].pixelWidth  = vValue[1]*1e4;
+                header->tags.getValue(MDL_DM3_VALUE, vValue, id);
+                dataHeaders[header->nIm].pixelHeight = vValue[0]*1e4;
+                dataHeaders[header->nIm].pixelWidth  = vValue[1]*1e4;
             }
 
             //TODO: Do I have to include FLIP?!?!? which? vertical or horizontal?
