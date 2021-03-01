@@ -109,14 +109,7 @@ void bsoftRestoreLoopBlock(const FileName &_inFile, const FileName &block);
 
 Matrix2D<double> getMatrix(char* matrix);
 
-MDRowVec firstRow(const FileName &fnMetadata) {
-    MetaDataVec md;
-    md.setMaxRows(1);
-    md.read(fnMetadata);
-    MDRowVec row;
-    md.getRow(row, md.firstRowId());
-    return row;
-}
+MDRowVec firstRow(const FileName &fnMetadata);
 //@}
 
 #endif /* METADATA_EXTENSION_H_ */

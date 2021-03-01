@@ -558,6 +558,7 @@ void bsoftRemoveLoopBlock(const FileName &_inFile, const FileName &_outFile)
         out << line << '\n';
     }
 }
+
 void bsoftRestoreLoopBlock(const FileName &_inFile, const FileName &_outFile)
 {
     std::ifstream in(_inFile.c_str());
@@ -580,4 +581,13 @@ void bsoftRestoreLoopBlock(const FileName &_inFile, const FileName &_outFile)
             continue;
         out << line << '\n';
     }
+}
+
+MDRowVec firstRow(const FileName &fnMetadata) {
+    MetaDataVec md;
+    md.setMaxRows(1);
+    md.read(fnMetadata);
+    MDRowVec row;
+    md.getRow(row, md.firstRowId());
+    return row;
 }
