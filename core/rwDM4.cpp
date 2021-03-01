@@ -24,8 +24,7 @@
  ***************************************************************************/
 
 #include "xmipp_image_base.h"
-#include "metadata.h"
-#include "metadata_sql.h"
+#include "metadata_vec.h"
 
 ///@defgroup DM4 DM4 File format
 ///@ingroup ImageFormats
@@ -41,7 +40,7 @@ struct DM4head
     char sorted;
     char open;
     int nTags;
-    MetaData tags;
+    MetaDataVec tags;
     int nIm;
 };
 
@@ -422,7 +421,7 @@ int spaceDM4;
 /** DM4 Print DM4 node
   * @ingroup DM4
 */
-void printDM4node(MetaData &MD, size_t id)
+void printDM4node(const MetaData &MD, size_t id)
 {
     std::string tag;
     MD.getValue(MDL_DM3_TAGNAME, tag, id);
@@ -450,7 +449,7 @@ void printDM4node(MetaData &MD, size_t id)
 /** DM4 Print DM4 header
   * @ingroup DM4
 */
-void printDM4(MetaData MD)
+void printDM4(const MetaData &MD)
 {
     std::vector<size_t> vObjs;
     spaceDM4 = 0;
@@ -522,23 +521,27 @@ int ImageBase::readDM4(size_t select_img,bool isStack)
 
     std::vector<double> vValue;
     int iValue;
-    size_t id;
+
     //Initialize query for later use
     MDValueEQ queryNodeId(MDL_DM3_NODEID, -1);
 
-    for (MDIterator iter(header->tags, MDValueEQ(MDL_DM3_TAGNAME,(String)"DataType")); iter.hasNext(); iter.moveNext())
+    std::vector<size_t> objIdsDataType;
+    header->tags.findObjects(objIdsDataType, MDValueEQ(MDL_DM3_TAGNAME,(String)"DataType"));
+
+    for (size_t objId : objIdsDataType)
         // Read all the image headers
         //for (int n = 0; n < vIm.size(); n++)
     {
         //header->tags.goToObject(vIm[n]);
-        header->tags.getValue(MDL_DM3_VALUE, vValue, iter.objId);
+        header->tags.getValue(MDL_DM3_VALUE, vValue, objId);
 
         if (vValue[0] != 23) //avoid thumb images
         {
             dataHeaders.push_back(dhRef);
 
-            parentID = parentDM4(header->tags, iter.objId, 2);
+            parentID = parentDM4(header->tags, objId, 2);
 
+            size_t id;
             nodeID = parentID;
             id = gotoTagDM4(header->tags, nodeID, "ImageData,Data");
             header->tags.getValue(MDL_DM3_NUMBER_TYPE, iValue, id);
