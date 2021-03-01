@@ -31,7 +31,7 @@
 #include "metadata_label.h"
 #include "metadata_row_sql.h"
 #include "metadata_static.h"
-#include "metadata_db.h"
+#include "metadata.h"
 #include "multidim_array_base.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
@@ -378,15 +378,15 @@ public:
                      const ApplyGeoParams &params = DefaultApplyGeoParams);
 
     /** Read an image from metadata, filename is provided*/
-    int readApplyGeo(const FileName &name, const MetaDataDb &md, size_t objId,
+    int readApplyGeo(const FileName &name, const MetaData &md, size_t objId,
                      const ApplyGeoParams &params = DefaultApplyGeoParams);
 
     /** Read an image from metadata, filename is taken from MDL_IMAGE */
-    int readApplyGeo(const MetaDataDb &md, size_t objId,
+    int readApplyGeo(const MetaData &md, size_t objId,
                      const ApplyGeoParams &params = DefaultApplyGeoParams);
 
     /** Apply geometry in referring metadata to the image */
-    void applyGeo(const MetaDataDb &md, size_t objId,
+    void applyGeo(const MetaData &md, size_t objId,
                   const ApplyGeoParams &params = DefaultApplyGeoParams);
 
     /** Set geo.

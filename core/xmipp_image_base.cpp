@@ -186,7 +186,7 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
                                   closeFile(hFile); \
                                   return err
 
-void ImageBase::applyGeo(const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
+void ImageBase::applyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
     MDRowSql row;
     md.getRow(row, objId);
@@ -208,7 +208,7 @@ int ImageBase::readApplyGeo(const FileName &name, const MDRow &row, const ApplyG
 
 /** Read an image from metadata, filename is provided
 */
-int ImageBase::readApplyGeo(const FileName &name, const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
     MDRowSql row;
     md.getRow(row, objId);
@@ -217,7 +217,7 @@ int ImageBase::readApplyGeo(const FileName &name, const MetaDataDb &md, size_t o
 
 /** Read an image from metadata, filename is taken from MDL_IMAGE
  */
-int ImageBase::readApplyGeo(const MetaDataDb &md, size_t objId, const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
     MDRowSql row;
     md.getRow(row, objId);

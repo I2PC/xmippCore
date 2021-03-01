@@ -371,10 +371,14 @@ bool MetaDataDb::getRow(MDRow &row, size_t id) const
             myMDSql->tableName(myMDSql->tableId),
             values)) return false;
     // fill them
-    for (auto &v : values) {
+    for (auto &v : values)
         row.setValue(v);
-    }
     return true;
+}
+
+bool MetaDataDb::getRow(MDRowSql &row, size_t id) const
+{
+    return getRow(row, id);
 }
 
 bool MetaDataDb::getRow2(MDRow &row, size_t id) const

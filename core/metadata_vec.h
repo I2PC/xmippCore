@@ -219,6 +219,7 @@ public:
         return MetaData::getValue(label, valueOut, id);
     }
 
+    bool getRow(MDRow &row, size_t id) const override;
     bool getRow(MDRowVec &row, size_t id) const;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;

@@ -277,7 +277,8 @@ void fromVMetaData(VMetaData &vmdIn);
     bool execGetRow(MDRow &row) const;
     bool execGetRow(MDRowConst &row) const;
     void finalizeGetRow(void) const;
-    bool getRow(MDRow &row, size_t id) const;
+    bool getRow(MDRow &row, size_t id) const override;
+    bool getRow(MDRowSql &row, size_t id) const;
     bool getAllRows(std::vector<MDRowSql> &rows) const;
     bool getRow2(MDRow &row, size_t id) const;
 
