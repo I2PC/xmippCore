@@ -2079,12 +2079,6 @@ void MetaDataDb::distinct(MetaDataDb &MDin, MDLabel label)
     _setOperatesLabel(MDin, label, DISTINCT);
 }
 
-void MetaDataDb::removeDisabled()
-{
-    if (containsLabel(MDL_ENABLED))
-        removeObjects(MDValueLE(MDL_ENABLED, 0)); // Remove values -1 and 0 on MDL_ENABLED label
-}
-
 void MetaDataDb::subtraction(const MetaDataDb &mdIn, const MDLabel label)
 {
     if(mdIn.isEmpty())

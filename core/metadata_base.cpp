@@ -49,8 +49,7 @@ void MetaData::copyInfo(const MetaData& md) {
     this->_parsedLines = md._parsedLines;
 }
 
-bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id)
-{
+bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id) {
     addLabel(label);
 
     if (id == BAD_OBJID)
@@ -63,8 +62,7 @@ bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t 
     this->setValue(mdValue, id);
 }
 
-bool MetaData::getStrFromValue(const MDLabel label, String &strOut, size_t id) const
-{
+bool MetaData::getStrFromValue(const MDLabel label, String &strOut, size_t id) const {
     MDObject mdValueOut(label);
     if (!getValue(mdValueOut, id))
         return false;
@@ -72,8 +70,12 @@ bool MetaData::getStrFromValue(const MDLabel label, String &strOut, size_t id) c
     return true;
 }
 
-WriteModeMetaData metadataModeConvert(String mode)
-{
+void MetaData::removeDisabled() {
+    if (containsLabel(MDL_ENABLED))
+        removeObjects(MDValueLE(MDL_ENABLED, 0)); // Remove values -1 and 0 on MDL_ENABLED label
+}
+
+WriteModeMetaData metadataModeConvert(String mode) {
     toLower(mode);
     if (mode.npos != mode.find("overwrite"))
         return MD_OVERWRITE;
