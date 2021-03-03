@@ -456,6 +456,7 @@ public:
 
     virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
 
+    virtual std::unique_ptr<MDRow> getRow(size_t id) const = 0;
     virtual bool getRow(MDRow &row, size_t id) const = 0;
 
     /*bool bindValue(size_t id) const;

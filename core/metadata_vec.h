@@ -219,6 +219,7 @@ public:
         return MetaData::getValue(label, valueOut, id);
     }
 
+    std::unique_ptr<MDRow> getRow(size_t id) const override;
     bool getRow(MDRow &row, size_t id) const override;
     bool getRow(MDRowVec &row, size_t id) const;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;

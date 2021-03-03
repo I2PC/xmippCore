@@ -357,6 +357,13 @@ bool MetaDataDb::getAllRows(std::vector<MDRowSql> &rows) const
     return true;
 }
 
+std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) const {
+    std::unique_ptr<MDRowSql> row(new MDRowSql());
+    if (!getRow(*row, id))
+        return nullptr;
+    return std::move(row);
+}
+
 bool MetaDataDb::getRow(MDRow &row, size_t id) const
 {
     if (id == BAD_OBJID)
