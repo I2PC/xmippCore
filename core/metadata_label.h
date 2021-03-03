@@ -432,7 +432,12 @@ enum MDLabel
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)
 
     MDL_TEST_SIZE,// < number of test assigned to a program
-    MDL_TILT_ESTIMATION, // <Mean correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MEAN, // <Mean correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_STD, // <STD correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MIN, // <Min correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MAX, // <Max correlation between the PSD segments of a micrograph
+
+
 
     MDL_VOLUME_SCORE_SUM, /// < Score corresponding to the sum of cc with cc>threshold
     MDL_VOLUME_SCORE_SUM_TH, ///< Score corresponding to the sum of cc-threshold with cc>threshold
@@ -1800,7 +1805,10 @@ private:
         MDL::addLabel(MDL_TRANSFORM_MATRIX, LABEL_STRING, "transformMatrix");
 
         MDL::addLabel(MDL_TEST_SIZE, LABEL_INT, "testSize");
-        MDL::addLabel(MDL_TILT_ESTIMATION, LABEL_DOUBLE, "tiltEstimation")
+        MDL::addLabel(MDL_TILT_ANALYSIS_MEAN, LABEL_DOUBLE, "tiltAnalysisMean");
+        MDL::addLabel(MDL_TILT_ANALYSIS_STD, LABEL_DOUBLE, "tiltAnalysisSTD");
+        MDL::addLabel(MDL_TILT_ANALYSIS_MIN, LABEL_DOUBLE, "tiltAnalysisMin");
+        MDL::addLabel(MDL_TILT_ANALYSIS_MAX, LABEL_DOUBLE, "tiltAnalysisMax");
 
         MDL::addLabel(MDL_VOLUME_SCORE_SUM, LABEL_DOUBLE, "volScoreSum");
         MDL::addLabel(MDL_VOLUME_SCORE_MEAN, LABEL_DOUBLE, "volScoreMean");
