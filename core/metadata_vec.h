@@ -226,6 +226,11 @@ public:
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
 
+    bool setRow(const MDRow &row, size_t id);
+    bool setRow(const MDRowConst &row, size_t id);
+    bool setRow(const MDRowVec &row, size_t id);
+    bool setRow(const MDRowVecConst &row, size_t id);
+
     template<class T>
     void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
         return MetaData::getColumnValues(label, valuesOut);
