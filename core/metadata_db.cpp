@@ -680,10 +680,10 @@ MetaDataDb::MetaDataDb()
     init(NULL);
 }//close MetaData default Constructor
 
-MetaDataDb::MetaDataDb(const std::vector<MDLabel> *labelsVector)
+MetaDataDb::MetaDataDb(const std::vector<MDLabel> &labelsVector)
 {
     myMDSql = new MDSql(this);
-    init(labelsVector);
+    init(&labelsVector);
 }//close MetaData default Constructor
 
 MetaDataDb::MetaDataDb(const FileName &fileName, const std::vector<MDLabel> *desiredLabels)

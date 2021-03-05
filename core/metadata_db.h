@@ -125,7 +125,7 @@ public:
      * if labels vectors is passed this labels are created on metadata
      */
     MetaDataDb();
-    MetaDataDb(const std::vector<MDLabel> *labelsVector);
+    MetaDataDb(const std::vector<MDLabel> &labelsVector);
 
     /** From File Constructor.
      *
