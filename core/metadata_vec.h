@@ -191,6 +191,8 @@ public:
      */
 
     size_t addRow(const MDRowVec &row);
+    void addRows(const std::vector<MDRowVec> &rows);
+
 
     int getMaxStringLength(const MDLabel thisLabel) const override;
 
