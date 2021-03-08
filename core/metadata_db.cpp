@@ -786,7 +786,7 @@ void MetaDataDb::importObjects(const MetaData &md, const std::vector<size_t> &ob
         importObject(md, objectsToAdd[i]);
 }
 
-void MetaDataDb::importObjects(const MetaDataDb &md, const MDQuery &query, bool doClear)
+void MetaDataDb::_importObjectsDb(const MetaDataDb &md, const MDQuery &query, bool doClear)
 {
     if (doClear)
     {

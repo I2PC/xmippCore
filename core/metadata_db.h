@@ -343,7 +343,9 @@ void fromVMetaData(VMetaData &vmdIn);
      */
     void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
     void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
-    void importObjects(const MetaDataDb &md, const MDQuery &query, bool doClear=true);
+    void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true) override;
+    void _importObjectsDb(const MetaDataDb &md, const MDQuery &query, bool doClear=true);
+    void _importObjectsGeneral(const MetaData &md, const MDQuery &query, bool doClear=true);
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if

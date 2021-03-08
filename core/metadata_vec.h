@@ -296,6 +296,7 @@ public:
      */
     void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
     void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
+    void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true) override;
 
     /** Remove the object with this id.
     * Returns true if the object was removed or false if
