@@ -226,7 +226,8 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
     size_t   img_seek = header_size + imgStart * image_size;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
     double daux;
 
     //std::cerr << formatString("DEBUG_JM: header_size: %10lu, datasize_n: %10lu, image_size: %10lu, imgStart: %10lu, img_seek: %10lu",
@@ -249,25 +250,25 @@ int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
         if (dataMode == _HEADER_ALL || dataMode == _DATA_ALL)
         {
             daux = (double)header->xoff;
-            MD[n].setValue(MDL_SHIFT_X, daux);
+            MD[n]->setValue(MDL_SHIFT_X, daux);
             daux = (double)header->yoff;
-            MD[n].setValue(MDL_SHIFT_Y, daux);
+            MD[n]->setValue(MDL_SHIFT_Y, daux);
             daux = (double)header->zoff;
-            MD[n].setValue(MDL_SHIFT_Z, daux);
+            MD[n]->setValue(MDL_SHIFT_Z, daux);
             daux = (double)header->phi;
-            MD[n].setValue(MDL_ANGLE_ROT, daux);
+            MD[n]->setValue(MDL_ANGLE_ROT, daux);
             daux = (double)header->theta;
-            MD[n].setValue(MDL_ANGLE_TILT, daux);
+            MD[n]->setValue(MDL_ANGLE_TILT, daux);
             daux = (double)header->gamma;
-            MD[n].setValue(MDL_ANGLE_PSI, daux);
+            MD[n]->setValue(MDL_ANGLE_PSI, daux);
             daux = (double)header->weight;
-            MD[n].setValue(MDL_WEIGHT, daux);
+            MD[n]->setValue(MDL_WEIGHT, daux);
             bool baux = (header->flip == 1);
-            MD[n].setValue(MDL_FLIP, baux);
+            MD[n]->setValue(MDL_FLIP, baux);
             daux = (double) header->scale;
             if (daux==0.)
                 daux=1.0;
-            MD[n].setValue(MDL_SCALE, daux);
+            MD[n]->setValue(MDL_SCALE, daux);
         }
     }
 
@@ -431,7 +432,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
     {
         if ((dataMode == _HEADER_ALL || dataMode == _DATA_ALL))
         {
-#define SET_HEADER_VALUE(field, label, aux)  MD[0].getValueOrDefault((label), (aux), 0.); header->field = (float)(aux)
+#define SET_HEADER_VALUE(field, label, aux)  MD[0]->getValueOrDefault((label), (aux), 0.); header->field = (float)(aux)
             SET_HEADER_VALUE(xoff, MDL_SHIFT_X, aux);
             SET_HEADER_VALUE(yoff, MDL_SHIFT_Y, aux);
             SET_HEADER_VALUE(zoff, MDL_SHIFT_Z, aux);
@@ -540,7 +541,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
         fseek( fimg,offset + (offset+datasize)*imgStart, SEEK_SET);
 
         //for ( size_t i=0; i<Ndim; i++ )
-        std::vector<MDRowSql>::iterator it = MD.begin();
+        auto it = MD.begin();
 
         for (size_t i = 0; i < Ndim; ++it, ++i)
         {

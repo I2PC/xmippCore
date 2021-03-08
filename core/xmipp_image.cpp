@@ -221,7 +221,7 @@ void Image<T>::getTransformationMatrix(Matrix2D<double> &A, bool only_apply_shif
     // This has only been implemented for 2D images...
     MULTIDIM_ARRAY(*this).checkDimension(2);
     A.resizeNoCopy(3, 3);
-    geo2TransformationMatrix(MD[n], A, only_apply_shifts);
+    geo2TransformationMatrix(*MD[n], A, only_apply_shifts);
 }
 
 template<typename T>
@@ -232,9 +232,10 @@ void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
     if (data.ndim != 1)
         REPORT_ERROR(ERR_MULTIDIM_SIZE,
                      "Geometric transformation cannot be applied to stacks!!!");
+
     if (MD.size() == 0)
-        MD.push_back(MDL::emptyHeader());
-    MDRow &rowAux = MD[0];
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+    MDRow &rowAux = *MD[0];
 
     if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
     {

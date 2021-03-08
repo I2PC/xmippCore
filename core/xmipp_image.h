@@ -852,14 +852,8 @@ public:
     Image<T>&
     operator=(const Image<T> &op1)
     {
-        MD = op1.MD;
-        MDMainHeader = op1.MDMainHeader;
-        filename = op1.filename;
-        transform = op1.transform;
-
-        aDimFile = op1.aDimFile;
+        this->copy(op1);
         data = op1.data;
-
         return *this;
     }
 

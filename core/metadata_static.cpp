@@ -302,10 +302,21 @@ bool MDL::isPSD(const MDLabel label)
     return data[(int)label]->tags & TAGLABEL_PSD;
 }
 
-MDRowSql MDL::emptyHeader() {
+MDRowSql MDL::emptyHeaderSql() {
     MDRowSql row;
     row.resetGeo();
     row.setValue(MDL_ANGLE_ROT, 0.);
     row.setValue(MDL_ANGLE_TILT,0.);
     return row;
+}
+
+MDRowVec MDL::emptyHeaderVec() {
+    MDRowVec row;
+    row.resetGeo();
+    row.setValue(MDL_ANGLE_ROT, 0.);
+    row.setValue(MDL_ANGLE_TILT,0.);
+    return row;
+}
+
+void emptifyHeader(MDRow&) {
 }

@@ -82,7 +82,8 @@ int ImageBase::readJPEG(size_t select_img)
     mdaBase->coreAllocateReuse();
 
     MD.clear();
-    MD.resize(aDim.ndim, MDL::emptyHeader());
+    for (size_t i = 0; i < aDim.ndim; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     /* Start decompression jpeg here */
     jpeg_start_decompress( &cinfo );

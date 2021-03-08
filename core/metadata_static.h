@@ -28,6 +28,7 @@
 
 #include "metadata_label.h"
 #include "metadata_row_sql.h"
+#include "metadata_row_vec.h"
 
 /** Static class to group some functions with labels.
  * This class holds several function to work with labels.
@@ -107,7 +108,9 @@ public:
      */
     static void resetBufferIndex();
 
-    static MDRowSql emptyHeader();
+    static MDRowSql emptyHeaderSql();
+    static MDRowVec emptyHeaderVec();
+    static void emptifyHeader(MDRow&);
 
 private:
     //Array of MDLabelData pointers

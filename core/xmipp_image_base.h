@@ -26,10 +26,12 @@
 #ifndef CORE_IMAGE_BASE_H_
 #define CORE_IMAGE_BASE_H_
 
+#include <memory>
+
 #include "xmipp_image_macros.h"
 #include "xmipp_datatype.h"
 #include "metadata_label.h"
-#include "metadata_row_sql.h"
+#include "metadata_row_vec.h"
 #include "metadata_static.h"
 #include "metadata.h"
 #include "multidim_array_base.h"
@@ -239,8 +241,9 @@ class ImageBase
 {
 public:
     MultidimArrayBase * mdaBase;    // Pointer to data from Image<template T> casted as MultidimArrayBase
-    std::vector<MDRowSql> MD;                   // data for each subimage
-    MDRowSql            MDMainHeader;           // data for the file
+    std::vector<std::unique_ptr<MDRow>> MD;     // data for each subimage, always non-null data present, pointer is here
+                                                // to allow storing MDVec / MDSql
+    MDRowVec            MDMainHeader;           // data for the file
 
 protected:
     FileName            filename;    // File name
@@ -251,7 +254,7 @@ protected:
     TIFF*               tif;         // TIFF Image file hander
     hid_t    fhdf5;       // HDF5 File handler
     ImageFHandler*      hFile;       // Image File handler information structure
-    ArrayDim         aDimFile;   // Image header file information structure (original info from file)
+    ArrayDim            aDimFile;   // Image header file information structure (original info from file)
     DataMode            dataMode;    // Flag to force select what will be read/write from image files
     size_t              offset;      // Data offset
     int                 swap;        // Perform byte swapping upon reading
@@ -271,6 +274,10 @@ public:
     /** Init.
      * Initialize everything to 0*/
     void init();
+
+    /** Copy.
+      * Copy ImageBase from other image*/
+    void copy(const ImageBase& other);
 
     /** Clear.
      * Initialize everything to 0*/
@@ -392,7 +399,7 @@ public:
     /** Set geo.
      * Copy the input geometry row into the image metadata row n.
      */
-    void setGeo(const MDRowSql &row, size_t n=0);
+    void setGeo(const MDRow &row, size_t n=0);
 
     /* Read an image with a lower resolution as a preview image.
      * If Zdim parameter is not passed, then all slices are rescaled.
@@ -542,21 +549,21 @@ public:
      */
     MDRow& getGeometry(const size_t n = 0)
     {
-        return MD[n];
+        return *MD[n];
     }
 
     /** Init geometry transformation with defaults values
      */
     void initGeometry(const size_t n = 0)
     {
-        MD[n] = MDL::emptyHeader();
+        MDL::emptifyHeader(*MD[n]);
     }
 
     /* Check if the label is in the individual header
     */
     bool individualContainsLabel(MDLabel label) const
     {
-        return (!MD.empty() && MD[0].containsLabel(label));
+        return (!MD.empty() && MD[0]->containsLabel(label));
     }
 
     /* Check if the label is in the main header */
@@ -697,19 +704,19 @@ public:
     /** Set Rotation angle to image */
     void setRot(double rot, const size_t n = 0)
     {
-        MD[n].setValue(MDL_ANGLE_ROT, rot);
+        MD[n]->setValue(MDL_ANGLE_ROT, rot);
     }
 
     /** Set Tilt angle to image */
     void setTilt(double tilt, const size_t n = 0)
     {
-        MD[n].setValue(MDL_ANGLE_TILT, tilt);
+        MD[n]->setValue(MDL_ANGLE_TILT, tilt);
     }
 
     /** Set Rotation angle to image */
     void setPsi(double psi, const size_t n = 0)
     {
-        MD[n].setValue(MDL_ANGLE_PSI, psi);
+        MD[n]->setValue(MDL_ANGLE_PSI, psi);
     }
 
     /** Set origin offsets in image header
@@ -726,49 +733,49 @@ public:
      */
     void setXoff(double xoff, const size_t n = 0)
     {
-        MD[n].setValue(MDL_SHIFT_X, xoff);
+        MD[n]->setValue(MDL_SHIFT_X, xoff);
     }
 
     /** Set Y offset in image header
      */
     void setYoff(double yoff, const size_t n = 0)
     {
-        MD[n].setValue(MDL_SHIFT_Y, yoff);
+        MD[n]->setValue(MDL_SHIFT_Y, yoff);
     }
 
     /** Set Z offset in image header
      */
     void setZoff(double zoff, const size_t n = 0)
     {
-        MD[n].setValue(MDL_SHIFT_Z, zoff);
+        MD[n]->setValue(MDL_SHIFT_Z, zoff);
     }
 
     /** Set scale in image header
      */
     void setScale(double scale, const size_t n = 0)
     {
-        MD[n].setValue(MDL_SCALE, scale);
+        MD[n]->setValue(MDL_SCALE, scale);
     }
 
     /** Get scale from image header
      */
     void getScale(double &scale, const size_t n = 0)
     {
-        MD[n].getValue(MDL_SCALE, scale);
+        MD[n]->getValue(MDL_SCALE, scale);
     }
 
     /** Set flip in image header
      */
     void setFlip(bool flip, const size_t n = 0)
     {
-        MD[n].setValue(MDL_FLIP, flip);
+        MD[n]->setValue(MDL_FLIP, flip);
     }
 
     /** Set Weight in image header
     */
     void setWeight(double weight, const size_t n = 0)
     {
-        MD[n].setValue(MDL_WEIGHT, weight);
+        MD[n]->setValue(MDL_WEIGHT, weight);
     }
 
     /** Get geometric transformation matrix from 2D-image header

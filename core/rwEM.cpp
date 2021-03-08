@@ -117,7 +117,8 @@ int ImageBase::readEM(size_t select_img, bool isStack)
     size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : aDim.ndim;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     /* As MRC does not support stacks, we use the geometry stored in the header
     for any image when we simulate the file is a stack.*/
@@ -125,12 +126,12 @@ int ImageBase::readEM(size_t select_img, bool isStack)
     {
         for ( size_t i = 0; i < imgEnd - imgStart; ++i )
         {
-            MD[i].setValue(MDL_SHIFT_X, 0.);
-            MD[i].setValue(MDL_SHIFT_Y, 0.);
-            MD[i].setValue(MDL_SHIFT_Z, 0.);
-            MD[i].setValue(MDL_ORIGIN_X, 0.);
-            MD[i].setValue(MDL_ORIGIN_Y, 0.);
-            MD[i].setValue(MDL_ORIGIN_Z, 0.);
+            MD[i]->setValue(MDL_SHIFT_X, 0.);
+            MD[i]->setValue(MDL_SHIFT_Y, 0.);
+            MD[i]->setValue(MDL_SHIFT_Z, 0.);
+            MD[i]->setValue(MDL_ORIGIN_X, 0.);
+            MD[i]->setValue(MDL_ORIGIN_Y, 0.);
+            MD[i]->setValue(MDL_ORIGIN_Z, 0.);
         }
     }
 

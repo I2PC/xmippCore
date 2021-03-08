@@ -211,7 +211,9 @@ int ImageBase::readTIA(int select_img,bool isStack)
     }
 
     MD.clear();
-    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+
     double aux;
     for ( size_t i = 0; i < imgEnd - imgStart; ++i )
     {
@@ -219,17 +221,17 @@ int ImageBase::readTIA(int select_img,bool isStack)
         {
             if(MDMainHeader.getValue(MDL_SAMPLINGRATE_X,aux))
             {
-                MD[i].setValue(MDL_SHIFT_X, dataHeaders[i].CalibrationOffsetX/aux);
+                MD[i]->setValue(MDL_SHIFT_X, dataHeaders[i].CalibrationOffsetX/aux);
                 aux = ROUND(dataHeaders[i].CalibrationElementX - \
                             dataHeaders[i].CalibrationOffsetX/aux - _xDim/2);
-                MD[i].setValue(MDL_ORIGIN_X, aux);
+                MD[i]->setValue(MDL_ORIGIN_X, aux);
             }
             if(MDMainHeader.getValue(MDL_SAMPLINGRATE_Y,aux))
             {
-                MD[i].setValue(MDL_SHIFT_Y, dataHeaders[i].CalibrationOffsetY/aux);
+                MD[i]->setValue(MDL_SHIFT_Y, dataHeaders[i].CalibrationOffsetY/aux);
                 aux = ROUND(dataHeaders[i].CalibrationElementY - \
                             dataHeaders[i].CalibrationOffsetY/aux -_yDim/2);
-                MD[i].setValue(MDL_ORIGIN_Y, aux);
+                MD[i]->setValue(MDL_ORIGIN_Y, aux);
             }
         }
     }

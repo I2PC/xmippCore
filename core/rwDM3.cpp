@@ -613,7 +613,8 @@ int ImageBase::readDM3(size_t select_img,bool isStack)
     }
 
     MD.clear();
-    MD.resize(imgEnd - imgStart, MDL::emptyHeader());
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
     offset = dataHeaders[imgStart].headerSize;
     delete header;
 
