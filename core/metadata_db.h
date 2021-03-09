@@ -261,6 +261,11 @@ void fromVMetaData(VMetaData &vmdIn);
      */
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
 
+    template<class T>
+    void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
+        return MetaData::getColumnValues(label, valuesOut);
+    }
+
     /** Get all values of a column as a vector.
      */
     template<typename T>
