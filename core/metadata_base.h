@@ -79,35 +79,6 @@
  *         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
  */
 
-/** Iterate over all elements of two MetaData at same time.
- *
- * This macro is useful to iterate over two MetaData with the same
- * number of elements and performs operations to elements in both of them.
- * At each iteration the 'active objects' in both MetaData are changed.
- *
- * @code
- * MetaData mdA, mdB, mdC;
- *  //Iterate over MetaData mdA and mdB
- *  //take image from the first and tilt angle from the second
- *  //and create a new MetaData.
- * FOR_ALL_OBJECTS_IN_METADATA2(mdA, mdB)
- * {
- *     String imageFile;
- *     double angle;
- *     mdA.getValue(MDL_IMAGE, imageFile,__iter.objId);
- *     mdB.getValue(MDL_ANGLE_TILT, angle,__iter2.objId);
- *     size_t objId=mdC.addObject();
- *     mdC.setValue(MDL_IMAGE, imageFile,objId);
- *     mdC.setValue(MDL_ANGLE_TILT, angle,objId);
- * }
- * @endcode
- */
-
-#define FOR_ALL_OBJECTS_IN_METADATA2(__md, __md2) \
-        for(MDIterator __iter(__md), __iter2(__md2);\
-             __iter.hasNext() && __iter2.hasNext(); \
-             __iter.moveNext(), __iter2.moveNext())
-
 /** Which are the blocks available in a metadata */
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
 bool existsBlockInMetaDataFile(const FileName &inFile, const String& inBlock);
