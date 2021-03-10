@@ -26,6 +26,7 @@
 #include "linear_system_helper.h"
 #include <random>
 #include <algorithm>
+#include <cassert>
 
 // Solve linear systems ---------------------------------------------------
 void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result)
@@ -65,6 +66,52 @@ void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result)
         VEC_ELEM(result,i)+=MAT_ELEM(AtAinv,i,j)*VEC_ELEM(Atb,j);
 }
 
+void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+{
+    // Compute AtA and Atb
+    const size_t sizeI = h.A.mdimy;
+    const size_t sizeJ = h.A.mdimx;
+    h.AtA.initZeros(sizeJ, sizeJ);
+    h.Atb.initZeros(sizeJ);
+    for (size_t i = 0; i < sizeJ; ++i)
+    {
+        for (size_t j = 0; j < sizeJ; ++j)
+        {
+            double AtA_ij = 0;
+            for (size_t k = 0; k < sizeI; ++k) {
+                const size_t tmp = k * sizeJ;
+                AtA_ij += h.A.mdata[tmp + i] * h.A.mdata[tmp + j];
+            }
+            const size_t offset = i * sizeJ;
+            h.AtA.mdata[offset + j] = AtA_ij;
+        }
+    }
+    // Compute the inverse of AtA
+    h.AtA.inv(h.AtAinv); // AtAinv is also square matrix, same size as AtA
+
+    assert(results.size() == h.bs.size());
+    auto res_it = results.begin();
+    auto b_it = h.bs.begin(); 
+    for (; res_it != results.end(); ++res_it, ++b_it) {
+
+        for (size_t i = 0; i < sizeJ; ++i)
+        {
+            double Atb_i = 0;
+            for (size_t k = 0; k < sizeI; ++k) {
+                Atb_i += h.A.mdata[k * sizeJ + i] * b_it->vdata[k];
+            }
+            h.Atb.vdata[i] = Atb_i;
+        }
+        // Now multiply by Atb
+        res_it->initZeros(sizeJ);
+        for (size_t i = 0; i < sizeJ; i++) { 
+            for (size_t j = 0; j < sizeJ; j++) {
+                res_it->vdata[i] += h.AtAinv.mdata[i * sizeJ +j] * h.Atb.vdata[j];
+            }
+        }
+    }
+}
+
 // Solve linear systems ---------------------------------------------------
 void weightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &result)
 {
@@ -81,6 +128,31 @@ void weightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &resul
             MAT_ELEM(A,i,j)*=wii;
     }
     solveLinearSystem(h,result);
+}
+
+void weightedLeastSquares(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+{
+    const size_t sizeW = h.w.vdim;
+    h.w_sqrt.resizeNoCopy(h.w);
+    // compute weights
+    for(size_t i = 0; i < sizeW; ++i) {
+        h.w_sqrt.vdata[i] = sqrt(h.w.vdata[i]);
+    }
+    // update the matrix
+    const size_t sizeX = h.A.mdimx;
+    for(size_t i = 0; i < sizeW; ++i) {
+        const size_t offset = i * sizeX; 
+        const auto v = h.w_sqrt[i];
+        for (size_t j = 0; j < sizeX; ++j)
+            h.A.mdata[offset + j] *= v;
+    }
+    // update values
+    for (auto &b : h.bs) {
+        for(size_t i = 0; i < sizeW; ++i) {
+            b.vdata[i] *= h.w_sqrt[i];
+        }
+    }
+    solveLinearSystem(h, results);
 }
 
 // Solve linear system with RANSAC ----------------------------------------
