@@ -1105,6 +1105,18 @@ public:
      */
     void inv(Matrix2D<T>& result) const;
 
+    /** Inverse of a matrix
+     *
+     * The matrix is inverted using a AlgLib.
+     * Set LU to use LU decomposition
+     *
+     * @code
+     * Matrix2D< double > m1_inv;
+     * m1.inv(m1_inv);
+     * @endcode
+     */
+    void invAlgLib(Matrix2D<T>& result, bool use_lu=false) const;
+
     /** Perform SVD decomposition
      *  *this = U * W * V^t
      * */
