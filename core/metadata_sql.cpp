@@ -1116,6 +1116,9 @@ void MDSql::setOperate(const MetaData *mdInLeft,
                     intersectLabels.push_back(*left);
                 }
             }
+        if (0 == intersectLabels.size()) {
+            REPORT_ERROR(ERR_MD_SQL, "No matching columns in the tables");
+        }
         mdInRight->addIndex(intersectLabels);
         mdInLeft->addIndex(intersectLabels);
     }
