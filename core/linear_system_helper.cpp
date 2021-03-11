@@ -29,6 +29,7 @@
 #include <cassert>
 
 // Solve linear systems ---------------------------------------------------
+ // FIXME deprecated (use solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results))
 void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result)
 {
     Matrix2D<double> &A=h.A;
@@ -68,32 +69,34 @@ void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result)
 
 void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
 {
-    // Compute AtA and Atb
     const size_t sizeI = h.A.mdimy;
     const size_t sizeJ = h.A.mdimx;
-    h.AtA.initZeros(sizeJ, sizeJ);
-    h.Atb.initZeros(sizeJ);
+    h.AtA.resizeNoCopy(sizeJ, sizeJ);
+    h.Atb.resizeNoCopy(sizeJ);
+    // compute AtA
+    h.At = h.A.transpose();
+    // for each row of the output
     for (size_t i = 0; i < sizeJ; ++i)
     {
+        // copy row of the At (nicely in memory)
+        // for each column of the output
         for (size_t j = 0; j < sizeJ; ++j)
         {
             double AtA_ij = 0;
+            // multiply elementwise row by row from At
             for (size_t k = 0; k < sizeI; ++k) {
-                const size_t tmp = k * sizeJ;
-                AtA_ij += h.A.mdata[tmp + i] * h.A.mdata[tmp + j];
+                AtA_ij += h.At.mdata[i * sizeI + k] * h.At.mdata[j * sizeI + k];
             }
-            const size_t offset = i * sizeJ;
-            h.AtA.mdata[offset + j] = AtA_ij;
+            h.AtA.mdata[i * sizeJ + j] = AtA_ij;
         }
     }
     // Compute the inverse of AtA
-    h.AtA.inv(h.AtAinv); // AtAinv is also square matrix, same size as AtA
+    h.AtA.invAlgLib(h.AtAinv); // AtAinv is also square matrix, same size as AtA
 
     assert(results.size() == h.bs.size());
     auto res_it = results.begin();
     auto b_it = h.bs.begin(); 
     for (; res_it != results.end(); ++res_it, ++b_it) {
-
         for (size_t i = 0; i < sizeJ; ++i)
         {
             double Atb_i = 0;

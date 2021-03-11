@@ -48,6 +48,7 @@ class WeightedLeastSquaresHelperMany
 {
 public:
     Matrix2D<double> A;
+    Matrix2D<double> At;
     std::vector<Matrix1D<double>> bs;
     Matrix1D<double> w; //Weights
     Matrix1D<double> w_sqrt; //Weights squared, will be computed
@@ -59,7 +60,10 @@ public:
 /** Solve Linear system Ax=b with pseudoinverse.
  * A and b must be set inside the PseudoInverseHelper, the rest of the
  * fields in PseudoInverseHelper are used by this routine to avoid
- * several allocation/deallocations */
+ * several allocation/deallocations 
+ * DEPRECATED, use solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+ * */
+// FIXME deprecated
 void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result);
 
 /** Solve Linear system Ax=[b] with pseudoinverse.
@@ -72,7 +76,11 @@ void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<d
  * several allocation/deallocations.
  *
  * The normal equations of this problem are A^t W A x = A^t W b,
- * where W is a diagonal matrix whose entries are in the vector w. */
+ * where W is a diagonal matrix whose entries are in the vector w.
+ * 
+ * DEPRECATED, use weightedLeastSquares(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+ *  */
+// FIXME deprecated
 void weightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &result);
 
 /** Solve Weighted least square problem Ax=b with pseudoinverse and weights w for multiple b.
