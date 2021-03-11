@@ -29,9 +29,13 @@
 #include <cstddef>
 #include <stdlib.h>
 #include <cstdint>
+#include <sys/mman.h> // MADVICE
+#include <unistd.h> // sysconf
 
 namespace memoryUtils
 {
+
+    const static long PAGE_SIZE = sysconf(_SC_PAGESIZE);
 
     inline constexpr size_t operator"" _kB(unsigned long long int bytes) {
       return 1024 * bytes;
@@ -59,13 +63,14 @@ namespace memoryUtils
 
 
     inline void* page_aligned_alloc(size_t bytes) {
-        return aligned_alloc(4096, bytes);
+        return aligned_alloc(PAGE_SIZE, bytes);
     }
 
     template<typename T>
     inline T* page_aligned_alloc(size_t elems, bool initToZero) {
         size_t bytes = elems * sizeof(T);
-        auto p = (T*)page_aligned_alloc(elems * sizeof(T));
+        auto p = (T*)page_aligned_alloc(bytes);
+        madvise(p, bytes, MADV_HUGEPAGE);
         if (initToZero) {
             memset(p, 0, bytes);
         }
