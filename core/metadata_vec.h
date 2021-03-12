@@ -496,7 +496,7 @@ public:
      *   imageMD.split(10, imagesGroups);
      * @endcode
      */
-    void split(size_t n, std::vector<MetaData> &results,
+    void split(size_t n, std::vector<MetaDataVec> &results,
                const MDLabel sortLabel=MDL_OBJID);
 
     /** Take a part from MetaData.
