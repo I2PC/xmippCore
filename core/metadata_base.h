@@ -383,22 +383,6 @@ public:
     virtual std::unique_ptr<MDRow> getRow(size_t id) const = 0;
     virtual bool getRow(MDRow &row, size_t id) const = 0;
 
-    /*bool bindValue(size_t id) const;
-
-    bool getAllRows(std::vector<MDRow> &rows) const;
-    bool getRow2(MDRow &row, size_t id) const;
-
-    ** Copy all the values in the input row in the current metadata
-    bool setRow(const MDRow &row, size_t id);
-    bool setRow2(const MDRow &row, size_t id);
-
-    ** Add a new Row and set values, return the objId of newly added object
-    size_t addRow(const MDRow &row);
-    void addRowOpt(const MDRow &row);
-    void addRows(const std::vector<MDRow> &rows);
-    void addMissingLabels(const MDRow &row);
-    size_t addRow2(const MDRow &row);*/
-
     /** Set label values from string representation.
      */
     virtual bool setValueFromStr(const MDLabel label, const String &value, size_t id);
@@ -530,21 +514,6 @@ public:
     virtual void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const = 0;
     virtual void print() const = 0;
 
-    /** Append data lines to file.
-     * This function can be used to add new data to
-     * an existing metadata. Now should be used with
-     * files with only one metadata, maybe can be extended later.
-     * For now it will not check any compatibility beetween the
-     * existent metadata and the new data to append.
-     */
-    // void append(const FileName &outFile) const;
-
-    /** Check if block exists in metadata file
-     * input full parh block@filename
-     * return false if metadata block does not exits
-     */
-    // bool existsBlock(const FileName &_inFile);
-
     /** Read data from file. Guess the blockname from the filename
      * @code
      * inFilename="first@md1.doc" -> filename = md1.doc, blockname = first
@@ -557,81 +526,9 @@ public:
      * @{
      */
 
-    /** Returns Max and Min values from a column in metadata
-     * These functions can only be used for labels of type double
-     */
-    // double getColumnMax(MDLabel column);
-
-    // double getColumnMin(MDLabel column);
-
-    /** Basic operations on columns data.
-     * Mainly perform replacements on string values and
-     * basic algebraic operations on numerical ones.
-     */
-    // void operate(const String &expression);
-
-    /** Replace an string in some column(label).
-     * The type of the column should be string. This function is a shortcut
-     * of the more genereal function operate
-     */
-    // void replace(const MDLabel label, const String &oldStr, const String &newStr);
-
-    /** Randomize a metadata.
-     * MDin is input and the "randomized"
-     * result will be in the "calling" Metadata.
-    */
-    // void randomize(const MetaData &MDin);
-
-    /**Remove duplicate entries for attribute in label
-     */
-    // void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
-
     /**Remove rows with MDL_ENABLED = -1 if this label is present
      */
     virtual void removeDisabled();
-
-    /*
-    * Sort a Metadata by a label.
-    * Sort the content of MDin comparing
-    * the label supplied, the result will
-    * be in the "calling" MetaData.
-    * Limit fixes the maximum number of returned rows
-    * Offset skips the first N rows
-    */
-    /*void sort(MetaData &MDin,
-              const MDLabel sortLabel,
-              bool asc=true,
-              int limit=-1,
-              int offset=0);*/
-
-
-    /*
-    * Sort a Metadata by a label.
-    * Sort the content of MDin comparing
-    * the label supplied, the result will
-    * be in the "calling" MetaData.
-    * If the input label is a vector field,
-    * you may supply label:col, to sort by that column,
-    * e.g., NMADisplacements:0
-    * Limit fixes the maximum number of returned rows
-    * Offset skips the first N rows
-    *
-    */
-    // void sort(MetaData &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
-
-    /** Split Metadata in several Metadatas.
-     * The Metadata will be divided in 'n'
-     * almost equally parts and the result will
-     * be a vector of Metadatas. The "calling"
-     * Metadata will no be modified.
-     * @code
-     *   // Divide the images metadata in 10 metadatas.
-     *   std::vector<MetaData> imagesGroups;
-     *   imageMD.split(10, imagesGroups);
-     * @endcode
-     */
-    //void split(size_t n, std::vector<MetaData> &results,
-    //           const MDLabel sortLabel=MDL_OBJID);
 
     /** Take a part from MetaData.
      * This function is equivallent to divide
@@ -734,57 +631,7 @@ public:
 
     virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
     virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
-
-    /** Expand Metadata with metadata pointed by label
-     * Given a metadata md1, with a column containing the name of another column metdata file mdxx
-     * add the columns in mdxx to md1
-     */
-    // void fillExpand(MDLabel label);
-
-    /** Fill column with constant value
-     */
-    // void fillConstant(MDLabel label, const String &value);
-
-    /** Fill column with random value
-     * mode should be: uniform, gaussian or student
-     * op1, op2 and op2 are interpreted for each mode:
-     * uniform: op1 and op2 are the limits of the interval
-     * gaussian: op1 and op2 are mean and std
-     * student: same as gaussian and use op3
-     */
-    // void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.);
-
-    /** Fill lineal, starting at some value and with some step */
-    // void fillLinear(MDLabel label, double initial, double step);
-
-    /** Copy all values from one column to another.
-     * Source column should exist
-     */
-    // void copyColumn(MDLabel labelDest, MDLabel labelSrc);
-
-    /** Same as previous, but copy to another metadata */
-    // void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc);
-
-    /** Rename column.
-     *
-     */
-    // void renameColumn(MDLabel oldLabel, MDLabel newLabel);
-
-    /** Rename several columns. This is an expensive operations so if several
-     * columns need to be changed do it using this function instead one by one
-     *
-     */
-    // void renameColumn(const std::vector<MDLabel> &oldLabel,
-    //         const std::vector<MDLabel> &newLabel);
-
-    // void metadataToVec(std::vector<MDRow> &vd);
-
-    // void vecToMetadata(const std::vector<MDRow> &rowMetadata);
-
-    /** 'is equal to' (equality).*/
-    // bool operator==(const MetaData& op) const;
-}
-;//class MetaData
+};//class MetaData
 
 /** print metadata
  *
