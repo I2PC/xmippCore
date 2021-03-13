@@ -2256,7 +2256,14 @@ void MetaDataDb::_selectSplitPart(const MetaDataDb &mdIn,
     mdIn.myMDSql->copyObjects(this, new MDQuery(n_images, first, sortLabel));
 }
 
-void MetaDataDb::selectSplitPart(const MetaDataDb &mdIn, size_t n, size_t part, const MDLabel sortLabel)
+void MetaDataDb::selectSplitPart(const MetaData &mdIn, size_t n, size_t part, const MDLabel sortLabel)
+{
+    if (dynamic_cast<const MetaDataDb*>(&mdIn) != nullptr)
+        return _selectSplitPart(dynamic_cast<const MetaDataDb&>(mdIn), n, part, sortLabel);
+    throw std::logic_error("Not yet implemented"); // TODO: use universal functions just on MetaData
+}
+
+void MetaDataDb::_selectSplitPart(const MetaDataDb &mdIn, size_t n, size_t part, const MDLabel sortLabel)
 {
     size_t mdSize = mdIn.size();
     if (n > mdSize)
@@ -2267,7 +2274,14 @@ void MetaDataDb::selectSplitPart(const MetaDataDb &mdIn, size_t n, size_t part, 
 
 }
 
-void MetaDataDb::selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjects, const MDLabel sortLabel)
+void MetaDataDb::selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel)
+{
+    if (dynamic_cast<const MetaDataDb*>(&mdIn) != nullptr)
+        return _selectRandomSubset(dynamic_cast<const MetaDataDb&>(mdIn), numberOfObjects, sortLabel);
+    throw std::logic_error("Not yet implemented"); // TODO: use universal functions just on MetaData
+}
+
+void MetaDataDb::_selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjects, const MDLabel sortLabel)
 {
     clear();
 
@@ -2277,8 +2291,16 @@ void MetaDataDb::selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjec
     sort(mdAux2,sortLabel);
 }
 
-void MetaDataDb::selectPart(const MetaDataDb &mdIn, size_t startPosition, size_t numberOfObjects,
-                          const MDLabel sortLabel)
+void MetaDataDb::selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
+                            const MDLabel sortLabel)
+{
+    if (dynamic_cast<const MetaDataDb*>(&mdIn) != nullptr)
+        return _selectPart(dynamic_cast<const MetaDataDb&>(mdIn), startPosition, numberOfObjects, sortLabel);
+    throw std::logic_error("Not yet implemented"); // TODO: use universal functions just on MetaData
+}
+
+void MetaDataDb::_selectPart(const MetaDataDb &mdIn, size_t startPosition, size_t numberOfObjects,
+                            const MDLabel sortLabel)
 {
     size_t mdSize = mdIn.size();
     if (startPosition < 0 || startPosition >= mdSize)

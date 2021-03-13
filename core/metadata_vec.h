@@ -511,10 +511,10 @@ public:
      */
     void selectSplitPart(const MetaData &mdIn,
                          size_t n, size_t part,
-                         const MDLabel sortLabel=MDL_OBJID);
+                         const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Select random subset */
-    void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+    void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Select some part from Metadata.
      * Select elements from input Metadata
@@ -523,7 +523,7 @@ public:
      * will be returned from startPosition to the end.
     */
     void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-                    const MDLabel sortLabel=MDL_OBJID);
+                    const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Makes filenames with absolute paths
     *

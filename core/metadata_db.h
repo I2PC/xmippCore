@@ -75,6 +75,15 @@ protected:
                           int n, int part, size_t mdSize,
                           const MDLabel sortLabel);
 
+    void _selectSplitPart(const MetaDataDb &mdIn,
+                          size_t n, size_t part,
+                          const MDLabel sortLabel=MDL_OBJID);
+
+    void _selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+
+    void _selectPart(const MetaDataDb &mdIn, size_t startPosition, size_t numberOfObjects,
+                     const MDLabel sortLabel=MDL_OBJID);
+
     /** This function is for generalize the sets operations
      * of unionDistinct, intersection, subtraction
      * which can be expressed in terms of
@@ -689,12 +698,12 @@ void fromVMetaData(VMetaData &vmdIn);
      * the input MetaData in n parts and take one.
      * The result will be in "calling" MetaData.
      */
-    void selectSplitPart(const MetaDataDb &mdIn,
+    void selectSplitPart(const MetaData &mdIn,
                          size_t n, size_t part,
-                         const MDLabel sortLabel=MDL_OBJID);
+                         const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Select random subset */
-    void selectRandomSubset(const MetaDataDb &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+    void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Select some part from Metadata.
      * Select elements from input Metadata
@@ -702,8 +711,8 @@ void fromVMetaData(VMetaData &vmdIn);
      * if the numberOfObjects is -1, all objects
      * will be returned from startPosition to the end.
     */
-    void selectPart(const MetaDataDb &mdIn, size_t startPosition, size_t numberOfObjects,
-                    const MDLabel sortLabel=MDL_OBJID);
+    void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
+                    const MDLabel sortLabel=MDL_OBJID) override;
 
     /** Makes filenames with absolute paths
     *

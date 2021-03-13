@@ -685,12 +685,13 @@ public:
      * the input MetaData in n parts and take one.
      * The result will be in "calling" MetaData.
      */
-    //void selectSplitPart(const MetaData &mdIn,
-    //                     size_t n, size_t part,
-    //                     const MDLabel sortLabel=MDL_OBJID);
+    virtual void selectSplitPart(const MetaData &mdIn,
+                                 size_t n, size_t part,
+                                 const MDLabel sortLabel=MDL_OBJID) = 0;
 
     /** Select random subset */
-    // void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID);
+    virtual void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects,
+                                    const MDLabel sortLabel=MDL_OBJID) = 0;
 
     /** Select some part from Metadata.
      * Select elements from input Metadata
@@ -698,8 +699,8 @@ public:
      * if the numberOfObjects is -1, all objects
      * will be returned from startPosition to the end.
     */
-    //void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-    //                const MDLabel sortLabel=MDL_OBJID);
+    virtual void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
+                            const MDLabel sortLabel=MDL_OBJID) = 0;
 
     /** Makes filenames with absolute paths
     *
