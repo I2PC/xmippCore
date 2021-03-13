@@ -234,6 +234,11 @@ void fromVMetaData(VMetaData &vmdIn);
     */
     bool setValueCol(const MDObject &mdValueIn) override;
 
+    template<class T>
+    bool setValueCol(const MDLabel label, const T &valueIn) {
+        return MetaData::setValueCol(label, valueIn);
+    }
+
     //private:
     /** This functions are using MDObject for set real values
      * there is an explicit function signature
