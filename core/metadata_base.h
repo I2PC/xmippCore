@@ -54,30 +54,13 @@
 #define DEFAULT_BLOCK_NAME "noname"
 
 
-/** Iterate over all elements in MetaData
- *
- * This macro is used to generate loops over all elements in the MetaData.
- * At each iteration the 'active object' is changed so you can perform
- * the set and get default method on the MetaData.
- *
- * @code
- * MetaData md;
- *   //...
- * FOR_ALL_OBJECTS_IN_METADATA(md)
- * {
- *     String imageFile;
- *     md.getValue(MDL_IMAGE, imageFile);
- *     std::cout << "Image file: " << imageFile << " ";
- * }
- * @endcode
- */
+// FIXME: deprecated
+// Preffered iterating is on right side of these macros
+#define FOR_ALL_OBJECTS_IN_METADATA(__md) for (size_t objId : __md.ids())
 
-#define FOR_ALL_OBJECTS_IN_METADATA(__md)   for (auto& row : __md)
-// auto due to const/non-const
+// FIXME: deprecated
+#define FOR_ALL_ROWS_IN_METADATA(__md) for (auto& row : __md)
 
-/* #define FOR_ALL_ROWS_IN_METADATA(__md) \
- *         for(MDRowIterator __iter(__md); __iter.hasNext(); __iter.moveNext(__md))
- */
 
 /** Which are the blocks available in a metadata */
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
