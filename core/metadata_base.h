@@ -144,6 +144,12 @@ public:
     void copyInfo(const MetaData& md);
 
 public:
+    /** Filename used in the read command, useful to write Error messages
+     *
+     */
+    FileName eFilename;
+    bool isMetadataFile;
+
     /** @name Constructors
      *  @{
      */
@@ -189,8 +195,6 @@ public:
      *  set to true  for column format (this is the default) (docfiles)
      */
     virtual void setColumnFormat(bool column) { _isColumnFormat = column; }
-
-    bool nextBlock(mdBuffer &buffer, mdBlock &block); // TODO
 
     /** Export medatada to xml file.
      *
@@ -253,7 +257,6 @@ public:
      * @{
      */
 
-
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
     virtual bool setValueCol(const MDObject &mdValueIn);
@@ -264,7 +267,6 @@ public:
      * md.setValueCol(MDL_IMAGE, "images/image00011.xmp");
      * @endcode
      */
-
     template<class T>
     bool setValueCol(const MDLabel label, const T &valueIn) {
         return setValueCol(MDObject(label, valueIn));
@@ -295,12 +297,6 @@ public:
      */
     virtual bool setValue(const MDObject &mdValueIn, size_t id);
     virtual bool getValue(MDObject &mdValueOut, size_t id) const;
-    /** Filename used in the read command, useful to write Error messages
-     *
-     */
-    FileName eFilename; // TODO
-    String extFile; //Filename extension TODO
-    bool isMetadataFile; // TODO
 
     /** Get the value of some label.
      * from the object that has id 'objectId'

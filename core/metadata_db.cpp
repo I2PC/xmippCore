@@ -1454,7 +1454,7 @@ void MetaDataDb::read(const FileName &_filename,
     //    if (blockName.empty())
     //        blockName = DEFAULT_BLOCK_NAME;
     inFile = _filename.removeBlockName();
-    extFile = _filename.getExtension();
+    String extFile = _filename.getExtension();
     blockName=escapeForRegularExpressions(blockName);
 
     _clear();
@@ -1637,7 +1637,7 @@ void MetaDataDb::readStar(const FileName &filename,
     is.seekg(0, std::ios::beg);//reset the stream position to the beginning to start parsing
 
     if (line.find(FileNameVersion) != String::npos ||
-        extFile == "xmd" || extFile == "star")
+        eFilename.getExtension() == "xmd" || eFilename.getExtension() == "star")
     {
         oldFormat = false;
         _comment.clear();

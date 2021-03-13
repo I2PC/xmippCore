@@ -180,8 +180,8 @@ public:
     void asVMetaData(VMetaData &vmdOut);
 
     /** Import from Vector Metadata.
- */
-void fromVMetaData(VMetaData &vmdIn);
+     */
+    void fromVMetaData(VMetaData &vmdIn);
 
     bool nextBlock(mdBuffer &buffer, mdBlock &block);
 
