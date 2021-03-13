@@ -26,29 +26,6 @@
 #include <algorithm>
 #include "metadata_base.h"
 
-MetaData::MetaData(const MetaData &md) {
-    this->copyInfo(md);
-}
-
-MetaData& MetaData::operator=(const MetaData &md) {
-    this->copyInfo(md);
-    return *this;
-}
-
-void MetaData::copyInfo(const MetaData& md) {
-    this->_fastStringSearch = md._fastStringSearch;
-    this->_fastStringSearchLabel = md._fastStringSearchLabel;
-    this->_path = md._path;
-    this->_comment = md._comment;
-    this->_isColumnFormat = md._isColumnFormat;
-    this->_precision = md._precision;
-    this->_inFile = md._inFile;
-    this->_activeLabels = md._activeLabels;
-    this->_ignoreLabels = md._ignoreLabels;
-    this->_maxRows = md._maxRows;
-    this->_parsedLines = md._parsedLines;
-}
-
 bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id) {
     addLabel(label);
 

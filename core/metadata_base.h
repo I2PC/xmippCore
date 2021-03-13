@@ -171,33 +171,7 @@ public:
      * or by a later reading from a MetaData file or old Xmipp formatted type.
      * if labels vectors is passed this labels are created on metadata
      */
-    MetaData();
-    MetaData(const std::vector<MDLabel> *labelsVector);
-
-    /** From File Constructor.
-     *
-     * The MetaData is created and data is read from provided FileName. Optionally, a vector
-     * of labels can be provided to read just those required labels
-     */
-    MetaData(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = nullptr);
-
-    /** Copy constructor
-     *
-     * Created a new metadata by copying all data from an existing MetaData object.
-     */
-    MetaData(const MetaData &md);
-
-    /** Assignment operator
-     *
-     * Copies MetaData from an existing MetaData object.
-     */
-    virtual MetaData& operator=(const MetaData &md);
-
-    /** Destructor
-     *
-     * Frees all used memory and destroys object.
-     */
-    ~MetaData();
+    MetaData() = default;
 
     /**Clear all data
      */
