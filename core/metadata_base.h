@@ -482,12 +482,12 @@ public:
 
     /** Return the object id of the first element in metadata. */
     virtual size_t firstRowId() const;
-    virtual size_t firstObject() const { return firstRowId(); } // deprecated: bad name
+    virtual size_t firstObject() const { return firstRowId(); } // FIXME: deprecated: bad name
     virtual size_t firstObject(const MDQuery&) const = 0;
 
     /** Goto last metadata object.*/
     virtual size_t lastRowId() const;
-    virtual size_t lastObject() const { return lastRowId(); } // deprecated: bad name
+    virtual size_t lastObject() const { return lastRowId(); } // FIXME: deprecated: bad name
 
     /** @name Search operations
      * @{
