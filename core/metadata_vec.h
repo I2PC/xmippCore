@@ -469,7 +469,7 @@ public:
     * Limit fixes the maximum number of returned rows
     * Offset skips the first N rows
     */
-    void sort(MetaData &MDin,
+    void sort(MetaDataVec &MDin,
               const MDLabel sortLabel,
               bool asc=true,
               int limit=-1,
@@ -488,7 +488,7 @@ public:
     * Offset skips the first N rows
     *
     */
-    void sort(MetaData &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
+    void sort(MetaDataVec &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
 
     /** Split Metadata in several Metadatas.
      * The Metadata will be divided in 'n'
