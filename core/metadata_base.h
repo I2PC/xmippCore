@@ -631,6 +631,48 @@ public:
 
     virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
     virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
+
+
+    /** Expand Metadata with metadata pointed by label
+     * Given a metadata md1, with a column containing the name of another column metdata file mdxx
+     * add the columns in mdxx to md1
+     */
+    virtual void fillExpand(MDLabel label) = 0;
+
+    /** Fill column with constant value
+     */
+    virtual void fillConstant(MDLabel label, const String &value) = 0;
+
+    /** Fill column with random value
+     * mode should be: uniform, gaussian or student
+     * op1, op2 and op2 are interpreted for each mode:
+     * uniform: op1 and op2 are the limits of the interval
+     * gaussian: op1 and op2 are mean and std
+     * student: same as gaussian and use op3
+     */
+    virtual void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) = 0;
+
+    /** Fill lineal, starting at some value and with some step */
+    virtual void fillLinear(MDLabel label, double initial, double step) = 0;
+
+    /** Copy all values from one column to another.
+     * Source column should exist
+     */
+    virtual void copyColumn(MDLabel labelDest, MDLabel labelSrc) = 0;
+
+    /** Same as previous, but copy to another metadata */
+    virtual void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) = 0;
+
+    /** Rename column.
+     *
+     */
+    virtual void renameColumn(MDLabel oldLabel, MDLabel newLabel) = 0;
+
+    /** Rename several columns. This is an expensive operations so if several
+     * columns need to be changed do it using this function instead one by one
+     */
+    virtual void renameColumn(const std::vector<MDLabel> &oldLabel,
+            const std::vector<MDLabel> &newLabel) = 0;
 };//class MetaData
 
 /** print metadata

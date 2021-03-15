@@ -827,50 +827,19 @@ public:
         return idIterator<true>(std::unique_ptr<MDDbIdIterator<true>>(new MDDbIdIterator<true>(*this, true)));
     }
 
-    /** Expand Metadata with metadata pointed by label
-     * Given a metadata md1, with a column containing the name of another column metdata file mdxx
-     * add the columns in mdxx to md1
-     */
-    void fillExpand(MDLabel label);
+    void fillExpand(MDLabel label) override;
+    void fillConstant(MDLabel label, const String &value) override;
+    void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) override;
+    void fillLinear(MDLabel label, double initial, double step) override;
 
-    /** Fill column with constant value
-     */
-    void fillConstant(MDLabel label, const String &value);
+    void copyColumn(MDLabel labelDest, MDLabel labelSrc) override;
+    void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) override;
 
-    /** Fill column with random value
-     * mode should be: uniform, gaussian or student
-     * op1, op2 and op2 are interpreted for each mode:
-     * uniform: op1 and op2 are the limits of the interval
-     * gaussian: op1 and op2 are mean and std
-     * student: same as gaussian and use op3
-     */
-    void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.);
-
-    /** Fill lineal, starting at some value and with some step */
-    void fillLinear(MDLabel label, double initial, double step);
-
-    /** Copy all values from one column to another.
-     * Source column should exist
-     */
-    void copyColumn(MDLabel labelDest, MDLabel labelSrc);
-
-    /** Same as previous, but copy to another metadata */
-    void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc);
-
-    /** Rename column.
-     *
-     */
-    void renameColumn(MDLabel oldLabel, MDLabel newLabel);
-
-    /** Rename several columns. This is an expensive operations so if several
-     * columns need to be changed do it using this function instead one by one
-     *
-     */
+    void renameColumn(MDLabel oldLabel, MDLabel newLabel) override;
     void renameColumn(const std::vector<MDLabel> &oldLabel,
-            const std::vector<MDLabel> &newLabel);
+            const std::vector<MDLabel> &newLabel) override;
 
     void metadataToVec(std::vector<MDRowSql> &vd);
-
     void vecToMetadata(const std::vector<MDRow> &rowMetadata);
 
     /** 'is equal to' (equality).*/
