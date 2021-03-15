@@ -14,7 +14,7 @@ struct MDBaseRowIterator {
     virtual void increment() = 0;
     virtual bool operator==(const MDBaseRowIterator& other) const = 0;
     virtual bool operator!=(const MDBaseRowIterator& other) const { return !(*this == other); }
-    virtual typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() = 0;
+    virtual typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() = 0;
 };
 
 /** Iterates over metadata ids */

@@ -724,12 +724,12 @@ public:
     template <bool IsConst>
     struct MDDbRowIterator : public MDBaseRowIterator<IsConst> {
     private:
-        typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
-        typename choose<IsConst, MDRowSqlConst, MDRowSql>::type _row;
+        typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
+        typename TypeHelpers::choose<IsConst, MDRowSqlConst, MDRowSql>::type _row;
         bool _end;
 
     public:
-        MDDbRowIterator(typename choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, bool _end = false)
+        MDDbRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, bool _end = false)
             : _mdd(mdd), _end(_end) {
             if (_end)
                 return;
@@ -759,7 +759,7 @@ public:
             return false;
         }
 
-        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
+        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
     };
 
     // TODO: use std::make_unique when ported to C++14

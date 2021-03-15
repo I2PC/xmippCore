@@ -534,13 +534,13 @@ public:
     template <bool IsConst>
     struct MDVecRowIterator : public MDBaseRowIterator<IsConst> {
     private:
-        typename choose<IsConst, const MetaDataVec&, MetaDataVec&>::type _mdv;
+        typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type _mdv;
         size_t _i;
-        using RowType = typename choose<IsConst, MDRowVecConst, MDRowVec>::type;
+        using RowType = typename TypeHelpers::choose<IsConst, MDRowVecConst, MDRowVec>::type;
         std::unique_ptr<RowType> _row;
 
     public:
-        MDVecRowIterator(typename choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
+        MDVecRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
             : _mdv(mdv), _i(i), _row(new RowType(mdv._rows.at(i), i, mdv._label_to_col)) {}
 
         // TODO: use std::make_unique when ported to C++14
@@ -560,7 +560,7 @@ public:
             return false;
         }
 
-        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return *_row; }
+        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return *_row; }
     };
 
     // TODO: use std::make_unique when ported to C++14

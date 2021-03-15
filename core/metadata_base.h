@@ -578,7 +578,7 @@ public:
         }
         bool operator==(const rowIterator& other) { return other.impl == this->impl; }
         bool operator!=(const rowIterator& other) { return !(*this == other); }
-        typename choose<IsConst, MDRowConst&, MDRow&>::type operator*() const { return **impl; }
+        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() const { return **impl; }
     };
 
     using iterator = rowIterator<false>;
@@ -616,11 +616,11 @@ public:
 
     template <bool IsConst>
     struct IdIteratorProxy {
-        typename choose<IsConst, const MetaData&, MetaData&>::type _md;
+        typename TypeHelpers::choose<IsConst, const MetaData&, MetaData&>::type _md;
 
-        IdIteratorProxy(typename choose<IsConst, const MetaData&, MetaData&>::type md) : _md(md) { }
-        typename choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type begin() { return _md.id_begin(); };
-        typename choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type end() { return _md.id_end(); };
+        IdIteratorProxy(typename TypeHelpers::choose<IsConst, const MetaData&, MetaData&>::type md) : _md(md) { }
+        typename TypeHelpers::choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type begin() { return _md.id_begin(); };
+        typename TypeHelpers::choose<IsConst, MetaData::id_const_iterator, MetaData::id_iterator>::type end() { return _md.id_end(); };
     };
 
     virtual id_iterator id_begin() = 0;

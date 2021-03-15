@@ -138,7 +138,9 @@ public:
             ++i;
             return *this;
         }
-        typename choose<IsConst, const MDObject*, MDObject*>::type operator*() const { return row->iteratorValue(i); }
+        typename TypeHelpers::choose<IsConst, const MDObject*, MDObject*>::type operator*() const {
+            return row->iteratorValue(i);
+        }
         bool operator==(const iterator_ptr& other) const { return other.i == this->i; }
         bool operator!=(const iterator_ptr& other) const { return !(*this == other); }
     };
@@ -210,7 +212,9 @@ public:
             ++i;
             return *this;
         }
-        typename choose<IsConst, const MDObject*, MDObject*>::type operator*() const { return row->iteratorValue(i); }
+        typename TypeHelpers::choose<IsConst, const MDObject*, MDObject*>::type operator*() const {
+            return row->iteratorValue(i);
+        }
         bool operator==(const iterator_ptr& other) const { return other.i == this->i; }
         bool operator!=(const iterator_ptr& other) const { return !(*this == other); }
     };
