@@ -142,6 +142,7 @@ public:
     size_t _maxRows, _parsedLines;
 
     void copyInfo(const MetaData& md);
+    void baseClear();
 
 public:
     /** Filename used in the read command, useful to write Error messages

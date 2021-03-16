@@ -115,15 +115,7 @@ void MetaDataDb::_clear(bool onlyData)
     }
     else
     {
-        _path.clear();
-        _comment.clear();
-        _fastStringSearch.clear();
-        _fastStringSearchLabel = MDL_UNDEFINED;
-
-        _activeLabels.clear();
-        _ignoreLabels.clear();
-        _isColumnFormat = true;
-        _inFile = FileName();
+        this->baseClear();
         myMDSql->clearMd();
     }
     eFilename="";
@@ -131,7 +123,6 @@ void MetaDataDb::_clear(bool onlyData)
 
 void MetaDataDb::clear()
 {
-    //_clear(true);
     init();
 }
 

@@ -66,3 +66,15 @@ bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel
     location = std::find(labelsVector.begin(), labelsVector.end(), label);
     return (location != labelsVector.end());
 }
+
+void MetaData::baseClear() {
+    _path.clear();
+    _comment.clear();
+    _fastStringSearch.clear();
+    _fastStringSearchLabel = MDL_UNDEFINED;
+
+    _activeLabels.clear();
+    _ignoreLabels.clear();
+    _isColumnFormat = true;
+    _inFile = FileName();
+}
