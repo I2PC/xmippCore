@@ -78,3 +78,15 @@ void MetaData::baseClear() {
     _isColumnFormat = true;
     _inFile = FileName();
 }
+
+void MetaData::copyInfo(const MetaData& md) {
+    _path = md._path;
+    _comment = md._comment;
+    _fastStringSearch = md._fastStringSearch;
+    _fastStringSearchLabel = md._fastStringSearchLabel;
+
+    _activeLabels = md._activeLabels;
+    _ignoreLabels = md._ignoreLabels;
+    _isColumnFormat = md._isColumnFormat;
+    _inFile = md._inFile;
+}
