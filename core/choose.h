@@ -18,6 +18,6 @@ struct choose<false, typeTrue, typeFalse> {
    typedef typeFalse type;
 };
 
-};//end namespace TypeHelpers
+}//end namespace TypeHelpers
 
 #endif
