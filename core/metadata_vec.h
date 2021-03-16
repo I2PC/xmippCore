@@ -61,16 +61,6 @@ protected:
      */
     void init(const std::vector<MDLabel>& labelsVector);
 
-    /** Copy info variables from another metadata
-     * @ingroup MetaDataConstructors
-     */
-    void copyInfo(const MetaData &md);
-
-    /** Copy all data from another metadata
-     * @ingroup MetaDataConstructors
-     */
-    void copyMetadata(const MetaData &md, bool copyObjects = true);
-
     /** This have the same logic of the public one,
      * but doesn't perform any range(which implies do a size()) checks.
      */
@@ -132,20 +122,14 @@ public:
      * Created a new metadata by copying all data from an existing MetaData object.
      */
     MetaDataVec(const MetaData &md);
-    MetaDataVec(const MetaDataVec &md);
+    MetaDataVec(const MetaDataVec &md) = default;
 
     /** Assignment operator
      *
      * Copies MetaData from an existing MetaData object.
      */
     MetaDataVec& operator=(const MetaData &md);
-    MetaDataVec& operator=(const MetaDataVec &md);
-
-    /** Destructor
-     *
-     * Frees all used memory and destroys object.
-     */
-    ~MetaDataVec();
+    MetaDataVec& operator=(const MetaDataVec &md) = default;
 
     /**Clear all data
      */
@@ -191,7 +175,9 @@ public:
      * @{
      */
 
-    size_t addRow(const MDRowVec &row);
+    template <typename T> // T could be only MDRow or MDRowConst
+    size_t addRow(const T &row);
+
     void addRows(const std::vector<MDRowVec> &rows);
 
 
