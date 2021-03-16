@@ -231,6 +231,7 @@ public:
     bool getRow(MDRow &row, size_t id) const override;
     bool getRow(MDRowVec &row, size_t id) const;
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
+    size_t getRowId(size_t i) const;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
 
@@ -544,9 +545,8 @@ public:
         MDVecRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
             : _mdv(mdv), _i(i), _row(new RowType(mdv._rows.at(i), i, mdv._label_to_col)) {}
 
-        // TODO: use std::make_unique when ported to C++14
         std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
-            return std::unique_ptr<MDVecRowIterator>(new MDVecRowIterator(_mdv, _i));
+            return MemHelpers::make_unique<MDVecRowIterator<IsConst>>(_mdv, _i);
         }
 
         void increment() override {
@@ -564,7 +564,6 @@ public:
         typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return *_row; }
     };
 
-    // TODO: use std::make_unique when ported to C++14
     iterator begin() override {
         return {MemHelpers::make_unique<MDVecRowIterator<false>>(*this, 0)};
     }
@@ -580,17 +579,46 @@ public:
     }
 
 
-    // TODO
+    template <bool IsConst>
+    struct MDVecIdIterator : public MDBaseIdIterator<IsConst> {
+    private:
+        const MetaDataVec& _mdv;
+        size_t _i;
+
+    public:
+        MDVecIdIterator(const MetaDataVec& mdv, size_t i)
+            : _mdv(mdv), _i(i) {}
+
+        bool operator==(const MDBaseIdIterator<IsConst>& other) const override {
+            const MDVecIdIterator<IsConst>* dri = dynamic_cast<const MDVecIdIterator<IsConst>*>(&other);
+            if (dri != nullptr)
+                return this->_i == dri->_i;
+            return false;
+        }
+
+        size_t operator*() override { return _mdv.getRowId(_i); }
+
+        void increment() override { this->_i++; }
+
+        std::unique_ptr<MDBaseIdIterator<IsConst>> clone() override {
+            return MemHelpers::make_unique<MDVecIdIterator<IsConst>>(_mdv, _i);
+        }
+    };
+
     id_iterator id_begin() override {
+        return {MemHelpers::make_unique<MDVecIdIterator<false>>(*this, 0)};
     }
 
     id_iterator id_end() override {
+        return {MemHelpers::make_unique<MDVecIdIterator<false>>(*this, this->size())};
     }
 
     id_const_iterator id_begin() const override {
+        return {MemHelpers::make_unique<MDVecIdIterator<true>>(*this, 0)};
     }
 
     id_const_iterator id_end() const override {
+        return {MemHelpers::make_unique<MDVecIdIterator<true>>(*this, this->size())};
     }
 
     void fillExpand(MDLabel label) override;
@@ -607,8 +635,7 @@ public:
 
     /** 'is equal to' (equality).*/
     bool operator==(const MetaData& op) const;
-}
-;//class MetaData
+};//class MetaData
 
 /** print metadata
  *
