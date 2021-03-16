@@ -28,6 +28,7 @@
 
 #include <regex.h>
 #include <cmath>
+#include "memory.h"
 #include "metadata_base.h"
 #include "metadata_label.h"
 #include "metadata_object.h"
@@ -739,9 +740,8 @@ public:
             this->increment();
         }
 
-        // TODO: use std::make_unique when ported to C++14
         std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
-            return std::unique_ptr<MDDbRowIterator>(new MDDbRowIterator<IsConst>(_mdd, _end));
+            return MemHelpers::make_unique<MDDbRowIterator<IsConst>>(_mdd, _end);
         }
 
         void increment() override {
@@ -762,19 +762,18 @@ public:
         typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
     };
 
-    // TODO: use std::make_unique when ported to C++14
     iterator begin() override {
-        return rowIterator<false>(std::unique_ptr<MDDbRowIterator<false>>(new MDDbRowIterator<false>(*this)));
+        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this)};
     }
     iterator end() override {
-        return rowIterator<false>(std::unique_ptr<MDDbRowIterator<false>>(new MDDbRowIterator<false>(*this, true)));
+        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this, true)};
     }
 
     const_iterator begin() const override {
-        return rowIterator<true>(std::unique_ptr<MDDbRowIterator<true>>(new MDDbRowIterator<true>(*this)));
+        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this)};
     }
     const_iterator end() const override {
-        return rowIterator<true>(std::unique_ptr<MDDbRowIterator<true>>(new MDDbRowIterator<true>(*this, true)));
+        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this, true)};
     }
 
 
@@ -805,26 +804,25 @@ public:
 
         void increment() override { this->_i++; }
 
-        // TODO: use std::make_unique when ported to C++14
         std::unique_ptr<MDBaseIdIterator<IsConst>> clone() override {
-            return std::unique_ptr<MDDbIdIterator>(new MDDbIdIterator<IsConst>(_mdd, _last, _pQuery));
+            return MemHelpers::make_unique<MDDbIdIterator<IsConst>>(_mdd, _last, _pQuery);
         }
     };
 
     id_iterator id_begin() override {
-        return idIterator<false>(std::unique_ptr<MDDbIdIterator<false>>(new MDDbIdIterator<false>(*this)));
+        return {MemHelpers::make_unique<MDDbIdIterator<false>>(*this)};
     }
 
     id_iterator id_end() override {
-        return idIterator<false>(std::unique_ptr<MDDbIdIterator<false>>(new MDDbIdIterator<false>(*this, true)));
+        return {MemHelpers::make_unique<MDDbIdIterator<false>>(*this, true)};
     }
 
     id_const_iterator id_begin() const override {
-        return idIterator<true>(std::unique_ptr<MDDbIdIterator<true>>(new MDDbIdIterator<true>(*this)));
+        return {MemHelpers::make_unique<MDDbIdIterator<true>>(*this)};
     }
 
     id_const_iterator id_end() const override {
-        return idIterator<true>(std::unique_ptr<MDDbIdIterator<true>>(new MDDbIdIterator<true>(*this, true)));
+        return {MemHelpers::make_unique<MDDbIdIterator<true>>(*this, true)};
     }
 
     void fillExpand(MDLabel label) override;

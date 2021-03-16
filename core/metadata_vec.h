@@ -28,6 +28,7 @@
 
 #include <memory>
 #include <exception>
+#include "memory.h"
 #include "metadata_base.h"
 #include "metadata_base_it.h"
 #include "metadata_row_vec.h"
@@ -51,7 +52,7 @@ using MetaDataVecRow = std::vector<MDObject>;
 class MetaDataVec: public MetaData {
 protected:
     std::vector<MetaDataVecRow> _rows;
-    std::array<int, MDL_LAST_LABEL> _label_to_col;
+    std::array<int, MDL_LAST_LABEL> _label_to_col; // -1 = no mapping
     std::vector<MDLabel> _col_to_label;
     size_t _no_columns = 0;
 
@@ -565,17 +566,17 @@ public:
 
     // TODO: use std::make_unique when ported to C++14
     iterator begin() override {
-        return rowIterator<false>(std::unique_ptr<MDVecRowIterator<false>>(new MDVecRowIterator<false>(*this, 0)));
+        return {MemHelpers::make_unique<MDVecRowIterator<false>>(*this, 0)};
     }
     iterator end() override {
-        return rowIterator<false>(std::unique_ptr<MDVecRowIterator<false>>(new MDVecRowIterator<false>(*this, this->size())));
+        return {MemHelpers::make_unique<MDVecRowIterator<false>>(*this, this->size())};
     }
 
     const_iterator begin() const override {
-        return rowIterator<true>(std::unique_ptr<MDVecRowIterator<true>>(new MDVecRowIterator<true>(*this, 0)));
+        return {MemHelpers::make_unique<MDVecRowIterator<true>>(*this, 0)};
     }
     const_iterator end() const override {
-        return rowIterator<true>(std::unique_ptr<MDVecRowIterator<true>>(new MDVecRowIterator<true>(*this, this->size())));
+        return {MemHelpers::make_unique<MDVecRowIterator<true>>(*this, this->size())};
     }
 
 
