@@ -297,9 +297,9 @@ public:
     bool execGetRow(MDRow &row) const;
     bool execGetRow(MDRowConst &row) const;
     void finalizeGetRow(void) const;
-    std::unique_ptr<MDRow> getRow(size_t id) const override;
-    bool getRow(MDRow &row, size_t id) const override;
-    bool getRow(MDRowSql &row, size_t id) const;
+    std::unique_ptr<MDRow> getRow(size_t id) override;
+    bool getRow(MDRow &row, size_t id) override;
+    bool getRow(MDRowSql &row, size_t id);
     bool getAllRows(std::vector<MDRowSql> &rows) const;
     bool getRow2(MDRow &row, size_t id) const;
 

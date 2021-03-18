@@ -348,14 +348,14 @@ bool MetaDataDb::getAllRows(std::vector<MDRowSql> &rows) const
     return true;
 }
 
-std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) const {
+std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) {
     std::unique_ptr<MDRowSql> row(new MDRowSql());
     if (!getRow(*row, id))
         return nullptr;
     return std::move(row);
 }
 
-bool MetaDataDb::getRow(MDRow &row, size_t id) const
+bool MetaDataDb::getRow(MDRow &row, size_t id)
 {
     if (id == BAD_OBJID)
         REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
@@ -374,7 +374,7 @@ bool MetaDataDb::getRow(MDRow &row, size_t id) const
     return true;
 }
 
-bool MetaDataDb::getRow(MDRowSql &row, size_t id) const
+bool MetaDataDb::getRow(MDRowSql &row, size_t id)
 {
     return getRow(row, id);
 }
