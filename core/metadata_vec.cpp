@@ -65,6 +65,28 @@ void MetaDataVec::init(const std::vector<MDLabel> &labelsVector) {
     _no_columns = col;
 }
 
+int MetaDataVec::_labelIndex(MDLabel label) const {
+    return this->_label_to_col[label];
+}
+
+const MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) const {
+    int labelIndex = _labelIndex(label);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    return this->_rows.at(i).at(labelIndex);
+}
+
+MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) {
+    int labelIndex = _labelIndex(label);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    return this->_rows.at(i).at(labelIndex);
+}
+
+size_t MetaDataVec::_rowIndex(size_t id) const {
+    return this->_id_to_index.at(id);
+}
+
 void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
     throw NotImplemented();
 }
@@ -98,28 +120,35 @@ void MetaDataVec::clear() {
 }
 
 template <typename T>
-size_t MetaDataVec::addRow(const T &row) {
+void MetaDataVec::_setRow(const T &row, size_t index) {
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
         if (row.containsLabel(label) && !this->containsLabel(label))
             this->addLabel(label);
     }
 
-    MetaDataVecRow newRow;
+    MetaDataVecRow& editRow = this->_rows[index];
+    editRow.clear();
 
     for (size_t coli = 0; coli < this->_no_columns; coli++)
-        newRow.push_back({this->_col_to_label[coli]});
+        editRow.push_back({this->_col_to_label[coli]});
 
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
         if (row.containsLabel(label)) {
             size_t ourCol = _label_to_col[label];
-            row.getValue(newRow[ourCol]);
+            row.getValue(editRow[ourCol]);
         }
     }
+}
 
+template <typename T>
+size_t MetaDataVec::addRow(const T &row) {
+    // FIXME: should id be changed or kept same?
+    MetaDataVecRow newRow;
     _rows.push_back(newRow);
-    return getRowId(_rows.size()-1); // FIXME: should id be changed or kept same?
+    this->_setRow(row, _rows.size()-1);
+    return getRowId(_rows.size()-1);
 }
 
 void MetaDataVec::addRows(const std::vector<MDRowVec> &rows) {
@@ -131,47 +160,142 @@ int MetaData::getMaxStringLength(const MDLabel thisLabel) const {
     return 0xFF;
 }
 
+bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
+    int labelIndex = this->_labelIndex(mdValueIn.label);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    for (auto& vecRow : this->_rows)
+        vecRow.at(labelIndex) = mdValueIn;
+    return true;
+}
 
-/*bool MetaData::setValueCol(const MDObject &mdValueIn) {
-}*/
+bool MetaDataVec::setValue(const MDObject &mdValueIn, size_t id) {
+    this->_getObject(this->_rowIndex(id), mdValueIn.label) = mdValueIn;
+    return true;
+}
 
+bool MetaDataVec::getValue(MDObject &mdValueOut, size_t id) const {
+    mdValueOut = this->_getObject(this->_rowIndex(id), mdValueOut.label);
+    return true;
+}
 
-/*bool setValue(const MDObject &mdValueIn, size_t id);
+std::unique_ptr<MDRow> MetaDataVec::getRow(size_t id) {
+    size_t i = this->_rowIndex(id);
+    return MemHelpers::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
+}
 
-bool getValue(MDObject &mdValueOut, size_t id) const;
+bool MetaDataVec::getRow(MDRow &row, size_t id) {
+    size_t i = this->_rowIndex(id);
+    row = MDRowVec(this->_rows[i], i, this->_label_to_col);
+    return true;
+}
 
-std::unique_ptr<MDRow> getRow(size_t id) const override;
-bool getRow(MDRow &row, size_t id) const override;
-bool getRow(MDRowVec &row, size_t id) const;
-bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
-size_t getRowId(size_t i) const;
-void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
-void setColumnValues(const std::vector<MDObject> &valuesIn) override;*/
+void MetaDataVec::getRow(MDRowVec &row, size_t id) {
+    size_t i = this->_rowIndex(id);
+    row = MDRowVec(this->_rows[i], i, this->_label_to_col);
+}
+
+bool MetaDataVec::getRowValues(size_t id, std::vector<MDObject> &values) const {
+    size_t i = this->_rowIndex(id);
+    values = this->_rows[i];
+    return true;
+}
+
+size_t MetaDataVec::getRowId(size_t i) const {
+    size_t id;
+    this->_getObject(i, MDL_OBJID).getValue(id);
+    return id;
+}
+
+void MetaDataVec::getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const {
+    valuesOut.clear();
+    int labelIndex = this->_labelIndex(label);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    for (const auto& vecRow : this->_rows)
+        valuesOut.push_back(vecRow.at(labelIndex));
+}
+
+void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
+    for (size_t i = 0; i < std::min(valuesIn.size(), this->_rows.size()); i++) {
+        int labelIndex = this->_labelIndex(valuesIn[i].label);
+        if (labelIndex < 0)
+            this->addLabel(valuesIn[i].label);
+        labelIndex = this->_labelIndex(valuesIn[i].label);
+        if (labelIndex < 0)
+            throw ColumnDoesNotExist(); // internal error
+        this->_rows[i][labelIndex] = valuesIn[i];
+    }
+}
 
 bool MetaDataVec::setRow(const MDRow &row, size_t id) {
+    this->_setRow(row, this->_rowIndex(id));
+    return true;
 }
 
 bool MetaDataVec::setRow(const MDRowConst &row, size_t id) {
+    this->_setRow(row, this->_rowIndex(id));
+    return true;
 }
 
-bool MetaDataVec::setRow(const MDRowVec &row, size_t id) {
-}
-
-bool MetaDataVec::setRow(const MDRowVecConst &row, size_t id) {
-}
-
+// FIXME: maybe remove?
 /*bool setValueFromStr(const MDLabel label, const String &value, size_t id);
-bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;
-bool isEmpty() const override;
-size_t size() const override;
-bool containsLabel(const MDLabel label) const override;
-bool addLabel(const MDLabel label, int pos = -1) override;
-bool removeLabel(const MDLabel label) override;
-bool keepLabels(const std::vector<MDLabel> &labels) override;
+bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;*/
 
-size_t addObject() override;
+bool MetaDataVec::isEmpty() const {
+    return this->_rows.empty();
+}
 
-void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
+size_t MetaDataVec::size() const {
+    return this->_rows.size();
+}
+
+bool MetaDataVec::containsLabel(const MDLabel label) const {
+    return this->_labelIndex(label) > -1;
+}
+
+bool MetaDataVec::addLabel(const MDLabel label, int pos) {
+    if (pos != -1)
+        throw NotImplemented();
+    if (this->_label_to_col[label] != -1)
+        return true;
+
+    this->_no_columns++;
+    size_t column = this->_no_columns-1;
+    this->_label_to_col[label] = column;
+    this->_col_to_label[column] = label;
+    return true;
+}
+
+bool MetaDataVec::removeLabel(const MDLabel label) {
+    if (this->_label_to_col[label] == -1)
+        return false;
+    int column = this->_label_to_col[label];
+
+    for (auto& vecRow : this->_rows)
+        if (static_cast<int>(vecRow.size()) > column)
+            vecRow.erase(vecRow.begin()+column); // this is expensive
+
+    // FIXME: test this properly
+    this->_label_to_col[label] = -1;
+    for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
+        if (this->_label_to_col[i] > column) {
+            this->_label_to_col[i]--;
+            this->_col_to_label[this->_label_to_col[i]] = MDLabel(i);
+        }
+    }
+    return true;
+}
+
+bool MetaDataVec::keepLabels(const std::vector<MDLabel> &labels) {
+    throw NotImplemented(); // not implemented yet
+}
+
+size_t MetaDataVec::addObject() {
+    throw NotImplemented(); // not implemented yet
+}
+
+/*void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
 void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
 void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true) override;
 
@@ -182,21 +306,30 @@ void removeObjects(const std::vector<size_t> &toRemove) override;
 int removeObjects() override;
 int removeObjects(const MDQuery&) override;
 
-void addItemId();
+void addItemId();*/
 
-size_t firstRowId() const override;
-size_t firstObject(const MDQuery&) const override;
-size_t lastRowId() const override;
+size_t MetaDataVec::firstRowId() const {
+    return this->getRowId(0);
+}
 
+size_t MetaDataVec::lastRowId() const {
+    return this->getRowId(this->size()-1);
+}
+
+/*size_t firstObject(const MDQuery&) const override;
 void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const override;
 void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const override;
 
 size_t countObjects(const MDQuery&) const override;
 bool containsObject(size_t objectId) const override;
 bool containsObject(const MDQuery&) const override;
+*/
 
-bool containsObject(size_t objectId);
+bool MetaDataVec::containsObject(size_t objectId) {
+    return this->_id_to_index.find(objectId) != this->_id_to_index.end();
+}
 
+/*
 void _writeRows(std::ostream &os) const;
 
 void writeStar(const FileName &outFile,const String & blockName="", WriteModeMetaData mode=MD_OVERWRITE) const;

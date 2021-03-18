@@ -28,15 +28,25 @@
 
 #include <memory>
 #include <exception>
+#include <unordered_map>
 #include "memory.h"
 #include "metadata_base.h"
 #include "metadata_base_it.h"
 #include "metadata_row_vec.h"
 
-class NotImplemented : public std::logic_error
-{
+class NotImplemented : public std::logic_error {
 public:
-    NotImplemented() : std::logic_error("Function not yet implemented") { };
+    NotImplemented() : std::logic_error("Function not yet implemented") {};
+};
+
+class ColumnDoesNotExist : public std::logic_error {
+public:
+    ColumnDoesNotExist() : std::logic_error("Column does not exist") {};
+};
+
+class RowDoesNotExist : public std::logic_error {
+public:
+    RowDoesNotExist() : std::logic_error("Row does not exist") {};
 };
 
 
@@ -55,6 +65,7 @@ protected:
     std::array<int, MDL_LAST_LABEL> _label_to_col; // -1 = no mapping
     std::vector<MDLabel> _col_to_label;
     size_t _no_columns = 0;
+    std::unordered_map<size_t, size_t> _id_to_index;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
@@ -89,6 +100,13 @@ protected:
      */
     std::vector<MDObject> getObjectsForActiveLabels() const;
 
+    int _labelIndex(MDLabel label) const;
+    const MDObject& _getObject(size_t i, MDLabel label) const;
+    MDObject& _getObject(size_t i, MDLabel label);
+    size_t _rowIndex(size_t id) const;
+
+    template <typename T> // TODO: T = MDRow, MDRowConst
+    void _setRow(const T &row, size_t index);
 
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
@@ -213,9 +231,9 @@ public:
         return MetaData::getValue(label, valueOut, id);
     }
 
-    std::unique_ptr<MDRow> getRow(size_t id) const override;
-    bool getRow(MDRow &row, size_t id) const override;
-    bool getRow(MDRowVec &row, size_t id) const;
+    std::unique_ptr<MDRow> getRow(size_t id) override;
+    bool getRow(MDRow &row, size_t id) override;
+    void getRow(MDRowVec &row, size_t id);
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     size_t getRowId(size_t i) const;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
@@ -223,8 +241,6 @@ public:
 
     bool setRow(const MDRow &row, size_t id);
     bool setRow(const MDRowConst &row, size_t id);
-    bool setRow(const MDRowVec &row, size_t id);
-    bool setRow(const MDRowVecConst &row, size_t id);
 
     template<class T>
     void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
