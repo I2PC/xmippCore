@@ -96,6 +96,10 @@ mdBlock;
 #define BLOCK_INIT(b) b.begin = b.end = b.loop = nullptr; b.nameSize = 0
 #define BLOCK_NAME(b, s) s.assign(b.begin, b.nameSize)
 
+class ObjectDoesNotExist: public std::logic_error {
+public:
+    ObjectDoesNotExist() : std::logic_error("Object does not exist") {};
+};
 
 /** Class to manage data files.
  *

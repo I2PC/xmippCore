@@ -178,14 +178,33 @@ bool MetaDataVec::getValue(MDObject &mdValueOut, size_t id) const {
 }
 
 std::unique_ptr<MDRow> MetaDataVec::getRow(size_t id) {
-    size_t i = this->_rowIndex(id);
+    int i = this->_rowIndex(id);
+    if (i < 0)
+        return nullptr;
     return MemHelpers::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
 }
 
 std::unique_ptr<const MDRow> MetaDataVec::getRow(size_t id) const {
-    size_t i = this->_rowIndex(id);
+    int i = this->_rowIndex(id);
+    if (i < 0)
+        return nullptr;
     return MemHelpers::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
 }
+
+MDRowVec MetaDataVec::getRowVec(size_t id) {
+    size_t i = this->_rowIndex(id);
+    if (i < 0)
+        throw ObjectDoesNotExist();
+    return MDRowVec(this->_rows[i], i, this->_label_to_col);
+}
+
+const MDRowVec MetaDataVec::getRowVec(size_t id) const {
+    size_t i = this->_rowIndex(id);
+    if (i < 0)
+        throw ObjectDoesNotExist();
+    return MDRowVec(this->_rows[i], i, this->_label_to_col);
+}
+
 
 bool MetaDataVec::getRow(MDRow &row, size_t id) {
     size_t i = this->_rowIndex(id);

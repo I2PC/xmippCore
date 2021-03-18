@@ -232,6 +232,9 @@ public:
     std::unique_ptr<MDRow> getRow(size_t id) override;
     std::unique_ptr<const MDRow> getRow(size_t id) const override;
 
+    MDRowVec getRowVec(size_t id);
+    const MDRowVec getRowVec(size_t id) const;
+
     bool getRow(MDRow &row, size_t id) override;
     void getRow(MDRowVec &row, size_t id);
 
