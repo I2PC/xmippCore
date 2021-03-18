@@ -355,6 +355,13 @@ std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) {
     return std::move(row);
 }
 
+std::unique_ptr<MDRowConst> MetaDataDb::getRow(size_t id) const {
+    std::unique_ptr<MDRowSqlConst> row(new MDRowSqlConst());
+    if (!getRow(*row, id))
+        return nullptr;
+    return std::move(row);
+}
+
 bool MetaDataDb::getRow(MDRow &row, size_t id)
 {
     if (id == BAD_OBJID)
@@ -371,6 +378,22 @@ bool MetaDataDb::getRow(MDRow &row, size_t id)
     // fill them
     for (auto &v : values)
         row.setValue(v);
+    return true;
+}
+
+bool MetaDataDb::getRow(MDRowConst &row, size_t id) const
+{
+    if (id == BAD_OBJID)
+        REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
+    // get active labels
+    auto values = getObjectsForActiveLabels();
+    // get values from the row
+    if ( ! sqlUtils::select(id,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values)) return false;
+    // fill them
+    row = MDRowSqlConst(values);
     return true;
 }
 

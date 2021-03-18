@@ -963,8 +963,63 @@ public:
 protected:
 
     /** Apply geometry in referring metadata to the image */
-    void
-    applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP);
+    void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP) override {
+        _applyGeo(row, only_apply_shifts, wrap);
+    }
+    void applyGeo(const MDRowConst &row, bool only_apply_shifts = false, bool wrap = WRAP) override {
+        _applyGeo(row, only_apply_shifts, wrap);
+    }
+
+    template <typename R> // FIXME: T = MDRow, MDRowConst
+    void _applyGeo(const R &row, bool only_apply_shifts, bool wrap) {
+        //This implementation does not handle stacks,
+        //read in a block
+        if (data.ndim != 1)
+            REPORT_ERROR(ERR_MULTIDIM_SIZE,
+                         "Geometric transformation cannot be applied to stacks!!!");
+
+        if (MD.size() == 0)
+            MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+        MDRow &rowAux = *MD[0];
+
+        if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
+        {
+            double aux;
+            //origins
+            if (row.getValue(MDL_ORIGIN_X, aux))
+                rowAux.setValue(MDL_ORIGIN_X, aux);
+            if (row.getValue(MDL_ORIGIN_Y, aux))
+                rowAux.setValue(MDL_ORIGIN_Y, aux);
+            if (row.getValue(MDL_ORIGIN_Z, aux))
+                rowAux.setValue(MDL_ORIGIN_Z, aux);
+            //shifts
+            if (row.getValue(MDL_SHIFT_X, aux))
+                rowAux.setValue(MDL_SHIFT_X, aux);
+            if (row.getValue(MDL_SHIFT_Y, aux))
+                rowAux.setValue(MDL_SHIFT_Y, aux);
+            if (row.getValue(MDL_SHIFT_Z, aux))
+                rowAux.setValue(MDL_SHIFT_Z, aux);
+            //rotations
+            if (row.getValue(MDL_ANGLE_ROT, aux))
+                rowAux.setValue(MDL_ANGLE_ROT, aux);
+            if (row.getValue(MDL_ANGLE_TILT, aux))
+                rowAux.setValue(MDL_ANGLE_TILT, aux);
+            if (row.getValue(MDL_ANGLE_PSI, aux))
+                rowAux.setValue(MDL_ANGLE_PSI, aux);
+            //scale
+            if (row.getValue(MDL_SCALE, aux))
+                rowAux.setValue(MDL_SCALE, aux);
+            //weight
+            if (row.getValue(MDL_WEIGHT, aux))
+                rowAux.setValue(MDL_WEIGHT, aux);
+            bool auxBool;
+            if (row.getValue(MDL_FLIP, auxBool))
+                rowAux.setValue(MDL_FLIP, auxBool);
+        }
+    }
+
+    //apply geo has not been defined for volumes
+    //and only make sense when reading data
 
     /** Set the image dimensions
      */

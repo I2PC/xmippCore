@@ -834,6 +834,7 @@ protected:
 
     /** Internal apply geometrical transformations */
     virtual void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP) = 0;
+    virtual void applyGeo(const MDRowConst &row, bool only_apply_shifts = false, bool wrap = WRAP) = 0;
 
     /** Internal read image file method.
      */

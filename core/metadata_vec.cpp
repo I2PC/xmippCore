@@ -190,6 +190,11 @@ bool MetaDataVec::getRow(MDRow &row, size_t id) {
     return true;
 }
 
+std::unique_ptr<MDRowConst> MetaDataVec::getRow(size_t id) const {
+    size_t i = this->_rowIndex(id);
+    return MemHelpers::make_unique<MDRowVecConst>(this->_rows[i], i, this->_label_to_col);
+}
+
 void MetaDataVec::getRow(MDRowVec &row, size_t id) {
     size_t i = this->_rowIndex(id);
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);

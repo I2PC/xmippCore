@@ -216,15 +216,14 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 /** Macros for don't type */
 #define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name); \
                                   int err = _read(name, hFile, params.datamode, params.select_img); \
-                                  applyGeo(row, params.only_apply_shifts, params.wrap); \
+                                  applyGeo(*row, params.only_apply_shifts, params.wrap); \
                                   closeFile(hFile); \
                                   return err
 
 void ImageBase::applyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    MDRowSql row;
-    md.getRow(row, objId);
-    applyGeo(row, params.only_apply_shifts, params.wrap);
+    std::unique_ptr<MDRowConst> row(md.getRow(objId));
+    applyGeo(*row, params.only_apply_shifts, params.wrap);
 }
 
 void ImageBase::setGeo(const MDRow &row, size_t n)
@@ -241,15 +240,18 @@ void ImageBase::setGeo(const MDRow &row, size_t n)
 
 int ImageBase::readApplyGeo(const FileName &name, const MDRow &row, const ApplyGeoParams &params)
 {
-    READ_AND_RETURN();
+    ImageFHandler* hFile = openFile(name);
+    int err = _read(name, hFile, params.datamode, params.select_img);
+    applyGeo(row, params.only_apply_shifts, params.wrap);
+    closeFile(hFile);
+    return err;
 }
 
 /** Read an image from metadata, filename is provided
 */
 int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    MDRowSql row;
-    md.getRow(row, objId);
+    std::unique_ptr<MDRowConst> row(md.getRow(objId));
     READ_AND_RETURN();
 }
 
@@ -257,10 +259,9 @@ int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t obj
  */
 int ImageBase::readApplyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    MDRowSql row;
-    md.getRow(row, objId);
+    std::unique_ptr<MDRowConst> row(md.getRow(objId));
     FileName name;
-    row.getValue(MDL_IMAGE, name);
+    row->getValue(MDL_IMAGE, name);
     READ_AND_RETURN();
 }
 

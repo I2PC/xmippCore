@@ -381,9 +381,10 @@ public:
 
     virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
 
-    // FIXME: add const version too?
     virtual std::unique_ptr<MDRow> getRow(size_t id) = 0;
     virtual bool getRow(MDRow &row, size_t id) = 0;
+
+    virtual std::unique_ptr<MDRowConst> getRow(size_t id) const = 0;
 
     /** Set label values from string representation.
      */

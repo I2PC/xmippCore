@@ -233,7 +233,12 @@ public:
 
     std::unique_ptr<MDRow> getRow(size_t id) override;
     bool getRow(MDRow &row, size_t id) override;
+
+    std::unique_ptr<MDRowConst> getRow(size_t id) const override;
+
     void getRow(MDRowVec &row, size_t id);
+    void getRow(MDRowVecConst &row, size_t id) const;
+
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     size_t getRowId(size_t i) const;
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
