@@ -43,11 +43,13 @@ private:
     std::array<int, MDL_LAST_LABEL>* _label_to_col;
     bool _in_metadata;
 
-    MDObject* iteratorValue(size_t i) const override;
+    MDObject* iteratorValue(size_t i) override;
+    const MDObject* iteratorValue(size_t i) const override;
 
 public:
     MDRowVec();
     MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col);
+    MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col);
     MDRowVec(const MDRowVec&);
     MDRowVec& operator = (const MDRowVec&);
     virtual ~MDRowVec();
@@ -61,7 +63,8 @@ public:
     std::vector<MDLabel> labels() const override;
     void addLabel(MDLabel label) override;
 
-    MDObject *getObject(MDLabel label) const override;
+    MDObject *getObject(MDLabel label) override;
+    const MDObject *getObject(MDLabel label) const override;
 
     bool getValue(MDObject &object) const override;
     void setValue(const MDObject &object) override;
@@ -78,45 +81,6 @@ public:
 
     template <typename T>
     void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
-
-    friend class MetaDataVec;
-};
-
-// Const row could only be attached
-// (It makes no sense to attach const row as this row could be changed in non-const Metadata)
-// Const row is used only for itearting over const metadata.
-class MDRowVecConst : public MDRowConst {
-private:
-    const std::vector<MDObject>& _row;
-    size_t _rowi;
-    const std::array<int, MDL_LAST_LABEL>& _label_to_col;
-
-    const MDObject* iteratorValue(size_t i) const override;
-
-public:
-    MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col);
-    MDRowVecConst(const MDRowVecConst&);
-    virtual ~MDRowVecConst();
-
-    bool empty() const override;
-    int size() const override;
-
-    bool containsLabel(MDLabel label) const override;
-    std::vector<MDLabel> labels() const override;
-
-    const MDObject *getObject(MDLabel label) const override;
-
-    bool getValue(MDObject &object) const override;
-
-    friend std::ostream& operator << (std::ostream &out, const MDRowVecConst &row);
-
-    // Templated functions from based class must be retemplated
-
-    template <typename T>
-    bool getValue(MDLabel label, T &d) const { return MDRow::getValue(label, d); }
-
-    template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const { return MDRow::getValueOrDefault(label, d, def); }
 
     friend class MetaDataVec;
 };

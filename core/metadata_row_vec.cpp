@@ -37,6 +37,15 @@ MDRowVec::MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_
     : _row(&row), _rowi(rowi), _label_to_col(&label_to_col), _in_metadata(true)
     {}
 
+MDRowVec::MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
+    : _row(const_cast<std::vector<MDObject>*>(&row)),
+       _rowi(rowi),
+       _label_to_col(const_cast<std::array<int, MDL_LAST_LABEL>*>(&label_to_col)), _in_metadata(true)
+       // This is very nasty hack. I was unable to solve situation nicely.
+       // Creator of the object must pay close attention to create 'const MDRowVec' when instantiating from
+       // const MetaData. This should be ok as crator is only in MetaDataVec.
+    {}
+
 MDRowVec::MDRowVec(const MDRowVec &other)
     : _rowi(other._rowi), _in_metadata(other._in_metadata)
     {
@@ -103,7 +112,11 @@ void MDRowVec::addLabel(MDLabel label) {
     }
 }
 
-MDObject *MDRowVec::getObject(MDLabel label) const {
+MDObject *MDRowVec::getObject(MDLabel label) {
+    return &_row->at((*_label_to_col)[label]);
+}
+
+const MDObject *MDRowVec::getObject(MDLabel label) const {
     return &_row->at((*_label_to_col)[label]);
 }
 
@@ -124,7 +137,11 @@ void MDRowVec::setValue(const MDObject &object) {
         (*_row)[(*_label_to_col)[_label]] = object;
 }
 
-MDObject* MDRowVec::iteratorValue(size_t i) const {
+MDObject* MDRowVec::iteratorValue(size_t i) {
+    return &(*_row)[i];
+}
+
+const MDObject* MDRowVec::iteratorValue(size_t i) const {
     return &(*_row)[i];
 }
 
@@ -137,57 +154,3 @@ std::ostream& operator << (std::ostream &out, const MDRowVec &row) {
 }
 
 bool MDRowVec::inMetadata() const { return _in_metadata; }
-
-///////////////////////////////////////////////////////////////////////////////
-
-MDRowVecConst::MDRowVecConst(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
-    : _row(row), _rowi(rowi), _label_to_col(label_to_col)
-    {}
-
-MDRowVecConst::MDRowVecConst(const MDRowVecConst &other)
-    : _row(other._row), _rowi(other._rowi), _label_to_col(other._label_to_col)
-    {}
-
-bool MDRowVecConst::empty() const {
-    return _row.size() == 0;
-}
-
-int MDRowVecConst::size() const {
-    return _row.size();
-}
-
-bool MDRowVecConst::containsLabel(MDLabel label) const {
-    return _label_to_col[label] >= 0;
-}
-
-std::vector<MDLabel> MDRowVecConst::labels() const {
-    std::vector<MDLabel> res;
-    res.reserve(_row.size());
-    for (const auto mdObj: _row)
-        res.push_back(mdObj.label);
-    return res;
-}
-
-const MDObject *MDRowVecConst::getObject(MDLabel label) const {
-    return &_row.at(_label_to_col[label]);
-}
-
-bool MDRowVecConst::getValue(MDObject &object) const {
-    MDLabel _label = object.label;
-    if (_label_to_col[_label] < 0)
-        return false;
-    object.copy(_row.at(_label_to_col[_label]));
-    return true;
-}
-
-const MDObject* MDRowVecConst::iteratorValue(size_t i) const {
-    return &_row[i];
-}
-
-std::ostream& operator << (std::ostream &out, const MDRowVecConst &row) {
-    for (int i = 0; i < row.size(); ++i) {
-        row._row[i].toStream(out);
-        out << " ";
-    }
-    return out;
-}

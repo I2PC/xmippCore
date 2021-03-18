@@ -81,7 +81,8 @@ public:
         setValue(MDL_SCALE,    1., addLabels);
     }
 
-    virtual MDObject* getObject(MDLabel label) const = 0;
+    virtual MDObject* getObject(MDLabel label) = 0;
+    virtual const MDObject* getObject(MDLabel label) const = 0;
 
     template <typename T>
     bool getValue(MDLabel label, T &d) const {
@@ -156,80 +157,7 @@ public:
 
 private:
 
-    virtual MDObject* iteratorValue(size_t i) const = 0;
-};
-
-
-/** Abstract class (API) for holding an entire const row of posible MDObject */
-class MDRowConst {
-public:
-    virtual bool empty() const = 0;
-    virtual int size() const = 0; /** Return number of labels present */
-
-    virtual size_t id() const {
-        size_t id;
-        getObject(MDL_OBJID)->getValue(id);
-        return id;
-    }
-
-    virtual bool containsLabel(MDLabel label) const = 0;
-    virtual std::vector<MDLabel> labels() const = 0;
-
-    virtual const MDObject* getObject(MDLabel label) const = 0;
-
-    template <typename T>
-    bool getValue(MDLabel label, T &d) const {
-        if (getObject(label) == nullptr)
-            return false;
-        getObject(label)->getValue(d);
-        return true;
-    }
-
-    template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const {
-        if (!getValue(label, d))
-            d = (T) def;
-    }
-
-    virtual bool getValue(MDObject &object) const = 0;
-
-    friend std::ostream& operator << (std::ostream &out, const MDRow &row);
-
-    template <bool IsConst>
-    class iterator_ptr {
-        size_t i;
-        const MDRowConst* row;
-
-    public:
-        iterator_ptr(size_t i, const MDRowConst& row) : i(i), row(&row) {}
-        iterator_ptr(iterator_ptr const& right) : i(right.i), row(right.row) {}
-        iterator_ptr& operator=(iterator_ptr const& right) {
-            i = right.i;
-            row = right.row;
-            return *this;
-        }
-        iterator_ptr& operator++() {
-            ++i;
-            return *this;
-        }
-        typename TypeHelpers::choose<IsConst, const MDObject*, MDObject*>::type operator*() const {
-            return row->iteratorValue(i);
-        }
-        bool operator==(const iterator_ptr& other) const { return other.i == this->i; }
-        bool operator!=(const iterator_ptr& other) const { return !(*this == other); }
-    };
-
-    using iterator = iterator_ptr<false>;
-    using const_iterator = iterator_ptr<true>;
-
-    iterator begin() { return iterator_ptr<false>(0, *this); }
-    iterator end() { return iterator_ptr<false>(this->size(), *this); }
-
-    const_iterator begin() const { return iterator_ptr<true>(0, *this); }
-    const_iterator end() const { return iterator_ptr<true>(this->size(), *this); }
-
-private:
-
+    virtual MDObject* iteratorValue(size_t i) = 0;
     virtual const MDObject* iteratorValue(size_t i) const = 0;
 };
 

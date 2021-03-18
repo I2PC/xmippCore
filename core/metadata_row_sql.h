@@ -35,18 +35,20 @@ class MDRowSql : public MDRow {
 private:
     // Reserve space for the maximum different labels
     // this will allow constant access to each object indexing by labels
-    MDObject *_objects[MDL_LAST_LABEL];
-    MDLabel _order[MDL_LAST_LABEL];
+    std::array<MDObject*, MDL_LAST_LABEL> _objects; // label to object; nullptr if none
+    std::array<MDLabel, MDL_LAST_LABEL> _order; // index to label (_order[0] = label for column 0)
     size_t _size; // Number of active labels
 
     void copy(const MDRowSql &row);
-    MDObject* iteratorValue(size_t i) const override;
+    MDObject* iteratorValue(size_t i) override;
+    const MDObject* iteratorValue(size_t i) const override;
 
 public:
     MDRowSql();
-    MDRowSql(const MDRowSql &row);
-    MDRowSql& operator = (const MDRowSql &row);
     ~MDRowSql();
+    MDRowSql(const MDRowSql &row);
+    MDRowSql(const std::vector<MDObject> &values);
+    MDRowSql& operator = (const MDRowSql &row);
 
     bool empty() const override;
     int size() const override;
@@ -56,7 +58,8 @@ public:
     std::vector<MDLabel> labels() const override;
     void addLabel(MDLabel label) override;
 
-    MDObject *getObject(MDLabel label) const override;
+    MDObject *getObject(MDLabel label) override;
+    const MDObject *getObject(MDLabel label) const override;
 
     bool getValue(MDObject &object) const override;
     void setValue(const MDObject &object) override;
@@ -73,42 +76,6 @@ public:
 
     template <typename T>
     void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
-};
-
-
-/** Class for holding an entire row of const MDObject */
-class MDRowSqlConst : public MDRowConst {
-private:
-    std::vector<MDObject> _values;
-    std::array<int, MDL_LAST_LABEL> _order;
-
-    const MDObject* iteratorValue(size_t i) const override;
-
-public:
-    MDRowSqlConst();
-    MDRowSqlConst(const MDRowSqlConst &row);
-    MDRowSqlConst(const std::vector<MDObject> &values);
-    MDRowSqlConst& operator = (const MDRowSqlConst &row);
-
-    bool empty() const override;
-    int size() const override;
-
-    bool containsLabel(MDLabel label) const override;
-    std::vector<MDLabel> labels() const override;
-
-    const MDObject* getObject(MDLabel label) const override;
-
-    bool getValue(MDObject &object) const override;
-
-    friend std::ostream& operator << (std::ostream &out, const MDRowSqlConst &row);
-
-    // Templated functions from base class must be retemplated
-
-    template <typename T>
-    bool getValue(MDLabel label, T &d) const { return MDRowConst::getValue(label, d); }
-
-    template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const { return MDRowConst::getValueOrDefault(label, d, def); }
 };
 
 #endif

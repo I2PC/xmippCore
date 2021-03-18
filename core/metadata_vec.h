@@ -105,8 +105,7 @@ protected:
     MDObject& _getObject(size_t i, MDLabel label);
     size_t _rowIndex(size_t id) const;
 
-    template <typename T> // TODO: T = MDRow, MDRowConst
-    void _setRow(const T &row, size_t index);
+    void _setRow(const MDRow &row, size_t index);
 
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
@@ -193,8 +192,7 @@ public:
      * @{
      */
 
-    template <typename T> // T could be only MDRow or MDRowConst
-    size_t addRow(const T &row);
+    size_t addRow(const MDRow &row);
 
     void addRows(const std::vector<MDRowVec> &rows);
 
@@ -232,12 +230,10 @@ public:
     }
 
     std::unique_ptr<MDRow> getRow(size_t id) override;
+    std::unique_ptr<const MDRow> getRow(size_t id) const override;
+
     bool getRow(MDRow &row, size_t id) override;
-
-    std::unique_ptr<MDRowConst> getRow(size_t id) const override;
-
     void getRow(MDRowVec &row, size_t id);
-    void getRow(MDRowVecConst &row, size_t id) const;
 
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     size_t getRowId(size_t i) const;
@@ -245,7 +241,6 @@ public:
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
 
     bool setRow(const MDRow &row, size_t id);
-    bool setRow(const MDRowConst &row, size_t id);
 
     template<class T>
     void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
@@ -545,7 +540,7 @@ public:
     private:
         typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type _mdv;
         size_t _i;
-        using RowType = typename TypeHelpers::choose<IsConst, MDRowVecConst, MDRowVec>::type;
+        using RowType = typename TypeHelpers::choose<IsConst, const MDRowVec, MDRowVec>::type;
         std::unique_ptr<RowType> _row;
 
     public:
@@ -568,7 +563,7 @@ public:
             return false;
         }
 
-        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return *_row; }
+        typename TypeHelpers::choose<IsConst, const MDRow&, MDRow&>::type operator*() override { return *_row; }
     };
 
     iterator begin() override {

@@ -296,18 +296,6 @@ bool MetaDataDb::execGetRow(MDRow &row) const
     return success;
 }
 
-bool MetaDataDb::execGetRow(MDRowConst &row) const
-{
-    std::vector<MDObject> mdValues;
-    mdValues.reserve(this->_activeLabels.size());
-
-    bool success = myMDSql->getObjectsValues(this->_activeLabels, mdValues);
-    if (success)
-        row = MDRowSqlConst(mdValues);
-
-    return success;
-}
-
 void MetaDataDb::finalizeGetRow(void) const
 {
     myMDSql->finalizePreparedStmt();
@@ -355,11 +343,8 @@ std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) {
     return std::move(row);
 }
 
-std::unique_ptr<MDRowConst> MetaDataDb::getRow(size_t id) const {
-    std::unique_ptr<MDRowSqlConst> row(new MDRowSqlConst());
-    if (!getRow(*row, id))
-        return nullptr;
-    return std::move(row);
+std::unique_ptr<const MDRow> MetaDataDb::getRow(size_t id) const {
+    return std::move(getRowSql(id));
 }
 
 bool MetaDataDb::getRow(MDRow &row, size_t id)
@@ -381,7 +366,7 @@ bool MetaDataDb::getRow(MDRow &row, size_t id)
     return true;
 }
 
-bool MetaDataDb::getRow(MDRowConst &row, size_t id) const
+std::unique_ptr<const MDRowSql> MetaDataDb::getRowSql(size_t id) const
 {
     if (id == BAD_OBJID)
         REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
@@ -391,13 +376,12 @@ bool MetaDataDb::getRow(MDRowConst &row, size_t id) const
     if ( ! sqlUtils::select(id,
             myMDSql->db,
             myMDSql->tableName(myMDSql->tableId),
-            values)) return false;
+            values)) return nullptr;
     // fill them
-    row = MDRowSqlConst(values);
-    return true;
+    return MemHelpers::make_unique<const MDRowSql>(values);
 }
 
-bool MetaDataDb::getRow(MDRowSql &row, size_t id)
+bool MetaDataDb::getRowSql(MDRowSql &row, size_t id)
 {
     return getRow(row, id);
 }
@@ -491,12 +475,6 @@ void MetaDataDb::finalizeSetRow(void)
 
 
 bool MetaDataDb::setRow(const MDRow &row, size_t id)
-{
-    SET_ROW_VALUES(row);
-    return true;
-}
-
-bool MetaDataDb::setRow(const MDRowConst &row, size_t id)
 {
     SET_ROW_VALUES(row);
     return true;

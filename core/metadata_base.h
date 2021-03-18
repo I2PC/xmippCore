@@ -382,9 +382,9 @@ public:
     virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
 
     virtual std::unique_ptr<MDRow> getRow(size_t id) = 0;
-    virtual bool getRow(MDRow &row, size_t id) = 0;
+    virtual std::unique_ptr<const MDRow> getRow(size_t id) const = 0;
 
-    virtual std::unique_ptr<MDRowConst> getRow(size_t id) const = 0;
+    virtual bool getRow(MDRow &row, size_t id) = 0;
 
     /** Set label values from string representation.
      */
@@ -581,7 +581,7 @@ public:
         }
         bool operator==(const rowIterator& other) { return other.impl == this->impl; }
         bool operator!=(const rowIterator& other) { return !(*this == other); }
-        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() const { return **impl; }
+        typename TypeHelpers::choose<IsConst, const MDRow&, MDRow&>::type operator*() const { return **impl; }
     };
 
     using iterator = rowIterator<false>;

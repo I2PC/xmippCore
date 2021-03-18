@@ -295,16 +295,15 @@ public:
 
     bool initGetRow(bool addWhereClause) const;
     bool execGetRow(MDRow &row) const;
-    bool execGetRow(MDRowConst &row) const;
     void finalizeGetRow(void) const;
 
     std::unique_ptr<MDRow> getRow(size_t id) override;
+    std::unique_ptr<const MDRow> getRow(size_t id) const override;
+
     bool getRow(MDRow &row, size_t id) override;
+    std::unique_ptr<const MDRowSql> getRowSql(size_t id) const;
+    bool getRowSql(MDRowSql &row, size_t id);
 
-    std::unique_ptr<MDRowConst> getRow(size_t id) const override;
-    bool getRow(MDRowConst &row, size_t id) const;
-
-    bool getRow(MDRowSql &row, size_t id);
     bool getAllRows(std::vector<MDRowSql> &rows) const;
     bool getRow2(MDRow &row, size_t id) const;
 
@@ -313,7 +312,6 @@ public:
     bool execSetRow(const MDRow &row, size_t id);
     void finalizeSetRow(void);
     bool setRow(const MDRow &row, size_t id);
-    bool setRow(const MDRowConst &row, size_t id);
     bool setRow2(const MDRow &row, size_t id);
 
     /** Add a new Row and set values, return the objId of newly added object */
@@ -731,7 +729,7 @@ public:
     struct MDDbRowIterator : public MDBaseRowIterator<IsConst> {
     private:
         typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type _mdd;
-        typename TypeHelpers::choose<IsConst, MDRowSqlConst, MDRowSql>::type _row;
+        typename TypeHelpers::choose<IsConst, MDRowSql, MDRowSql>::type _row;
         bool _end;
 
     public:
@@ -764,7 +762,7 @@ public:
             return false;
         }
 
-        typename TypeHelpers::choose<IsConst, MDRowConst&, MDRow&>::type operator*() override { return _row; }
+        typename TypeHelpers::choose<IsConst, const MDRow&, MDRow&>::type operator*() override { return _row; }
     };
 
     iterator begin() override {

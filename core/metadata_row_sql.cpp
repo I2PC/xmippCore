@@ -30,20 +30,26 @@
 
 MDRowSql::MDRowSql() {
     _size = 0;
-    //Just initialize all pointers with NULL value
-    memset(_objects, 0, MDL_LAST_LABEL * sizeof(size_t));
+    _objects.fill(nullptr);
 }
 
 MDRowSql::MDRowSql(const MDRowSql &row) {
     _size = 0;
-    //Just initialize all pointers with NULL value
-    memset(_objects, 0, MDL_LAST_LABEL * sizeof(size_t));
+    _objects.fill(nullptr);
     copy(row);
 }
 
 MDRowSql& MDRowSql::operator = (const MDRowSql &row) {
     copy(row);
     return *this;
+}
+
+MDRowSql::MDRowSql(const std::vector<MDObject> &values) {
+    _objects.fill(nullptr);
+    for (size_t i = 0; i < values.size(); i++) {
+        _objects[values[i].label] = new MDObject(values[i]);
+        _order[i] = values[i].label;
+    }
 }
 
 MDRowSql::~MDRowSql() {
@@ -93,7 +99,11 @@ void MDRowSql::addLabel(MDLabel label) {
     }
 }
 
-MDObject *MDRowSql::getObject(MDLabel label) const {
+const MDObject *MDRowSql::getObject(MDLabel label) const {
+    return _objects[label];
+}
+
+MDObject *MDRowSql::getObject(MDLabel label) {
     return _objects[label];
 }
 
@@ -135,81 +145,20 @@ void MDRowSql::copy(const MDRowSql &row) {
         ++ptrRowObjectsLabel;
     }
     //copy the order of labels
-    memcpy(_order, row._order, sizeof(int)*_size);
+    _order = row._order;
 }
 
-MDObject* MDRowSql::iteratorValue(size_t i) const {
+MDObject* MDRowSql::iteratorValue(size_t i) {
+    return _objects[_order[i]];
+}
+
+const MDObject* MDRowSql::iteratorValue(size_t i) const {
     return _objects[_order[i]];
 }
 
 std::ostream& operator << (std::ostream &out, const MDRowSql &row) {
     for (size_t i = 0; i < row._size; ++i) {
         row._objects[row._order[i]]->toStream(out);
-        out << " ";
-    }
-    return out;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// MDRowSqlConst
-
-MDRowSqlConst::MDRowSqlConst() : _order() {
-    std::fill(_order.begin(), _order.end(), -1);
-}
-
-MDRowSqlConst::MDRowSqlConst(const std::vector<MDObject> &values) : _values(values), _order() {
-    std::fill(_order.begin(), _order.end(), -1);
-    for (size_t i = 0; i < values.size(); i++)
-        _order[values[i].label] = i;
-}
-
-MDRowSqlConst::MDRowSqlConst(const MDRowSqlConst &row)
-    : _values(row._values), _order(row._order) {}
-
-MDRowSqlConst& MDRowSqlConst::operator = (const MDRowSqlConst &row) {
-    _values = row._values;
-    _order = row._order;
-    return *this;
-}
-
-bool MDRowSqlConst::empty() const {
-    return _values.size() == 0;
-}
-
-int MDRowSqlConst::size() const {
-    return _values.size();
-}
-
-bool MDRowSqlConst::containsLabel(MDLabel label) const {
-    return _order[label] != -1;
-}
-
-std::vector<MDLabel> MDRowSqlConst::labels() const {
-    std::vector<MDLabel> res;
-    res.reserve(_values.size());
-    for (const MDObject &obj : _values)
-        res.push_back(obj.label);
-    return res;
-}
-
-const MDObject *MDRowSqlConst::getObject(MDLabel label) const {
-    return &_values[_order.at(label)];
-}
-
-bool MDRowSqlConst::getValue(MDObject &object) const {
-    if (_order[object.label] == -1)
-        return false;
-    object.copy(_values[_order.at(object.label)]);
-    return true;
-}
-
-const MDObject* MDRowSqlConst::iteratorValue(size_t i) const {
-    return &_values[i];
-}
-
-std::ostream& operator << (std::ostream &out, const MDRowSqlConst &row) {
-    for (size_t i = 0; i < row.size(); ++i) {
-        row._values[i].toStream(out);
         out << " ";
     }
     return out;

@@ -119,8 +119,7 @@ void MetaDataVec::clear() {
     this->_no_columns = 0;
 }
 
-template <typename T>
-void MetaDataVec::_setRow(const T &row, size_t index) {
+void MetaDataVec::_setRow(const MDRow &row, size_t index) {
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
         if (row.containsLabel(label) && !this->containsLabel(label))
@@ -142,8 +141,7 @@ void MetaDataVec::_setRow(const T &row, size_t index) {
     }
 }
 
-template <typename T>
-size_t MetaDataVec::addRow(const T &row) {
+size_t MetaDataVec::addRow(const MDRow &row) {
     // FIXME: should id be changed or kept same?
     MetaDataVecRow newRow;
     _rows.push_back(newRow);
@@ -184,15 +182,15 @@ std::unique_ptr<MDRow> MetaDataVec::getRow(size_t id) {
     return MemHelpers::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
 }
 
+std::unique_ptr<const MDRow> MetaDataVec::getRow(size_t id) const {
+    size_t i = this->_rowIndex(id);
+    return MemHelpers::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
+}
+
 bool MetaDataVec::getRow(MDRow &row, size_t id) {
     size_t i = this->_rowIndex(id);
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);
     return true;
-}
-
-std::unique_ptr<MDRowConst> MetaDataVec::getRow(size_t id) const {
-    size_t i = this->_rowIndex(id);
-    return MemHelpers::make_unique<MDRowVecConst>(this->_rows[i], i, this->_label_to_col);
 }
 
 void MetaDataVec::getRow(MDRowVec &row, size_t id) {
@@ -234,11 +232,6 @@ void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
 }
 
 bool MetaDataVec::setRow(const MDRow &row, size_t id) {
-    this->_setRow(row, this->_rowIndex(id));
-    return true;
-}
-
-bool MetaDataVec::setRow(const MDRowConst &row, size_t id) {
     this->_setRow(row, this->_rowIndex(id));
     return true;
 }

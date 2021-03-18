@@ -222,7 +222,7 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 
 void ImageBase::applyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    std::unique_ptr<MDRowConst> row(md.getRow(objId));
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
     applyGeo(*row, params.only_apply_shifts, params.wrap);
 }
 
@@ -251,7 +251,7 @@ int ImageBase::readApplyGeo(const FileName &name, const MDRow &row, const ApplyG
 */
 int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    std::unique_ptr<MDRowConst> row(md.getRow(objId));
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
     READ_AND_RETURN();
 }
 
@@ -259,7 +259,7 @@ int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t obj
  */
 int ImageBase::readApplyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    std::unique_ptr<MDRowConst> row(md.getRow(objId));
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
     FileName name;
     row->getValue(MDL_IMAGE, name);
     READ_AND_RETURN();
