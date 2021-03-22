@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include "metadata_vec.h"
+#include "metadata_generator.h"
 
 MetaDataVec::MetaDataVec() {
     init(std::vector<MDLabel>());
@@ -373,6 +374,8 @@ bool MetaDataVec::removeObject(size_t id) {
 
     for (size_t j = i; j < this->_rows.size(); j++)
         this->_id_to_index[this->getRowId(i)]--;
+
+    return true;
 }
 
 void MetaDataVec::removeObjects(const std::vector<size_t> &toRemove) {
@@ -470,9 +473,14 @@ size_t MetaDataVec::countObjects(const MDQuery& query) const {
 }
 
 bool MetaDataVec::containsObject(size_t objectId) const {
+    return this->_rowIndex(objectId) > -1;
 }
 
-bool MetaDataVec::containsObject(const MDQuery&) const {
+bool MetaDataVec::containsObject(const MDQuery& query) const {
+    for (const MetaDataVecRow& row : this->_rows)
+        if (this->_match(row, query))
+            return true;
+    return false;
 }
 
 bool MetaDataVec::containsObject(size_t objectId) {
@@ -536,19 +544,29 @@ void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjec
 
 
 void MetaDataVec::fillExpand(MDLabel label) {
-    // TODO
+    // FIXME
+    throw NotImplemented();
 }
 
 void MetaDataVec::fillConstant(MDLabel label, const String &value) {
-    // TODO
+    // FIXME: move to MetaData and use common MDGenerator?
+    MDConstGenerator generator(value);
+    generator.label = label;
+    generator.fill(*this);
 }
 
-void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) {
-    // TODO
+void MetaDataVec::fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3) {
+    // FIXME: move to MetaData and use common MDGenerator?
+    MDRandGenerator generator(op1, op2, mode, op3);
+    generator.label = label;
+    generator.fill(*this);
 }
 
-void fillLinear(MDLabel label, double initial, double step) {
-    // TODO
+void MetaDataVec::fillLinear(MDLabel label, double initial, double step) {
+    // FIXME: move to MetaData and use common MDGenerator?
+    MDLinealGenerator generator(initial, step);
+    generator.label = label;
+    generator.fill(*this);
 }
 
 void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
