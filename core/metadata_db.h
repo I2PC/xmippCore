@@ -161,7 +161,7 @@ public:
      *
      * Frees all used memory and destroys object.
      */
-    ~MetaDataDb();
+    virtual ~MetaDataDb();
 
     /**Clear all data
      */

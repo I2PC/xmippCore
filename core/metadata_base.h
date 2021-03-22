@@ -166,6 +166,7 @@ public:
      * if labels vectors is passed this labels are created on metadata
      */
     MetaData() = default;
+    virtual ~MetaData();
 
     /**Clear all data
      */

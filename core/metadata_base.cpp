@@ -26,6 +26,8 @@
 #include <algorithm>
 #include "metadata_base.h"
 
+MetaData::~MetaData() {}
+
 bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id) {
     addLabel(label);
 

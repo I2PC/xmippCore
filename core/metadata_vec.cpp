@@ -484,14 +484,29 @@ bool MetaDataVec::containsObject(size_t objectId) {
 }
 
 /*
-void _writeRows(std::ostream &os) const;
+void _writeRows(std::ostream &os) const;*/
 
-void writeStar(const FileName &outFile,const String & blockName="", WriteModeMetaData mode=MD_OVERWRITE) const;
-void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const;
-void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const;
-void print() const;
-void append(const FileName &outFile) const;
-bool existsBlock(const FileName &_inFile);
+void MetaDataVec::writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMetaData mode) const {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::print() const {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::append(const FileName &outFile) const {
+    // TODO
+    throw NotImplemented();
+}
+
+/*bool existsBlock(const FileName &_inFile);
 void readStar(const FileName &inFile,
               const std::vector<MDLabel> *desiredLabels = nullptr,
               const String & blockName=DEFAULT_BLOCK_NAME,
@@ -504,35 +519,68 @@ void readXML(const FileName &inFile,
 void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack = true) override;
 void readPlain(const FileName &inFile, const String &labelsString, const String &separator = " ");
 void addPlain(const FileName &inFile, const String &labelsString, const String &separator=" ");
+*/
 
+double MetaDataVec::getColumnMax(MDLabel column) {
+    // TODO
+    throw NotImplemented();
+}
 
-double getColumnMax(MDLabel column);
-double getColumnMin(MDLabel column);
+double MetaDataVec::getColumnMin(MDLabel column) {
+    // TODO
+    throw NotImplemented();
+}
 
-
+/*
 void operate(const String &expression);
-void replace(const MDLabel label, const String &oldStr, const String &newStr);
-void randomize(const MetaData &MDin);
-void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
-void removeDisabled();*/
+void replace(const MDLabel label, const String &oldStr, const String &newStr);*/
+
+void MetaDataVec::randomize(const MetaData &MDin) {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::removeDisabled() {
+    // TODO
+    throw NotImplemented();
+}
 
 void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
+    // TODO
+    throw NotImplemented();
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const String &sortLabel, bool asc, int limit, int offset) {
+    // TODO
+    throw NotImplemented();
 }
 
-/*void split(size_t n, std::vector<MetaDataVec> &results,
-           const MDLabel sortLabel=MDL_OBJID);
+void MetaDataVec::split(size_t n, std::vector<MetaDataVec> &results, const MDLabel sortLabel) {
+    // TODO
+    throw NotImplemented();
+}
 
-void selectSplitPart(const MetaData &mdIn,
-                     size_t n, size_t part,
-                     const MDLabel sortLabel=MDL_OBJID) override;
+void MetaDataVec::selectSplitPart(const MetaData &mdIn, size_t n, size_t part,
+                                   const MDLabel sortLabel) {
+    // TODO
+    throw NotImplemented();
+}
 
-void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
+void MetaDataVec::selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel) {
+    // TODO
+    throw NotImplemented();
+}
 
-void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-                const MDLabel sortLabel=MDL_OBJID) override;*/
+void MetaDataVec::selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
+                             const MDLabel sortLabel) {
+    // TODO
+    throw NotImplemented();
+}
 
 /*void makeAbsPath(const MDLabel label=MDL_IMAGE);*/
 
@@ -605,6 +653,13 @@ void MetaDataVec::copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc
     throw NotImplemented();
 }
 
-/*void renameColumn(MDLabel oldLabel, MDLabel newLabel) override;
-void renameColumn(const std::vector<MDLabel> &oldLabel,
-        const std::vector<MDLabel> &newLabel) override;*/
+void MetaDataVec::renameColumn(MDLabel oldLabel, MDLabel newLabel) {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
+                               const std::vector<MDLabel> &newLabel) {
+    // TODO
+    throw NotImplemented();
+}

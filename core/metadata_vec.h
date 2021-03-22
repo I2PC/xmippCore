@@ -155,6 +155,8 @@ public:
     MetaDataVec& operator=(const MetaData &md);
     MetaDataVec& operator=(const MetaDataVec &md) = default;
 
+    virtual ~MetaDataVec() {}
+
     /**Clear all data
      */
     void clear() override;
