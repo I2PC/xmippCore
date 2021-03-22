@@ -312,15 +312,45 @@ size_t MetaDataVec::addObject() {
     throw NotImplemented(); // not implemented yet
 }
 
-/*void importObject(const MetaData &md, const size_t id, bool doClear=true) override;
-void importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear=true) override;
-void importObjects(const MetaData &md, const MDQuery &query, bool doClear=true) override;
+void MetaDataVec::importObject(const MetaData &md, const size_t id, bool doClear) {
+    if (doClear) {
+        this->clear();
+        this->copyInfo(md);
+    }
 
-bool removeObject(size_t id) override;
+    std::unique_ptr<const MDRow> row = md.getRow(id);
+    if (row == nullptr)
+        return;
 
-void removeObjects(const std::vector<size_t> &toRemove) override;
+    MDRowVec newRow;
+    for (const MDObject* obj : *row)
+        newRow.setValue(*obj);
+    this->addRow(newRow);
+}
 
-int removeObjects() override;
+void MetaDataVec::importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear) {
+    if (doClear) {
+        this->clear();
+        this->copyInfo(md);
+    }
+
+    for (size_t objId : objectsToAdd)
+        this->importObject(md, objId, false);
+}
+
+void MetaDataVec::importObjects(const MetaData &md, const MDQuery &query, bool doClear) {
+    std::vector<size_t> ids;
+    md.findObjects(ids, query);
+    this->importObjects(md, ids, doClear);
+}
+
+/*bool removeObject(size_t id) override;*/
+
+void MetaDataVec::removeObjects(const std::vector<size_t> &toRemove) {
+    // TODO
+}
+
+/*int removeObjects() override;
 int removeObjects(const MDQuery&) override;
 
 void addItemId();*/
@@ -333,14 +363,26 @@ size_t MetaDataVec::lastRowId() const {
     return this->getRowId(this->size()-1);
 }
 
-/*size_t firstObject(const MDQuery&) const override;
-void findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const override;
-void findObjects(std::vector<size_t> &objectsOut, int limit = -1) const override;
+size_t MetaDataVec:: firstObject(const MDQuery&) const {
+    // TODO
+}
 
-size_t countObjects(const MDQuery&) const override;
-bool containsObject(size_t objectId) const override;
-bool containsObject(const MDQuery&) const override;
-*/
+void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const {
+    // TODO
+}
+
+void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, int limit) const {
+    // TODO
+}
+
+size_t MetaDataVec::countObjects(const MDQuery&) const {
+}
+
+bool MetaDataVec::containsObject(size_t objectId) const {
+}
+
+bool MetaDataVec::containsObject(const MDQuery&) const {
+}
 
 bool MetaDataVec::containsObject(size_t objectId) {
     return this->_id_to_index.find(objectId) != this->_id_to_index.end();
@@ -397,19 +439,35 @@ void selectSplitPart(const MetaData &mdIn,
 void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
 
 void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
-                const MDLabel sortLabel=MDL_OBJID) override;
+                const MDLabel sortLabel=MDL_OBJID) override;*/
 
-void makeAbsPath(const MDLabel label=MDL_IMAGE);
+/*void makeAbsPath(const MDLabel label=MDL_IMAGE);*/
 
 
-void fillExpand(MDLabel label) override;
-void fillConstant(MDLabel label, const String &value) override;
-void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) override;
-void fillLinear(MDLabel label, double initial, double step) override;
+void MetaDataVec::fillExpand(MDLabel label) {
+    // TODO
+}
 
-void copyColumn(MDLabel labelDest, MDLabel labelSrc) override;
-void copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) override;
+void MetaDataVec::fillConstant(MDLabel label, const String &value) {
+    // TODO
+}
 
-void renameColumn(MDLabel oldLabel, MDLabel newLabel) override;
+void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) {
+    // TODO
+}
+
+void fillLinear(MDLabel label, double initial, double step) {
+    // TODO
+}
+
+void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
+    // TODO
+}
+
+void MetaDataVec::copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) {
+    // TODO
+}
+
+/*void renameColumn(MDLabel oldLabel, MDLabel newLabel) override;
 void renameColumn(const std::vector<MDLabel> &oldLabel,
         const std::vector<MDLabel> &newLabel) override;*/
