@@ -460,6 +460,63 @@ bool MDObject::fromChar(const char * szChar)
     std::stringstream ss(szChar);
     return fromStream(ss);
 }
+
+bool MDObject::operator==(const MDObject &obj) const {
+    // FIXME: allow to compare e.g. int & double & longint
+    if (this->label != obj.label)
+        return false;
+
+    if (this->type != obj.type)
+        throw std::logic_error("MDObject: cannot compare == objects of different type");
+
+    if (this->type == LABEL_INT)
+        return this->data.intValue == obj.data.intValue;
+    else if (this->type == LABEL_BOOL)
+        return this->data.boolValue == obj.data.boolValue;
+    else if (this->type == LABEL_SIZET)
+        return this->data.longintValue == obj.data.longintValue;
+    else if (this->type == LABEL_DOUBLE)
+        return this->data.doubleValue == obj.data.doubleValue;
+    else if (this->type == LABEL_STRING)
+        return *(this->data.stringValue) == *(obj.data.stringValue);
+    else if (this->type == LABEL_VECTOR_DOUBLE)
+        return *(this->data.vectorValue) == *(obj.data.vectorValue);
+    else if (this->type == LABEL_VECTOR_SIZET)
+        return *(this->data.vectorValueLong) == *(obj.data.vectorValueLong);
+
+    throw std::logic_error("MDObject: unknown data type");
+}
+
+bool MDObject::operator<=(const MDObject &obj) const {
+    // FIXME: allow to compare e.g. int & double & longint
+    if (this->type == LABEL_INT)
+        return this->data.intValue <= obj.data.intValue;
+    else if (this->type == LABEL_BOOL)
+        return this->data.boolValue <= obj.data.boolValue;
+    else if (this->type == LABEL_SIZET)
+        return this->data.longintValue <= obj.data.longintValue;
+    else if (this->type == LABEL_DOUBLE)
+        return this->data.doubleValue <= obj.data.doubleValue;
+
+    throw std::logic_error("MDObject: cannot compare this type on <=");
+}
+
+bool MDObject::operator!=(const MDObject &obj) const {
+    return !(*this == obj);
+}
+
+bool MDObject::operator>=(const MDObject &obj) const {
+    return (!(*this <= obj) || (*this == obj));
+}
+
+bool MDObject::operator<(const MDObject &obj) const {
+    return ((*this <= obj) && (*this != obj));
+}
+
+bool MDObject::operator>(const MDObject &obj) const {
+    return ((*this >= obj) && (*this != obj));
+}
+
 //MDObject & MDRow::operator [](MDLabel label)
 //{
 //    for (iterator it = begin(); it != end(); ++it)

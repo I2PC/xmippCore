@@ -129,6 +129,13 @@ public:
     bool fromString(const String &str);
     bool fromChar(const char * str);
 
+    bool operator == (const MDObject &obj) const;
+    bool operator != (const MDObject &obj) const;
+    bool operator <= (const MDObject &obj) const;
+    bool operator >= (const MDObject &obj) const;
+    bool operator < (const MDObject &obj) const;
+    bool operator > (const MDObject &obj) const;
+
     friend class MDSql;
 }
 ; //close class MDObject
