@@ -959,18 +959,6 @@ public:
 }
 ;//close class MDLabelData
 
-/** Union to store values */
-typedef union
-{
-    bool boolValue;
-    int intValue;
-    size_t longintValue;
-    double doubleValue;
-    String * stringValue;
-    std::vector<double> * vectorValue;
-    std::vector<size_t> * vectorValueLong;
-} ObjectData;
-
 /** Explicit instantiation */
 #ifndef __APPLE__
 template class std::vector<MDObject *>

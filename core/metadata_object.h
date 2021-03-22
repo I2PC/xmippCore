@@ -34,6 +34,18 @@
 #define _QUOT '\''
 #define _DQUOT '"'
 
+/** Union to store values */
+typedef union
+{
+    bool boolValue;
+    int intValue;
+    size_t longintValue;
+    double doubleValue;
+    String * stringValue;
+    std::vector<double> * vectorValue;
+    std::vector<size_t> * vectorValueLong;
+} ObjectData;
+
 /** Class to hold the labels values and type
  *
  */
