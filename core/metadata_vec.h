@@ -640,7 +640,7 @@ public:
             const std::vector<MDLabel> &newLabel) override;
 
     /** 'is equal to' (equality).*/
-    bool operator==(const MetaData& op) const;
+    bool operator==(const MetaDataVec& op) const;
 };//class MetaData
 
 /** print metadata

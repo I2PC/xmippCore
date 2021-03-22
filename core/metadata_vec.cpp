@@ -123,6 +123,16 @@ void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
     }
 }
 
+void MetaDataVec::writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const {
+    // FIXME: implement
+    throw NotImplemented();
+}
+
+void MetaDataVec::writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const {
+    // FIXME: implement
+    throw NotImplemented();
+}
+
 void MetaDataVec::clear() {
     this->baseClear();
     this->_rows.clear();
@@ -166,7 +176,7 @@ void MetaDataVec::addRows(const std::vector<MDRowVec> &rows) {
         this->addRow(row);
 }
 
-int MetaData::getMaxStringLength(const MDLabel thisLabel) const {
+int MetaDataVec::getMaxStringLength(const MDLabel thisLabel) const {
     return 0xFF;
 }
 
@@ -531,9 +541,15 @@ double MetaDataVec::getColumnMin(MDLabel column) {
     throw NotImplemented();
 }
 
-/*
-void operate(const String &expression);
-void replace(const MDLabel label, const String &oldStr, const String &newStr);*/
+void MetaDataVec::operate(const String &expression) {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::replace(const MDLabel label, const String &oldStr, const String &newStr) {
+    // TODO
+    throw NotImplemented();
+}
 
 void MetaDataVec::randomize(const MetaData &MDin) {
     // TODO
@@ -660,6 +676,12 @@ void MetaDataVec::renameColumn(MDLabel oldLabel, MDLabel newLabel) {
 
 void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
                                const std::vector<MDLabel> &newLabel) {
+    // TODO
+    throw NotImplemented();
+}
+
+
+bool MetaDataVec::operator==(const MetaDataVec& op) const {
     // TODO
     throw NotImplemented();
 }

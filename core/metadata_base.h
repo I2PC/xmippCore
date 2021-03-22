@@ -265,7 +265,7 @@ public:
 
     /** Set the value of all objects in an specified column (both value and column are specified in mdValueIn)
     */
-    virtual bool setValueCol(const MDObject &mdValueIn);
+    virtual bool setValueCol(const MDObject &mdValueIn) = 0;
 
     /**Set the value of all objects in an specified column.
      * @code
@@ -301,8 +301,8 @@ public:
      * This is done for some type checking of Metadata labels
      * and values
      */
-    virtual bool setValue(const MDObject &mdValueIn, size_t id);
-    virtual bool getValue(MDObject &mdValueOut, size_t id) const;
+    virtual bool setValue(const MDObject &mdValueIn, size_t id) = 0;
+    virtual bool getValue(MDObject &mdValueOut, size_t id) const = 0;
 
     /** Get the value of some label.
      * from the object that has id 'objectId'
@@ -489,12 +489,12 @@ public:
      */
 
     /** Return the object id of the first element in metadata. */
-    virtual size_t firstRowId() const;
+    virtual size_t firstRowId() const = 0;
     virtual size_t firstObject() const { return firstRowId(); } // FIXME: deprecated: bad name
     virtual size_t firstObject(const MDQuery&) const = 0;
 
     /** Goto last metadata object.*/
-    virtual size_t lastRowId() const;
+    virtual size_t lastRowId() const = 0;
     virtual size_t lastObject() const { return lastRowId(); } // FIXME: deprecated: bad name
 
     /** @name Search operations

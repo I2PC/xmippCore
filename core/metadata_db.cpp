@@ -779,6 +779,15 @@ void MetaDataDb::importObjects(const MetaData &md, const std::vector<size_t> &ob
         importObject(md, objectsToAdd[i]);
 }
 
+void MetaDataDb::importObjects(const MetaData &md, const MDQuery &query, bool doClear)
+{
+    // Currently supports importing only from MetaDataDb
+    assert(dynamic_cast<const MetaDataDb*>(&md) != nullptr);
+
+    const MetaDataDb& mdd = dynamic_cast<const MetaDataDb&>(md);
+    this->_importObjectsDb(mdd, query, doClear);
+}
+
 void MetaDataDb::_importObjectsDb(const MetaDataDb &md, const MDQuery &query, bool doClear)
 {
     if (doClear)

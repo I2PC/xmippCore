@@ -137,12 +137,6 @@ protected:
     virtual void finishProcessing();
     virtual void writeOutput(); // maybe used by checkpoint
     virtual void showProgress();
-    /** This method will be used to distribute the images to process
-     * it will set the objectId and objectIndexto read from input metadata
-     * or -1 if there are no more images to process.
-     * This method will be useful for parallel task distribution
-     */
-    virtual bool getImageToProcess(size_t &objId, size_t &objIndex);
 
     /** Define the label param */
     virtual void defineLabelParam();
