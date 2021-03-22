@@ -569,12 +569,46 @@ void MetaDataVec::fillLinear(MDLabel label, double initial, double step) {
     generator.fill(*this);
 }
 
+void MetaDataVec::_expand(MetaDataVecRow& row, const MDLabel label) {
+    int labeli = this->_labelIndex(label);
+    if (labeli < 0)
+        this->addLabel(label);
+    this->_expand(row,  this->_labelIndex(label));
+}
+
+void MetaDataVec::_expand(MetaDataVecRow& row, size_t labeli) {
+    // In assert: all labels to labeli (including) must be present in
+    // this->_col_to_label.
+
+    if (labeli < row.size())
+        return; // space for label already present
+
+    for (size_t i = row.size(); i <= labeli; i++)
+        row.push_back(MDObject(this->_col_to_label.at(i)));
+}
+
 void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
-    // TODO
+    int labelsrci = this->_labelIndex(labelSrc);
+    int labeldesti = this->_labelIndex(labelDest);
+    if (labelsrci < 0)
+        return;
+    if (labeldesti < 0)
+        this->addLabel(labelDest);
+    labeldesti = this->_labelIndex(labelDest);
+
+    for (MetaDataVecRow& row : this->_rows) {
+        if (static_cast<size_t>(labeldesti) >= row.size())
+            this->_expand(row, labeldesti);
+
+        if (static_cast<size_t>(labelsrci) < row.size())
+            row[labeldesti] = row[labelsrci];
+        // else row[labeldesti] is empty MDObject (from previous if)
+    }
 }
 
 void MetaDataVec::copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) {
     // TODO
+    throw NotImplemented();
 }
 
 /*void renameColumn(MDLabel oldLabel, MDLabel newLabel) override;

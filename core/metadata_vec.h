@@ -107,10 +107,12 @@ protected:
     size_t _rowIndexSafe(size_t id) const;
 
     void _setRow(const MDRow &row, size_t index);
-
     bool _match(const MetaDataVecRow&, const MDQuery&) const;
-
     size_t getRowId(const MetaDataVecRow&) const;
+
+    // Expand row to fit label in.
+    void _expand(MetaDataVecRow&, const MDLabel);
+    void _expand(MetaDataVecRow&, size_t labeli);
 
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
