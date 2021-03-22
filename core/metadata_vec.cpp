@@ -83,8 +83,17 @@ MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) {
     return this->_rows.at(i).at(labelIndex);
 }
 
-size_t MetaDataVec::_rowIndex(size_t id) const {
+int MetaDataVec::_rowIndex(size_t id) const {
+    if (this->_id_to_index.find(id) == this->_id_to_index.end())
+        return -1;
     return this->_id_to_index.at(id);
+}
+
+size_t MetaDataVec::_rowIndexSafe(size_t id) const {
+    int i = this->_rowIndex(id);
+    if (i == -1)
+        throw ObjectDoesNotExist();
+    return i;
 }
 
 void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
@@ -168,12 +177,12 @@ bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
 }
 
 bool MetaDataVec::setValue(const MDObject &mdValueIn, size_t id) {
-    this->_getObject(this->_rowIndex(id), mdValueIn.label) = mdValueIn;
+    this->_getObject(this->_rowIndexSafe(id), mdValueIn.label) = mdValueIn;
     return true;
 }
 
 bool MetaDataVec::getValue(MDObject &mdValueOut, size_t id) const {
-    mdValueOut = this->_getObject(this->_rowIndex(id), mdValueOut.label);
+    mdValueOut = this->_getObject(this->_rowIndexSafe(id), mdValueOut.label);
     return true;
 }
 
@@ -192,33 +201,29 @@ std::unique_ptr<const MDRow> MetaDataVec::getRow(size_t id) const {
 }
 
 MDRowVec MetaDataVec::getRowVec(size_t id) {
-    size_t i = this->_rowIndex(id);
-    if (i < 0)
-        throw ObjectDoesNotExist();
+    size_t i = this->_rowIndexSafe(id);
     return MDRowVec(this->_rows[i], i, this->_label_to_col);
 }
 
 const MDRowVec MetaDataVec::getRowVec(size_t id) const {
-    size_t i = this->_rowIndex(id);
-    if (i < 0)
-        throw ObjectDoesNotExist();
+    size_t i = this->_rowIndexSafe(id);
     return MDRowVec(this->_rows[i], i, this->_label_to_col);
 }
 
 
 bool MetaDataVec::getRow(MDRow &row, size_t id) {
-    size_t i = this->_rowIndex(id);
+    size_t i = this->_rowIndexSafe(id);
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);
     return true;
 }
 
 void MetaDataVec::getRow(MDRowVec &row, size_t id) {
-    size_t i = this->_rowIndex(id);
+    size_t i = this->_rowIndexSafe(id);
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);
 }
 
 bool MetaDataVec::getRowValues(size_t id, std::vector<MDObject> &values) const {
-    size_t i = this->_rowIndex(id);
+    size_t i = this->_rowIndexSafe(id);
     values = this->_rows[i];
     return true;
 }
@@ -251,7 +256,7 @@ void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
 }
 
 bool MetaDataVec::setRow(const MDRow &row, size_t id) {
-    this->_setRow(row, this->_rowIndex(id));
+    this->_setRow(row, this->_rowIndexSafe(id));
     return true;
 }
 
@@ -344,10 +349,21 @@ void MetaDataVec::importObjects(const MetaData &md, const MDQuery &query, bool d
     this->importObjects(md, ids, doClear);
 }
 
-/*bool removeObject(size_t id) override;*/
+bool MetaDataVec::removeObject(size_t id) {
+    int i = this->_rowIndex(id);
+    if (i < 0)
+        return false;
+
+    this->_id_to_index.erase(i);
+    this->_rows.erase(this->_rows.begin()+i);
+
+    for (size_t j = i; j < this->_rows.size(); j++)
+        this->_id_to_index[this->getRowId(i)]--;
+}
 
 void MetaDataVec::removeObjects(const std::vector<size_t> &toRemove) {
-    // TODO
+    for (size_t id : toRemove)
+        this->removeObject(id);
 }
 
 /*int removeObjects() override;

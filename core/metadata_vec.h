@@ -103,7 +103,8 @@ protected:
     int _labelIndex(MDLabel label) const;
     const MDObject& _getObject(size_t i, MDLabel label) const;
     MDObject& _getObject(size_t i, MDLabel label);
-    size_t _rowIndex(size_t id) const;
+    int _rowIndex(size_t id) const;
+    size_t _rowIndexSafe(size_t id) const;
 
     void _setRow(const MDRow &row, size_t index);
 
