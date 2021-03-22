@@ -108,6 +108,10 @@ protected:
 
     void _setRow(const MDRow &row, size_t index);
 
+    bool _match(const MetaDataVecRow&, const MDQuery&) const;
+
+    size_t getRowId(const MetaDataVecRow&) const;
+
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */

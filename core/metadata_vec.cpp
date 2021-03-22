@@ -97,6 +97,7 @@ size_t MetaDataVec::_rowIndexSafe(size_t id) const {
 }
 
 void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
+    // FIXME: implement
     throw NotImplemented();
 }
 
@@ -114,6 +115,7 @@ void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
     if (extFile == "xml") {
         writeXML(_outFile, blockName, mode);
     } else if (extFile == "sqlite") {
+        // FIXME: implement
         throw NotImplemented();
     } else {
         writeStar(_outFile, blockName, mode);
@@ -234,6 +236,15 @@ size_t MetaDataVec::getRowId(size_t i) const {
     return id;
 }
 
+size_t MetaDataVec::getRowId(const MetaDataVecRow& row) const {
+    int labelIndex = _labelIndex(MDL_OBJID);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    size_t id;
+    row.at(labelIndex).getValue(id);
+    return id;
+}
+
 void MetaDataVec::getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const {
     valuesOut.clear();
     int labelIndex = this->_labelIndex(label);
@@ -310,10 +321,12 @@ bool MetaDataVec::removeLabel(const MDLabel label) {
 }
 
 bool MetaDataVec::keepLabels(const std::vector<MDLabel> &labels) {
+    // FIXME: implement
     throw NotImplemented(); // not implemented yet
 }
 
 size_t MetaDataVec::addObject() {
+    // FIXME: implement
     throw NotImplemented(); // not implemented yet
 }
 
@@ -344,6 +357,7 @@ void MetaDataVec::importObjects(const MetaData &md, const std::vector<size_t> &o
 }
 
 void MetaDataVec::importObjects(const MetaData &md, const MDQuery &query, bool doClear) {
+    // FIXME: move this to MetaData?
     std::vector<size_t> ids;
     md.findObjects(ids, query);
     this->importObjects(md, ids, doClear);
@@ -366,10 +380,24 @@ void MetaDataVec::removeObjects(const std::vector<size_t> &toRemove) {
         this->removeObject(id);
 }
 
-/*int removeObjects() override;
-int removeObjects(const MDQuery&) override;
+int MetaDataVec::removeObjects() {
+    size_t count = this->size();
+    this->clear();
+    return count;
+}
 
-void addItemId();*/
+int MetaDataVec::removeObjects(const MDQuery& query) {
+    // FIXME: move this to MetaData?
+    std::vector<size_t> ids;
+    this->findObjects(ids, query);
+    this->removeObjects(ids);
+    return true;
+}
+
+void MetaDataVec::addItemId() {
+    // FIXME: implement
+    throw NotImplemented();
+}
 
 size_t MetaDataVec::firstRowId() const {
     return this->getRowId(0);
@@ -379,19 +407,66 @@ size_t MetaDataVec::lastRowId() const {
     return this->getRowId(this->size()-1);
 }
 
-size_t MetaDataVec:: firstObject(const MDQuery&) const {
-    // TODO
+bool MetaDataVec::_match(const MetaDataVecRow& row, const MDQuery& query) const {
+    if (dynamic_cast<const MDValueRelational*>(&query) == nullptr)
+        throw NotImplemented(); // MDValueRange, MDExpression, MDMultiQuery not implemented yet
+                                // MDExpression will probably never be supported as it is raw SQL expression
+
+    const MDValueRelational& rel = dynamic_cast<const MDValueRelational&>(query);
+
+    if (rel.value == nullptr)
+        return false;
+
+    size_t labeli = this->_labelIndex(rel.value->label);
+    if (labeli >= row.size())
+        return false;
+
+    const MDObject& mdObj = row[labeli];
+
+    if (rel.op == RelationalOp::EQ)
+        return *(rel.value) == mdObj;
+    if (rel.op == RelationalOp::NE)
+        return *(rel.value) != mdObj;
+    if (rel.op == RelationalOp::GT) // FIXME: check if < & > are not swapped
+        return *(rel.value) < mdObj;
+    if (rel.op == RelationalOp::GE)
+        return *(rel.value) <= mdObj;
+    if (rel.op == RelationalOp::LT)
+        return *(rel.value) > mdObj;
+    if (rel.op == RelationalOp::LE)
+        return *(rel.value) >= mdObj;
+
+    throw std::logic_error("MetaDataVec::_match: unknown operator");
+}
+
+size_t MetaDataVec::firstObject(const MDQuery& query) const {
+    // FIXME: should first be first in _rows order or ids order?
+    for (const MetaDataVecRow& row : this->_rows)
+        if (this->_match(row, query))
+            return this->getRowId(row);
+    return BAD_OBJID;
 }
 
 void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, const MDQuery &query) const {
-    // TODO
+    // FIXME: should first be first in _rows order or ids order?
+    objectsOut.clear();
+    for (const MetaDataVecRow& row : this->_rows)
+        if (this->_match(row, query))
+            objectsOut.push_back(this->getRowId(row));
 }
 
 void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, int limit) const {
-    // TODO
+    objectsOut.clear();
+    for (size_t i = 0; i < std::min<size_t>(limit, this->size()); i++)
+        objectsOut.push_back(this->getRowId(this->_rows[i]));
 }
 
-size_t MetaDataVec::countObjects(const MDQuery&) const {
+size_t MetaDataVec::countObjects(const MDQuery& query) const {
+    size_t count = 0;
+    for (const MetaDataVecRow& row : this->_rows)
+        if (this->_match(row, query))
+            count++;
+    return count;
 }
 
 bool MetaDataVec::containsObject(size_t objectId) const {

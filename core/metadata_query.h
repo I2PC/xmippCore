@@ -102,9 +102,9 @@ enum RelationalOp
  */
 class MDValueRelational: public MDQuery
 {
+public:
     MDObject *value;
     RelationalOp op;
-public:
 
     template <class T>
     MDValueRelational(MDLabel label, const T &value, RelationalOp op, int limit = -1, int offset = 0, MDLabel orderLabel = MDL_OBJID):MDQuery(limit, offset, orderLabel)
