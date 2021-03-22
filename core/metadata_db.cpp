@@ -31,6 +31,7 @@
 #include "metadata_db.h"
 #include "xmipp_image.h"
 #include "metadata_sql.h"
+#include "metadata_generator.h"
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
