@@ -257,14 +257,6 @@ public:
         return MetaData::getColumnValues(label, valuesOut);
     }
 
-    /** Set label values from string representation.
-     */
-    bool setValueFromStr(const MDLabel label, const String &value, size_t id);
-
-    /** Get string representation from label value.
-     */
-    bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;
-
     /**Check whether the metadata is empty.
      */
     bool isEmpty() const override;

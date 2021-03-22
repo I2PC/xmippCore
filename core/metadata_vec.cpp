@@ -272,10 +272,6 @@ bool MetaDataVec::setRow(const MDRow &row, size_t id) {
     return true;
 }
 
-// FIXME: maybe remove?
-/*bool setValueFromStr(const MDLabel label, const String &value, size_t id);
-bool getStrFromValue(const MDLabel label, String &strOut, size_t id) const;*/
-
 bool MetaDataVec::isEmpty() const {
     return this->_rows.empty();
 }
@@ -518,17 +514,15 @@ void operate(const String &expression);
 void replace(const MDLabel label, const String &oldStr, const String &newStr);
 void randomize(const MetaData &MDin);
 void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
-void removeDisabled();
+void removeDisabled();*/
 
-void sort(MetaDataVec &MDin,
-          const MDLabel sortLabel,
-          bool asc=true,
-          int limit=-1,
-          int offset=0);
+void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
+}
 
-void sort(MetaDataVec &MDin, const String &sortLabel, bool asc=true, int limit=-1, int offset=0);
+void MetaDataVec::sort(MetaDataVec &MDin, const String &sortLabel, bool asc, int limit, int offset) {
+}
 
-void split(size_t n, std::vector<MetaDataVec> &results,
+/*void split(size_t n, std::vector<MetaDataVec> &results,
            const MDLabel sortLabel=MDL_OBJID);
 
 void selectSplitPart(const MetaData &mdIn,
