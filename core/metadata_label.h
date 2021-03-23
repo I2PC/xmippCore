@@ -439,6 +439,7 @@ enum MDLabel
     MDL_TILT_ANALYSIS_STD, // <STD correlation between the PSD segments of a micrograph
     MDL_TILT_ANALYSIS_MIN, // <Min correlation between the PSD segments of a micrograph
     MDL_TILT_ANALYSIS_MAX, // <Max correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_PSDs, // <Image composed of the PSDs of each segment of a micrograph
 
 
 
@@ -1815,6 +1816,8 @@ private:
         MDL::addLabel(MDL_TILT_ANALYSIS_STD, LABEL_DOUBLE, "tiltAnalysisSTD");
         MDL::addLabel(MDL_TILT_ANALYSIS_MIN, LABEL_DOUBLE, "tiltAnalysisMin");
         MDL::addLabel(MDL_TILT_ANALYSIS_MAX, LABEL_DOUBLE, "tiltAnalysisMax");
+        MDL::addLabel(MDL_TILT_ANALYSIS_PSDs, LABEL_DOUBLE, "tiltAnalysisPSDs");
+
 
         MDL::addLabel(MDL_VOLUME_SCORE_SUM, LABEL_DOUBLE, "volScoreSum");
         MDL::addLabel(MDL_VOLUME_SCORE_MEAN, LABEL_DOUBLE, "volScoreMean");
