@@ -33,8 +33,8 @@ jobs:
           echo ${TRAVIS_BRANCH}
           ./scripts/travis_build
         env:
-          TRAVIS_PULL_REQUEST_BRANCH: ${{GITHUB_HEAD_REF}}
-          TRAVIS_BRANCH: ${{GITHUB_REF}}
+          TRAVIS_PULL_REQUEST_BRANCH: GITHUB_HEAD_REF
+          TRAVIS_BRANCH: ${GITHUB_REF}
       
       - name: Prepare Sonar scanner
         run: |
