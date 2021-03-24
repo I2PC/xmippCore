@@ -1814,7 +1814,7 @@ private:
         MDL::addLabel(MDL_TILT_ANALYSIS_STD, LABEL_DOUBLE, "tiltAnalysisSTD");
         MDL::addLabel(MDL_TILT_ANALYSIS_MIN, LABEL_DOUBLE, "tiltAnalysisMin");
         MDL::addLabel(MDL_TILT_ANALYSIS_MAX, LABEL_DOUBLE, "tiltAnalysisMax");
-        MDL::addLabel(MDL_TILT_ANALYSIS_PSDs, LABEL_STRING, "tiltAnalysisPSDs");
+        MDL::addLabel(MDL_TILT_ANALYSIS_PSDs, LABEL_STRING, "tiltAnalysisPSDs", TAGLABEL_IMAGE);
 
 
         MDL::addLabel(MDL_VOLUME_SCORE_SUM, LABEL_DOUBLE, "volScoreSum");
