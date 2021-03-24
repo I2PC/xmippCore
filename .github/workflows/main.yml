@@ -27,6 +27,11 @@ jobs:
         with:
           fetch-depth: 0
           
+      - name: Create Travis variables
+        run: |
+          echo "TRAVIS_PULL_REQUEST_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
+          echo "TRAVIS_BRANCH=${GITHUB_REF}" >> $GITHUB_ENV
+          
       - name: Fetching Xmipp
         run: |
           echo ${TRAVIS_PULL_REQUEST_BRANCH}
@@ -34,9 +39,6 @@ jobs:
           echo ${GITHUB_HEAD_REF}
           echo ${GITHUB_REF}
           ./scripts/travis_build
-        env:
-          TRAVIS_PULL_REQUEST_BRANCH: $GITHUB_HEAD_REF
-          TRAVIS_BRANCH: $GITHUB_REF
       
       - name: Prepare Sonar scanner
         run: |
