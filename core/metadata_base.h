@@ -375,7 +375,7 @@ public:
             REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Input vector must be of the same size as the metadata");
         if (!addObjects) {
             size_t n = 0;
-            for (auto row : *this)
+            for (auto& row : *this)
                 row.setValue(label, valuesIn[n++]);
         } else {
             size_t nmax=valuesIn.size();

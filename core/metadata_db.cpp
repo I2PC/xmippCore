@@ -673,6 +673,10 @@ MetaDataDb::MetaDataDb()
     init(NULL);
 }//close MetaData default Constructor
 
+MetaDataDb::MetaDataDb(const MetaData &md) {
+	// FIXME: TODO
+}
+
 MetaDataDb::MetaDataDb(const std::vector<MDLabel> &labelsVector)
 {
     myMDSql = new MDSql(this);

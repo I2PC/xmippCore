@@ -516,8 +516,12 @@ void MetaDataVec::append(const FileName &outFile) const {
     throw NotImplemented();
 }
 
-/*bool existsBlock(const FileName &_inFile);
-void readStar(const FileName &inFile,
+bool MetaDataVec::existsBlock(const FileName &_inFile) {
+    // TODO
+    throw NotImplemented();
+}
+
+/*void readStar(const FileName &inFile,
               const std::vector<MDLabel> *desiredLabels = nullptr,
               const String & blockName=DEFAULT_BLOCK_NAME,
               bool decomposeStack=true);

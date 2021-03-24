@@ -136,6 +136,7 @@ public:
      */
     MetaDataDb();
     MetaDataDb(const std::vector<MDLabel> &labelsVector);
+    MetaDataDb(const MetaData &md);
 
     /** From File Constructor.
      *
@@ -289,6 +290,11 @@ public:
     /** Get all values of a column as a vector.
      */
     void setColumnValues(const std::vector<MDObject> &valuesIn) override;
+
+    template<class T>
+    void setColumnValues(const MDLabel label, const std::vector<T> &valuesIn) {
+        return MetaData::setColumnValues(label, valuesIn);
+    }
 
     /** Get all values of an MetaData row of an specified objId*/
     bool bindValue(size_t id) const;
