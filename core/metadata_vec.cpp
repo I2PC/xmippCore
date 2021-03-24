@@ -526,10 +526,17 @@ void readXML(const FileName &inFile,
              const String & blockRegExp=DEFAULT_BLOCK_NAME,
              bool decomposeStack=true);
 
-void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack = true) override;
-void readPlain(const FileName &inFile, const String &labelsString, const String &separator = " ");
-void addPlain(const FileName &inFile, const String &labelsString, const String &separator=" ");
-*/
+void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack = true) override;*/
+
+void MetaDataVec::readPlain(const FileName &inFile, const String &labelsString, const String &separator) {
+    // TODO
+    throw NotImplemented();
+}
+
+void MetaDataVec::addPlain(const FileName &inFile, const String &labelsString, const String &separator) {
+    // TODO
+    throw NotImplemented();
+}
 
 double MetaDataVec::getColumnMax(MDLabel column) {
     // TODO
