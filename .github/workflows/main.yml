@@ -27,18 +27,19 @@ jobs:
         with:
           fetch-depth: 0
           
+      - name: Fetch cache
+        uses: actions/cache@v2.1.4
+        with:
+          path: sonarCache
+          key: ${{ runner.os }}-sonarCache
+          
       - name: Create Travis variables
         run: |
           echo "TRAVIS_PULL_REQUEST_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
           echo "TRAVIS_BRANCH=${GITHUB_REF}" >> $GITHUB_ENV
           
       - name: Fetching Xmipp
-        run: |
-          echo ${TRAVIS_PULL_REQUEST_BRANCH}
-          echo ${TRAVIS_BRANCH}
-          echo ${GITHUB_HEAD_REF}
-          echo ${GITHUB_REF}
-          ./scripts/travis_build
+        run: ./scripts/travis_build
       
       - name: Prepare Sonar scanner
         run: |
@@ -52,7 +53,12 @@ jobs:
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
         
-#      - name: Install CUDA
+      - name: Install CUDA
+        uses: Jimver/cuda-toolkit@v0.2.0
+        with: 
+          cuda: 10.2.89
+          method: network
+          sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
 #        run: source scripts/install_cuda_github.sh
 #        env: 
 #          CUDA_VER: 10.2.89
