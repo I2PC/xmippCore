@@ -318,5 +318,8 @@ MDRowVec MDL::emptyHeaderVec() {
     return row;
 }
 
-void emptifyHeader(MDRow&) {
+void MDL::emptifyHeader(MDRow& row) {
+    row.resetGeo();
+    row.setValue(MDL_ANGLE_ROT, 0.);
+    row.setValue(MDL_ANGLE_TILT,0.);
 }
