@@ -446,6 +446,12 @@ public:
                     slope = 1;
                     min0 -= CHAR_MIN;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -470,6 +476,12 @@ public:
                 {
                     slope = 1;
                     min0 += CHAR_MIN;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
@@ -501,6 +513,12 @@ public:
                 {
                     slope = 1;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -531,6 +549,12 @@ public:
                 else if (castMode == CW_CONVERT && (myTypeId == DT_SChar))
                 {
                     slope = 1;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
@@ -564,6 +588,12 @@ public:
                 {
                     slope = 1;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -594,6 +624,12 @@ public:
                          && (myTypeId == DT_Short || myTypeId == DT_SChar))
                 {
                     slope = 1;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
