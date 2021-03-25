@@ -142,8 +142,6 @@ int ImageBase::writeJPEG(size_t select_img, bool isStack, int mode, String bitDe
     //Selection of output datatype
     DataType myTypeID = myT();
 
-    castMode = CW_CONVERT;
-
     if (mmapOnWrite)
     {
         /* As we cannot mmap a JPEG File, when this option is passed we are going to mmap
