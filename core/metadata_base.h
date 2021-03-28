@@ -584,8 +584,8 @@ public:
             impl->increment();
             return *this;
         }
-        bool operator==(const rowIterator& other) { return other.impl == this->impl; }
-        bool operator!=(const rowIterator& other) { return !(*this == other); }
+        bool operator==(const rowIterator<IsConst>& other) const { return other.impl == this->impl; }
+        bool operator!=(const rowIterator<IsConst>& other) const { return !(*this == other); }
         typename TypeHelpers::choose<IsConst, const MDRow&, MDRow&>::type operator*() const { return **impl; }
     };
 
@@ -614,8 +614,8 @@ public:
             impl->increment();
             return *this;
         }
-        bool operator==(const idIterator& other) { return other.impl == this->impl; }
-        bool operator!=(const idIterator& other) { return !(*this == other); }
+        bool operator==(const idIterator<IsConst>& other) const { return other.impl == this->impl; }
+        bool operator!=(const idIterator<IsConst>& other) const { return !(*this == other); }
         size_t operator*() const { return **impl; }
     };
 
