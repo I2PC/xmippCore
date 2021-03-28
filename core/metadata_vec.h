@@ -556,7 +556,12 @@ public:
 
     public:
         MDVecRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
-            : _mdv(mdv), _i(i), _row(new RowType(mdv._rows.at(i), i, mdv._label_to_col)) {}
+            : _mdv(mdv), _i(i) {
+                if (_i < _mdv.size())
+                    _row.reset(new RowType(mdv._rows.at(i), i, mdv._label_to_col));
+                else
+                    _row = nullptr;
+            }
 
         std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
             return MemHelpers::make_unique<MDVecRowIterator<IsConst>>(_mdv, _i);
@@ -564,7 +569,10 @@ public:
 
         void increment() override {
             _i++;
-            _row.reset(new RowType(_mdv._rows.at(_i), _i, _mdv._label_to_col));
+            if (_i < _mdv.size())
+                _row.reset(new RowType(_mdv._rows.at(_i), _i, _mdv._label_to_col));
+            else
+                _row = nullptr;
         }
 
         bool operator==(const MDBaseRowIterator<IsConst>& other) const override {
