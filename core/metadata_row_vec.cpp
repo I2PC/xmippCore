@@ -31,6 +31,7 @@ MDRowVec::MDRowVec()
     : _in_metadata(false) {
     _row = new std::vector<MDObject>();
     _label_to_col = new std::array<int, MDL_LAST_LABEL>();
+    std::fill(_label_to_col->begin(), _label_to_col->end(), -1);
 }
 
 MDRowVec::MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col)
