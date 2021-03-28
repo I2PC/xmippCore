@@ -58,6 +58,7 @@ MetaDataVec& MetaDataVec::operator=(const MetaData &md) {
 }
 
 void MetaDataVec::init(const std::vector<MDLabel> &labelsVector) {
+    this->clear();
     size_t col = 0;
     for (const auto label : labelsVector) {
         _label_to_col[label] = col;
