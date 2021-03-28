@@ -195,7 +195,13 @@ bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
 }
 
 bool MetaDataVec::setValue(const MDObject &mdValueIn, size_t id) {
-    this->_getObject(this->_rowIndexSafe(id), mdValueIn.label) = mdValueIn;
+    if (!this->containsLabel(mdValueIn.label))
+        this->addLabel(mdValueIn.label);
+
+    MetaDataVecRow& row = this->_rows[this->_rowIndexSafe(id)];
+    this->_expand(row, mdValueIn.label);
+
+    row[this->_labelIndex(mdValueIn.label)] = mdValueIn;
     return true;
 }
 
