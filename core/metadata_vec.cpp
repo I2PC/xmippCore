@@ -172,6 +172,7 @@ size_t MetaDataVec::addRow(const MDRow &row) {
     size_t rowId = getRowId(_rows.size()-1);
     if (rowId == this->_next_id)
         this->_next_id++;
+    this->_id_to_index[rowId] = _rows.size()-1;
     return rowId;
 }
 
@@ -307,7 +308,7 @@ bool MetaDataVec::addLabel(const MDLabel label, int pos) {
     this->_no_columns++;
     size_t column = this->_no_columns-1;
     this->_label_to_col[label] = column;
-    this->_col_to_label[column] = label;
+    this->_col_to_label.push_back(label);
     return true;
 }
 
