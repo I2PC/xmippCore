@@ -99,7 +99,7 @@ size_t MetaDataVec::_rowIndexSafe(size_t id) const {
 
 void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
     // FIXME: implement
-    throw NotImplemented();
+    throw NotImplemented("read not implemented");
 }
 
 void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
@@ -117,7 +117,7 @@ void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
         writeXML(_outFile, blockName, mode);
     } else if (extFile == "sqlite") {
         // FIXME: implement
-        throw NotImplemented();
+        throw NotImplemented("sqlite read not implemented");
     } else {
         writeStar(_outFile, blockName, mode);
     }
@@ -125,12 +125,12 @@ void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
 
 void MetaDataVec::writeXML(const FileName fn, const FileName blockname, WriteModeMetaData mode) const {
     // FIXME: implement
-    throw NotImplemented();
+    throw NotImplemented("writeXML not implemented");
 }
 
 void MetaDataVec::writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const {
     // FIXME: implement
-    throw NotImplemented();
+    throw NotImplemented("writeText not immplemented");
 }
 
 void MetaDataVec::clear() {
@@ -168,7 +168,10 @@ size_t MetaDataVec::addRow(const MDRow &row) {
     MetaDataVecRow newRow;
     _rows.push_back(newRow);
     this->_setRow(row, _rows.size()-1);
-    return getRowId(_rows.size()-1);
+    size_t rowId = getRowId(_rows.size()-1);
+    if (rowId == this->_next_id)
+        this->_next_id++;
+    return rowId;
 }
 
 void MetaDataVec::addRows(const std::vector<MDRowVec> &rows) {
@@ -296,7 +299,7 @@ bool MetaDataVec::containsLabel(const MDLabel label) const {
 
 bool MetaDataVec::addLabel(const MDLabel label, int pos) {
     if (pos != -1)
-        throw NotImplemented();
+        throw NotImplemented("addLabel to -1 not implemented");
     if (this->_label_to_col[label] != -1)
         return true;
 
@@ -329,12 +332,13 @@ bool MetaDataVec::removeLabel(const MDLabel label) {
 
 bool MetaDataVec::keepLabels(const std::vector<MDLabel> &labels) {
     // FIXME: implement
-    throw NotImplemented(); // not implemented yet
+    throw NotImplemented("keepLabels not implemented"); // not implemented yet
 }
 
 size_t MetaDataVec::addObject() {
-    // FIXME: implement
-    throw NotImplemented(); // not implemented yet
+    MDRowVec row;
+    row.setValue(MDObject(MDL_OBJID, this->_next_id));
+    this->addRow(row);
 }
 
 void MetaDataVec::importObject(const MetaData &md, const size_t id, bool doClear) {
@@ -405,7 +409,7 @@ int MetaDataVec::removeObjects(const MDQuery& query) {
 
 void MetaDataVec::addItemId() {
     // FIXME: implement
-    throw NotImplemented();
+    throw NotImplemented("addItemId not implemented");
 }
 
 size_t MetaDataVec::firstRowId() const {
@@ -418,7 +422,7 @@ size_t MetaDataVec::lastRowId() const {
 
 bool MetaDataVec::_match(const MetaDataVecRow& row, const MDQuery& query) const {
     if (dynamic_cast<const MDValueRelational*>(&query) == nullptr)
-        throw NotImplemented(); // MDValueRange, MDExpression, MDMultiQuery not implemented yet
+        throw NotImplemented("_match not implemented"); // MDValueRange, MDExpression, MDMultiQuery not implemented yet
                                 // MDExpression will probably never be supported as it is raw SQL expression
 
     const MDValueRelational& rel = dynamic_cast<const MDValueRelational&>(query);
@@ -498,27 +502,27 @@ void _writeRows(std::ostream &os) const;*/
 
 void MetaDataVec::writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("writeStart not implemented");
 }
 
 void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMetaData mode) const {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("write not implemented");
 }
 
 void MetaDataVec::print() const {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("print not implemented");
 }
 
 void MetaDataVec::append(const FileName &outFile) const {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("append not implemented");
 }
 
 bool MetaDataVec::existsBlock(const FileName &_inFile) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("existsBlock not implemented");
 }
 
 /*void readStar(const FileName &inFile,
@@ -534,79 +538,79 @@ void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nu
 
 void MetaDataVec::readPlain(const FileName &inFile, const String &labelsString, const String &separator) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("readPlain not implemented");
 }
 
 void MetaDataVec::addPlain(const FileName &inFile, const String &labelsString, const String &separator) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("addPlain not implemented");
 }
 
 double MetaDataVec::getColumnMax(MDLabel column) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("getColumnMax not implemented");
 }
 
 double MetaDataVec::getColumnMin(MDLabel column) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("getColumnMin not implemented");
 }
 
 void MetaDataVec::operate(const String &expression) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("operate not implemented");
 }
 
 void MetaDataVec::replace(const MDLabel label, const String &oldStr, const String &newStr) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("replace not implemented");
 }
 
 void MetaDataVec::randomize(const MetaData &MDin) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("randomize not implemented");
 }
 
 void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("removeDuplicates not implemented");
 }
 
 void MetaDataVec::removeDisabled() {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("removeDisabled not implemented");
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("sort not implemented");
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const String &sortLabel, bool asc, int limit, int offset) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("sort not implemented");
 }
 
 void MetaDataVec::split(size_t n, std::vector<MetaDataVec> &results, const MDLabel sortLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("split not implemented");
 }
 
 void MetaDataVec::selectSplitPart(const MetaData &mdIn, size_t n, size_t part,
                                    const MDLabel sortLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("selectSplitPart not implemented");
 }
 
 void MetaDataVec::selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("selectRandomSubset not implemented");
 }
 
 void MetaDataVec::selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
                              const MDLabel sortLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("selectPart not implemented");
 }
 
 /*void makeAbsPath(const MDLabel label=MDL_IMAGE);*/
@@ -614,7 +618,7 @@ void MetaDataVec::selectPart(const MetaData &mdIn, size_t startPosition, size_t 
 
 void MetaDataVec::fillExpand(MDLabel label) {
     // FIXME
-    throw NotImplemented();
+    throw NotImplemented("fillExpand not implemented");
 }
 
 void MetaDataVec::fillConstant(MDLabel label, const String &value) {
@@ -677,22 +681,22 @@ void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
 
 void MetaDataVec::copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("copyColumnTo not implemented");
 }
 
 void MetaDataVec::renameColumn(MDLabel oldLabel, MDLabel newLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("removeColumn not implemented");
 }
 
 void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
                                const std::vector<MDLabel> &newLabel) {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("renameColumn not implemented");
 }
 
 
 bool MetaDataVec::operator==(const MetaDataVec& op) const {
     // TODO
-    throw NotImplemented();
+    throw NotImplemented("operator == not implemented");
 }

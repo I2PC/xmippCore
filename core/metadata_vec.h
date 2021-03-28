@@ -36,7 +36,8 @@
 
 class NotImplemented : public std::logic_error {
 public:
-    NotImplemented() : std::logic_error("Function not yet implemented") {};
+    NotImplemented(const std::string& str) : std::logic_error(str) {};
+    // NotImplemented() : std::logic_error("Function not yet implemented") {};
 };
 
 class ColumnDoesNotExist : public std::logic_error {
@@ -66,6 +67,7 @@ protected:
     std::vector<MDLabel> _col_to_label;
     size_t _no_columns = 0;
     std::unordered_map<size_t, size_t> _id_to_index;
+    size_t _next_id = 0;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
