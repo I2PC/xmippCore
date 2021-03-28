@@ -66,7 +66,6 @@ void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _s
     _sd().initZeros();
     // Calculate SD
     for (size_t id : md.ids())
-    FOR_ALL_OBJECTS_IN_METADATA(md)
     {
         md.getValue(image_label, fnImg, id);
         if (apply_geo)

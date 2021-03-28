@@ -127,6 +127,7 @@ int ImageBase::readRange(const FileName &name, size_t start_img, size_t end_img,
     }
 
     readBatch(name, start_img, end_img - start_img + 1, datamode, mapData, mode);
+    return true;
 }
 
 

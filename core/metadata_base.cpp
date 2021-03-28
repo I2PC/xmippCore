@@ -39,6 +39,7 @@ bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t 
     MDObject mdValue(label);
     mdValue.fromString(value);
     this->setValue(mdValue, id);
+    return true;
 }
 
 bool MetaData::getStrFromValue(const MDLabel label, String &strOut, size_t id) const {

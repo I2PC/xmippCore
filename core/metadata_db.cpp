@@ -644,7 +644,7 @@ void MetaDataDb::addRows(const std::vector<MDRowSql> &rows)
 
 size_t MetaDataDb::addRow2(const MDRow &row)
 {
-    size_t id;      // Inserted row id.
+    size_t id = BAD_OBJID;
 
     // Initialize INSERT.
     if (initAddRow( row))
@@ -654,10 +654,6 @@ size_t MetaDataDb::addRow2(const MDRow &row)
         {
             // Get last inserted row id.
             id = myMDSql->getObjId();
-        }
-        else
-        {
-            id = BAD_OBJID;
         }
 
         // Finalize INSERT.

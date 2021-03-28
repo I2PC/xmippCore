@@ -327,7 +327,6 @@ void XmippMetadataProgram::checkPoint()
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
-    size_t objId;
     MDRowVec rowIn, rowOut;
     mdOut.clear(); //this allows multiple runs of the same Program object
 
@@ -353,7 +352,7 @@ void XmippMetadataProgram::run()
 
     for (const auto& row : *mdIn)
     {
-        mdIn->getRow(rowIn, objId);
+        mdIn->getRow(rowIn, row.id());
         rowIn.getValue(image_label, fnImg);
 
         if (fnImg.empty())

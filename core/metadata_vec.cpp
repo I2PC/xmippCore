@@ -338,7 +338,7 @@ bool MetaDataVec::keepLabels(const std::vector<MDLabel> &labels) {
 size_t MetaDataVec::addObject() {
     MDRowVec row;
     row.setValue(MDObject(MDL_OBJID, this->_next_id));
-    this->addRow(row);
+    return this->addRow(row);
 }
 
 void MetaDataVec::importObject(const MetaData &md, const size_t id, bool doClear) {
