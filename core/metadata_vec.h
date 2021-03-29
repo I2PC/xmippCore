@@ -654,7 +654,6 @@ public:
     void renameColumn(const std::vector<MDLabel> &oldLabel,
             const std::vector<MDLabel> &newLabel) override;
 
-    /** 'is equal to' (equality).*/
     bool operator==(const MetaDataVec& op) const;
 };//class MetaData
 

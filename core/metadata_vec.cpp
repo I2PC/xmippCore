@@ -705,6 +705,30 @@ void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
 
 
 bool MetaDataVec::operator==(const MetaDataVec& op) const {
-    // TODO
-    throw NotImplemented("operator == not implemented");
+    // This comparison ignores order of labels, everything else must be same
+
+    if (this->_rows.size() != op._rows.size())
+        return false;
+
+    for (size_t labeli = 0; labeli < MDL_LAST_LABEL; labeli++)
+        if ((this->_label_to_col[labeli] > -1) != (op._label_to_col[labeli] > -1))
+            return false;
+
+    for (size_t i = 0; i < this->_rows.size(); i++) {
+        for (size_t labeli = 0; labeli < MDL_LAST_LABEL; labeli++) {
+            int thisLabelRowI = this->_label_to_col[labeli];
+            int opLabelRowI = op._label_to_col[labeli];
+            if (thisLabelRowI > -1) {
+                if ((static_cast<size_t>(thisLabelRowI) < this->_rows[i].size()) !=
+                    (static_cast<size_t>(opLabelRowI) < op._rows[i].size()))
+                    return false; // item present in one row, but not other
+                if (static_cast<size_t>(thisLabelRowI) >= this->_rows[i].size())
+                    continue; // label not present in both rows
+                if (this->_rows[i][thisLabelRowI] != op._rows[i][opLabelRowI])
+                    return false; // MDObjects are diffrent
+            }
+        }
+    }
+
+    return true; // all rows same → ok
 }
