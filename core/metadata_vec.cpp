@@ -167,9 +167,19 @@ void MetaDataVec::_setRow(const MDRow &row, size_t index) {
 
 size_t MetaDataVec::addRow(const MDRow &row) {
     // FIXME: should id be changed or kept same?
+
     MetaDataVecRow newRow;
     _rows.push_back(newRow);
     this->_setRow(row, _rows.size()-1);
+
+    if (!row.containsLabel(MDL_OBJID)) {
+        MetaDataVecRow& _row = this->_rows[_rows.size()-1];
+        if (!this->containsLabel(MDL_OBJID))
+            this->addLabel(MDL_OBJID);
+        this->_expand(_row, MDL_OBJID);
+        _row[this->_labelIndex(MDL_OBJID)] = MDObject(MDL_OBJID, this->_next_id);
+    }
+
     size_t rowId = getRowId(_rows.size()-1);
     if (rowId == this->_next_id)
         this->_next_id++;
