@@ -114,10 +114,14 @@ void MDRowVec::addLabel(MDLabel label) {
 }
 
 MDObject *MDRowVec::getObject(MDLabel label) {
+    if ((*_label_to_col)[label] < 0)
+        return nullptr;
     return &_row->at((*_label_to_col)[label]);
 }
 
 const MDObject *MDRowVec::getObject(MDLabel label) const {
+    if ((*_label_to_col)[label] < 0)
+        return nullptr;
     return &_row->at((*_label_to_col)[label]);
 }
 
