@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <cassert>
 #include "metadata_vec.h"
 #include "metadata_generator.h"
 
@@ -181,6 +182,15 @@ size_t MetaDataVec::addRow(const MDRow &row) {
     }
 
     size_t rowId = getRowId(_rows.size()-1);
+
+    if (this->_id_to_index.find(rowId) != this->_id_to_index.end()) {
+        MetaDataVecRow& _row = this->_rows[_rows.size()-1];
+        _row[this->_labelIndex(MDL_OBJID)] = MDObject(MDL_OBJID, this->_next_id);
+        rowId = this->_next_id;
+    }
+
+    assert(this->_id_to_index.find(rowId) == this->_id_to_index.end());
+
     if (rowId == this->_next_id)
         this->_next_id++;
     this->_id_to_index[rowId] = _rows.size()-1;
@@ -716,7 +726,8 @@ void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
 
 
 bool MetaDataVec::operator==(const MetaDataVec& op) const {
-    // This comparison ignores order of labels, everything else must be same
+    // This comparison ignores order of labels, everything else must be same,
+    // even order of rows and ids.
 
     if (this->_rows.size() != op._rows.size())
         return false;
