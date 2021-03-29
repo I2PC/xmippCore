@@ -140,6 +140,7 @@ void MetaDataVec::clear() {
     std::fill(this->_label_to_col.begin(), this->_label_to_col.end(), -1);
     this->_col_to_label.clear();
     this->_no_columns = 0;
+    this->_next_id = 0;
 }
 
 void MetaDataVec::_setRow(const MDRow &row, size_t index) {
@@ -724,7 +725,7 @@ bool MetaDataVec::operator==(const MetaDataVec& op) const {
                     return false; // item present in one row, but not other
                 if (static_cast<size_t>(thisLabelRowI) >= this->_rows[i].size())
                     continue; // label not present in both rows
-                if (this->_rows[i][thisLabelRowI] != op._rows[i][opLabelRowI])
+                if (!this->_rows[i][thisLabelRowI].eq(op._rows[i][opLabelRowI], this->precision()))
                     return false; // MDObjects are diffrent
             }
         }

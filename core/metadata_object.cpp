@@ -462,6 +462,10 @@ bool MDObject::fromChar(const char * szChar)
 }
 
 bool MDObject::operator==(const MDObject &obj) const {
+    return this->eq(obj, 0);
+}
+
+bool MDObject::eq(const MDObject &obj, double epsilon) const {
     // FIXME: allow to compare e.g. int & double & longint
     if (this->label != obj.label)
         return false;
@@ -476,12 +480,17 @@ bool MDObject::operator==(const MDObject &obj) const {
     else if (this->type == LABEL_SIZET)
         return this->data.longintValue == obj.data.longintValue;
     else if (this->type == LABEL_DOUBLE)
-        return this->data.doubleValue == obj.data.doubleValue;
+        return std::abs(this->data.doubleValue - obj.data.doubleValue) <= epsilon;
     else if (this->type == LABEL_STRING)
         return *(this->data.stringValue) == *(obj.data.stringValue);
-    else if (this->type == LABEL_VECTOR_DOUBLE)
-        return *(this->data.vectorValue) == *(obj.data.vectorValue);
-    else if (this->type == LABEL_VECTOR_SIZET)
+    else if (this->type == LABEL_VECTOR_DOUBLE) {
+        if (this->data.vectorValue->size() != obj.data.vectorValue->size())
+            return false;
+        for (size_t i = 0; i < this->data.vectorValue->size(); i++)
+            if (std::abs((*this->data.vectorValue)[i] - (*obj.data.vectorValue)[i]) > epsilon)
+                return false;
+        return true;
+    } else if (this->type == LABEL_VECTOR_SIZET)
         return *(this->data.vectorValueLong) == *(obj.data.vectorValueLong);
 
     throw std::logic_error("MDObject: unknown data type");

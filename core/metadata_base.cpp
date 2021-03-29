@@ -80,6 +80,7 @@ void MetaData::baseClear() {
     _ignoreLabels.clear();
     _isColumnFormat = true;
     _inFile = FileName();
+    _precision = 1000;
 }
 
 void MetaData::copyInfo(const MetaData& md) {
@@ -92,4 +93,8 @@ void MetaData::copyInfo(const MetaData& md) {
     _ignoreLabels = md._ignoreLabels;
     _isColumnFormat = md._isColumnFormat;
     _inFile = md._inFile;
+}
+
+double MetaData::precision() const {
+    return 1./this->_precision;
 }

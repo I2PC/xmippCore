@@ -129,6 +129,7 @@ public:
     bool fromString(const String &str);
     bool fromChar(const char * str);
 
+    bool eq(const MDObject &obj, double epsilon) const;
     bool operator == (const MDObject &obj) const;
     bool operator != (const MDObject &obj) const;
     bool operator <= (const MDObject &obj) const;

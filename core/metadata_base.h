@@ -121,7 +121,7 @@ public:
 #define line_max 70
 
     bool _isColumnFormat; ///< Format for the file, column or row formatted
-    int _precision;
+    int _precision = 1000;
     /**Input file name
      * Where does this MetaData come from/go to be stored?
      */
@@ -147,6 +147,7 @@ public:
 
     void copyInfo(const MetaData& md);
     void baseClear();
+    double precision() const;
 
 public:
     /** Filename used in the read command, useful to write Error messages
