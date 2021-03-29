@@ -167,6 +167,7 @@ public:
     /** @name Getters and setters
      * @{
      */
+    std::vector<MDLabel> getActiveLabels() const override;
 
     bool nextBlock(mdBuffer &buffer, mdBlock &block);
 

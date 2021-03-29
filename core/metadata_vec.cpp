@@ -733,3 +733,11 @@ bool MetaDataVec::operator==(const MetaDataVec& op) const {
 
     return true; // all rows same → ok
 }
+
+std::vector<MDLabel> MetaDataVec::getActiveLabels() const {
+    std::vector<MDLabel> out;
+    for (size_t i = MDL_GATHER_ID; i < MDL_LAST_LABEL; i++) // ignore MDL_FIRST_LABEL = MDL_OBJID
+        if (this->_label_to_col[i] > -1)
+            out.push_back(static_cast<MDLabel>(i));
+    return out;
+}

@@ -131,7 +131,7 @@ public:
      * and/or will be stored on a new metadata file when "save" is
      * called
      **/
-    std::vector<MDLabel> _activeLabels;
+    std::vector<MDLabel> _activeLabels; // FIXME: maybe move this to MetaDataDb? MetaDataVec does not use it.
 
     /** When reading a column formatted file, if a label is found that
      * does not exist as a MDLabel, it is ignored. For further
@@ -247,12 +247,6 @@ public:
     /**Get safe access to active labels.
      */
     virtual std::vector<MDLabel> getActiveLabels() const { return this->_activeLabels; }
-
-    /**Get unsafe pointer to active labels.
-     */
-    virtual std::vector<MDLabel> *getActiveLabelsAddress() const {
-        return (std::vector<MDLabel>*) (&this->_activeLabels);
-    }
 
     /**Get maximum string length of column values.
     */
