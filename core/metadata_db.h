@@ -458,7 +458,6 @@ public:
      */
     void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const override;
     void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const override;
-    void print() const override;
 
     /** Append data lines to file.
      * This function can be used to add new data to

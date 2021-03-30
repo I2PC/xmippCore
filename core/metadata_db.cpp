@@ -1083,12 +1083,6 @@ void MetaDataDb::_writeRows(std::ostream &os) const
     myMDSql->finalizePreparedStmt();
 }
 
-void MetaDataDb::print() const
-{
-    write(std::cout);
-}
-
-
 void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaData mode ) const
 {
     if(mode==MD_OVERWRITE)

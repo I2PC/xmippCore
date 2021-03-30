@@ -515,7 +515,7 @@ public:
 
     virtual void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const = 0;
     virtual void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const = 0;
-    virtual void print() const = 0;
+    virtual void print() const { this->write(std::cout); }
 
     /** Read data from file. Guess the blockname from the filename
      * @code

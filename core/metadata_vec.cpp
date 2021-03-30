@@ -73,17 +73,25 @@ int MetaDataVec::_labelIndex(MDLabel label) const {
 }
 
 const MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) const {
-    int labelIndex = _labelIndex(label);
-    if (labelIndex < 0)
-        throw ColumnDoesNotExist();
-    return this->_rows.at(i).at(labelIndex);
+    return this->_getObject(this->_rows.at(i), label);
 }
 
 MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) {
-    int labelIndex = _labelIndex(label);
+    return this->_getObject(this->_rows.at(i), label);
+}
+
+const MDObject& MetaDataVec::_getObject(const MetaDataVecRow& row, MDLabel label) const {
+    int labelIndex = this->_labelIndex(label);
     if (labelIndex < 0)
         throw ColumnDoesNotExist();
-    return this->_rows.at(i).at(labelIndex);
+    return row.at(labelIndex);
+}
+
+MDObject& MetaDataVec::_getObject(MetaDataVecRow& row, MDLabel label) const {
+    int labelIndex = this->_labelIndex(label);
+    if (labelIndex < 0)
+        throw ColumnDoesNotExist();
+    return row.at(labelIndex);
 }
 
 int MetaDataVec::_rowIndex(size_t id) const {
@@ -526,8 +534,21 @@ bool MetaDataVec::containsObject(size_t objectId) {
     return this->_id_to_index.find(objectId) != this->_id_to_index.end();
 }
 
-/*
-void _writeRows(std::ostream &os) const;*/
+
+void MetaDataVec::_writeRows(std::ostream &os) const {
+    for (const MetaDataVecRow& row : this->_rows) {
+        for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
+            const MDLabel label = static_cast<MDLabel>(i);
+            if ((label != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1) &&
+                (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
+                os.width(1);
+                this->_getObject(row, label).toStream(os);
+                os << " ";
+            }
+        }
+        os << '\n';
+    }
+}
 
 void MetaDataVec::writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const {
     // TODO
@@ -535,13 +556,40 @@ void MetaDataVec::writeStar(const FileName &outFile, const String & blockName, W
 }
 
 void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMetaData mode) const {
-    // TODO
-    throw NotImplemented("write not implemented");
-}
+    if (mode==MD_OVERWRITE)
+        os << FileNameVersion << " * "// << (isColumnFormat ? "column" : "row")
+        << '\n' // write which type of format (column or row) and the path;
+        << WordWrap(this->_comment, line_max);     // write md comment in the 2nd comment line of header
 
-void MetaDataVec::print() const {
-    // TODO
-    throw NotImplemented("print not implemented");
+    // write data block
+    String _szBlockName("data_");
+    _szBlockName += blockName;
+
+    if (_isColumnFormat) {
+        // write md columns in 3rd comment line of the header
+        os << _szBlockName << '\n';
+        os << "loop_" << '\n';
+        for (size_t i = 0; i < MDL_LAST_LABEL; i++)
+            if ((i != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1))
+                os << " _" << MDL::label2Str(static_cast<MDLabel>(i)) << '\n';
+        _writeRows(os);
+
+        //Put the activeObject to the first, if exists
+    } else { // row format
+        os << _szBlockName << '\n';
+
+        // Print single object
+        assert(this->_rows.size() == 1);
+
+        for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
+            const MDLabel label = static_cast<MDLabel>(i);
+            if ((label != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1) &&
+                (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
+                this->_getObject(0, label).toStream(os);
+                os << '\n';
+            }
+        }
+    }
 }
 
 void MetaDataVec::append(const FileName &outFile) const {
@@ -761,4 +809,9 @@ std::vector<MDLabel> MetaDataVec::getActiveLabels() const {
         if (this->_label_to_col[i] > -1)
             out.push_back(static_cast<MDLabel>(i));
     return out;
+}
+
+std::ostream& operator<<(std::ostream& o, const MetaDataVec& md) {
+    md.write(o);
+    return o;
 }

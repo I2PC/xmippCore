@@ -105,6 +105,8 @@ protected:
     int _labelIndex(MDLabel label) const;
     const MDObject& _getObject(size_t i, MDLabel label) const;
     MDObject& _getObject(size_t i, MDLabel label);
+    const MDObject& _getObject(const MetaDataVecRow&, MDLabel) const;
+    MDObject& _getObject(MetaDataVecRow&, MDLabel) const;
     int _rowIndex(size_t id) const;
     size_t _rowIndexSafe(size_t id) const;
 
@@ -392,7 +394,6 @@ public:
     /** Write metadata to out stream
      */
     void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const;
-    void print() const;
 
     /** Append data lines to file.
      * This function can be used to add new data to
@@ -656,11 +657,8 @@ public:
             const std::vector<MDLabel> &newLabel) override;
 
     bool operator==(const MetaDataVec& op) const;
-};//class MetaData
+};//class MetaDataVec
 
-/** print metadata
- *
- */
-std::ostream& operator<<(std::ostream& o, const MetaData & mD);
+std::ostream& operator<<(std::ostream& o, const MetaDataVec& md);
 
 #endif
