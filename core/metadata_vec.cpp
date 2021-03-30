@@ -634,11 +634,6 @@ double MetaDataVec::getColumnMin(MDLabel column) {
     throw NotImplemented("getColumnMin not implemented");
 }
 
-void MetaDataVec::operate(const String &expression) {
-    // TODO
-    throw NotImplemented("operate not implemented");
-}
-
 void MetaDataVec::replace(const MDLabel label, const String &oldStr, const String &newStr) {
     // TODO
     throw NotImplemented("replace not implemented");

@@ -452,12 +452,6 @@ public:
     double getColumnMin(MDLabel column);
 
 
-    /** Basic operations on columns data.
-     * Mainly perform replacements on string values and
-     * basic algebraic operations on numerical ones.
-     */
-    void operate(const String &expression);
-
     /** Replace an string in some column(label).
      * The type of the column should be string. This function is a shortcut
      * of the more genereal function operate
