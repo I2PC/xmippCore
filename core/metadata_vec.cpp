@@ -26,8 +26,15 @@
 
 #include <algorithm>
 #include <cassert>
+#include <fstream>
 #include "metadata_vec.h"
 #include "metadata_generator.h"
+
+#include <sys/stat.h>
+#include <fcntl.h>
+#ifdef XMIPP_MMAP
+#include <sys/mman.h>
+#endif
 
 MetaDataVec::MetaDataVec() {
     init(std::vector<MDLabel>());
@@ -107,9 +114,26 @@ size_t MetaDataVec::_rowIndexSafe(size_t id) const {
     return i;
 }
 
-void MetaDataVec::read(const FileName &inFile, const std::vector<MDLabel> *dediredLables, bool decomposeStack) {
-    // FIXME: implement
-    throw NotImplemented("read not implemented");
+void MetaDataVec::read(const FileName &filename, const std::vector<MDLabel> *desiredLabels, bool decomposeStack) {
+    String blockName;
+    FileName inFile;
+
+    blockName = filename.getBlockName();
+    inFile = filename.removeBlockName();
+    String extFile = filename.getExtension();
+    blockName = escapeForRegularExpressions(blockName);
+
+    this->clear();
+    this->_isColumnFormat = true;
+
+    if (extFile == "xml")
+        this->readXML(_inFile, desiredLabels, blockName, decomposeStack);
+    else if (extFile == "sqlite")
+        throw NotImplemented("Reading from .sqlite file into MetaDataVec not implemented!");
+    else
+        this->readStar(filename, desiredLabels, blockName, decomposeStack);
+
+    this->eFilename = filename;
 }
 
 void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
@@ -126,8 +150,7 @@ void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {
     if (extFile == "xml") {
         writeXML(_outFile, blockName, mode);
     } else if (extFile == "sqlite") {
-        // FIXME: implement
-        throw NotImplemented("sqlite read not implemented");
+        throw NotImplemented("Writing to .sqlite file from MetaDataVec not implemented!");
     } else {
         writeStar(_outFile, blockName, mode);
     }
@@ -552,8 +575,94 @@ void MetaDataVec::_writeRows(std::ostream &os) const {
 }
 
 void MetaDataVec::writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const {
-    // TODO
-    throw NotImplemented("writeStart not implemented");
+    // FIXME: this method is compeletely same as in MetaDataDb
+    // Move to MetaData?
+#ifdef XMIPP_MMAP
+    if (outFile.hasImageExtension())
+        REPORT_ERROR(ERR_IO,"MetaData:writeStar Trying to write metadata with image extension");
+
+    struct stat file_status;
+    int fd;
+    char *map = NULL;
+    char *tailMetadataFile = NULL; // auxiliary variable to keep metadata file tail in memory
+    size_t size=-1;
+    char *target, * target2 = NULL;
+
+    //check if file exists or not block name has been given
+    //in our format no two identical data_xxx strings may exists
+    if (mode == MD_APPEND) {
+        if (blockName.empty() || !outFile.exists())
+            mode = MD_OVERWRITE;
+        else {
+            //does blockname exists?
+            //remove it from file in this case
+            // get length of file:
+            if(stat(outFile.c_str(), &file_status) != 0)
+                REPORT_ERROR(ERR_IO_NOPATH,"MetaData:writeStar can not get filesize for file "+outFile);
+            size = file_status.st_size;
+            if (size == 0)
+                mode = MD_OVERWRITE;
+        }
+
+        if (mode == MD_APPEND) { //size=0 for /dev/stderr
+            fd = open(outFile.c_str(),  O_RDWR, S_IREAD | S_IWRITE);
+            if (fd == -1)
+                REPORT_ERROR(ERR_IO_NOPATH,"MetaData:writeStar can not read file named "+outFile);
+
+            map = (char *) mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+            if (map == MAP_FAILED)
+                REPORT_ERROR(ERR_MEM_BADREQUEST,"MetaData:writeStar can not map memory ");
+
+            // Is this a metadata formatted FILE
+            if(strncmp(map,FileNameVersion.c_str(),FileNameVersion.length()) != 0) {
+                mode = MD_OVERWRITE;
+            } else {
+                //block name
+                String _szBlockName = formatString("\ndata_%s\n", blockName.c_str());
+                size_t blockNameSize = _szBlockName.size();
+
+                //search for the string
+                target = (char *) _memmem(map, size, _szBlockName.c_str(), blockNameSize);
+
+                if (target != NULL)
+                {
+                    target2 = (char *) _memmem(target+1, size - (target - map), "\ndata_", 6);
+
+                    if (target2 != NULL)
+                    {
+                        //target block is not the last one, so we need to
+                        //copy file from target2 to auxiliary memory and truncate
+                        tailMetadataFile = (char *) malloc( ((map + size) - target2));
+                        memmove(tailMetadataFile,target2, (map + size) - target2);
+                    }
+                    if (ftruncate(fd, target - map+1)==-1)  //truncate rest of the file
+                        REPORT_ERROR(ERR_UNCLASSIFIED,"Cannot truncate file");
+                }
+            }
+            close(fd);
+
+            if (munmap(map, size) == -1)
+                REPORT_ERROR(ERR_MEM_NOTDEALLOC, "MetaData:writeStar, Can not unmap memory");
+        }
+    }
+
+    std::ios_base::openmode openMode = (mode == MD_OVERWRITE) ? std::ios_base::out : std::ios_base::app;
+    std::ofstream ofs(outFile.c_str(), openMode);
+
+    write(ofs, blockName, mode);
+
+    if (tailMetadataFile != NULL) {
+        //append memory buffer to file
+        //may a cat a buffer to a ofstream
+        ofs.write(tailMetadataFile,(map + size) - target2);
+        free(tailMetadataFile);
+    }
+    ofs.close();
+
+#else
+
+    REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
 }
 
 void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMetaData mode) const {
@@ -603,16 +712,14 @@ bool MetaDataVec::existsBlock(const FileName &_inFile) {
     throw NotImplemented("existsBlock not implemented");
 }
 
-/*void readStar(const FileName &inFile,
-              const std::vector<MDLabel> *desiredLabels = nullptr,
-              const String & blockName=DEFAULT_BLOCK_NAME,
-              bool decomposeStack=true);
-void readXML(const FileName &inFile,
-             const std::vector<MDLabel> *desiredLabels= nullptr,
-             const String & blockRegExp=DEFAULT_BLOCK_NAME,
-             bool decomposeStack=true);
+void MetaDataVec::readStar(const FileName &inFile, const std::vector<MDLabel> *desiredLabels, const String & blockName, bool decomposeStack) {
+    // TODO
+    throw NotImplemented("readStar not implemented");
+}
 
-void read(const FileName &inFile, const std::vector<MDLabel> *desiredLabels = nullptr, bool decomposeStack = true) override;*/
+void MetaDataVec::readXML(const FileName &inFile, const std::vector<MDLabel> *desiredLabels, const String & blockRegExp, bool decomposeStack) {
+    REPORT_ERROR(ERR_NOT_IMPLEMENTED,"readXML not implemented yet");
+}
 
 void MetaDataVec::readPlain(const FileName &inFile, const String &labelsString, const String &separator) {
     // TODO

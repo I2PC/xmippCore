@@ -420,7 +420,7 @@ public:
      *
      */
     void readXML(const FileName &inFile,
-                 const std::vector<MDLabel> *desiredLabels= nullptr,
+                 const std::vector<MDLabel> *desiredLabels = nullptr,
                  const String & blockRegExp=DEFAULT_BLOCK_NAME,
                  bool decomposeStack=true);
 
