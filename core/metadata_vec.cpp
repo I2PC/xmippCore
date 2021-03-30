@@ -148,6 +148,7 @@ void MetaDataVec::clear() {
     this->_rows.clear();
     std::fill(this->_label_to_col.begin(), this->_label_to_col.end(), -1);
     this->_col_to_label.clear();
+    this->_id_to_index.clear();
     this->_no_columns = 0;
     this->_next_id = 0;
 }
@@ -565,7 +566,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
     String _szBlockName("data_");
     _szBlockName += blockName;
 
-    if (_isColumnFormat) {
+    if (this->_isColumnFormat) {
         // write md columns in 3rd comment line of the header
         os << _szBlockName << '\n';
         os << "loop_" << '\n';
