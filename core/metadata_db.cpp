@@ -132,6 +132,7 @@ void MetaDataDb::init(const std::vector<MDLabel> *labelsVector)
     _clear();
     _maxRows = 0; //by default read all rows
     _parsedLines = 0; //no parsed line;
+    _activeLabels.clear();
     if (labelsVector != NULL)
         _activeLabels = *labelsVector;
     //Create table in database
@@ -772,7 +773,8 @@ void MetaDataDb::importObject(const MetaData &md, const size_t id, bool doClear)
 
 void MetaDataDb::importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear)
 {
-    init(&(md._activeLabels));
+    const std::vector<MDLabel>& labels = md.getActiveLabels();
+    init(&labels);
     copyInfo(md);
     int size = objectsToAdd.size();
     for (int i = 0; i < size; i++)

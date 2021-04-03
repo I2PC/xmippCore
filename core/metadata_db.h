@@ -59,6 +59,12 @@ protected:
     friend class MDSql;
     MDSql * myMDSql;
 
+    /** What labels have been read from a docfile/metadata file
+     * and/or will be stored on a new metadata file when "save" is
+     * called
+     **/
+    std::vector<MDLabel> _activeLabels;
+
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
      */
@@ -333,6 +339,14 @@ public:
     /**Number of objects contained in the metadata.
      */
     size_t size() const override;
+
+    bool containsLabel(const MDLabel label) const override {
+        return vectorContainsLabel(this->_activeLabels, label);
+    }
+
+    std::vector<MDLabel> getActiveLabels() const override {
+        return this->_activeLabels;
+    }
 
     /** Add a new label to the metadata.
      * By default the label is added at the end,

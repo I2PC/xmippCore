@@ -76,8 +76,6 @@ void MetaData::baseClear() {
     _fastStringSearch.clear();
     _fastStringSearchLabel = MDL_UNDEFINED;
 
-    _activeLabels.clear();
-    _ignoreLabels.clear();
     _isColumnFormat = true;
     _inFile = FileName();
     _precision = 1000;
@@ -89,8 +87,6 @@ void MetaData::copyInfo(const MetaData& md) {
     _fastStringSearch = md._fastStringSearch;
     _fastStringSearchLabel = md._fastStringSearchLabel;
 
-    _activeLabels = md._activeLabels;
-    _ignoreLabels = md._ignoreLabels;
     _isColumnFormat = md._isColumnFormat;
     _inFile = md._inFile;
 }

@@ -127,19 +127,6 @@ public:
      */
     FileName _inFile;
 
-    /** What labels have been read from a docfile/metadata file
-     * and/or will be stored on a new metadata file when "save" is
-     * called
-     **/
-    std::vector<MDLabel> _activeLabels; // FIXME: maybe move this to MetaDataDb? MetaDataVec does not use it.
-
-    /** When reading a column formatted file, if a label is found that
-     * does not exist as a MDLabel, it is ignored. For further
-     * file processing, such columns must be ignored and this structure
-     * allows to do that
-     **/
-    std::vector<unsigned int> _ignoreLabels;
-
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
@@ -246,7 +233,7 @@ public:
 
     /**Get safe access to active labels.
      */
-    virtual std::vector<MDLabel> getActiveLabels() const { return this->_activeLabels; }
+    virtual std::vector<MDLabel> getActiveLabels() const = 0;
 
     /**Get maximum string length of column values.
     */
@@ -404,9 +391,7 @@ public:
 
     /** Check whether a label is contained in metadata.
      */
-    virtual bool containsLabel(const MDLabel label) const {
-        return vectorContainsLabel(this->_activeLabels, label);
-    }
+    virtual bool containsLabel(const MDLabel label) const = 0;
 
     /** Add a new label to the metadata.
      * By default the label is added at the end,
