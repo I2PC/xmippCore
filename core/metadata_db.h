@@ -191,19 +191,6 @@ public:
      */
     void fromVMetaData(VMetaData &vmdIn);
 
-    bool nextBlock(mdBuffer &buffer, mdBlock &block);
-
-    /** Check if there is any other block to read with the name
-     * given by the regular expression.
-     *  returns pointer do first two data_entries and first loop
-     */
-    bool nextBlockToRead(regex_t &re,
-                         char * startingPoint,
-                         size_t remainingSize,
-                         String &blockName,
-                         char *& firstData,
-                         char *& secondData,
-                         char *& firstloop);
     /** Export medatada to xml file.
      *
      */

@@ -661,6 +661,8 @@ public:
      */
     virtual void renameColumn(const std::vector<MDLabel> &oldLabel,
             const std::vector<MDLabel> &newLabel) = 0;
+
+    virtual bool nextBlock(mdBuffer &buffer, mdBlock &block);
 };//class MetaData
 
 /** print metadata

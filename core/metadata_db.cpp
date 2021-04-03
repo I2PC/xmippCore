@@ -1899,50 +1899,6 @@ void MetaDataDb::aggregateSingleInt(MDObject &mdValueOut, AggregateOperation op,
     mdValueOut.setValue(aux2);
 }
 
-
-bool MetaDataDb::nextBlock(mdBuffer &buffer, mdBlock &block)
-{
-    BLOCK_INIT(block);
-    if (buffer.size == 0)
-        return false;
-    // Search for data_ after a newline
-    block.begin = BUFFER_FIND(buffer, "data_", 5);
-
-    if (block.begin) // data_ FOUND!!!
-    {
-        block.begin += 5; //Shift data_
-        size_t n = block.begin - buffer.begin;
-        BUFFER_MOVE(buffer, n);
-        //Search for the end of line
-        char *newLine = BUFFER_FIND(buffer, "\n", 1);
-        //Calculate length of block name, counting after data_
-        block.nameSize = newLine - buffer.begin;
-        //Search for next block if exists one
-        //use assign and check if not NULL at same time
-        if (!(block.end = BUFFER_FIND(buffer, "\ndata_", 6))) {
-            block.end = block.begin + buffer.size; }
-        else {
-            block.end += 1; // to include terminal \n
-        }
-        block.loop = BUFFER_FIND(buffer, "\nloop_", 6);
-        //If loop_ is not found or is found outside block
-        //scope, the block is in column format
-        if (block.loop)
-        {
-            if (block.loop < block.end)
-                block.loop += 6; // Shift \nloop_
-            else
-                block.loop = NULL;
-        }
-        //Move buffer to end of block
-        n = block.end - buffer.begin;
-        BUFFER_MOVE(buffer, n);
-        return true;
-    }
-
-    return false;
-}
-
 void MetaDataDb::aggregate(const MetaDataDb &mdIn, AggregateOperation op,
                          MDLabel aggregateLabel, MDLabel operateLabel, MDLabel resultLabel)
 {
