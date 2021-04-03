@@ -564,7 +564,7 @@ void MetaDataVec::_writeRows(std::ostream &os) const {
     for (const MetaDataVecRow& row : this->_rows) {
         for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
             const MDLabel label = static_cast<MDLabel>(i);
-            if ((label != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1) &&
+            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1) &&
                 (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
                 os.width(1);
                 this->_getObject(row, label).toStream(os, true);
@@ -590,7 +590,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
         os << _szBlockName << '\n';
         os << "loop_" << '\n';
         for (size_t i = 0; i < MDL_LAST_LABEL; i++)
-            if ((i != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1))
+            if ((i != MDL_STAR_COMMENT) && (i != MDL_OBJID) && (this->_label_to_col[i] > -1))
                 os << " _" << MDL::label2Str(static_cast<MDLabel>(i)) << '\n';
         _writeRows(os);
 
@@ -603,7 +603,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
 
         for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
             const MDLabel label = static_cast<MDLabel>(i);
-            if ((label != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1) &&
+            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1) &&
                 (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
                 this->_getObject(0, label).toStream(os);
                 os << '\n';
