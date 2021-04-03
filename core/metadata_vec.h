@@ -84,19 +84,6 @@ protected:
     /** clear data and table structure */
     void _clear(bool onlyData=false);
 
-    /** Some private reading functions */
-    void _readColumns(std::istream& is, std::vector<MDObject*> & columnValues,
-                      const std::vector<MDLabel>* desiredLabels = nullptr);
-    void _readRows(std::istream& is, std::vector<MDObject*> & columnValues, bool useCommentAsImage);
-    /** This function will be used to parse the rows data in START format
-     * @param[out] columnValues MDRow with values to fill in
-     * @param pchStart pointer to the position of '_loop' in memory
-     * @param pEnd  pointer to the position of the next '_data' in memory
-     * @param maxRows if this number if greater than 0, only this number of rows will be parsed.
-     */
-    void _readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValues, const std::vector<MDLabel> *desiredLabels);
-    void _readRowFormat(std::istream& is);
-
     /**
      * Get a vector of (empty) objects for each active label
      */
@@ -171,8 +158,6 @@ public:
      */
     std::vector<MDLabel> getActiveLabels() const override;
 
-    bool nextBlock(mdBuffer &buffer, mdBlock &block);
-
     /** Export medatada to xml file.
      *
      */
@@ -183,22 +168,8 @@ public:
      */
     void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const override;
 
-    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues, const std::vector<MDLabel> *desiredLabels, bool firstTime);
-
-    /* Helper function to parse an MDObject and set its value.
-     * The parsing will be from an input stream(istream)
-     * and if parsing fails, an error will be raised
-     */
-    void _parseObject(std::istream &is, MDObject &object, size_t id = BAD_OBJID);
-
-    /** Get Metadata labels for the block defined by start
-     * and end loop pointers. Return pointer to newline after last label
-     */
-    void _readColumnsStar(mdBlock &block,
-                          std::vector<MDObject*> & columnValues,
-                          const std::vector<MDLabel>* desiredLabels,
-                          bool addColumns = true,
-                          size_t id = BAD_OBJID);
+    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
+                       const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
 
     /** @} */
 
@@ -379,10 +350,6 @@ public:
     /** Write rows data to disk. */
     void _writeRows(std::ostream &os) const;
 
-    /** Write metadata to disk.
-     * This will write the metadata content to disk.
-     */
-    void writeStar(const FileName &outFile,const String & blockName="", WriteModeMetaData mode=MD_OVERWRITE) const;
     /** Write metadata to disk. Guess blockname from filename
      * @code
      * outFilename="first@md1.doc" -> filename = md1.doc, blockname = first
@@ -410,12 +377,6 @@ public:
      */
     bool existsBlock(const FileName &_inFile);
 
-    /** Read data from file.
-     */
-    void readStar(const FileName &filename,
-                  const std::vector<MDLabel> *desiredLabels = nullptr,
-                  const String & blockName=DEFAULT_BLOCK_NAME,
-                  bool decomposeStack=true);
     /** Read metadata from xml file
      *
      */

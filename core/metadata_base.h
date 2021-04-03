@@ -61,6 +61,7 @@
 // FIXME: deprecated
 #define FOR_ALL_ROWS_IN_METADATA(__md) for (auto& row : __md)
 
+#define END_OF_LINE() ((char*) memchr (iter, '\n', end-iter))
 
 /** Which are the blocks available in a metadata */
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList);
@@ -136,6 +137,43 @@ public:
     void baseClear();
     double precision() const;
 
+    virtual void readStar(const FileName &filename, const std::vector<MDLabel> *desiredLabels,
+                          const String &blockRegExp, bool decomposeStack);
+
+    virtual void _readColumns(std::istream& is, std::vector<MDObject*> & columnValues,
+                              const std::vector<MDLabel>* desiredLabels = nullptr);
+
+    virtual void _readColumnsStar(mdBlock &block,
+                                  std::vector<MDObject*> & columnValues,
+                                  const std::vector<MDLabel>* desiredLabels,
+                                  bool addColumns = true,
+                                  size_t id = BAD_OBJID);
+
+    /* Helper function to parse an MDObject and set its value.
+     * The parsing will be from an input stream(istream)
+     * and if parsing fails, an error will be raised
+     */
+    virtual void _parseObject(std::istream &is, MDObject &object, size_t id = BAD_OBJID);
+
+    virtual void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
+                               const std::vector<MDLabel> *desiredLabels, bool firstTime) = 0;
+
+    /* This function will be used to parse the rows data
+     * having read the columns labels before and setting which are desired
+     * the useCommentAsImage is for compatibility with old DocFile format
+     * where the image were in comments
+     */
+    virtual void _readRows(std::istream& is, std::vector<MDObject*>& columnValues, bool useCommentAsImage);
+
+    /** This function will be used to parse the rows data in START format
+     * @param[out] columnValues MDRow with values to fill in
+     * @param pchStart pointer to the position of '_loop' in memory
+     * @param pEnd  pointer to the position of the next '_data' in memory
+     * @param maxRows if this number if greater than 0, only this number of rows will be parsed.
+     */
+    virtual void _readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValues,
+                               const std::vector<MDLabel> *desiredLabels);
+
 public:
     /** Filename used in the read command, useful to write Error messages
      *
@@ -199,6 +237,8 @@ public:
      *
      */
     virtual void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const = 0;
+
+    virtual void writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const;
 
     /**Get path.
      */
