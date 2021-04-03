@@ -567,7 +567,7 @@ void MetaDataVec::_writeRows(std::ostream &os) const {
             if ((label != MDL_STAR_COMMENT) && (this->_label_to_col[i] > -1) &&
                 (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
                 os.width(1);
-                this->_getObject(row, label).toStream(os);
+                this->_getObject(row, label).toStream(os, true);
                 os << " ";
             }
         }
