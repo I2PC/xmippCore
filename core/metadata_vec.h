@@ -412,7 +412,7 @@ public:
 
     /** Read data from file.
      */
-    void readStar(const FileName &inFile,
+    void readStar(const FileName &filename,
                   const std::vector<MDLabel> *desiredLabels = nullptr,
                   const String & blockName=DEFAULT_BLOCK_NAME,
                   bool decomposeStack=true);
