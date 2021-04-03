@@ -34,6 +34,72 @@
 #include <sys/mman.h>
 #endif
 
+// Get the blocks available
+void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
+{
+    if (!inFile.isMetaData())
+        return;
+    if (inFile.getBlockName() != "")
+        return;
+    blockList.clear();
+    String extFile = inFile.getExtension();
+
+    if (extFile == "xml") {
+        REPORT_ERROR(ERR_NOT_IMPLEMENTED, "getBlocksInMetaDataFile");
+    } else if(extFile == "sqlite") {
+        getBlocksInMetaDataFileDB(inFile, blockList);
+    } else { //map file
+        int fd;
+        MetaDataDb mdAux;
+        mdAux.setMaxRows(1);
+        mdAux.read(inFile);
+        BUFFER_CREATE(bufferMap);
+        mapFile(inFile, bufferMap.begin, bufferMap.size, fd);
+        BUFFER_COPY(bufferMap, buffer);
+        BLOCK_CREATE(block);
+        String blockName;
+        while (mdAux.nextBlock(buffer, block)) {
+            BLOCK_NAME(block, blockName);
+            blockList.push_back(blockName);
+        }
+
+        unmapFile(bufferMap.begin, bufferMap.size, fd);
+    }
+}
+
+// Does the blocks exist
+bool existsBlockInMetaDataFile(const FileName &inFileWithBlock) {
+    return existsBlockInMetaDataFile(inFileWithBlock.removeBlockName(),
+                                     inFileWithBlock.getBlockName());
+}
+
+bool existsBlockInMetaDataFile(const FileName &inFile, const String& inBlock) {
+    if (!inFile.isMetaData())
+        return false;
+    if (!inFile.getBlockName().empty())
+        return inBlock == inFile.getBlockName();
+
+    MetaDataDb MDaux(inFile);
+    //map file
+    int fd;
+    BUFFER_CREATE(bufferMap);
+    mapFile(inFile, bufferMap.begin, bufferMap.size, fd);
+    BUFFER_COPY(bufferMap, buffer);
+    BLOCK_CREATE(block);
+    String blockName;
+    bool result = false;
+    while (MDaux.nextBlock(buffer, block)) {
+        BLOCK_NAME(block, blockName);
+        if (inBlock == blockName) {
+            result = true;
+            break;
+        }
+    }
+
+    unmapFile(bufferMap.begin, bufferMap.size, fd);
+    return result;
+}
+
 MetaData::~MetaData() {}
 
 bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id) {
