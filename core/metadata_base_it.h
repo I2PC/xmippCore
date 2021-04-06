@@ -10,6 +10,7 @@ class MetaData;
 /** Iterates over metadata rows */
 template <bool IsConst>
 struct MDBaseRowIterator {
+    virtual ~MDBaseRowIterator() {}
     virtual std::unique_ptr<MDBaseRowIterator> clone() = 0;
     virtual void increment() = 0;
     virtual bool operator==(const MDBaseRowIterator& other) const = 0;
@@ -20,6 +21,7 @@ struct MDBaseRowIterator {
 /** Iterates over metadata ids */
 template <bool IsConst>
 struct MDBaseIdIterator {
+    virtual ~MDBaseIdIterator() {}
     virtual std::unique_ptr<MDBaseIdIterator> clone() = 0;
     virtual void increment() = 0;
     virtual bool operator==(const MDBaseIdIterator& other) const = 0;

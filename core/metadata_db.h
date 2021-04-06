@@ -704,6 +704,7 @@ public:
         typename TypeHelpers::choose<IsConst, MDRowSql, MDRowSql>::type _row;
         std::vector<size_t> _ids;
         size_t _i;
+        bool _finalized = false;
 
     public:
         MDDbRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, size_t _i)
@@ -716,7 +717,14 @@ public:
 
             _mdd.execGetRow(this->_row);
             this->_row.set_id(this->_ids[this->_i]);
-            if (this->_i+1 == _ids.size())
+            if (this->_i+1 == _ids.size()) {
+                _mdd.finalizeGetRow();
+                _finalized = true;
+            }
+        }
+
+        virtual ~MDDbRowIterator() {
+            if (!_finalized)
                 _mdd.finalizeGetRow();
         }
 
@@ -736,8 +744,10 @@ public:
             this->_mdd.execGetRow(this->_row);
             this->_row.set_id(this->_ids[this->_i]);
 
-            if (this->_i == _ids.size())
+            if (this->_i == _ids.size()) {
                 _mdd.finalizeGetRow();
+                _finalized = true;
+            }
         }
 
         bool operator==(const MDBaseRowIterator<IsConst>& other) const override {

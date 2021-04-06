@@ -53,10 +53,9 @@ MDRowSql::MDRowSql(const std::vector<MDObject> &values) {
 }
 
 MDRowSql::~MDRowSql() {
-    MDObject **ptrObjectsLabel = &(_objects[0]);
-    FOR_ALL_LABELS() {
-        delete *ptrObjectsLabel;
-        ++ptrObjectsLabel;
+    for (int _label = MDL_FIRST_LABEL; _label < MDL_LAST_LABEL; ++_label) {
+        if (_objects[_label] != nullptr)
+            delete _objects[_label];
     }
 }
 
@@ -70,8 +69,9 @@ int MDRowSql::size() const {
 
 void MDRowSql::clear() {
     _size = 0;
-    FOR_ALL_LABELS() {
-        delete _objects[_label];
+    for (int _label = MDL_FIRST_LABEL; _label < MDL_LAST_LABEL; ++_label) {
+        if (_objects[_label] != nullptr)
+            delete _objects[_label];
         _objects[_label] = nullptr;
     }
 }
@@ -131,7 +131,7 @@ void MDRowSql::copy(const MDRowSql &row) {
     _size = row._size;
     MDObject ** ptrObjectsLabel=&(_objects[0]);
     MDObject * const * ptrRowObjectsLabel=&(row._objects[0]);
-    FOR_ALL_LABELS() {
+    for (int _label = MDL_FIRST_LABEL; _label < MDL_LAST_LABEL; ++_label) {
         if (*ptrRowObjectsLabel == nullptr) {
             delete *ptrObjectsLabel;
             *ptrObjectsLabel = nullptr;
