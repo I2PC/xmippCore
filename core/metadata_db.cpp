@@ -893,9 +893,6 @@ void MetaDataDb::append(const FileName &outFile) const
 
 void MetaDataDb::_writeRows(std::ostream &os) const
 {
-    // Prepare statement.
-    this->initGetRow( true);
-
     for (const auto& row : *this)
     {
         for (size_t i = 0; i < this->_activeLabels.size(); i++)
@@ -910,8 +907,6 @@ void MetaDataDb::_writeRows(std::ostream &os) const
 
         os << '\n';
     }
-    // Finalize statement.
-    myMDSql->finalizePreparedStmt();
 }
 
 void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaData mode ) const

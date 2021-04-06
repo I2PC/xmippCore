@@ -706,22 +706,20 @@ public:
         size_t _i;
 
     public:
-        MDDbRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, bool _end = false)
-            : _mdd(mdd) {
+        MDDbRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataDb&, MetaDataDb&>::type &mdd, size_t _i)
+            : _mdd(mdd), _i(_i) {
             mdd.myMDSql->selectObjects(_ids);
-            this->_i = _end ? this->_ids.size() : 0;
-
-            if (_end)
+            if (this->_i >= _ids.size())
                 return;
 
             _mdd.execGetRow(this->_row);
             this->_row.set_id(this->_ids[this->_i]);
-            if (this->_i == _ids.size())
+            if (this->_i+1 == _ids.size())
                 _mdd.finalizeGetRow();
         }
 
         std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
-            return MemHelpers::make_unique<MDDbRowIterator<IsConst>>(_mdd, _i == _ids.size());
+            return MemHelpers::make_unique<MDDbRowIterator<IsConst>>(_mdd, _i);
         }
 
         void increment() override {
@@ -747,17 +745,17 @@ public:
     };
 
     iterator begin() override {
-        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this)};
+        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this, 0)};
     }
     iterator end() override {
-        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this, true)};
+        return {MemHelpers::make_unique<MDDbRowIterator<false>>(*this, this->size())};
     }
 
     const_iterator begin() const override {
-        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this)};
+        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this, 0)};
     }
     const_iterator end() const override {
-        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this, true)};
+        return {MemHelpers::make_unique<MDDbRowIterator<true>>(*this, this->size())};
     }
 
 
