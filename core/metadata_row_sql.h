@@ -38,6 +38,7 @@ private:
     std::array<MDObject*, MDL_LAST_LABEL> _objects; // label to object; nullptr if none
     std::array<MDLabel, MDL_LAST_LABEL> _order; // index to label (_order[0] = label for column 0)
     size_t _size; // Number of active labels
+    size_t _id;
 
     void copy(const MDRowSql &row);
     MDObject* iteratorValue(size_t i) override;
@@ -49,6 +50,9 @@ public:
     MDRowSql(const MDRowSql &row);
     MDRowSql(const std::vector<MDObject> &values);
     MDRowSql& operator = (const MDRowSql &row);
+
+    size_t id() const override { return this->_id; }
+    void set_id(size_t id) { this->_id = id; }
 
     bool empty() const override;
     int size() const override;
