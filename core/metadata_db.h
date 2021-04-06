@@ -111,6 +111,9 @@ protected:
     /** clear data and table structure */
     void _clear(bool onlyData=false);
 
+    void _readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValues,
+                       const std::vector<MDLabel> *desiredLabels) override;
+
     /** Some private reading functions */
     void _readRowFormat(std::istream& is);
 

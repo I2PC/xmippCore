@@ -1162,6 +1162,52 @@ void MetaDataDb::readDB(const FileName &filename,
     myMDSql->copyTableFromFileDB(blockRegExp, filename, desiredLabels, _maxRows);
 }
 
+/* This function parses rows data in START format
+ */
+void MetaDataDb::_readRowsStar(mdBlock &block, std::vector<MDObject*> & columnValues,
+                               const std::vector<MDLabel> *desiredLabels) {
+    String line;
+    std::stringstream ss;
+    size_t n = block.end - block.loop;
+    bool firstTime = true;
+
+    if (n == 0)
+        return;
+
+    char * buffer = new char[n];
+    memcpy(buffer, block.loop, n);
+    char *iter = buffer, *end = iter + n, * newline = NULL;
+    _parsedLines = 0; //Check how many lines the md have
+
+    if (myMDSql->initializeInsert( desiredLabels, columnValues))
+    {
+        while (iter < end) { //while there are data lines
+            //Adding \n position and check if NULL at the same time
+            if (!(newline = END_OF_LINE()))
+                newline = end;
+            line.assign(iter, newline - iter);
+            trim(line);
+
+            if (!line.empty() && line[0] != '#') {
+                //_maxRows would be > 0 if we only want to read some
+                // rows from the md for performance reasons...
+                // anyway the number of lines will be counted in _parsedLines
+                if (_maxRows == 0 || _parsedLines < _maxRows) {
+                    std::stringstream ss(line);
+                    this->_parseObjects(ss, columnValues, desiredLabels, firstTime);
+                    firstTime = false;
+                }
+                _parsedLines++;
+            }
+            iter = newline + 1; //go to next line
+        }
+
+        myMDSql->finalizePreparedStmt();
+    }
+
+    delete[] buffer;
+}
+
 /*This function will read the md data if is in row format */
 void MetaDataDb::_readRowFormat(std::istream& is) {
     String line, token;
