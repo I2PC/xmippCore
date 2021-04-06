@@ -765,7 +765,7 @@ public:
         MDDbIdIterator(const MetaDataDb& mdd, bool last = false, const MDQuery* pQuery = nullptr)
             : _mdd(mdd), _last(last), _pQuery(pQuery) {
             mdd.myMDSql->selectObjects(_ids, pQuery);
-            _i = last ? this->_ids.size()-1 : 0;
+            _i = last ? this->_ids.size() : 0;
         }
 
         bool operator==(const MDBaseIdIterator<IsConst>& other) const override {
