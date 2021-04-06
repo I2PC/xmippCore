@@ -338,12 +338,6 @@ bool MetaDataDb::getRow2(MDRow &row, size_t id) const
     return(success);
 }
 
-//TODO: could be improve in a query for update the entire row
-#define SET_ROW_VALUES(row) \
-    for (auto obj : row) {\
-        setValue(obj->label, id);\
-    }\
-
 bool MetaDataDb::initSetRow(const MDRow &row)
 {
     int     j=0;                    // Loop counter.
@@ -405,7 +399,8 @@ void MetaDataDb::finalizeSetRow(void)
 
 bool MetaDataDb::setRow(const MDRow &row, size_t id)
 {
-    SET_ROW_VALUES(row);
+    for (auto obj : row)
+        setValue(obj->label, id);
     return true;
 }
 
@@ -494,7 +489,8 @@ void MetaDataDb::finalizeAddRow(void)
 size_t MetaDataDb::addRow(const MDRow &row)
 {
     size_t id = addObject();
-    SET_ROW_VALUES(row);
+    for (auto obj : row)
+        setValue(*obj, id);
 
     return id;
 }

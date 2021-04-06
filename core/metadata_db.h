@@ -712,6 +712,8 @@ public:
             if (this->_i >= _ids.size())
                 return;
 
+            _mdd.initGetRow(false);
+
             _mdd.execGetRow(this->_row);
             this->_row.set_id(this->_ids[this->_i]);
             if (this->_i+1 == _ids.size())
@@ -727,6 +729,10 @@ public:
                 return;
 
             this->_i++;
+
+            if (this->_i >= _ids.size())
+                return;
+
             this->_mdd.execGetRow(this->_row);
             this->_row.set_id(this->_ids[this->_i]);
 
