@@ -411,5 +411,9 @@ String WordWrap(const String &inputString, size_t lineLength);
  */
 String escapeForRegularExpressions(const String &str);
 
+/** Ends with.
+ * Detects if str1 finishes with str2.
+ */
+bool endsWith(const char* str1, const char* str2);
 //@}
 #endif
