@@ -401,7 +401,7 @@ void MetaDataDb::finalizeSetRow(void)
 bool MetaDataDb::setRow(const MDRow &row, size_t id)
 {
     for (auto obj : row)
-        setValue(obj->label, id);
+        setValue(*obj, id);
     return true;
 }
 
@@ -1269,7 +1269,6 @@ void MetaDataDb::fillExpand(MDLabel label)
     //join
     MetaDataDb md(*this);
     join1(md, mdCTFs, label);
-
 }
 
 void MetaDataDb::fillConstant(MDLabel label, const String &value)
