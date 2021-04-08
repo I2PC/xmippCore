@@ -43,7 +43,7 @@ void MetaDataDb::_clear(bool onlyData)
     }
     else
     {
-        this->baseClear();
+        MetaData::clear();
         _activeLabels.clear();
         myMDSql->clearMd();
     }

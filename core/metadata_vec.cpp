@@ -168,7 +168,7 @@ void MetaDataVec::writeText(const FileName fn,  const std::vector<MDLabel>* desi
 }
 
 void MetaDataVec::clear() {
-    this->baseClear();
+    MetaData::clear();
     this->_rows.clear();
     std::fill(this->_label_to_col.begin(), this->_label_to_col.end(), -1);
     this->_col_to_label.clear();

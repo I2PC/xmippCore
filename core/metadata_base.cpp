@@ -140,7 +140,7 @@ bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel
     return (location != labelsVector.end());
 }
 
-void MetaData::baseClear() {
+void MetaData::clear() {
     _path.clear();
     _comment.clear();
     _fastStringSearch.clear();

@@ -134,7 +134,6 @@ protected:
     size_t _maxRows, _parsedLines;
 
     void copyInfo(const MetaData& md);
-    void baseClear();
     double precision() const;
 
     virtual void readStar(const FileName &filename, const std::vector<MDLabel> *desiredLabels,
@@ -196,7 +195,7 @@ public:
 
     /**Clear all data
      */
-    virtual void clear() = 0;
+    virtual void clear();
     /** @} */
 
     /** @name Getters and setters
