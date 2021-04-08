@@ -53,17 +53,15 @@ void MetaDataDb::_clear(bool onlyData)
 
 void MetaDataDb::clear()
 {
-    init();
+    init({});
 }
 
-void MetaDataDb::init(const std::vector<MDLabel> *labelsVector)
+void MetaDataDb::init(const std::vector<MDLabel> &labelsVector)
 {
     _clear();
     _maxRows = 0; //by default read all rows
     _parsedLines = 0; //no parsed line;
-    _activeLabels.clear();
-    if (labelsVector != NULL)
-        _activeLabels = *labelsVector;
+    _activeLabels = labelsVector;
     //Create table in database
     myMDSql->createMd();
     _precision = 100;
@@ -74,7 +72,7 @@ void MetaDataDb::copyMetadata(const MetaDataDb &md, bool copyObjects)
 {
     if (this == &md) //not sense to copy same metadata
         return;
-    init(&(md._activeLabels));
+    init(md._activeLabels);
     copyInfo(md);
     if (!md._activeLabels.empty())
     {
@@ -592,7 +590,7 @@ size_t MetaDataDb::addRow2(const MDRow &row)
 MetaDataDb::MetaDataDb()
 {
     myMDSql = new MDSql(this);
-    init(NULL);
+    init({});
 }//close MetaData default Constructor
 
 MetaDataDb::MetaDataDb(const MetaData &md) {
@@ -602,14 +600,14 @@ MetaDataDb::MetaDataDb(const MetaData &md) {
 MetaDataDb::MetaDataDb(const std::vector<MDLabel> &labelsVector)
 {
     myMDSql = new MDSql(this);
-    init(&labelsVector);
+    init(labelsVector);
 }//close MetaData default Constructor
 
-MetaDataDb::MetaDataDb(const FileName &fileName, const std::vector<MDLabel> *desiredLabels)
+MetaDataDb::MetaDataDb(const FileName &fileName, const std::vector<MDLabel> &desiredLabels)
 {
     myMDSql = new MDSql(this);
     init(desiredLabels);
-    read(fileName, desiredLabels);
+    read(fileName, desiredLabels.empty() ? nullptr : &desiredLabels);
 }//close MetaData from file Constructor
 
 MetaDataDb::MetaDataDb(const MetaDataDb &md)
@@ -699,7 +697,7 @@ void MetaDataDb::importObject(const MetaData &md, const size_t id, bool doClear)
 void MetaDataDb::importObjects(const MetaData &md, const std::vector<size_t> &objectsToAdd, bool doClear)
 {
     const std::vector<MDLabel>& labels = md.getActiveLabels();
-    init(&labels);
+    init(labels);
     copyInfo(md);
     int size = objectsToAdd.size();
     for (int i = 0; i < size; i++)
@@ -720,7 +718,7 @@ void MetaDataDb::_importObjectsDb(const MetaDataDb &md, const MDQuery &query, bo
     if (doClear)
     {
         //Copy all structure and info from the other metadata
-        init(&(md._activeLabels));
+        init(md._activeLabels);
         copyInfo(md);
     }
     else
@@ -1389,7 +1387,7 @@ void MetaDataDb::aggregate(const MetaDataDb &mdIn, AggregateOperation op,
     labels[0] = aggregateLabel;
     labels[1] = resultLabel;
     operateLabels[0]=operateLabel;
-    init(&labels);
+    init(labels);
     std::vector<AggregateOperation> ops(1);
     ops[0] = op;
     mdIn.myMDSql->aggregateMd(this, ops, operateLabels);
@@ -1401,7 +1399,7 @@ void MetaDataDb::aggregate(const MetaDataDb &mdIn, const std::vector<AggregateOp
 {
     if (resultLabels.size() - ops.size() != 1)
         REPORT_ERROR(ERR_MD, "Labels vectors should contain one element more than operations");
-    init(&resultLabels);
+    init(resultLabels);
     mdIn.myMDSql->aggregateMd(this, ops, operateLabels);
 }
 
@@ -1414,7 +1412,7 @@ void MetaDataDb::aggregateGroupBy(const MetaDataDb &mdIn,
     std::vector<MDLabel> labels;
     labels = groupByLabels;
     labels.push_back(resultLabel);
-    init(&labels);
+    init(labels);
     mdIn.myMDSql->aggregateMdGroupBy(this, op, groupByLabels, operateLabel, resultLabel);
 }
 
@@ -1590,7 +1588,7 @@ void MetaDataDb::sort(MetaDataDb &MDin, const MDLabel sortLabel,bool asc, int li
 {
     if (MDin.containsLabel(sortLabel))
     {
-        init(&(MDin._activeLabels));
+        init(MDin._activeLabels);
         copyInfo(MDin);
         //if you sort just once the index will not help much
         addIndex(sortLabel);
@@ -1649,7 +1647,7 @@ void MetaDataDb::sort(MetaDataDb &MDin, const String &sortLabel,bool asc, int li
         v.indexSort(idx);
 
         // Construct output Metadata
-        init(&(MDin._activeLabels));
+        init(MDin._activeLabels);
         copyInfo(MDin);
         size_t id;
         FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(idx)
@@ -1687,7 +1685,7 @@ void MetaDataDb::_selectSplitPart(const MetaDataDb &mdIn,
 {
     size_t first, last, n_images;
     n_images = divide_equally(mdSize, n, part, first, last);
-    init(&(mdIn._activeLabels));
+    init(mdIn._activeLabels);
     copyInfo(mdIn);
     mdIn.myMDSql->copyObjects(this, new MDQuery(n_images, first, sortLabel));
 }
@@ -1741,7 +1739,7 @@ void MetaDataDb::_selectPart(const MetaDataDb &mdIn, size_t startPosition, size_
     size_t mdSize = mdIn.size();
     if (startPosition < 0 || startPosition >= mdSize)
         REPORT_ERROR(ERR_MD, "selectPart: 'startPosition' should be between 0 and size()-1");
-    init(&(mdIn._activeLabels));
+    init(mdIn._activeLabels);
     copyInfo(mdIn);
     mdIn.myMDSql->copyObjects(this, new MDQuery(numberOfObjects, startPosition, sortLabel));
 }

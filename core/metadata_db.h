@@ -69,7 +69,7 @@ protected:
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors
      */
-    void init(const std::vector<MDLabel> *labelsVector = NULL);
+    void init(const std::vector<MDLabel> &labelsVector);
 
     /** Copy all data from another metadata
      * @ingroup MetaDataConstructors
@@ -143,7 +143,7 @@ public:
      * The MetaData is created and data is read from provided FileName. Optionally, a vector
      * of labels can be provided to read just those required labels
      */
-    MetaDataDb(const FileName &fileName, const std::vector<MDLabel> *desiredLabels = NULL);
+    MetaDataDb(const FileName &fileName, const std::vector<MDLabel> &desiredLabels = {});
 
     /** Copy constructor
      *
