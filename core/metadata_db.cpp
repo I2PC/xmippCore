@@ -91,7 +91,7 @@ void MetaDataDb::asVMetaData(VMetaData &vmdOut)
 {
     vmdOut.clear();
     for (const MDRow& row : *this)
-        vmdOut.push_back(dynamic_cast<const MDRowSql&>(row));
+        vmdOut.emplace_back(dynamic_cast<const MDRowSql&>(row));
 }
 
 void MetaDataDb::fromVMetaData(VMetaData &vmdIn)
