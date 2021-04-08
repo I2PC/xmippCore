@@ -327,7 +327,7 @@ void XmippMetadataProgram::checkPoint()
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
-    MDRowVec rowIn, rowOut;
+    MDRowVec rowOut;
     mdOut.clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing
@@ -352,8 +352,7 @@ void XmippMetadataProgram::run()
 
     for (const auto& row : *mdIn)
     {
-        mdIn->getRow(rowIn, row.id());
-        rowIn.getValue(image_label, fnImg);
+        row.getValue(image_label, fnImg);
 
         if (fnImg.empty())
             break;
@@ -388,12 +387,12 @@ void XmippMetadataProgram::run()
             }
             else
                 fnImgOut = fnImg;
-            setupRowOut(fnImg, rowIn, fnImgOut, rowOut);
+            setupRowOut(fnImg, row, fnImgOut, rowOut);
         }
         else if (produces_a_metadata)
-            setupRowOut(fnImg, rowIn, fnImgOut, rowOut);
+            setupRowOut(fnImg, row, fnImgOut, rowOut);
 
-        processImage(fnImg, fnImgOut, rowIn, rowOut);
+        processImage(fnImg, fnImgOut, row, rowOut);
 
         if (each_image_produces_an_output || produces_a_metadata)
             mdOut.addRow(rowOut);
