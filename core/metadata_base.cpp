@@ -131,7 +131,7 @@ WriteModeMetaData metadataModeConvert(String mode) {
         return MD_OVERWRITE;
     if (mode.npos != mode.find("append"))
         return MD_APPEND;
-    REPORT_ERROR(ERR_ARG_INCORRECT,"metadataModeConvert: Invalid mode");
+    REPORT_ERROR(ERR_ARG_INCORRECT,"metadataModeConvert: Invalid mode: "+mode);
 }
 
 bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel label) {
