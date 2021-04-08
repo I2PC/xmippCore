@@ -104,10 +104,7 @@ MetaData::~MetaData() {}
 
 bool MetaData::setValueFromStr(const MDLabel label, const String &value, size_t id) {
     if (id == BAD_OBJID)
-    {
         REPORT_ERROR(ERR_MD_NOACTIVE, "setValue: please provide objId other than -1");
-        exit(1);
-    }
     addLabel(label);
     MDObject mdValue(label);
     mdValue.fromString(value);
