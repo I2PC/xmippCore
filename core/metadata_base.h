@@ -369,12 +369,13 @@ public:
         std::vector<size_t> objectsId;
         findObjects(objectsId);
         size_t n = objectsId.size();
-        valuesOut.resize(n);
+        valuesOut.clear();
+        valuesOut.reserve(n);
         for (size_t i = 0; i < n; ++i)
         {
             getValue(mdValueOut, objectsId[i]);
             mdValueOut.getValue(value);
-            valuesOut[i] = value;
+            valuesOut.emplace_back(value);
         }
     }
 
