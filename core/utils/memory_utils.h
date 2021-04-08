@@ -29,6 +29,7 @@
 #include <cstddef>
 #include <stdlib.h>
 #include <cstdint>
+#include <memory>
 
 namespace memoryUtils
 {
@@ -115,6 +116,12 @@ namespace memoryUtils
         } else {
             return number + alignment - off;
         }
+    }
+
+    template<typename T, typename... Args>
+    std::unique_ptr<T> make_unique(Args&&... args)
+    {
+        return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
     }
 
 } // memoryUtils

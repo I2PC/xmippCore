@@ -32,7 +32,7 @@
 #include "memory.h"
 #include "metadata_base.h"
 #include "metadata_base_it.h"
-#include "metadata_row_vec.h"
+#include "utils/memory_utils.h"
 
 class NotImplemented : public std::logic_error {
 public:
@@ -521,7 +521,7 @@ public:
             }
 
         std::unique_ptr<MDBaseRowIterator<IsConst>> clone() override {
-            return MemHelpers::make_unique<MDVecRowIterator<IsConst>>(_mdv, _i);
+            return memoryUtils::make_unique<MDVecRowIterator<IsConst>>(_mdv, _i);
         }
 
         void increment() override {
@@ -543,17 +543,17 @@ public:
     };
 
     iterator begin() override {
-        return {MemHelpers::make_unique<MDVecRowIterator<false>>(*this, 0)};
+        return {memoryUtils::make_unique<MDVecRowIterator<false>>(*this, 0)};
     }
     iterator end() override {
-        return {MemHelpers::make_unique<MDVecRowIterator<false>>(*this, this->size())};
+        return {memoryUtils::make_unique<MDVecRowIterator<false>>(*this, this->size())};
     }
 
     const_iterator begin() const override {
-        return {MemHelpers::make_unique<MDVecRowIterator<true>>(*this, 0)};
+        return {memoryUtils::make_unique<MDVecRowIterator<true>>(*this, 0)};
     }
     const_iterator end() const override {
-        return {MemHelpers::make_unique<MDVecRowIterator<true>>(*this, this->size())};
+        return {memoryUtils::make_unique<MDVecRowIterator<true>>(*this, this->size())};
     }
 
 
@@ -579,24 +579,24 @@ public:
         void increment() override { this->_i++; }
 
         std::unique_ptr<MDBaseIdIterator<IsConst>> clone() override {
-            return MemHelpers::make_unique<MDVecIdIterator<IsConst>>(_mdv, _i);
+            return memoryUtils::make_unique<MDVecIdIterator<IsConst>>(_mdv, _i);
         }
     };
 
     id_iterator id_begin() override {
-        return {MemHelpers::make_unique<MDVecIdIterator<false>>(*this, 0)};
+        return {memoryUtils::make_unique<MDVecIdIterator<false>>(*this, 0)};
     }
 
     id_iterator id_end() override {
-        return {MemHelpers::make_unique<MDVecIdIterator<false>>(*this, this->size())};
+        return {memoryUtils::make_unique<MDVecIdIterator<false>>(*this, this->size())};
     }
 
     id_const_iterator id_begin() const override {
-        return {MemHelpers::make_unique<MDVecIdIterator<true>>(*this, 0)};
+        return {memoryUtils::make_unique<MDVecIdIterator<true>>(*this, 0)};
     }
 
     id_const_iterator id_end() const override {
-        return {MemHelpers::make_unique<MDVecIdIterator<true>>(*this, this->size())};
+        return {memoryUtils::make_unique<MDVecIdIterator<true>>(*this, this->size())};
     }
 
     void fillExpand(MDLabel label) override;

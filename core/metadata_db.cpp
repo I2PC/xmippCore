@@ -308,7 +308,7 @@ std::unique_ptr<const MDRowSql> MetaDataDb::getRowSql(size_t id) const
             myMDSql->tableName(myMDSql->tableId),
             values)) return nullptr;
     // fill them
-    return MemHelpers::make_unique<const MDRowSql>(values);
+    return memoryUtils::make_unique<const MDRowSql>(values);
 }
 
 bool MetaDataDb::getRowSql(MDRowSql &row, size_t id)
