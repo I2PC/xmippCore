@@ -1,6 +1,7 @@
 /***************************************************************************
  *
  * Authors:    J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
+ *             Jan Horacek (xhorace4@fi.muni.cz)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *

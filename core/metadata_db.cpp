@@ -1,6 +1,7 @@
 /**************************************************************************
  *
  * Authors:      J.R. Bilbao-Castro (jrbcast@ace.ual.es)
+ *               Jan Horacek (xhorace4@fi.muni.cz)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
