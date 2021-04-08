@@ -44,6 +44,7 @@ void MetaDataDb::_clear(bool onlyData)
     else
     {
         this->baseClear();
+        _activeLabels.clear();
         myMDSql->clearMd();
     }
     eFilename="";
