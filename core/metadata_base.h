@@ -494,14 +494,6 @@ public:
     virtual int removeObjects(const MDQuery&) = 0;
     virtual int removeObjects() = 0;
 
-    /** Add item id.
-     * From 1 to last.
-     */
-    // void addItemId();
-
-    /** Remove item id.*/
-    // void removeItemId();
-
     /** @} */
 
     /** @name Iteration functions
@@ -579,11 +571,6 @@ public:
     */
     virtual void selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
                             const MDLabel sortLabel=MDL_OBJID) = 0;
-
-    /** Makes filenames with absolute paths
-    *
-    */
-    // void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
     friend struct MDBaseRowIterator<false>;
