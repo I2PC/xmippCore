@@ -42,7 +42,7 @@
 #include "xmipp_filename.h"
 #include "metadata_writemode.h"
 
-typedef std::vector<MDRowSql> VMetaData;
+using VMetaData = std::vector<MDRowSql>;
 
 /** Class to manage data files.
  *
