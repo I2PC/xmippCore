@@ -105,6 +105,10 @@ protected:
     void _expand(MetaDataVecRow&, const MDLabel);
     void _expand(MetaDataVecRow&, size_t labeli);
 
+    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
+                       const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
+
+
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
@@ -167,9 +171,6 @@ public:
      *
      */
     void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const override;
-
-    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
-                       const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
 
     /** @} */
 
@@ -312,11 +313,6 @@ public:
      */
     int removeObjects() override;
     int removeObjects(const MDQuery&) override;
-
-    /** Add item id.
-     * From 1 to last.
-     */
-    void addItemId();
 
     size_t firstRowId() const override;
     size_t firstObject(const MDQuery&) const override;

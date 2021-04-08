@@ -469,11 +469,6 @@ int MetaDataVec::removeObjects(const MDQuery& query) {
     return true;
 }
 
-void MetaDataVec::addItemId() {
-    // FIXME: implement
-    throw NotImplemented("addItemId not implemented");
-}
-
 size_t MetaDataVec::firstRowId() const {
     return this->getRowId(0);
 }
