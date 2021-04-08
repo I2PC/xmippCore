@@ -484,8 +484,9 @@ size_t MetaDataVec::lastRowId() const {
 
 bool MetaDataVec::_match(const MetaDataVecRow& row, const MDQuery& query) const {
     if (dynamic_cast<const MDValueRelational*>(&query) == nullptr)
-        throw NotImplemented("_match not implemented"); // MDValueRange, MDExpression, MDMultiQuery not implemented yet
-                                // MDExpression will probably never be supported as it is raw SQL expression
+        throw NotImplemented("_match for this type of query not implemented");
+            // MDValueRange, MDExpression, MDMultiQuery not implemented yet
+            // MDExpression will probably never be supported as it is raw SQL expression
 
     const MDValueRelational& rel = dynamic_cast<const MDValueRelational&>(query);
 
