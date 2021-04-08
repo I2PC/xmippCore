@@ -5,8 +5,6 @@
 #include "metadata_row_base.h"
 #include "choose.h"
 
-class MetaData;
-
 /** Iterates over metadata rows */
 template <bool IsConst>
 struct MDBaseRowIterator {
