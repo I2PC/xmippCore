@@ -110,7 +110,7 @@ public:
  *
  */
 class MetaData {
-public:
+protected:
     // Allows a fast search for pairs where the value is
     // a string, i.e. looking for filenames which is quite
     // usual
