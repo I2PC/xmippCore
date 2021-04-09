@@ -416,7 +416,8 @@ void MetaDataVec::importObject(const MetaData &md, const size_t id, bool doClear
 
     MDRowVec newRow;
     for (const MDObject* obj : *row)
-        newRow.setValue(*obj);
+        if (obj->label != MDL_OBJID)
+            newRow.setValue(*obj);
     this->addRow(newRow);
 }
 
