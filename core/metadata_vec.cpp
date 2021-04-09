@@ -708,7 +708,10 @@ void MetaDataVec::randomize(const MetaData &MDin) {
     std::random_device rd;
     auto g = std::mt19937(rd());
     std::shuffle(this->_rows.begin(), this->_rows.end(), g);
+    this->_recalc_id_to_index();
+}
 
+void MetaDataVec::_recalc_id_to_index() {
     this->_id_to_index.clear();
     for (size_t i = 0; i < this->_rows.size(); i++)
         this->_id_to_index[this->getRowId(i)] = i;
@@ -720,8 +723,25 @@ void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
-    // TODO
-    throw NotImplemented("sort not implemented");
+    *this = MDin;
+
+    int label_index = this->_labelIndex(sortLabel);
+    if (label_index > -1) {
+        std::sort(this->_rows.begin(), this->_rows.end(),
+            [label_index, asc](const MetaDataVecRow &a, const MetaDataVecRow &b) {
+                if (asc)
+                    return a[label_index] < b[label_index];
+                return a[label_index] > b[label_index];
+            }
+        );
+
+        this->_rows.erase(this->_rows.begin(), this->_rows.begin()+offset);
+        if (limit > 0)
+            this->_rows.erase(this->_rows.begin()+limit, this->_rows.end());
+
+        this->_recalc_id_to_index();
+
+    }
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const String &sortLabel, bool asc, int limit, int offset) {

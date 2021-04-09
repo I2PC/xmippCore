@@ -108,6 +108,7 @@ protected:
     void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
                        const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
 
+    void _recalc_id_to_index();
 
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
