@@ -830,8 +830,7 @@ void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
 
 
 bool MetaDataVec::operator==(const MetaDataVec& op) const {
-    // This comparison ignores order of labels, everything else must be same,
-    // even order of rows and ids.
+    // This comparison ignores order of labels and row ids, everything else must be same.
 
     if (this->_rows.size() != op._rows.size())
         return false;
@@ -842,6 +841,9 @@ bool MetaDataVec::operator==(const MetaDataVec& op) const {
 
     for (size_t i = 0; i < this->_rows.size(); i++) {
         for (size_t labeli = 0; labeli < MDL_LAST_LABEL; labeli++) {
+            if ((labeli == MDL_COMMENT) || (labeli == MDL_OBJID))
+                continue;
+
             int thisLabelRowI = this->_label_to_col[labeli];
             int opLabelRowI = op._label_to_col[labeli];
             if (thisLabelRowI > -1) {
