@@ -591,7 +591,6 @@ public:
         return {memoryUtils::make_unique<MDVecIdIterator<true>>(*this, this->size())};
     }
 
-    void fillExpand(MDLabel label) override;
     void fillConstant(MDLabel label, const String &value) override;
     void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) override;
     void fillLinear(MDLabel label, double initial, double step) override;

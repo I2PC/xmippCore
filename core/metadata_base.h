@@ -647,13 +647,6 @@ public:
     virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
     virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
 
-
-    /** Expand Metadata with metadata pointed by label
-     * Given a metadata md1, with a column containing the name of another column metdata file mdxx
-     * add the columns in mdxx to md1
-     */
-    virtual void fillExpand(MDLabel label) = 0;
-
     /** Fill column with constant value
      */
     virtual void fillConstant(MDLabel label, const String &value) = 0;

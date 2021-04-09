@@ -827,7 +827,12 @@ public:
         return {memoryUtils::make_unique<MDDbIdIterator<true>>(*this, true)};
     }
 
-    void fillExpand(MDLabel label) override;
+    /** Expand Metadata with metadata pointed by label
+     * Given a metadata md1, with a column containing the name of another column metdata file mdxx
+     * add the columns in mdxx to md1
+     */
+    void fillExpand(MDLabel label);
+
     void fillConstant(MDLabel label, const String &value) override;
     void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) override;
     void fillLinear(MDLabel label, double initial, double step) override;

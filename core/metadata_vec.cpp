@@ -735,11 +735,6 @@ void MetaDataVec::selectPart(const MetaData &mdIn, size_t startPosition, size_t 
 /*void makeAbsPath(const MDLabel label=MDL_IMAGE);*/
 
 
-void MetaDataVec::fillExpand(MDLabel label) {
-    // FIXME
-    throw NotImplemented("fillExpand not implemented");
-}
-
 void MetaDataVec::fillConstant(MDLabel label, const String &value) {
     // FIXME: move to MetaData and use common MDGenerator?
     MDConstGenerator generator(value);
