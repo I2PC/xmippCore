@@ -333,11 +333,9 @@ public:
  */
 class MDMultiQuery: public MDQuery
 {
-private:
+public:
     std::vector<const MDQuery*> queries;
     std::vector<String> operations;
-
-public:
 
     MDMultiQuery(int limit = -1, int offset = 0, MDLabel orderLabel = MDL_OBJID):MDQuery(limit, offset, orderLabel)
     {

@@ -479,6 +479,23 @@ size_t MetaDataVec::lastRowId() const {
 }
 
 bool MetaDataVec::_match(const MetaDataVecRow& row, const MDQuery& query) const {
+    if (dynamic_cast<const MDMultiQuery*>(&query) != nullptr) {
+        // Process MDMultiQuery
+        const MDMultiQuery& mq = dynamic_cast<const MDMultiQuery&>(query);
+        if (mq.operations.size() == 0)
+            return true; // emptuy query matches always
+        String operation = mq.operations[0];
+        for (const auto& op : mq.operations)
+            assert(op == operation); // support only all same operations
+        for (const auto& q : mq.queries) {
+            if ((operation == "AND") && (!this->_match(row, *q)))
+                return false;
+            else if ((operation == "OR") && (this->_match(row, *q)))
+                return true;
+        }
+        return (operation == "AND"); // false for "OR", true for "AND"
+    }
+
     if (dynamic_cast<const MDValueRelational*>(&query) == nullptr)
         throw NotImplemented("_match for this type of query not implemented");
             // MDValueRange, MDExpression, MDMultiQuery not implemented yet
