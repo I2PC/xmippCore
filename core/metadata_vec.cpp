@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cassert>
 #include <fstream>
+#include <random>
 #include "metadata_vec.h"
 #include "metadata_generator.h"
 #include "xmipp_image.h"
@@ -691,8 +692,13 @@ void MetaDataVec::replace(const MDLabel label, const String &oldStr, const Strin
 }
 
 void MetaDataVec::randomize(const MetaData &MDin) {
-    // TODO
-    throw NotImplemented("randomize not implemented");
+    std::random_device rd;
+    auto g = std::mt19937(rd());
+    std::shuffle(this->_rows.begin(), this->_rows.end(), g);
+
+    this->_id_to_index.clear();
+    for (size_t i = 0; i < this->_rows.size(); i++)
+        this->_id_to_index[this->getRowId(i)] = i;
 }
 
 void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
