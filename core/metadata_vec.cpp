@@ -700,11 +700,6 @@ void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
     throw NotImplemented("removeDuplicates not implemented");
 }
 
-void MetaDataVec::removeDisabled() {
-    // TODO
-    throw NotImplemented("removeDisabled not implemented");
-}
-
 void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
     // TODO
     throw NotImplemented("sort not implemented");

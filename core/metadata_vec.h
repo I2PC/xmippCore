@@ -425,10 +425,6 @@ public:
      */
     void removeDuplicates(MetaData &MDin, MDLabel label=MDL_UNDEFINED);
 
-    /**Remove rows with MDL_ENABLED = -1 if this label is present
-     */
-    void removeDisabled();
-
     /*
     * Sort a Metadata by a label.
     * Sort the content of MDin comparing
