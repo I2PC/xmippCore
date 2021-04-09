@@ -367,12 +367,6 @@ public:
      */
     void append(const FileName &outFile) const;
 
-    /** Check if block exists in metadata file
-     * input full parh block@filename
-     * return false if metadata block does not exits
-     */
-    bool existsBlock(const FileName &_inFile);
-
     /** Read metadata from xml file
      *
      */

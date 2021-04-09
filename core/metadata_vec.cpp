@@ -632,11 +632,6 @@ void MetaDataVec::append(const FileName &outFile) const {
     throw NotImplemented("append not implemented");
 }
 
-bool MetaDataVec::existsBlock(const FileName &_inFile) {
-    // TODO
-    throw NotImplemented("existsBlock not implemented");
-}
-
 void MetaDataVec::_parseObjects(std::istream &is, std::vector<MDObject*> &columnValues,
                                 const std::vector<MDLabel> *desiredLabels, bool firstTime) {
     for (size_t i = 0; i < columnValues.size(); i++) {
