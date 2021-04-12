@@ -865,8 +865,10 @@ void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
         if (static_cast<size_t>(labeldesti) >= row.size())
             this->_expand(row, labeldesti);
 
-        if (static_cast<size_t>(labelsrci) < row.size())
+        if (static_cast<size_t>(labelsrci) < row.size()) {
             row[labeldesti] = row[labelsrci];
+            row[labeldesti].label = labelDest;
+        }
         // else row[labeldesti] is empty MDObject (from previous if)
     }
 }
