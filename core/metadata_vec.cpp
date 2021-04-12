@@ -91,7 +91,7 @@ MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) {
 
 const MDObject& MetaDataVec::_getObject(const MetaDataVecRow& row, MDLabel label) const {
     int labelIndex = this->_labelIndex(label);
-    if (labelIndex < 0)
+    if ((labelIndex < 0) || (static_cast<size_t>(labelIndex) >= row.size()))
         throw ColumnDoesNotExist();
     return row.at(labelIndex);
 }
@@ -243,7 +243,7 @@ int MetaDataVec::getMaxStringLength(const MDLabel thisLabel) const {
 bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
     int labelIndex = this->_labelIndex(mdValueIn.label);
     if (labelIndex < 0)
-        throw ColumnDoesNotExist();
+        return false;
     for (auto& vecRow : this->_rows)
         vecRow.at(labelIndex) = mdValueIn;
     return true;
@@ -261,7 +261,11 @@ bool MetaDataVec::setValue(const MDObject &mdValueIn, size_t id) {
 }
 
 bool MetaDataVec::getValue(MDObject &mdValueOut, size_t id) const {
-    mdValueOut = this->_getObject(this->_rowIndexSafe(id), mdValueOut.label);
+    try {
+        mdValueOut = this->_getObject(this->_rowIndexSafe(id), mdValueOut.label);
+    } catch (const ColumnDoesNotExist&) {
+        return false;
+    }
     return true;
 }
 
@@ -291,7 +295,9 @@ const MDRowVec MetaDataVec::getRowVec(size_t id) const {
 
 
 bool MetaDataVec::getRow(MDRow &row, size_t id) {
-    size_t i = this->_rowIndexSafe(id);
+    int i = this->_rowIndex(id);
+    if (i < 0)
+        return false;
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);
     return true;
 }
@@ -302,7 +308,9 @@ void MetaDataVec::getRow(MDRowVec &row, size_t id) {
 }
 
 bool MetaDataVec::getRowValues(size_t id, std::vector<MDObject> &values) const {
-    size_t i = this->_rowIndexSafe(id);
+    int i = this->_rowIndex(id);
+    if (i < 0)
+        return false;
     values = this->_rows[i];
     return true;
 }
