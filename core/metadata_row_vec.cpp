@@ -116,11 +116,15 @@ void MDRowVec::addLabel(MDLabel label) {
 MDObject *MDRowVec::getObject(MDLabel label) {
     if ((*_label_to_col)[label] < 0)
         return nullptr;
+    if ((*_label_to_col)[label] >= static_cast<int>(_row->size()))
+        return nullptr;
     return &_row->at((*_label_to_col)[label]);
 }
 
 const MDObject *MDRowVec::getObject(MDLabel label) const {
     if ((*_label_to_col)[label] < 0)
+        return nullptr;
+    if ((*_label_to_col)[label] >= static_cast<int>(_row->size()))
         return nullptr;
     return &_row->at((*_label_to_col)[label]);
 }
@@ -128,6 +132,8 @@ const MDObject *MDRowVec::getObject(MDLabel label) const {
 bool MDRowVec::getValue(MDObject &object) const {
     MDLabel _label = object.label;
     if ((*_label_to_col)[_label] < 0)
+        return false;
+    if ((*_label_to_col)[_label] >= static_cast<int>(_row->size()))
         return false;
     object.copy(_row->at((*_label_to_col)[_label]));
     return true;
