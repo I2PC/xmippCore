@@ -905,15 +905,15 @@ bool MetaDataVec::operator==(const MetaDataVec& op) const {
             if ((labeli == MDL_COMMENT) || (labeli == MDL_OBJID))
                 continue;
 
-            int thisLabelRowI = this->_label_to_col[labeli];
-            int opLabelRowI = op._label_to_col[labeli];
-            if (thisLabelRowI > -1) {
-                if ((static_cast<size_t>(thisLabelRowI) < this->_rows[i].size()) !=
-                    (static_cast<size_t>(opLabelRowI) < op._rows[i].size()))
+            int thisLabelColI = this->_label_to_col[labeli];
+            int opLabelColI = op._label_to_col[labeli];
+            if (thisLabelColI > -1) {
+                if ((static_cast<size_t>(thisLabelColI) < this->_rows[i].size()) !=
+                    (static_cast<size_t>(opLabelColI) < op._rows[i].size()))
                     return false; // item present in one row, but not other
-                if (static_cast<size_t>(thisLabelRowI) >= this->_rows[i].size())
+                if (static_cast<size_t>(thisLabelColI) >= this->_rows[i].size())
                     continue; // label not present in both rows
-                if (!this->_rows[i][thisLabelRowI].eq(op._rows[i][opLabelRowI], this->precision()))
+                if (!this->_rows[i][thisLabelColI].eq(op._rows[i][opLabelColI], this->precision()))
                     return false; // MDObjects are diffrent
             }
         }
