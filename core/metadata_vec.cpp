@@ -718,8 +718,39 @@ void MetaDataVec::_recalc_id_to_index() {
 }
 
 void MetaDataVec::removeDuplicates(MetaData &MDin, MDLabel label) {
-    // TODO
-    throw NotImplemented("removeDuplicates not implemented");
+    *this = MDin; // FIXME: maybe join?
+    std::vector<MetaDataVecRow> new_rows;
+    for (const auto& row : this->_rows) {
+        if (!this->_contains(new_rows, row))
+            new_rows.emplace_back(row);
+    }
+    this->_rows = new_rows;
+}
+
+bool MetaDataVec::_contains(const std::vector<MetaDataVecRow>& rows, const MetaDataVecRow& row) const {
+    for (const auto& _row : rows)
+        if (this->_rowsEq(row, _row))
+            return true;
+    return false;
+}
+
+bool MetaDataVec::_rowsEq(const MetaDataVecRow& a, const MetaDataVecRow& b) const {
+    for (size_t label = 0; label < MDL_LAST_LABEL; label++) {
+        if ((label == MDL_COMMENT) || (label == MDL_OBJID))
+            continue;
+
+        int labeli = this->_labelIndex(static_cast<MDLabel>(label));
+        if (labeli > -1) { // label is active
+            if ((static_cast<size_t>(labeli) < a.size()) !=
+                (static_cast<size_t>(labeli) < b.size()))
+                return false; // item present in one row, but not other
+            if (static_cast<size_t>(labeli) >= a.size())
+                continue; // label not present in both rows
+            if (!a[labeli].eq(b[labeli], this->precision()))
+                return false; // MDObjects are diffrent
+        }
+    }
+    return true;
 }
 
 void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {

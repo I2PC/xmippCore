@@ -110,6 +110,9 @@ protected:
 
     void _recalc_id_to_index();
 
+    bool _contains(const std::vector<MetaDataVecRow>&, const MetaDataVecRow&) const;
+    bool _rowsEq(const MetaDataVecRow& a, const MetaDataVecRow& b) const;
+
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
