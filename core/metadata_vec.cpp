@@ -879,8 +879,19 @@ void MetaDataVec::copyColumnTo(MetaData& md, MDLabel labelDest, MDLabel labelSrc
 }
 
 void MetaDataVec::renameColumn(MDLabel oldLabel, MDLabel newLabel) {
-    // TODO
-    throw NotImplemented("removeColumn not implemented");
+    assert(!this->containsLabel(newLabel));
+    int labeloldi = this->_labelIndex(oldLabel);
+    if (labeloldi < 0)
+        throw ColumnDoesNotExist();
+
+    this->_label_to_col[newLabel] = labeloldi;
+    this->_label_to_col[oldLabel] = -1;
+    this->_col_to_label[labeloldi] = newLabel;
+
+    for (auto& row : this->_rows) {
+        if (labeloldi < static_cast<int>(row.size()))
+            row[labeloldi].label = newLabel;
+    }
 }
 
 void MetaDataVec::renameColumn(const std::vector<MDLabel> &oldLabel,
