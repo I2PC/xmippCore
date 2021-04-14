@@ -74,13 +74,6 @@ protected:
      */
     void init(const std::vector<MDLabel>& labelsVector);
 
-    /** This have the same logic of the public one,
-     * but doesn't perform any range(which implies do a size()) checks.
-     */
-    void _selectSplitPart(const MetaData &mdIn,
-                          int n, int part, size_t mdSize,
-                          const MDLabel sortLabel);
-
     /** clear data and table structure */
     void _clear(bool onlyData=false);
 
