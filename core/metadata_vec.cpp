@@ -237,7 +237,7 @@ void MetaDataVec::addRows(const std::vector<MDRowVec> &rows) {
 }
 
 int MetaDataVec::getMaxStringLength(const MDLabel thisLabel) const {
-    return 0xFF;
+    return 255;
 }
 
 bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
