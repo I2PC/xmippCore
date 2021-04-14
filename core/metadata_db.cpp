@@ -368,27 +368,25 @@ bool MetaDataDb::initSetRow(const MDRow &row)
 
 bool MetaDataDb::execSetRow(const MDRow &row, size_t id)
 {
-    int i = 0, j = 0;
-    bool success = true;
+
     std::vector<const MDObject*> mdValues;
+    std::vector<MDLabel> mdLabels;
 
     // Set values vector size.
     mdValues.resize(row.size());
+    mdLabels.resize(row.size());
 
     // Build values vector.
-    j = 0;
+    int i = 0;
     for (const MDObject* obj : row) {
         addLabel(obj->label);
         mdValues[i] = obj;
-        j++;
+        mdLabels[i] = obj->label;
+        i++;
     }
-    mdValues.resize(j);
 
     // Execute statement.
-    if (!myMDSql->setObjectValues(id, mdValues))
-        success = false;
-
-    return success;
+    return !myMDSql->setObjectValues(id, mdValues, &mdLabels);
 }
 
 void MetaDataDb::finalizeSetRow(void)

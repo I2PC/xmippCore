@@ -320,6 +320,7 @@ bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const st
     // id != -1 means there is a WHERE clause in the query sentence and id must be added.
     if (id != -1)
     {
+        // FIXME: if desiredLabels == nullptr, segfault is generated
         sqlite3_bind_int(this->preparedStmt, desiredLabels->size(), id);
     }
 
