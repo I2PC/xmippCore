@@ -44,11 +44,31 @@ public:
     Matrix1D<double> w; //Weights
 };
 
+class WeightedLeastSquaresHelperMany
+{
+public:
+    Matrix2D<double> A;
+    Matrix2D<double> At;
+    std::vector<Matrix1D<double>> bs;
+    Matrix1D<double> w; //Weights
+    Matrix1D<double> w_sqrt; //Weights squared, will be computed
+    Matrix2D<double> AtA;
+    Matrix2D<double> AtAinv;
+    Matrix1D<double> Atb;
+};
+
 /** Solve Linear system Ax=b with pseudoinverse.
  * A and b must be set inside the PseudoInverseHelper, the rest of the
  * fields in PseudoInverseHelper are used by this routine to avoid
- * several allocation/deallocations */
+ * several allocation/deallocations 
+ * DEPRECATED, use solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+ * */
+// FIXME deprecated
 void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result);
+
+/** Solve Linear system Ax=[b] with pseudoinverse.
+ * A and all 'b's must be set inside the helper */
+void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &result);
 
 /** Solve Weighted least square problem Ax=b with pseudoinverse and weights w.
  * A, w and b must be set inside the WeightedLeastSquaresHelper, the rest of the
@@ -56,8 +76,20 @@ void solveLinearSystem(PseudoInverseHelper &h, Matrix1D<double> &result);
  * several allocation/deallocations.
  *
  * The normal equations of this problem are A^t W A x = A^t W b,
- * where W is a diagonal matrix whose entries are in the vector w. */
+ * where W is a diagonal matrix whose entries are in the vector w.
+ * 
+ * DEPRECATED, use weightedLeastSquares(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results)
+ *  */
+// FIXME deprecated
 void weightedLeastSquares(WeightedLeastSquaresHelper &h, Matrix1D<double> &result);
+
+/** Solve Weighted least square problem Ax=b with pseudoinverse and weights w for multiple b.
+ * A, w and all 'b's must be set inside the helper to avoid
+ * several allocation/deallocations.
+ *
+ * The normal equations of this problem are A^t W A x = A^t W b,
+ * where W is a diagonal matrix whose entries are in the vector w. */
+void weightedLeastSquares(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<double>> &results);
 
 /** Solve Weighted least square problem Ax=b and weights w, with RANSAC.
  * Tol is a tolerance value: if an equation is fulfilled with an error smaller than tol,

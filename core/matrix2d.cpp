@@ -617,6 +617,47 @@ void Matrix2D<T>::computeColMeans(Matrix1D<double> &Xmr) const
     Xmr*=1.0/MAT_YSIZE(*this);
  }
 
+template<>
+void Matrix2D<double>::invAlgLib(Matrix2D<double>& result, bool use_lu) const  
+{
+    if (mdimx < 5) {
+        return this->inv(result);
+    }
+
+    // copy data to alglib matrix
+    const auto N = this->mdimx;
+    alglib::real_2d_array a;
+    a.setlength(N, N);
+    for(size_t i = 0; i < N; ++i) {
+        auto dest = a.c_ptr()->ptr.pp_double[i];
+        auto src = this->mdata + (i * N);
+        memcpy(dest, src, N * sizeof(double));
+    }
+
+    // compute inverse
+    alglib::ae_int_t info;
+    alglib::matinvreport rep;
+    if(use_lu) {
+        alglib::integer_1d_array pivots;
+        alglib::rmatrixlu(a, N, N, pivots);
+        alglib::rmatrixluinverse(a, pivots, info, rep);
+    } else {
+        alglib::rmatrixinverse(a, info, rep); // inplace inverse
+    }
+    if (1 != (int)info) {
+        REPORT_ERROR(ERR_NUMERICAL,"Could not perform matrix inversion using alglib");
+    }
+
+    // get result from alglib matrix
+    result.resizeNoCopy(*this);
+    for(size_t i = 0; i < N; ++i) {
+        auto src = a.c_ptr()->ptr.pp_double[i];
+        auto dest = result.mdata + (i * N);
+        memcpy(dest, src, N * sizeof(double));
+    }
+}
+
+
 template<typename T>
 void Matrix2D<T>::inv(Matrix2D<T>& result) const
 {
