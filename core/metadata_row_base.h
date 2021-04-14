@@ -86,9 +86,10 @@ public:
 
     template <typename T>
     bool getValue(MDLabel label, T &d) const {
-        if (getObject(label) == nullptr)
+        auto *obj = getObject(label);
+        if (obj == nullptr)
             return false;
-        getObject(label)->getValue(d);
+        obj->getValue(d);
         return true;
     }
 
