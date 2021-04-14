@@ -101,7 +101,7 @@ std::vector<MDLabel> MDRowVec::labels() const {
     std::vector<MDLabel> res;
     res.reserve(_row->size());
     for (const auto mdObj: *_row)
-        res.push_back(mdObj.label);
+        res.emplace_back(mdObj.label);
     return res;
 }
 
@@ -109,7 +109,7 @@ void MDRowVec::addLabel(MDLabel label) {
     // Warning: not adding to all rows!
     if ((*_label_to_col)[label] < 0) {
         (*_label_to_col)[label] = _row->size();
-        _row->push_back(MDObject(label));
+        _row->emplace_back(MDObject(label));
     }
 }
 
@@ -143,7 +143,7 @@ void MDRowVec::setValue(const MDObject &object) {
     MDLabel _label = object.label;
     if ((*_label_to_col)[_label] < 0) {
         (*_label_to_col)[_label] = _row->size();
-        _row->push_back(object);
+        _row->emplace_back(object);
     } else
         (*_row)[(*_label_to_col)[_label]] = object;
 }

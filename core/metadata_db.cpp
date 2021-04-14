@@ -517,7 +517,7 @@ void MetaDataDb::addMissingLabels(const MDRow &row) {
     auto definedLabels = row.labels();
     for (const auto &l : definedLabels){
         if ( ! containsLabel(l)) {
-            missingLabels.push_back(l);
+            missingLabels.emplace_back(l);
         }
     }
     // add missing labels
@@ -551,11 +551,11 @@ void MetaDataDb::addRows(const std::vector<MDRowSql> &rows)
     std::vector<std::vector<const MDObject*>> records;
     records.reserve(noOfRows);
     for (const auto &r : rows) {
-        records.push_back(std::vector<const MDObject*>());
+        records.emplace_back(std::vector<const MDObject*>());
         auto &vals = records.back();
         vals.reserve(noOfLabels);
         for (const auto &l : labels) {
-            vals.push_back(r.getObject(l));
+            vals.emplace_back(r.getObject(l));
         }
     }
     // insert values to db
@@ -646,7 +646,7 @@ bool MetaDataDb::addLabel(const MDLabel label, int pos)
     if (containsLabel(label))
         return false;
     if (pos < 0 || pos >= (int)this->_activeLabels.size())
-        this->_activeLabels.push_back(label);
+        this->_activeLabels.emplace_back(label);
     else
         this->_activeLabels.insert(this->_activeLabels.begin() + pos, label);
     myMDSql->addColumn(label);
@@ -1409,7 +1409,7 @@ void MetaDataDb::aggregateGroupBy(const MetaDataDb &mdIn,
 {
     std::vector<MDLabel> labels;
     labels = groupByLabels;
-    labels.push_back(resultLabel);
+    labels.emplace_back(resultLabel);
     init(labels);
     mdIn.myMDSql->aggregateMdGroupBy(this, op, groupByLabels, operateLabel, resultLabel);
 }
@@ -1420,7 +1420,7 @@ void MetaDataDb::_setOperates(const MetaDataDb &mdIn,
                             SetOperation operation)
 {
     std::vector<MDLabel> labels;
-    labels.push_back(label);
+    labels.emplace_back(label);
     _setOperates(mdIn,labels,operation);
 }
 
@@ -1450,7 +1450,7 @@ void MetaDataDb::_setOperatesLabel(const MetaDataDb &mdIn,
     //Add label to be sure is present in output
     addLabel(label);
     std::vector<MDLabel> labels;
-    labels.push_back(label);
+    labels.emplace_back(label);
     mdIn.myMDSql->setOperate(this, labels, operation);
 }
 
@@ -1535,8 +1535,8 @@ void MetaDataDb::join2(const MetaDataDb &mdInLeft, const MetaDataDb &mdInRight, 
 {
     clear();
     std::vector<MDLabel> labelsLeft, labelsRight;
-    labelsLeft.push_back(labelLeft);
-    labelsRight.push_back(labelRight);
+    labelsLeft.emplace_back(labelLeft);
+    labelsRight.emplace_back(labelRight);
     _setOperates(mdInLeft, mdInRight, labelsLeft,labelsRight, (SetOperation)type);
 }
 
@@ -1832,7 +1832,7 @@ void MetaDataDb::writeText(const FileName fn,  const std::vector<MDLabel>* desir
 void MetaDataDb::metadataToVec(std::vector<MDRowSql> &vd)
 {
     for (const auto& row : *this)
-        vd.push_back(dynamic_cast<const MDRowSql&>(row));
+        vd.emplace_back(dynamic_cast<const MDRowSql&>(row));
 }
 
 void MetaDataDb::vecToMetadata(const std::vector<MDRow> &rowMetadata)

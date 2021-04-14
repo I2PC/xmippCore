@@ -420,7 +420,7 @@ bool MDObject::fromStream(std::istream &is, bool fromString)
             //  data.vectorValue = new std::vector<double>;
             data.vectorValue->clear();
             while (is >> d) //This will stop at ending "]"
-                data.vectorValue->push_back(d);
+                data.vectorValue->emplace_back(d);
             if (!fromString)
             {
                 is.clear(); //this is for clear the fail state after found ']'
@@ -434,7 +434,7 @@ bool MDObject::fromStream(std::istream &is, bool fromString)
             //  data.vectorValue = new std::vector<double>;
             data.vectorValueLong->clear();
             while (is >> value) //This will stop at ending "]"
-                data.vectorValueLong->push_back(value);
+                data.vectorValueLong->emplace_back(value);
             if (!fromString)
             {
                 is.clear(); //this is for clear the fail state after found ']'
@@ -533,7 +533,7 @@ bool MDObject::operator>(const MDObject &obj) const {
 //        if ((*it)->label == label)
 //            return *(*it);
 //    MDObject * pObj = new MDObject(label);
-//    push_back(pObj);
+//    emplace_back(pObj);
 //
 //    return *pObj;
 //}

@@ -60,7 +60,7 @@ void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)
         String blockName;
         while (mdAux.nextBlock(buffer, block)) {
             BLOCK_NAME(block, blockName);
-            blockList.push_back(blockName);
+            blockList.emplace_back(blockName);
         }
 
         unmapFile(bufferMap.begin, bufferMap.size, fd);
@@ -230,7 +230,7 @@ void MetaData::_readColumns(std::istream& is, std::vector<MDObject*> & columnVal
 
             if (desiredLabels != NULL && !vectorContainsLabel(*desiredLabels, label))
                 label = MDL_UNDEFINED; //ignore if not present in desiredLabels
-            columnValues.push_back(new MDObject(label));
+            columnValues.emplace_back(new MDObject(label));
             if (label != MDL_UNDEFINED)
                 addLabel(label);
 
@@ -294,7 +294,7 @@ void MetaData::_readColumnsStar(mdBlock &block,
             if (addColumns)
             {
                 MDObject * _mdObject = new MDObject(label);
-                columnValues.push_back(_mdObject);//add the value here with a char
+                columnValues.emplace_back(_mdObject);//add the value here with a char
                 if(!_isColumnFormat)
                     _parseObject(ss, *_mdObject, id);
             }
@@ -520,8 +520,8 @@ void MetaData::readStar(const FileName &filename, const std::vector<MDLabel> *de
         is.ignore(256, ':'); //ignore all until ':' to start parsing column labels
         getline(is, line);
         ss.str(line);
-        columnValues.push_back(new MDObject(MDL_UNDEFINED));
-        columnValues.push_back(new MDObject(MDL_UNDEFINED));
+        columnValues.emplace_back(new MDObject(MDL_UNDEFINED));
+        columnValues.emplace_back(new MDObject(MDL_UNDEFINED));
 
         this->addLabel(MDL_IMAGE);
         this->_readColumns(ss, columnValues, desiredLabels);
@@ -531,8 +531,8 @@ void MetaData::readStar(const FileName &filename, const std::vector<MDLabel> *de
         std::cerr << "WARNING: ** You are using an old file format (SELFILE) which is going "
         << "to be deprecated in next Xmipp release **" << std::endl;
         // I will assume that is an old SelFile, so only need to add two columns
-        columnValues.push_back(new MDObject(MDL_IMAGE));//addLabel(MDL_IMAGE);
-        columnValues.push_back(new MDObject(MDL_ENABLED));//addLabel(MDL_ENABLED);
+        columnValues.emplace_back(new MDObject(MDL_IMAGE));//addLabel(MDL_IMAGE);
+        columnValues.emplace_back(new MDObject(MDL_ENABLED));//addLabel(MDL_ENABLED);
     }
 
     if (oldFormat)

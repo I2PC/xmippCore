@@ -204,7 +204,7 @@ size_t MetaDataVec::addRow(const MDRow &row) {
     // FIXME: should id be changed or kept same?
 
     MetaDataVecRow newRow;
-    _rows.push_back(newRow);
+    _rows.emplace_back(newRow);
     this->_setRow(row, _rows.size()-1);
 
     if (!row.containsLabel(MDL_OBJID)) {
@@ -336,7 +336,7 @@ void MetaDataVec::getColumnValues(const MDLabel label, std::vector<MDObject> &va
     if (labelIndex < 0)
         throw ColumnDoesNotExist();
     for (const auto& vecRow : this->_rows)
-        valuesOut.push_back(vecRow.at(labelIndex));
+        valuesOut.emplace_back(vecRow.at(labelIndex));
 }
 
 void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
@@ -377,7 +377,7 @@ bool MetaDataVec::addLabel(const MDLabel label, int pos) {
     this->_no_columns++;
     size_t column = this->_no_columns-1;
     this->_label_to_col[label] = column;
-    this->_col_to_label.push_back(label);
+    this->_col_to_label.emplace_back(label);
     return true;
 }
 
@@ -550,13 +550,13 @@ void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, const MDQuery &qu
     objectsOut.clear();
     for (const MetaDataVecRow& row : this->_rows)
         if (this->_match(row, query))
-            objectsOut.push_back(this->getRowId(row));
+            objectsOut.emplace_back(this->getRowId(row));
 }
 
 void MetaDataVec::findObjects(std::vector<size_t> &objectsOut, int limit) const {
     objectsOut.clear();
     for (size_t i = 0; i < std::min<size_t>(limit, this->size()); i++)
-        objectsOut.push_back(this->getRowId(this->_rows[i]));
+        objectsOut.emplace_back(this->getRowId(this->_rows[i]));
 }
 
 size_t MetaDataVec::countObjects(const MDQuery& query) const {
@@ -849,7 +849,7 @@ void MetaDataVec::_expand(MetaDataVecRow& row, size_t labeli) {
         return; // space for label already present
 
     for (size_t i = row.size(); i <= labeli; i++)
-        row.push_back(MDObject(this->_col_to_label.at(i)));
+        row.emplace_back(MDObject(this->_col_to_label.at(i)));
 }
 
 void MetaDataVec::copyColumn(MDLabel labelDest, MDLabel labelSrc) {
@@ -937,7 +937,7 @@ std::vector<MDLabel> MetaDataVec::getActiveLabels() const {
     std::vector<MDLabel> out;
     for (size_t i = MDL_GATHER_ID; i < MDL_LAST_LABEL; i++) // ignore MDL_FIRST_LABEL = MDL_OBJID
         if (this->_label_to_col[i] > -1)
-            out.push_back(static_cast<MDLabel>(i));
+            out.emplace_back(static_cast<MDLabel>(i));
     return out;
 }
 

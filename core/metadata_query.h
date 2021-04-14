@@ -343,13 +343,13 @@ public:
     }
     void addAndQuery(MDQuery &query)
     {
-        queries.push_back(&query);
-        operations.push_back("AND");
+        queries.emplace_back(&query);
+        operations.emplace_back("AND");
     }
     void addOrQuery(MDQuery &query)
     {
-        queries.push_back(&query);
-        operations.push_back("OR");
+        queries.emplace_back(&query);
+        operations.emplace_back("OR");
     }
 
     void clear()

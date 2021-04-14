@@ -86,7 +86,7 @@ std::vector<MDLabel> MDRowSql::labels() const {
     for (size_t i = 0; i < _size; ++i) {
         const MDLabel &label = _order[i];
         if (containsLabel(label))
-            res.push_back(label);
+            res.emplace_back(label);
     }
     return res;
 }
