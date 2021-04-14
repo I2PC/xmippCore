@@ -474,27 +474,36 @@ bool MDObject::eq(const MDObject &obj, double epsilon) const {
     if (this->type != obj.type)
         throw std::logic_error("MDObject: cannot compare == objects of different type");
 
-    if (this->type == LABEL_INT)
-        return this->data.intValue == obj.data.intValue;
-    else if (this->type == LABEL_BOOL)
-        return this->data.boolValue == obj.data.boolValue;
-    else if (this->type == LABEL_SIZET)
-        return this->data.longintValue == obj.data.longintValue;
-    else if (this->type == LABEL_DOUBLE)
-        return std::abs(this->data.doubleValue - obj.data.doubleValue) <= epsilon;
-    else if (this->type == LABEL_STRING)
-        return *(this->data.stringValue) == *(obj.data.stringValue);
-    else if (this->type == LABEL_VECTOR_DOUBLE) {
-        if (this->data.vectorValue->size() != obj.data.vectorValue->size())
-            return false;
-        for (size_t i = 0; i < this->data.vectorValue->size(); i++)
-            if (std::abs((*this->data.vectorValue)[i] - (*obj.data.vectorValue)[i]) > epsilon)
-                return false;
-        return true;
-    } else if (this->type == LABEL_VECTOR_SIZET)
-        return *(this->data.vectorValueLong) == *(obj.data.vectorValueLong);
+    switch (this->type) {
+        case LABEL_INT:
+            return this->data.intValue == obj.data.intValue;
 
-    throw std::logic_error("MDObject: unknown data type");
+        case LABEL_BOOL:
+            return this->data.boolValue == obj.data.boolValue;
+
+        case LABEL_SIZET:
+            return this->data.longintValue == obj.data.longintValue;
+
+        case LABEL_DOUBLE:
+            return std::abs(this->data.doubleValue - obj.data.doubleValue) <= epsilon;
+
+        case LABEL_STRING:
+            return *(this->data.stringValue) == *(obj.data.stringValue);
+
+        case LABEL_VECTOR_DOUBLE:
+            if (this->data.vectorValue->size() != obj.data.vectorValue->size())
+                return false;
+            for (size_t i = 0; i < this->data.vectorValue->size(); i++)
+                if (std::abs((*this->data.vectorValue)[i] - (*obj.data.vectorValue)[i]) > epsilon)
+                    return false;
+            return true;
+
+        case LABEL_VECTOR_SIZET:
+            return *(this->data.vectorValueLong) == *(obj.data.vectorValueLong);
+
+        default:
+            throw std::logic_error("MDObject: unknown data type");
+    };
 }
 
 bool MDObject::operator<=(const MDObject &obj) const {
