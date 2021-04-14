@@ -64,8 +64,7 @@ jobs:
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
 
       - name: Compile Xmipp
-        #run: build-wrapper-linux-x86-64 --out-dir bw-outputs ./xmipp noAsk
-        run: ./xmipp noAsk
+        run: build-wrapper-linux-x86-64 --out-dir bw-outputs ./xmipp noAsk
         env:
           TRAVIS: 1
           BUILD_TESTS: False
