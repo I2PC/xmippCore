@@ -41,14 +41,14 @@ jobs:
       - name: Fetching Xmipp
         run: ./scripts/travis_build
       
-      #- name: Prepare Sonar scanner
-      #  run: |
-      #    wget -nv https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
-      #    unzip -q sonar-scanner-cli-4.6.0.2311-linux.zip
-      #    echo "${PWD}/sonar-scanner-4.6.0.2311-linux/bin/" >> $GITHUB_PATH
-      #    wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-      #    unzip -q build-wrapper-linux-x86.zip          
-      #    echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
+      - name: Prepare Sonar scanner
+        run: |
+          wget -nv https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
+          unzip -q sonar-scanner-cli-4.6.0.2311-linux.zip
+          echo "${PWD}/sonar-scanner-4.6.0.2311-linux/bin/" >> $GITHUB_PATH
+          wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -q build-wrapper-linux-x86.zip          
+          echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
       
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
@@ -64,15 +64,14 @@ jobs:
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
 
       - name: Compile Xmipp
-        #run: build-wrapper-linux-x86-64 --out-dir bw-outputs ./xmipp noAsk
-        run: ./xmipp noAsk
+        run: build-wrapper-linux-x86-64 --out-dir bw-outputs ./xmipp noAsk
         env:
           TRAVIS: 1
           BUILD_TESTS: False
           
-      #- name: SonarCloud Scan
-      #  run: |
-      #    sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN
-      #  env:
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: SonarCloud Scan
+        run: |
+          sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
