@@ -17,20 +17,7 @@
 
 
 /*----------   Statistics --------------------------------------- */
-//Copy of the Metadata is required to remove disabled objects before computing stats
-void getStatistics(MetaDataVec md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getStatistics(md, _ave, _sd, apply_geo, wrap, image_label);
-}
-
-void getStatistics(MetaDataDb md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getStatistics(md, _ave, _sd, apply_geo, wrap, image_label);
-}
-
-void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
+void getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label)
 {
     bool first = true;
     int n = 0;
@@ -45,6 +32,11 @@ void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _s
     params.wrap = wrap;
     for (size_t id : md.ids())
     {
+        size_t enabled;
+        md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
+        if (enabled < 1)
+            continue;
+
         md.getValue(image_label, fnImg, id);
         if (apply_geo)
             image.readApplyGeo(fnImg, md, id, params);
@@ -67,6 +59,11 @@ void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _s
     // Calculate SD
     for (size_t id : md.ids())
     {
+        size_t enabled;
+        md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
+        if (enabled < 1)
+            continue;
+
         md.getValue(image_label, fnImg, id);
         if (apply_geo)
             image.readApplyGeo(fnImg, md, id, params);
@@ -150,22 +147,7 @@ Matrix2D<double> getMatrix(char* matrix)
     return transformM;
 }
 
-
-
-//Copy of the Metadata is required to remove disabled objects before computing stats
-void getAverageApplyGeo(MetaDataVec md, MultidimArray<double> & _ave, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getAverageApplyGeo(md, _ave, image_label);
-}
-
-void getAverageApplyGeo(MetaDataDb md, MultidimArray<double> & _ave, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getAverageApplyGeo(md, _ave, image_label);
-}
-
-void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label)
+void getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label)
 {
     bool first = true;
     int n = 0;
@@ -179,6 +161,11 @@ void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLab
 
     for (size_t id : md.ids())
     {
+        size_t enabled;
+        md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
+        if (enabled < 1)
+            continue;
+
         md.getValue(image_label, fnImg, id);
         image.readApplyGeo(fnImg, md, id);
 
@@ -196,23 +183,7 @@ void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLab
 }
 
 /*----------   Statistics --------------------------------------- */
-//Copy of the Metadata is required to remove disabled objects before computing stats
-
-void getStatistics(MetaDataVec md, double& _ave, double& _sd, double& _min,
-                   double& _max, bool apply_geo, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getStatistics(md, _ave, _sd, _min, _max, apply_geo, image_label);
-}
-
-void getStatistics(MetaDataDb md, double& _ave, double& _sd, double& _min,
-                   double& _max, bool apply_geo, MDLabel image_label)
-{
-    md.removeDisabled();
-    _getStatistics(md, _ave, _sd, _min, _max, apply_geo, image_label);
-}
-
-void _getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
+void getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
                    double& _max, bool apply_geo, MDLabel image_label)
 {
     _min = MAXDOUBLE;
@@ -229,6 +200,11 @@ void _getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
     FileName fnImg;
     for (size_t id : md.ids())
     {
+        size_t enabled;
+        md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
+        if (enabled < 1)
+            continue;
+
         md.getValue(image_label, fnImg, id);
         if (apply_geo)
             image.readApplyGeo(fnImg, md, id);

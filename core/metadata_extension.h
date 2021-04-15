@@ -29,9 +29,7 @@
  */
 /** Get the image statistics of a metadata.
  * Note that the mean and stddev are images, not values.*/
-void getStatistics(MetaDataVec md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
-void getStatistics(MetaDataDb md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
-void _getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
+void getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
 
 /** Write images in MetaData into a stack */
 void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo, bool wrap, MDLabel image_label=MDL_IMAGE);
@@ -39,17 +37,11 @@ void writeMdToStack(const MetaData &md, const FileName &fnStack, bool apply_geo,
 /** Get the average of a Metadata applying the header.
  * The md is not cleaned from disabled images (this option makes the call faster).
  */
-void getAverageApplyGeo(MetaDataVec md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
-void getAverageApplyGeo(MetaDataDb md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
-void _getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
+void getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabel image_label=MDL_IMAGE);
 
 /** Get the image statistics of a metadata.
  */
-void getStatistics(MetaDataVec md, double& _ave, double& _sd, double& _min,
-        double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
-void getStatistics(MetaDataDb md, double& _ave, double& _sd, double& _min,
-        double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
-void _getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
+void getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
         double& _max, bool apply_geo, MDLabel image_label=MDL_IMAGE);
 
 /** Get Fourier statistics */
