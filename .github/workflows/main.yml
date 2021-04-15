@@ -26,12 +26,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          
+
+      # This will try to fetch cache for current commit
+      # Since no such cache exists, it will try to bring newest restore-key one
+      # i.e. the one from latest build. See https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows#matching-a-cache-key
       - name: Fetch cache
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v2.1.5
         with:
           path: sonarCache
-          key: ${{ runner.os }}-sonarCache
+          key: ${{ runner.os }}-sonarCache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-sonarCache- 
           
       - name: Create Travis variables
         run: |
@@ -53,12 +57,12 @@ jobs:
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
         
-      - name: Install CUDA
-        uses: Jimver/cuda-toolkit@v0.2.0
-        with: 
-          cuda: 10.2.89
-          method: network
-          sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
+        #- name: Install CUDA
+        #uses: Jimver/cuda-toolkit@v0.2.0
+        #with: 
+        #  cuda: 10.2.89
+        #  method: network
+        #  sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
 
       - name: Install dependencies
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
@@ -68,7 +72,11 @@ jobs:
         env:
           TRAVIS: 1
           BUILD_TESTS: False
-          
+ 
+      # Since we moved files to be able to build Xmipp, we also changed git records -> the diff will git wrong results
+      - name: Restore repository
+        run: cp -rf src/xmippCore/.* .       
+
       - name: SonarCloud Scan
         run: |
           sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN
