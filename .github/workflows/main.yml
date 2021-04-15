@@ -75,7 +75,7 @@ jobs:
  
       # Since we moved files to be able to build Xmipp, we also changed git records -> the diff will git wrong results
       - name: Restore repository
-        run: cp -rf src/xmippCore/.* .       
+        run: cp -rf src/xmippCore/.* . || true # ignore errors reported by cp 
 
       - name: SonarCloud Scan
         run: |
