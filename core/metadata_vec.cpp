@@ -201,7 +201,12 @@ void MetaDataVec::_setRow(const MDRow &row, size_t index) {
 }
 
 size_t MetaDataVec::addRow(const MDRow &row) {
-    // FIXME: should id be changed or kept same?
+    /* Id:
+     * When ‹row› does not contain MDL_OBJID column, it is created from ‹this->_nextId›
+     * When ‹row› contains id which is NOT present in Metadata, id is kept.
+     * When ‹row› contains id which IS present in Metadata, id is changed from ‹this->_nextId›.
+     * When ‹this->_nextId› is present in MetaData, assert fails. This should not happen.
+    */
 
     MetaDataVecRow newRow;
     _rows.emplace_back(newRow);
