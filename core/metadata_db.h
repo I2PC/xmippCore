@@ -118,6 +118,9 @@ protected:
     /** Some private reading functions */
     void _readRowFormat(std::istream& is);
 
+    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
+                       const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
+
     /**
      * Get a vector of (empty) objects for each active label
      */
@@ -202,9 +205,6 @@ public:
      *
      */
     void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const override;
-
-    void _parseObjects(std::istream &is, std::vector<MDObject*> & columnValues,
-                       const std::vector<MDLabel> *desiredLabels, bool firstTime) override;
 
     /**Get maximum string length of column values.
     */
