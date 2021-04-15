@@ -1049,10 +1049,10 @@ void MetaDataDb::read(const FileName &_filename,
     eFilename = _filename;
 }
 
-#define LINE_LENGTH 1024
+
 void MetaDataDb::readPlain(const FileName &inFile, const String &labelsString, const String &separator)
 {
-
+    constexpr size_t LINE_LENGTH = 1024;
     clear();
     std::vector<MDLabel> labels;
     MDL::str2LabelVector(labelsString, labels);
