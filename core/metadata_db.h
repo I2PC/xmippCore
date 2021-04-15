@@ -42,8 +42,6 @@
 #include "xmipp_filename.h"
 #include "metadata_writemode.h"
 
-using VMetaData = std::vector<MDRowSql>;
-
 /** Class to manage data files.
  *
  * The MetaData class manages all procedures related to
@@ -180,16 +178,6 @@ public:
      */
 
     MDSql * getDatabase() { return myMDSql; }
-
-    /** As Vector Metadata.
-     * This avoids many thread unsafe issues. All rows of the metadata are returned
-     * as a set of rows
-     */
-    void asVMetaData(VMetaData &vmdOut);
-
-    /** Import from Vector Metadata.
-     */
-    void fromVMetaData(VMetaData &vmdIn);
 
     /** Export medatada to xml file.
      *

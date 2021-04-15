@@ -87,20 +87,6 @@ void MetaDataDb::copyMetadata(const MetaDataDb &md, bool copyObjects)
     }
 }
 
-void MetaDataDb::asVMetaData(VMetaData &vmdOut)
-{
-    vmdOut.clear();
-    for (const MDRow& row : *this)
-        vmdOut.emplace_back(dynamic_cast<const MDRowSql&>(row));
-}
-
-void MetaDataDb::fromVMetaData(VMetaData &vmdIn)
-{
-    clear();
-    for (auto& row: vmdIn)
-        addRow2(row);
-}
-
 bool MetaDataDb::setValue(const MDObject &mdValueIn, size_t id)
 {
     if (id == BAD_OBJID)
