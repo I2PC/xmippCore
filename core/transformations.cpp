@@ -40,22 +40,8 @@ void produceSplineCoefficients(int SplineDegree,
                                MultidimArray< double > &coeffs,
                                const MultidimArray< T > &V1)
 {
-
-    coeffs.initZeros(ZSIZE(V1), YSIZE(V1), XSIZE(V1));
-    STARTINGX(coeffs) = STARTINGX(V1);
-    STARTINGY(coeffs) = STARTINGY(V1);
-    STARTINGZ(coeffs) = STARTINGZ(V1);
-
-    int Status;
-    MultidimArray< double > aux;
-    typeCast(V1, aux); // This will create a single volume!
-
-    ChangeBasisVolume(MULTIDIM_ARRAY(aux), MULTIDIM_ARRAY(coeffs),
-                      XSIZE(V1), YSIZE(V1), ZSIZE(V1),
-                      CardinalSpline, BasicSpline, SplineDegree,
-                      MirrorOffBounds, DBL_EPSILON, &Status);
-    if (Status)
-        REPORT_ERROR(ERR_UNCLASSIFIED, "Error in produceSplineCoefficients...");
+	int * tmp;
+	printf("value: %d", *tmp);
 }
 
 template <typename T>
