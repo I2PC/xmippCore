@@ -501,7 +501,6 @@ bool MDSql::initializeInsert(const std::vector<MDLabel> *labels, const std::vect
     this->preparedStream << ");";
 
     // Prepare statement.
-    //std::cout << this->preparedStream.str().c_str() << std::endl;
     if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
     {
         printf( "initializeInsert: could not prepare statement: %s\n", sqlite3_errmsg(db) );
@@ -1289,7 +1288,7 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
             if (label == MDL_UNDEFINED)
             {
                 if(strcmp(Labels,"objID"))
-                    std::cout << (String)"WARNING: Ignoring unknown column: " + Labels << std::endl;
+                    std::cerr << (String)"WARNING: Ignoring unknown column: " + Labels << std::endl;
             }
             else
             {

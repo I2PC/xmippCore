@@ -410,7 +410,7 @@ bool MetaDataDb::initAddRow(const MDRow &row)
     // Prepare statement (mdValues is not used).
     if (!myMDSql->initializeInsert( &labels, mdValues))
     {
-        std::cout << "initAddRow: error executing myMDSql->initializeInsert" << std::endl;
+        std::cerr << "initAddRow: error executing myMDSql->initializeInsert" << std::endl;
         success = false;
     }
 
@@ -439,7 +439,7 @@ bool MetaDataDb::execAddRow(const MDRow &row)
     // Execute statement.
     if (!myMDSql->setObjectValues( -1, mdValues))
     {
-        std::cout << "execAddRow: error executing myMDSql->setObjectValues" << std::endl;
+        std::cerr << "execAddRow: error executing myMDSql->setObjectValues" << std::endl;
         success = false;
     }
 
