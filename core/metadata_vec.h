@@ -513,7 +513,7 @@ public:
             return false;
         }
 
-        typename TypeHelpers::choose<IsConst, const MDRow&, MDRow&>::type operator*() override { return *_row; }
+        typename TypeHelpers::choose<IsConst, const MDRowVec&, MDRowVec&>::type operator*() override { return *_row; }
     };
 
     iterator begin() override {
