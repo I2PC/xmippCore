@@ -116,7 +116,6 @@ protected:
     // usual
     std::map<String, size_t> _fastStringSearch;
     MDLabel _fastStringSearchLabel;
-    String _path; ///< A parameter stored on MetaData Files
     String _comment; ///< A general comment for the MetaData file
     ///comment is wraped in char_max length lines
 #define line_max 70
@@ -237,19 +236,6 @@ public:
     virtual void writeText(const FileName fn,  const std::vector<MDLabel>* desiredLabels) const = 0;
 
     virtual void writeStar(const FileName &outFile, const String & blockName, WriteModeMetaData mode) const;
-
-    /**Get path.
-     */
-    virtual String getPath() const { return this->_path; }
-
-    /**Set Path.
-     * the path will appear in first line
-     */
-    virtual void setPath(const String &newPath = "") {
-        const size_t length = 512;
-        char _buffer[length];
-        this->_path = (newPath == "") ? String(getcwd(_buffer, length)) : newPath;
-    }
 
     /**Get Header Comment.
      * the comment will appear in second line.

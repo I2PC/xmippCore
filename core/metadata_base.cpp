@@ -141,7 +141,6 @@ bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel
 }
 
 void MetaData::clear() {
-    _path.clear();
     _comment.clear();
     _fastStringSearch.clear();
     _fastStringSearchLabel = MDL_UNDEFINED;
@@ -152,7 +151,6 @@ void MetaData::clear() {
 }
 
 void MetaData::copyInfo(const MetaData& md) {
-    _path = md._path;
     _comment = md._comment;
     _fastStringSearch = md._fastStringSearch;
     _fastStringSearchLabel = md._fastStringSearchLabel;
