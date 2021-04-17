@@ -130,24 +130,6 @@ void MetaDataDb::getColumnValues(const MDLabel label, std::vector<MDObject> &val
     }
 }
 
-template<typename T>
-bool MetaDataDb::getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
-    if (!containsLabel(label))
-            return false;
-    return sqlUtils::select(label,
-            myMDSql->db,
-            myMDSql->tableName(myMDSql->tableId),
-            values);
-}
-
-/**
- *  XXX HACK Because of the cyclic dependency between MetaData/MetaData label and MetaData SQL,
- *  this cannot be in header. So we need to explicitly instantiate it
- */
-template bool MetaDataDb::getColumnValuesOpt<float>(MDLabel, std::vector<float, std::allocator<float> >&) const;
-template bool MetaDataDb::getColumnValuesOpt<FileName>(MDLabel, std::vector<FileName, std::allocator<FileName> >&) const;
-template bool MetaDataDb::getColumnValuesOpt<int>(MDLabel, std::vector<int, std::allocator<int> >&) const;
-
 void MetaDataDb::setColumnValues(const std::vector<MDObject> &valuesIn)
 {
     bool addObjects=false;

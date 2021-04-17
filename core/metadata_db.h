@@ -851,6 +851,15 @@ std::ostream& operator<<(std::ostream& o, const MetaData & mD);
  */
 WriteModeMetaData metadataModeConvert (String mode);
 
+template<typename T>
+bool MetaDataDb::getColumnValuesOpt(const MDLabel label, std::vector<T> &values) const {
+    if (!containsLabel(label))
+            return false;
+    return sqlUtils::select(label,
+            myMDSql->db,
+            myMDSql->tableName(myMDSql->tableId),
+            values);
+}
 
 /** @} */
 
