@@ -48,7 +48,6 @@ void MetaDataDb::_clear(bool onlyData)
         _activeLabels.clear();
         myMDSql->clearMd();
     }
-    eFilename="";
 }//close clear
 
 void MetaDataDb::clear()
@@ -1028,11 +1027,6 @@ void MetaDataDb::read(const FileName &_filename,
         readDB(inFile, desiredLabels, blockName, decomposeStack);
     else
         readStar(_filename, desiredLabels, blockName, decomposeStack);
-
-    //_read(filename,desiredLabels,BlockName,decomposeStack);
-    //_read calls clean so I cannot use eFilename as filename ROB
-    // since eFilename is reset in clean
-    eFilename = _filename;
 }
 
 

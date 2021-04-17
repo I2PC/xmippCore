@@ -438,7 +438,7 @@ void MetaData::readStar(const FileName &filename, const std::vector<MDLabel> *de
     is.seekg(0, std::ios::beg);//reset the stream position to the beginning to start parsing
 
     if (line.find(FileNameVersion) != String::npos ||
-        eFilename.getExtension() == "xmd" || eFilename.getExtension() == "star") {
+        filename.getExtension() == "xmd" || filename.getExtension() == "star") {
         oldFormat = false;
         _comment.clear();
 

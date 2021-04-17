@@ -134,8 +134,6 @@ void MetaDataVec::read(const FileName &filename, const std::vector<MDLabel> *des
         throw NotImplemented("Reading from .sqlite file into MetaDataVec not implemented!");
     else
         this->readStar(filename, desiredLabels, blockName, decomposeStack);
-
-    this->eFilename = filename;
 }
 
 void MetaDataVec::write(const FileName &outFile, WriteModeMetaData mode) const {

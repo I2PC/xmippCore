@@ -177,7 +177,6 @@ public:
     /** Filename used in the read command, useful to write Error messages
      *
      */
-    FileName eFilename;
     bool isMetadataFile;
 
     /** @name Constructors
