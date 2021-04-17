@@ -535,15 +535,6 @@ public:
      */
     virtual void removeDisabled();
 
-    /** Take a part from MetaData.
-     * This function is equivallent to divide
-     * the input MetaData in n parts and take one.
-     * The result will be in "calling" MetaData.
-     */
-    virtual void selectSplitPart(const MetaData &mdIn,
-                                 size_t n, size_t part,
-                                 const MDLabel sortLabel=MDL_OBJID) = 0;
-
     /** Select random subset */
     virtual void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects,
                                     const MDLabel sortLabel=MDL_OBJID) = 0;

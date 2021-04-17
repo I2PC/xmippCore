@@ -459,15 +459,6 @@ public:
     void split(size_t n, std::vector<MetaDataVec> &results,
                const MDLabel sortLabel=MDL_OBJID);
 
-    /** Take a part from MetaData.
-     * This function is equivallent to divide
-     * the input MetaData in n parts and take one.
-     * The result will be in "calling" MetaData.
-     */
-    void selectSplitPart(const MetaData &mdIn,
-                         size_t n, size_t part,
-                         const MDLabel sortLabel=MDL_OBJID) override;
-
     /** Select random subset */
     void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
 

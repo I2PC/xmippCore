@@ -796,12 +796,6 @@ void MetaDataVec::split(size_t n, std::vector<MetaDataVec> &results, const MDLab
     throw NotImplemented("split not implemented");
 }
 
-void MetaDataVec::selectSplitPart(const MetaData &mdIn, size_t n, size_t part,
-                                   const MDLabel sortLabel) {
-    // TODO
-    throw NotImplemented("selectSplitPart not implemented");
-}
-
 void MetaDataVec::selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel) {
     // TODO
     throw NotImplemented("selectRandomSubset not implemented");

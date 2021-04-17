@@ -669,7 +669,7 @@ public:
      */
     void selectSplitPart(const MetaData &mdIn,
                          size_t n, size_t part,
-                         const MDLabel sortLabel=MDL_OBJID) override;
+                         const MDLabel sortLabel=MDL_OBJID);
 
     /** Select random subset */
     void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
