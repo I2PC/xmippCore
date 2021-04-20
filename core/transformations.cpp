@@ -691,7 +691,7 @@ void applyGeometry(int SplineDegree,
     else
     { //FIXME I do not think you want to recall your self
         REPORT_ERROR(ERR_NOT_IMPLEMENTED,"I do not think you want to recall your self");
-        applyGeometry(SplineDegree, V2, V1, A, inv, wrap, outside);
+       // applyGeometry(SplineDegree, V2, V1, A, inv, wrap, outside); // this was causing crash of the sonarcloud analyzer
     }
 }
 
