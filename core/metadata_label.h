@@ -369,6 +369,7 @@ enum MDLabel
     MDL_RESOLUTION_FREQ, ///<Frequency in 1/A (double)
     MDL_RESOLUTION_FREQ2, ///< Frequency in 1/A squared (double)
     MDL_RESOLUTION_FREQREAL, ///< Frequency in A (double)
+	MDL_RESOLUTION_FSO, ///<Fourier shell occupancy (double)
     MDL_RESOLUTION_LOCAL_RESIDUE, ///< Frequency in A of the local resolution of a residue (double)
     MDL_RESOLUTION_LOG_STRUCTURE_FACTOR, ///<Logarithm of the structure factor
     MDL_RESOLUTION_SSNR, ///<Fourier shell correlation (double)
@@ -1712,6 +1713,7 @@ private:
         MDL::addLabel(MDL_RESIDUE, LABEL_INT, "residue");
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
+        MDL::addLabel(MDL_RESOLUTION_FSO, LABEL_DOUBLE, "resolutionFSO");
         MDL::addLabel(MDL_RESOLUTION_FRC, LABEL_DOUBLE, "resolutionFRC");
         MDL::addLabel(MDL_RESOLUTION_FRCRANDOMNOISE, LABEL_DOUBLE, "resolutionFRCRandomNoise");
         MDL::addLabel(MDL_RESOLUTION_FREQ, LABEL_DOUBLE, "resolutionFreqFourier");
