@@ -30,10 +30,11 @@
 #include "xmipp_datatype.h"
 #include "xmipp_filename.h"
 #include "metadata_label.h"
+#include "metadata_row_sql.h"
 #include "metadata_writemode.h"
+#include "metadata_base.h"
+#include "metadata_vec.h"
 
-class MetaData;
-class MDIterator;
 
 /** Special class of XmippProgram that performs some operation related with processing images.
  * It can receive a file with images(MetaData) or a single image.
@@ -45,20 +46,14 @@ class XmippMetadataProgram: public virtual XmippProgram
 private:
     /// Input and output metadatas
     MetaData * mdIn = nullptr;
-    MetaData * mdOut = nullptr; //TODO: can be treated by reference as mdIn for
+    MetaDataVec mdOut; //TODO: can be treated by reference as mdIn for
     // uses from another programs...
 public:
     /// The input metadata should not be used
     /// if there is a very very special case
     /// you can use this function
-    MetaData * getInputMd()
-    {
-        return mdIn;
-    }
-    MetaData * getOutputMd()
-    {
-        return mdOut;
-    }
+    MetaData * getInputMd() { return mdIn; }
+    MetaDataVec& getOutputMd() { return mdOut; }
 
 public:
     //Image<double>   img;
@@ -76,10 +71,6 @@ protected:
     /// Metadata writing mode: OVERWRITE, APPEND
     WriteModeMetaData mode;
 
-    /// Iterator over input metadata
-    MDIterator * iter;
-    /// Filenames of input and output Images
-    //FileName        fnImg, fnImgOut;
     /// Output extension and root
     FileName oext, oroot;
     /// MDLabel to be used to read/write images, usually will be MDL_IMAGE
@@ -146,12 +137,6 @@ protected:
     virtual void finishProcessing();
     virtual void writeOutput(); // maybe used by checkpoint
     virtual void showProgress();
-    /** This method will be used to distribute the images to process
-     * it will set the objectId and objectIndexto read from input metadata
-     * or -1 if there are no more images to process.
-     * This method will be useful for parallel task distribution
-     */
-    virtual bool getImageToProcess(size_t &objId, size_t &objIndex);
 
     /** Define the label param */
     virtual void defineLabelParam();

@@ -221,77 +221,7 @@ void Image<T>::getTransformationMatrix(Matrix2D<double> &A, bool only_apply_shif
     // This has only been implemented for 2D images...
     MULTIDIM_ARRAY(*this).checkDimension(2);
     A.resizeNoCopy(3, 3);
-    geo2TransformationMatrix(MD[n], A, only_apply_shifts);
-}
-
-template<typename T>
-void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
-{
-    //This implementation does not handle stacks,
-    //read in a block
-    if (data.ndim != 1)
-        REPORT_ERROR(ERR_MULTIDIM_SIZE,
-                     "Geometric transformation cannot be applied to stacks!!!");
-    if (MD.size() == 0)
-        MD.push_back(MDL::emptyHeader);
-    MDRow &rowAux = MD[0];
-
-    if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
-    {
-        double aux;
-        //origins
-        if (row.getValue(MDL_ORIGIN_X, aux))
-            rowAux.setValue(MDL_ORIGIN_X, aux);
-        if (row.getValue(MDL_ORIGIN_Y, aux))
-            rowAux.setValue(MDL_ORIGIN_Y, aux);
-        if (row.getValue(MDL_ORIGIN_Z, aux))
-            rowAux.setValue(MDL_ORIGIN_Z, aux);
-        //shifts
-        if (row.getValue(MDL_SHIFT_X, aux))
-            rowAux.setValue(MDL_SHIFT_X, aux);
-        if (row.getValue(MDL_SHIFT_Y, aux))
-            rowAux.setValue(MDL_SHIFT_Y, aux);
-        if (row.getValue(MDL_SHIFT_Z, aux))
-            rowAux.setValue(MDL_SHIFT_Z, aux);
-        //rotations
-        if (row.getValue(MDL_ANGLE_ROT, aux))
-            rowAux.setValue(MDL_ANGLE_ROT, aux);
-        if (row.getValue(MDL_ANGLE_TILT, aux))
-            rowAux.setValue(MDL_ANGLE_TILT, aux);
-        if (row.getValue(MDL_ANGLE_PSI, aux))
-            rowAux.setValue(MDL_ANGLE_PSI, aux);
-        //scale
-        if (row.getValue(MDL_SCALE, aux))
-            rowAux.setValue(MDL_SCALE, aux);
-        //weight
-        if (row.getValue(MDL_WEIGHT, aux))
-            rowAux.setValue(MDL_WEIGHT, aux);
-        bool auxBool;
-        if (row.getValue(MDL_FLIP, auxBool))
-            rowAux.setValue(MDL_FLIP, auxBool);
-    }
-
-    //apply geo has not been defined for volumes
-    //and only make sense when reading data
-    if (data.getDim() < 3 && dataMode >= DATA)
-    {
-        Matrix2D<double> A;
-        if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
-            getTransformationMatrix(A, only_apply_shifts);
-        else
-        {
-            String matrixStr;
-            row.getValue(MDL_TRANSFORM_MATRIX, matrixStr);
-            string2TransformationMatrix(matrixStr, A, 3);
-        }
-
-        if (!A.isIdentity())
-        {
-            MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
-            applyGeometry(BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
-                          wrap);
-        }
-    }
+    geo2TransformationMatrix(*MD[n], A, only_apply_shifts);
 }
 
 template<typename T>
@@ -343,6 +273,54 @@ void Image<T>::getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim,
 
     // We set the actual dimesions of th MDA to the imageOut as if it were read from file.
     imgOut.setADimFile(IMGMATRIX(imgOut).getDimensions());
+}
+
+template<typename T>
+void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap) {
+    //This implementation does not handle stacks,
+    //read in a block
+    if (data.ndim != 1)
+        REPORT_ERROR(ERR_MULTIDIM_SIZE,
+                     "Geometric transformation cannot be applied to stacks!!!");
+
+    if (MD.size() == 0)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+    MDRow &rowAux = *MD[0];
+
+    if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
+    {
+        double aux;
+        //origins
+        if (row.getValue(MDL_ORIGIN_X, aux))
+            rowAux.setValue(MDL_ORIGIN_X, aux);
+        if (row.getValue(MDL_ORIGIN_Y, aux))
+            rowAux.setValue(MDL_ORIGIN_Y, aux);
+        if (row.getValue(MDL_ORIGIN_Z, aux))
+            rowAux.setValue(MDL_ORIGIN_Z, aux);
+        //shifts
+        if (row.getValue(MDL_SHIFT_X, aux))
+            rowAux.setValue(MDL_SHIFT_X, aux);
+        if (row.getValue(MDL_SHIFT_Y, aux))
+            rowAux.setValue(MDL_SHIFT_Y, aux);
+        if (row.getValue(MDL_SHIFT_Z, aux))
+            rowAux.setValue(MDL_SHIFT_Z, aux);
+        //rotations
+        if (row.getValue(MDL_ANGLE_ROT, aux))
+            rowAux.setValue(MDL_ANGLE_ROT, aux);
+        if (row.getValue(MDL_ANGLE_TILT, aux))
+            rowAux.setValue(MDL_ANGLE_TILT, aux);
+        if (row.getValue(MDL_ANGLE_PSI, aux))
+            rowAux.setValue(MDL_ANGLE_PSI, aux);
+        //scale
+        if (row.getValue(MDL_SCALE, aux))
+            rowAux.setValue(MDL_SCALE, aux);
+        //weight
+        if (row.getValue(MDL_WEIGHT, aux))
+            rowAux.setValue(MDL_WEIGHT, aux);
+        bool auxBool;
+        if (row.getValue(MDL_FLIP, auxBool))
+            rowAux.setValue(MDL_FLIP, auxBool);
+    }
 }
 
 //template int Image<std::complex<double> >::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);

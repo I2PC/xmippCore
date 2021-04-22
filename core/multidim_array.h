@@ -2978,7 +2978,7 @@ public:
             center /= mass;
     }
 
-    /** Sort vector elements
+    /** Sort 1D vector elements
      *
      * Sort in ascending order the vector elements. You can use the "reverse"
      * function to sort in descending order.

@@ -29,7 +29,7 @@
 #include "metadata_sql.h"
 #include "xmipp_threads.h"
 #include "xmipp_filename.h"
-#include "metadata.h"
+#include "metadata_db.h"
 
 //#define DEBUG
 
@@ -42,7 +42,7 @@ const char *MDSql::zLeftover;
 int MDSql::rc;
 Mutex sqlMutex; //Mutex to syncronize db access
 
-std::stringstream MDSql::preparedStream;	// Stream.
+std::stringstream MDSql::preparedStream;    // Stream.
 sqlite3_stmt * MDSql::preparedStmt;
 
 void sqlite_regexp(sqlite3_context* context, int argc, sqlite3_value** values) {
@@ -110,7 +110,7 @@ int MDSql::getUniqueId()
     return ++table_counter;
 }
 
-MDSql::MDSql(MetaData *md)
+MDSql::MDSql(MetaDataDb *md)
 {
     sqlMutex.lock();
     tableId = getUniqueId();
@@ -131,7 +131,7 @@ bool MDSql::createMd()
 {
     sqlMutex.lock();
     //std::cerr << "creating md" <<std::endl;
-    bool result = createTable(&(myMd->activeLabels));
+    bool result = createTable(&(myMd->_activeLabels));
     //std::cerr << "leave creating md" <<std::endl;
     sqlMutex.unlock();
 
@@ -152,12 +152,12 @@ bool MDSql::clearMd()
 
 size_t MDSql::getObjId()
 {
-	size_t id;		// Return value.
+    size_t id;      // Return value.
 
-	// Get last inserted row id.
-	id = sqlite3_last_insert_rowid(db);
+    // Get last inserted row id.
+    id = sqlite3_last_insert_rowid(db);
 
-	return(id);
+    return(id);
 }
 
 size_t MDSql::addRow()
@@ -207,7 +207,7 @@ bool  MDSql::activateMathExtensions(void)
 
 bool  MDSql::activateRegExtensions(void)
 {
-	if( sqlite3_create_function(db, "regexp", 2, SQLITE_ANY,0, &sqlite_regexp,0,0)!= SQLITE_OK)
+    if( sqlite3_create_function(db, "regexp", 2, SQLITE_ANY,0, &sqlite_regexp,0,0)!= SQLITE_OK)
         REPORT_ERROR(ERR_MD_SQL,"Cannot activate sqlite extensions");
     else
         return true;
@@ -215,12 +215,12 @@ bool  MDSql::activateRegExtensions(void)
 
 bool  MDSql::deactivateThreadMuting(void)
 {
-	beThreadSafe = false;
+    beThreadSafe = false;
     return ( sqlite3_config(SQLITE_CONFIG_MULTITHREAD) == SQLITE_OK);
 }
 bool  MDSql::activateThreadMuting(void)
 {
-	beThreadSafe = true;
+    beThreadSafe = true;
     return ( sqlite3_config(SQLITE_CONFIG_SERIALIZED) == SQLITE_OK);
 }
 
@@ -230,7 +230,7 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     //1 Create an new table that matches your original table,
     // but with the changed columns.
     bool result;
-    std::vector<MDLabel> v1(myMd->activeLabels);
+    std::vector<MDLabel> v1(myMd->_activeLabels);
     std::vector<MDLabel>::const_iterator itOld;
     std::vector<MDLabel>::const_iterator itNew;
     for( itOld = oldLabel.begin(), itNew = newlabel.begin();
@@ -246,9 +246,9 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     //2 Now we can copy the original data to the new table:
     String oldLabelString=" objID";
     String newLabelString=" objID";
-    for(std::vector<MDLabel>::const_iterator  it = (myMd->activeLabels)
+    for(std::vector<MDLabel>::const_iterator  it = (myMd->_activeLabels)
             .begin();
-        it != (myMd->activeLabels).end();
+        it != (myMd->_activeLabels).end();
         ++it)
         oldLabelString += ", " + MDL::label2StrSql(*it);
     for(std::vector<MDLabel>
@@ -272,7 +272,7 @@ bool MDSql::renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector
     << " RENAME TO " << tableName(oldTableId);
     result = execSingleStmt(sqlCommand);
     tableId=oldTableId;
-    myMd->activeLabels=v1;
+    myMd->_activeLabels=v1;
     return result;
 }
 
@@ -283,41 +283,45 @@ size_t MDSql::size(void)
     return execSingleIntStmt(ss);
 }
 
-bool MDSql::setObjectValues( size_t id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels)
+template bool MDSql::setObjectValues(int id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+template bool MDSql::setObjectValues(int id, const std::vector<const MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels);
+
+template <typename T>
+bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const std::vector<MDLabel> *desiredLabels)
 {
-    bool r = true;			// Return value.
-    int i=0, j=0;			// Loop indexes.
+    bool r = true;          // Return value.
     int rc;
 
     // Add values.
     if (desiredLabels==NULL)
     {
         bindValue( this->preparedStmt, 1, *(columnValues[0]));
-        for (i=1; i<columnValues.size() ;i++)
+        for (size_t i=1; i<columnValues.size() ;i++)
         {
-        	bindValue( this->preparedStmt, i+1, *(columnValues[i]));
+            bindValue( this->preparedStmt, i+1, *(columnValues[i]));
         }
     }
     // Add only desired columns.
     else
     {
-		for (i=0; i<desiredLabels->size() ;i++)
-		{
-			for (j=0; j<columnValues.size() ;j++)
-			{
-				if (columnValues[j]->label == (*desiredLabels)[i])
-				{
-					bindValue( this->preparedStmt, i+1, *(columnValues[j]));
-					break;
-				}
-			}
-		}
+        for (size_t i=0; i<desiredLabels->size() ;i++)
+        {
+            for (size_t j=0; j<columnValues.size() ;j++)
+            {
+                if (columnValues[j]->label == (*desiredLabels)[i])
+                {
+                    bindValue( this->preparedStmt, i+1, *(columnValues[j]));
+                    break;
+                }
+            }
+        }
     }
 
     // id != -1 means there is a WHERE clause in the query sentence and id must be added.
     if (id != -1)
     {
-    	sqlite3_bind_int( this->preparedStmt, i+1, id);
+        // FIXME: if desiredLabels == nullptr, segfault is generated
+        sqlite3_bind_int(this->preparedStmt, desiredLabels->size(), id);
     }
 
     // Execute statement.
@@ -339,11 +343,11 @@ bool MDSql::setObjectValues( size_t id, const std::vector<MDObject*> &columnValu
 
 void MDSql::finalizePreparedStmt(void)
 {
-	if (this->preparedStmt != NULL)
-	{
-		sqlite3_finalize( this->preparedStmt);
-		this->preparedStmt = NULL;
-	}
+    if (this->preparedStmt != NULL)
+    {
+        sqlite3_finalize( this->preparedStmt);
+        this->preparedStmt = NULL;
+    }
 }
 
 //set column with a given value
@@ -409,183 +413,180 @@ bool MDSql::setObjectValue(const int objId, const MDObject &value)
 
 bool MDSql::initializeSelect( bool addWhereObjId, const std::vector<MDLabel> &labels)
 {
-	int 	i=0;					// Loop counter.
-	bool	createdOK=true;		// Return value.
-	std::stringstream ss;		// Sentence string.
+    bool createdOK=true;     // Return value.
+    std::stringstream ss;       // Sentence string.
 
-	// Initialize SELECT sentence.
-	ss << "SELECT ";
+    // Initialize SELECT sentence.
+    ss << "SELECT ";
 
-	// Add columns names.
-	if (labels.size() > 0)
-	{
-		// Add columns names.
-		ss << MDL::label2StrSql(labels[0]);
-		for (i=1; i<labels.size() ;i++)
-		{
-			if (labels[i] != MDL_STAR_COMMENT)
-			{
-				ss << "," << MDL::label2StrSql(labels[i]);
-			}
-		}
-	}
-	// Select all columns.
-	else
-	{
-		ss << " * ";
-	}
+    // Add columns names.
+    if (labels.size() > 0)
+    {
+        // Add columns names.
+        ss << MDL::label2StrSql(labels[0]);
+        for (size_t i=1; i<labels.size() ;i++)
+        {
+            if (labels[i] != MDL_STAR_COMMENT)
+            {
+                ss << "," << MDL::label2StrSql(labels[i]);
+            }
+        }
+    }
+    // Select all columns.
+    else
+    {
+        ss << " * ";
+    }
 
-	// Add table.
-	ss << " FROM " << tableName(tableId);
+    // Add table.
+    ss << " FROM " << tableName(tableId);
 
-	// Check if add WHERE clause to select by id.
-	if (addWhereObjId)
-	{
-		ss << " WHERE objID=?";
-	}
+    // Check if add WHERE clause to select by id.
+    if (addWhereObjId)
+    {
+        ss << " WHERE objID=?";
+    }
 
-	if (sqlite3_prepare_v2(db, ss.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
-	{
-		createdOK = false;
-		printf( "could not prepare statement: %s\n", sqlite3_errmsg(db) );
-		this->preparedStmt = NULL;
-	}
+    if (sqlite3_prepare_v2(db, ss.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
+    {
+        createdOK = false;
+        printf( "could not prepare statement: %s\n", sqlite3_errmsg(db) );
+        this->preparedStmt = NULL;
+    }
 
-	return(createdOK);
+    return(createdOK);
 }
 
 bool MDSql::initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values)
 {
-	int 	i=0;				// Loop counter.
-	int		length=0;			// # labels.
-	bool	createdOK=true;		// Return value.
+    int     i=0;                // Loop counter.
+    int     length=0;           // # labels.
+    bool    createdOK=true;     // Return value.
 
-	// Clear preparedStream.
-	this->preparedStream.str(std::string());
+    // Clear preparedStream.
+    this->preparedStream.str(std::string());
 
-	// Initialize SQL sentence.
-	this->preparedStream << "INSERT INTO " << tableName(tableId);
+    // Initialize SQL sentence.
+    this->preparedStream << "INSERT INTO " << tableName(tableId);
 
-	// Add columns.
-	this->preparedStream << " (";
+    // Add columns.
+    this->preparedStream << " (";
 
-	// Execute branch if "labels" size is not zero.
-	if (labels != NULL)
-	{
-		length = labels->size();
-		this->preparedStream << MDL::label2StrSql((*labels)[0]);
-		for (i=1; i<length ;i++)
-		{
-			this->preparedStream << "," << MDL::label2StrSql((*labels)[i]);
-		}
-	}
-	// Execute branch if "values" size is not zero.
-	else if ((length = values.size()) > 0)
-	{
-		this->preparedStream << MDL::label2StrSql((*values[0]).label);
-		for (i=1; i<length ;i++)
-		{
-			this->preparedStream << "," << MDL::label2StrSql((*values[i]).label);
-		}
-	}
+    // Execute branch if "labels" size is not zero.
+    if (labels != NULL)
+    {
+        length = labels->size();
+        this->preparedStream << MDL::label2StrSql((*labels)[0]);
+        for (i=1; i<length ;i++)
+        {
+            this->preparedStream << "," << MDL::label2StrSql((*labels)[i]);
+        }
+    }
+    // Execute branch if "values" size is not zero.
+    else if ((length = values.size()) > 0)
+    {
+        this->preparedStream << MDL::label2StrSql((*values[0]).label);
+        for (i=1; i<length ;i++)
+        {
+            this->preparedStream << "," << MDL::label2StrSql((*values[i]).label);
+        }
+    }
 
-	// Add one '?' character for each label.
-	this->preparedStream << ") VALUES (?";
-	for (i=1; i<length ;i++)
-	{
-		this->preparedStream << ",?";
-	}
-	this->preparedStream << ");";
+    // Add one '?' character for each label.
+    this->preparedStream << ") VALUES (?";
+    for (i=1; i<length ;i++)
+    {
+        this->preparedStream << ",?";
+    }
+    this->preparedStream << ");";
 
-	// Prepare statement.
-	//std::cout << this->preparedStream.str().c_str() << std::endl;
-	if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
-	{
-		printf( "initializeInsert: could not prepare statement: %s\n", sqlite3_errmsg(db) );
-		this->preparedStmt = NULL;
-		createdOK = false;
-	}
+    // Prepare statement.
+    if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
+    {
+        printf( "initializeInsert: could not prepare statement: %s\n", sqlite3_errmsg(db) );
+        this->preparedStmt = NULL;
+        createdOK = false;
+    }
 
-	return(createdOK);
+    return(createdOK);
 }
 
 bool MDSql::initializeUpdate(const std::vector<MDLabel> &labels)
 {
-	int 	i=0;				// Loop counter.
-	int		length=0;			// # labels.
-	bool	createdOK=true;		// Return value.
+    int     i=0;                // Loop counter.
+    int     length=0;           // # labels.
+    bool    createdOK=true;     // Return value.
 
-	// Get # labels.
-	length = labels.size();
+    // Get # labels.
+    length = labels.size();
 
-	// Check there are labels.
-	if (length > 0)
-	{
-		// Clear preparedStream.
-		this->preparedStream.str(std::string());
+    // Check there are labels.
+    if (length > 0)
+    {
+        // Clear preparedStream.
+        this->preparedStream.str(std::string());
 
-		// Initialize SQL sentence.
-		this->preparedStream << "UPDATE " << tableName(tableId) << " SET ";
+        // Initialize SQL sentence.
+        this->preparedStream << "UPDATE " << tableName(tableId) << " SET ";
 
-		// Add labels.
-		this->preparedStream << MDL::label2StrSql(labels[0]) << "=?";
-		for (i=1; i<length ;i++)
-		{
-			this->preparedStream << ", " << MDL::label2StrSql(labels[i]) << "=?";
-		}
+        // Add labels.
+        this->preparedStream << MDL::label2StrSql(labels[0]) << "=?";
+        for (i=1; i<length ;i++)
+        {
+            this->preparedStream << ", " << MDL::label2StrSql(labels[i]) << "=?";
+        }
 
-		// Insert where clause.
-		this->preparedStream << " WHERE objID=?;";
+        // Insert where clause.
+        this->preparedStream << " WHERE objID=?;";
 
-		// Prepare statement.
-		if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
-		{
-			printf( "initializeUpdate: could not prepare statement: %s\n", sqlite3_errmsg(db) );
-			this->preparedStmt = NULL;
-			createdOK = false;
-		}
-	}
-	else
-	{
-		this->preparedStmt = NULL;
-		createdOK = false;
-	}
+        // Prepare statement.
+        if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
+        {
+            printf( "initializeUpdate: could not prepare statement: %s\n", sqlite3_errmsg(db) );
+            this->preparedStmt = NULL;
+            createdOK = false;
+        }
+    }
+    else
+    {
+        this->preparedStmt = NULL;
+        createdOK = false;
+    }
 
-	return(createdOK);
+    return(createdOK);
 }
 
 
 bool MDSql::getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values)
 {
-	bool ret=true;				// Return value.
-	int i=0;					// Loop counter.
+    bool ret=true;              // Return value.
 
-	// Execute statement.
-	if (sqlite3_step(this->preparedStmt) == SQLITE_ROW)
-	{
-	    const auto noOfLabels = labels.size();
-		for (i=0; i < noOfLabels; i++)
-		{
-			if (labels[i] != MDL_STAR_COMMENT)
-			{
-				values.emplace_back(labels[i]);
-			    auto &value = values.back();
-				extractValue(this->preparedStmt, i, value);
-			}
-		}
-	}
-	// If no row retrieved then return false.
-	else
-	{
-		ret = false;
-	}
+    // Execute statement.
+    if (sqlite3_step(this->preparedStmt) == SQLITE_ROW)
+    {
+        const auto noOfLabels = labels.size();
+        for (size_t i=0; i < noOfLabels; i++)
+        {
+            if (labels[i] != MDL_STAR_COMMENT)
+            {
+                values.emplace_back(labels[i]);
+                auto &value = values.back();
+                extractValue(this->preparedStmt, i, value);
+            }
+        }
+    }
+    // If no row retrieved then return false.
+    else
+    {
+        ret = false;
+    }
 
-	return(ret);
+    return(ret);
 }
 
 bool MDSql::getObjectValue(const int objId, MDObject  &value)
 {
-	if (beThreadSafe) { sqlMutex.lock(); }
+    if (beThreadSafe) { sqlMutex.lock(); }
     std::stringstream ss;
     MDLabel column = value.label;
     sqlite3_stmt * &stmt = myCache->getValueCache[column];
@@ -661,7 +662,7 @@ size_t MDSql::deleteObjects(const MDQuery *queryPtr)
 
 }
 
-size_t MDSql::copyObjects(MetaData *mdPtrOut, const MDQuery *queryPtr) const
+size_t MDSql::copyObjects(MetaDataDb *mdPtrOut, const MDQuery *queryPtr) const
 {
     return copyObjects(mdPtrOut->myMDSql, queryPtr);
 }
@@ -676,11 +677,11 @@ size_t MDSql::copyObjects(MDSql * sqlOut, const MDQuery *queryPtr) const
     //Add columns names to the insert and also to select
     //* couldn't be used because maybe are duplicated objID's
     std::string sep = " ";
-    int size = myMd->activeLabels.size();
+    int size = myMd->_activeLabels.size();
 
     for (int i = 0; i < size; i++)
     {
-        ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
         sep = ", ";
     }
     ss << "(" << ss2.str() << ") SELECT " << ss2.str();
@@ -698,13 +699,13 @@ size_t MDSql::copyObjects(MDSql * sqlOut, const MDQuery *queryPtr) const
     return 0;
 }
 
-void MDSql::aggregateMd(MetaData *mdPtrOut,
+void MDSql::aggregateMd(MetaDataDb *mdPtrOut,
                         const std::vector<AggregateOperation> &operations,
                         const std::vector<MDLabel>            &operateLabel)
 {
     std::stringstream ss;
     std::stringstream ss2;
-    std::string aggregateStr = MDL::label2StrSql(mdPtrOut->activeLabels[0]);
+    std::string aggregateStr = MDL::label2StrSql(mdPtrOut->_activeLabels[0]);
     ss << "INSERT INTO " << tableName(mdPtrOut->myMDSql->tableId)
     << "(" << aggregateStr;
     ss2 << aggregateStr;
@@ -712,7 +713,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
     //aggregating one
     for (size_t i = 0; i < operations.size(); i++)
     {
-        ss << ", " << MDL::label2StrSql(mdPtrOut->activeLabels[i+1]);
+        ss << ", " << MDL::label2StrSql(mdPtrOut->_activeLabels[i+1]);
         ss2 << ", " ;
         switch (operations[i])
         {
@@ -735,7 +736,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
             REPORT_ERROR(ERR_MD_SQL, "Invalid aggregate operation.");
         }
         ss2 << "(" << MDL::label2StrSql(operateLabel[i])
-        << ") AS " << MDL::label2StrSql(mdPtrOut->activeLabels[i+1]);
+        << ") AS " << MDL::label2StrSql(mdPtrOut->_activeLabels[i+1]);
     }
     ss << ") SELECT " << ss2.str();
     ss << " FROM " << tableName(tableId);
@@ -746,7 +747,7 @@ void MDSql::aggregateMd(MetaData *mdPtrOut,
 }
 
 
-void MDSql::aggregateMdGroupBy(MetaData *mdPtrOut,
+void MDSql::aggregateMdGroupBy(MetaDataDb *mdPtrOut,
                                AggregateOperation operation,
                                const std::vector<MDLabel> &groupByLabels ,
                                MDLabel operateLabel,
@@ -930,7 +931,7 @@ int MDSql::columnMaxLength(MDLabel column)
     return execSingleIntStmt(ss);
 }
 
-void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation)
+void MDSql::setOperate(MetaDataDb *mdPtrOut, const std::vector<MDLabel> &columns, SetOperation operation)
 {
     std::stringstream ss, ss2;
     bool execStmt = true;
@@ -947,11 +948,11 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
 
     case UNION_DISTINCT: //unionDistinct
         //Create string with columns list
-        size = mdPtrOut->activeLabels.size();
+        size = mdPtrOut->_activeLabels.size();
         //std::cerr << "LABEL" <<  MDL::label2StrSql(column) <<std::endl;
         for (int i = 0; i < size; i++)
         {
-            ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+            ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
             sep = ", ";
         }
         ss << "INSERT INTO " << tableName(mdPtrOut->myMDSql->tableId)
@@ -961,11 +962,11 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
         << " WHERE ";
         for (size_t j=0; j<columns.size(); ++j)
         {
-        	if (j>0)
-        		ss << " AND ";
-        	ss << MDL::label2StrSql(columns[j])
-				<< " NOT IN (SELECT " << MDL::label2StrSql(columns[j])
-				<< " FROM " << tableName(mdPtrOut->myMDSql->tableId) << ") ";
+            if (j>0)
+                ss << " AND ";
+            ss << MDL::label2StrSql(columns[j])
+                << " NOT IN (SELECT " << MDL::label2StrSql(columns[j])
+                << " FROM " << tableName(mdPtrOut->myMDSql->tableId) << ") ";
         }
         ss << ";";
         break;
@@ -973,9 +974,9 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
     case DISTINCT:
     case REMOVE_DUPLICATE:
         //Create string with columns list
-        size = mdPtrOut->activeLabels.size();
+        size = mdPtrOut->_activeLabels.size();
         sep = ' ';
-        labelVector = &(mdPtrOut->activeLabels);
+        labelVector = &(mdPtrOut->_activeLabels);
         for (int i = 0; i < size; i++)
         {
             ss2 << sep << MDL::label2StrSql( labelVector->at(i));
@@ -1007,13 +1008,13 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
         << " WHERE ";
         for (size_t j=0; j<columns.size(); ++j)
         {
-        	if (j>0)
-        		ss << " AND ";
-        	ss << MDL::label2StrSql(columns[j]);
+            if (j>0)
+                ss << " AND ";
+            ss << MDL::label2StrSql(columns[j]);
             if (operation == INTERSECTION)
                 ss << " NOT";
-			ss << " IN (SELECT " << MDL::label2StrSql(columns[j])
-			   << " FROM " << tableName(tableId) << ") ";
+            ss << " IN (SELECT " << MDL::label2StrSql(columns[j])
+               << " FROM " << tableName(tableId) << ") ";
         }
         ss << ";";
         break;
@@ -1027,33 +1028,33 @@ void MDSql::setOperate(MetaData *mdPtrOut, const std::vector<MDLabel> &columns, 
 
 bool MDSql::equals(const MDSql &op)
 {
-    std::vector<MDLabel> v1(myMd->activeLabels),v2(op.myMd->activeLabels);
+    std::vector<MDLabel> v1(myMd->_activeLabels),v2(op.myMd->_activeLabels);
     std::sort(v1.begin(),v1.end());
     std::sort(v2.begin(),v2.end());
 
     if(v1 != v2)
         return (false);
-    int size  = myMd->activeLabels.size();
+    int size  = myMd->_activeLabels.size();
     std::stringstream sqlQuery,ss2,ss2Group;
 
     ss2 << MDL::label2StrSql(MDL_OBJID);
     ss2Group << MDL::label2StrSql(MDL_OBJID);
-    int precision = myMd->precision;
+    int precision = myMd->_precision;
     for (int i = 0; i < size; i++)
     {
         //when metadata  is double compare
-        if(MDL::isDouble(myMd->activeLabels[i]))
+        if(MDL::isDouble(myMd->_activeLabels[i]))
         {
-            ss2 << ", CAST (" << MDL::label2StrSql( myMd->activeLabels[i])
+            ss2 << ", CAST (" << MDL::label2StrSql( myMd->_activeLabels[i])
             << "*" << precision
-            << " as INTEGER) as " << MDL::label2StrSql( myMd->activeLabels[i]);
+            << " as INTEGER) as " << MDL::label2StrSql( myMd->_activeLabels[i]);
 
         }
         else
         {
-            ss2 << ", "       << MDL::label2StrSql( myMd->activeLabels[i]);
+            ss2 << ", "       << MDL::label2StrSql( myMd->_activeLabels[i]);
         }
-        ss2Group<< ", "       << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2Group<< ", "       << MDL::label2StrSql( myMd->_activeLabels[i]);
     }
     sqlQuery
     << "SELECT count(*) FROM ("
@@ -1072,10 +1073,10 @@ bool MDSql::equals(const MDSql &op)
     return (execSingleIntStmt(sqlQuery)==0);
 }
 
-void MDSql::setOperate(const MetaData *mdInLeft,
-                       const MetaData *mdInRight,
-					   const std::vector<MDLabel> &columnsLeft,
-					   const std::vector<MDLabel> &columnsRight,
+void MDSql::setOperate(const MetaDataDb *mdInLeft,
+                       const MetaDataDb *mdInRight,
+                       const std::vector<MDLabel> &columnsLeft,
+                       const std::vector<MDLabel> &columnsRight,
                        SetOperation operation)
 {
     std::stringstream ss, ss2, ss3;
@@ -1103,11 +1104,11 @@ void MDSql::setOperate(const MetaData *mdInLeft,
     {
         std::vector<MDLabel> intersectLabels;
         std::vector<MDLabel>::const_iterator left, right;
-        for (right=(mdInRight->activeLabels).begin();
-             right!=(mdInRight->activeLabels).end();
+        for (right=(mdInRight->_activeLabels).begin();
+             right!=(mdInRight->_activeLabels).end();
              ++right)
-            for (left=(mdInLeft->activeLabels).begin();
-                 left!=(mdInLeft->activeLabels).end();
+            for (left=(mdInLeft->_activeLabels).begin();
+                 left!=(mdInLeft->_activeLabels).end();
                  ++left)
             {
                 if (*left == *right)
@@ -1124,24 +1125,24 @@ void MDSql::setOperate(const MetaData *mdInLeft,
     }
     else
     {
-    	if (columnsRight.size()==1)
-    	{
-			mdInRight->addIndex(columnsRight[0]);
-			mdInLeft->addIndex(columnsLeft[0]);
-    	}
+        if (columnsRight.size()==1)
+        {
+            mdInRight->addIndex(columnsRight[0]);
+            mdInLeft->addIndex(columnsLeft[0]);
+        }
     }
-    size = myMd->activeLabels.size();
-    size_t sizeLeft = mdInLeft->activeLabels.size();
+    size = myMd->_activeLabels.size();
+    size_t sizeLeft = mdInLeft->_activeLabels.size();
 
     for (size_t i = 0; i < size; i++)
     {
-        ss2 << sep << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss2 << sep << MDL::label2StrSql( myMd->_activeLabels[i]);
         ss3 << sep;
-        if (i < sizeLeft && mdInLeft->activeLabels[i] == myMd->activeLabels[i])
+        if (i < sizeLeft && mdInLeft->_activeLabels[i] == myMd->_activeLabels[i])
             ss3 << tableName(mdInLeft->myMDSql->tableId) << ".";
         else
             ss3 << tableName(mdInRight->myMDSql->tableId) << ".";
-        ss3 << MDL::label2StrSql( myMd->activeLabels[i]);
+        ss3 << MDL::label2StrSql( myMd->_activeLabels[i]);
         sep = ", ";
     }
     ss << "INSERT INTO " << tableName(tableId)
@@ -1155,9 +1156,9 @@ void MDSql::setOperate(const MetaData *mdInLeft,
         ss << " ON (";
         for (size_t j=0; j<columnsLeft.size(); ++j)
         {
-        	if (j>0)
-        		ss << " AND ";
-        	ss << tableName(mdInLeft->myMDSql->tableId) << "." << MDL::label2StrSql(columnsLeft[j])
+            if (j>0)
+                ss << " AND ";
+            ss << tableName(mdInLeft->myMDSql->tableId) << "." << MDL::label2StrSql(columnsLeft[j])
                << "=" << tableName(mdInRight->myMDSql->tableId) << "." << MDL::label2StrSql(columnsRight[j]);
         }
         ss << ") ";
@@ -1166,17 +1167,17 @@ void MDSql::setOperate(const MetaData *mdInLeft,
     {
         sep = " ";
         ss << " WHERE ";
-        for (size_t i = 0; i < mdInRight->activeLabels.size(); i++)
+        for (size_t i = 0; i < mdInRight->_activeLabels.size(); i++)
             for (size_t j = 0; j < sizeLeft; j++)
             {
-                if(mdInRight->activeLabels[i] == mdInLeft->activeLabels[j])
+                if(mdInRight->_activeLabels[i] == mdInLeft->_activeLabels[j])
                 {
                     ss << sep
                     << tableName(mdInRight->myMDSql->tableId) << "."
-                    << MDL::label2StrSql(mdInRight->activeLabels[i])
+                    << MDL::label2StrSql(mdInRight->_activeLabels[i])
                     << " = "
                     << tableName(mdInLeft->myMDSql->tableId) << "."
-                    << MDL::label2StrSql(mdInLeft->activeLabels[j]);
+                    << MDL::label2StrSql(mdInLeft->_activeLabels[j]);
                     sep = " AND ";
                 }
             }
@@ -1234,7 +1235,7 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
     int rows;
     int columns;
     char *Labels;
-    int	rc;
+    int rc;
 
     sqlite3 *db1;
     if (sqlite3_open(filename.c_str(), &db1))
@@ -1243,12 +1244,12 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
     String sql;
     if(blockname.empty())
     {
-    	sql = (String)"SELECT name FROM sqlite_master\
-    	                 WHERE type='table' LIMIT 1;";
+        sql = (String)"SELECT name FROM sqlite_master\
+                         WHERE type='table' LIMIT 1;";
         if ((rc=sqlite3_get_table (db1, sql.c_str(), &results, &rows, &columns, NULL)) != SQLITE_OK)
             REPORT_ERROR(ERR_MD_SQL,formatString("Error accessing table code: %d message: %s. SQL command %s",rc,sqlite3_errmsg(db1),sql.c_str()));
         else
-        	_blockname=(String)results[1];
+            _blockname=(String)results[1];
     }
     else
         _blockname=blockname;
@@ -1266,7 +1267,7 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
     else if (desiredLabels != NULL)
     {
 
-        myMd->activeLabels = *desiredLabels;
+        myMd->_activeLabels = *desiredLabels;
         for(std::vector<MDLabel>::const_iterator  it = desiredLabels->
                 begin();
             it != desiredLabels->end();
@@ -1287,11 +1288,11 @@ void MDSql::copyTableFromFileDB(const FileName blockname,
             if (label == MDL_UNDEFINED)
             {
                 if(strcmp(Labels,"objID"))
-                    std::cout << (String)"WARNING: Ignoring unknown column: " + Labels << std::endl;
+                    std::cerr << (String)"WARNING: Ignoring unknown column: " + Labels << std::endl;
             }
             else
             {
-                myMd->activeLabels.push_back(label);
+                myMd->_activeLabels.push_back(label);
             }
         }
     }
@@ -1476,7 +1477,7 @@ bool MDSql::execSingleStmt(const std::stringstream &ss)
 
 bool MDSql::execSingleStmt(sqlite3_stmt * &stmt, const std::stringstream *ss)
 {
-	int rc;
+    int rc;
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_OK && rc != SQLITE_ROW && rc != SQLITE_DONE)
         REPORT_ERROR(ERR_MD_SQL,formatString("Error code: %d message: %s\n  Sqlite query: %s",rc,sqlite3_errmsg(db), ss->str().c_str()));
@@ -1485,7 +1486,7 @@ bool MDSql::execSingleStmt(sqlite3_stmt * &stmt, const std::stringstream *ss)
 
 size_t MDSql::execSingleIntStmt(const std::stringstream &ss)
 {
-	int rc;
+    int rc;
     sqlite3_stmt * stmt;
     sqlite3_prepare_v2(db, ss.str().c_str(), -1, &stmt, &zLeftover);
     rc = sqlite3_step(stmt);
@@ -1502,7 +1503,7 @@ size_t MDSql::execSingleIntStmt(const std::stringstream &ss)
 
 double MDSql::execSingleDoubleStmt(const std::stringstream &ss)
 {
-	int rc;
+    int rc;
     sqlite3_stmt * stmt;
     sqlite3_prepare_v2(db, ss.str().c_str(), -1, &stmt, &zLeftover);
     rc = sqlite3_step(stmt);
@@ -1525,19 +1526,19 @@ std::string MDSql::tableName(const int tableId) const
 
 bool MDSql::bindStatement( size_t id)
 {
-	bool success=true;		// Return value.
+    bool success=true;      // Return value.
 
-	// Clear current statement.
-	sqlite3_clear_bindings(this->preparedStmt);
-	sqlite3_reset(this->preparedStmt);
+    // Clear current statement.
+    sqlite3_clear_bindings(this->preparedStmt);
+    sqlite3_reset(this->preparedStmt);
 
-	// Bind object id.
-	if (sqlite3_bind_int(this->preparedStmt, 1, id) != SQLITE_OK)
-	{
-		success = false;
-	}
+    // Bind object id.
+    if (sqlite3_bind_int(this->preparedStmt, 1, id) != SQLITE_OK)
+    {
+        success = false;
+    }
 
-	return(success);
+    return(success);
 }
 
 int MDSql::bindValue(sqlite3_stmt *stmt, const int position, const MDObject &valueIn)
@@ -1647,37 +1648,4 @@ void MDCache::clear()
         sqlite3_finalize(addRowStmt);
         addRowStmt = NULL;
     }
-}
-
-String MDQuery::limitString() const
-{
-    if (limit == -1 && offset > 0)
-        REPORT_ERROR(ERR_MD_SQL, "Sqlite does not support OFFSET without LIMIT");
-    std::stringstream ss;
-    if (limit != -1)
-        ss << " LIMIT " << limit << " ";
-    if (offset > 0)
-        ss << " OFFSET " << offset << " ";
-    return ss.str();
-}
-
-String MDValueRange::queryStringFunc() const
-{
-    std::stringstream ss;
-    ss << "(" << query1->queryStringFunc() << " AND " << query2->queryStringFunc() << ")";
-    return ss.str();
-}
-
-String MDMultiQuery::queryStringFunc() const
-{
-    if (queries.size() > 0)
-    {
-        std::stringstream ss;
-        ss << "(" << queries[0]->queryStringFunc() << ") ";
-        for (size_t i = 1; i < queries.size(); i++)
-            ss << operations[i] << " (" << queries[i]->queryStringFunc() << ") ";
-
-        return ss.str();
-    }
-    return " ";
 }

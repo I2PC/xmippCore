@@ -45,7 +45,6 @@ XmippMetadataProgram::XmippMetadataProgram()
     remove_disabled = true;
     single_image = input_is_metadata = input_is_stack = output_is_stack = false;
     mdInSize = 0;
-    iter = NULL;
     ndimOut = zdimOut = ydimOut = xdimOut = 0;
     image_label = MDL_IMAGE;
     delete_mdIn = false;
@@ -56,17 +55,15 @@ XmippMetadataProgram::XmippMetadataProgram()
     create_empty_stackfile = false;
     datatypeOut = DT_Double;
     mdIn = nullptr;
-    mdOut = new MetaData();
 }
 
 XmippMetadataProgram::~XmippMetadataProgram()
 {
     if (delete_mdIn)
         delete mdIn;
-    delete mdOut;
 }
 
-int XmippMetadataProgram::tryRead(int argc, const char ** argv, bool reportErrors )
+int XmippMetadataProgram::tryRead(int argc, const char ** argv, bool reportErrors)
 {
     try
     {
@@ -170,7 +167,7 @@ void XmippMetadataProgram::readParams()
     track_origin = track_origin || checkParam("--track_origin");
     keep_input_columns = keep_input_columns || checkParam("--keep_input_columns");
 
-    MetaData * md = new MetaData;
+    MetaData * md = new MetaDataVec();
     md->read(fn_in, NULL, decompose_stacks);
     delete_mdIn = true; // Only delete mdIn when called directly from command line
 
@@ -285,16 +282,16 @@ void XmippMetadataProgram::finishProcessing()
 
 void XmippMetadataProgram::writeOutput()
 {
-    if (!single_image && !mdOut->isEmpty() && !fn_out.empty())
+    if (!single_image && !mdOut.isEmpty() && !fn_out.empty())
     {
         if (produces_an_output || produces_a_metadata || !oroot.empty()) // Out as independent images
-            mdOut->write(fn_out.replaceExtension("xmd"));
+            mdOut.write(fn_out.replaceExtension("xmd"));
         else if (save_metadata_stack) // Output is stack and also save its associated metadata
         {
             FileName outFileName = getParam("--save_metadata_stack");
             if (outFileName.empty())
                 outFileName = fn_out.replaceExtension("xmd");
-            mdOut->write(outFileName);
+            mdOut.write(outFileName);
         }
     }
 }
@@ -303,18 +300,6 @@ void XmippMetadataProgram::showProgress()
 {
     if (time_bar_step>0 && time_bar_done % time_bar_step == 0 && allow_time_bar && verbose && !single_image)
         progress_bar(time_bar_done);
-}
-
-bool XmippMetadataProgram::getImageToProcess(size_t &objId, size_t &objIndex)
-{
-    if (time_bar_done == 0)
-        iter = new MDIterator(*mdIn);
-    else
-        iter->moveNext();
-
-    ++time_bar_done;
-    objIndex = iter->objIndex;
-    return ((objId = iter->objId) != BAD_OBJID);
 }
 
 void XmippMetadataProgram::setupRowOut(const FileName &fnImgIn, const MDRow &rowIn, const FileName &fnImgOut, MDRow &rowOut) const
@@ -342,16 +327,15 @@ void XmippMetadataProgram::checkPoint()
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
-    size_t objId;
-    MDRow rowIn, rowOut;
-    mdOut->clear(); //this allows multiple runs of the same Program object
+    MDRowVec rowOut;
+    mdOut.clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing
     preProcess();
 
     startProcessing();
 
-    size_t objIndex = 0;
+
 
     if (!oroot.empty())
     {
@@ -363,13 +347,12 @@ void XmippMetadataProgram::run()
         pathBaseName   = fullBaseName.getDir();
     }
 
-    //FOR_ALL_OBJECTS_IN_METADATA(mdIn)
-    while (getImageToProcess(objId, objIndex))
-    {
-        ++objIndex; //increment for composing starting at 1
+    size_t objIndex = 1; // start at 1
+    time_bar_done = 0;
 
-        mdIn->getRow(rowIn, objId);
-        rowIn.getValue(image_label, fnImg);
+    for (const auto& row : *mdIn)
+    {
+        row.getValue(image_label, fnImg);
 
         if (fnImg.empty())
             break;
@@ -404,23 +387,22 @@ void XmippMetadataProgram::run()
             }
             else
                 fnImgOut = fnImg;
-            setupRowOut(fnImg, rowIn, fnImgOut, rowOut);
+            setupRowOut(fnImg, row, fnImgOut, rowOut);
         }
         else if (produces_a_metadata)
-            setupRowOut(fnImg, rowIn, fnImgOut, rowOut);
+            setupRowOut(fnImg, row, fnImgOut, rowOut);
 
-        processImage(fnImg, fnImgOut, rowIn, rowOut);
+        processImage(fnImg, fnImgOut, row, rowOut);
 
         if (each_image_produces_an_output || produces_a_metadata)
-            mdOut->addRow(rowOut);
+            mdOut.addRow(rowOut);
 
         checkPoint();
         showProgress();
+        objIndex++;
+        time_bar_done++;
     }
     wait();
-
-    //free iterator memory
-    delete iter;
 
     /* Generate name to save mdOut when output are independent images. It uses as prefix
      * the dirBaseName in order not overwriting files when repeating same command on

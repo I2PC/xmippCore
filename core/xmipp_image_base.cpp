@@ -50,12 +50,46 @@ void ImageBase::init()
     m_auxI = nullptr;
 }
 
+void ImageBase::copy(const ImageBase& other) {
+    mdaBase = other.mdaBase;
+    MDMainHeader = other.MDMainHeader;
+
+    for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
+        const MDRow& row = *rowPtr;
+        if (dynamic_cast<MDRowVec*>(rowPtr.get()) != nullptr)
+            MD.push_back(std::unique_ptr<MDRow>(new MDRowVec(dynamic_cast<const MDRowVec&>(row))));
+        if (dynamic_cast<MDRowSql*>(rowPtr.get()) != nullptr)
+            MD.push_back(std::unique_ptr<MDRow>(new MDRowSql(dynamic_cast<const MDRowSql&>(row))));
+    }
+
+    filename = other.filename;
+    tempFilename = other.tempFilename;
+    dataFName = other.dataFName;
+    fimg = other.fimg;
+    fhed = other.fhed;
+    tif = other.tif;
+    hFile = other.hFile;
+    aDimFile = other.aDimFile;
+    offset = other.offset;
+    swap = other.swap;
+    swapWrite = other.swapWrite;
+    transform = other.transform;
+    replaceNsize = other.replaceNsize;
+    _exists = other._exists;
+    mmapOnRead = other.mmapOnRead;
+    mmapOnWrite = other.mmapOnWrite;
+    mFd = other.mFd;
+    mappedSize = other.mappedSize;
+    mappedOffset = other.mappedOffset;
+    virtualOffset = other.virtualOffset;
+}
+
 void ImageBase::clearHeader()
 {
     MDMainHeader.clear();
     MD.clear();
     //Just to ensure there is an empty MDRow
-    MD.push_back(MDMainHeader);
+    MD.push_back(std::unique_ptr<MDRow>(new MDRowVec(MDMainHeader)));
 }
 
 /** General read function
@@ -93,6 +127,7 @@ int ImageBase::readRange(const FileName &name, size_t start_img, size_t end_img,
     }
 
     readBatch(name, start_img, end_img - start_img + 1, datamode, mapData, mode);
+    return true;
 }
 
 
@@ -180,54 +215,54 @@ void ImageBase::mapFile2Write(size_t Xdim, size_t Ydim, size_t Zdim, const FileN
 /** General read function
  */
 /** Macros for don't type */
-#define GET_ROW()               MDRow row; md.getRow(row, objId)
-
-#define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name);\
+#define READ_AND_RETURN()        ImageFHandler* hFile = openFile(name); \
                                   int err = _read(name, hFile, params.datamode, params.select_img); \
-                                  applyGeo(row, params.only_apply_shifts, params.wrap); \
+                                  applyGeo(*row, params.only_apply_shifts, params.wrap); \
                                   closeFile(hFile); \
                                   return err
 
-#define APPLY_GEO()        MDRow row; md.getRow(row, objId); \
-                           applyGeo(row, params.only_apply_shifts, params.wrap) \
-
-void ImageBase::applyGeo(const MetaData &md, size_t objId,
-const ApplyGeoParams &params)
+void ImageBase::applyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    APPLY_GEO();
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
+    applyGeo(*row, params.only_apply_shifts, params.wrap);
 }
 
 void ImageBase::setGeo(const MDRow &row, size_t n)
 {
-    if (n<MD.size())
-        MD[n]=row;
-    else
-        REPORT_ERROR(ERR_MD_OBJECTNUMBER,"Trying to set a value outside the current metadata size");
+    if (n < MD.size()) {
+        if (dynamic_cast<const MDRowVec*>(&row) != nullptr)
+            MD[n] = std::unique_ptr<MDRow>(new MDRowVec(dynamic_cast<const MDRowVec&>(row)));
+        if (dynamic_cast<const MDRowSql*>(&row) != nullptr)
+            MD[n] = std::unique_ptr<MDRow>(new MDRowSql(dynamic_cast<const MDRowSql&>(row)));
+    } else {
+        REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Trying to set a value outside the current metadata size");
+    }
 }
 
-int ImageBase::readApplyGeo(const FileName &name, const MDRow &row,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const FileName &name, const MDRow &row, const ApplyGeoParams &params)
 {
-    READ_AND_RETURN();
+    ImageFHandler* hFile = openFile(name);
+    int err = _read(name, hFile, params.datamode, params.select_img);
+    applyGeo(row, params.only_apply_shifts, params.wrap);
+    closeFile(hFile);
+    return err;
 }
 
 /** Read an image from metadata, filename is provided
 */
-int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const FileName &name, const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    GET_ROW();
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
     READ_AND_RETURN();
 }
 
 /** Read an image from metadata, filename is taken from MDL_IMAGE
  */
-int ImageBase::readApplyGeo(const MetaData &md, size_t objId,
-                            const ApplyGeoParams &params)
+int ImageBase::readApplyGeo(const MetaData &md, size_t objId, const ApplyGeoParams &params)
 {
-    GET_ROW();
+    std::unique_ptr<const MDRow> row(md.getRow(objId));
     FileName name;
-    row.getValue(MDL_IMAGE, name);
+    row->getValue(MDL_IMAGE, name);
     READ_AND_RETURN();
 }
 
@@ -308,7 +343,7 @@ void ImageBase::swapPage(char * page, size_t pageNrElements, DataType datatype, 
 double ImageBase::rot(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_ANGLE_ROT, dummy);
+    MD[n]->getValue(MDL_ANGLE_ROT, dummy);
     return dummy;
 }
 
@@ -321,7 +356,7 @@ double ImageBase::rot(const size_t n) const
 double ImageBase::tilt(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_ANGLE_TILT, dummy);
+    MD[n]->getValue(MDL_ANGLE_TILT, dummy);
     return dummy;
 }
 
@@ -334,7 +369,7 @@ double ImageBase::tilt(const size_t n) const
 double ImageBase::psi(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_ANGLE_PSI, dummy);
+    MD[n]->getValue(MDL_ANGLE_PSI, dummy);
     return dummy;
 }
 
@@ -347,7 +382,7 @@ double ImageBase::psi(const size_t n) const
 double ImageBase::Xoff(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_SHIFT_X, dummy);
+    MD[n]->getValue(MDL_SHIFT_X, dummy);
     return dummy;
 }
 
@@ -360,7 +395,7 @@ double ImageBase::Xoff(const size_t n) const
 double ImageBase::Yoff(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_SHIFT_Y, dummy);
+    MD[n]->getValue(MDL_SHIFT_Y, dummy);
     return dummy;
 }
 
@@ -373,7 +408,7 @@ double ImageBase::Yoff(const size_t n) const
 double ImageBase::Zoff(const size_t n) const
 {
     double dummy = 0;
-    MD[n].getValue(MDL_SHIFT_Z, dummy);
+    MD[n]->getValue(MDL_SHIFT_Z, dummy);
     return dummy;
 }
 
@@ -386,7 +421,7 @@ double ImageBase::Zoff(const size_t n) const
 double ImageBase::weight(const size_t n) const
 {
     double dummy = 1;
-    MD[n].getValue(MDL_WEIGHT, dummy);
+    MD[n]->getValue(MDL_WEIGHT, dummy);
     return dummy;
 }
 
@@ -399,7 +434,7 @@ double ImageBase::weight(const size_t n) const
 double ImageBase::scale(const size_t n) const
 {
     double dummy = 1;
-    MD[n].getValue(MDL_SCALE, dummy);
+    MD[n]->getValue(MDL_SCALE, dummy);
     return dummy;
 }
 
@@ -413,7 +448,7 @@ double ImageBase::scale(const size_t n) const
 bool ImageBase::flip(const size_t n) const
 {
     bool dummy = false;
-    MD[n].getValue(MDL_FLIP, dummy);
+    MD[n]->getValue(MDL_FLIP, dummy);
     return dummy;
 }
 
@@ -452,9 +487,9 @@ double ImageBase::samplingRateX() const
 void ImageBase::setEulerAngles(double rot, double tilt, double psi,
                                const size_t n)
 {
-    MD[n].setValue(MDL_ANGLE_ROT, rot);
-    MD[n].setValue(MDL_ANGLE_TILT, tilt);
-    MD[n].setValue(MDL_ANGLE_PSI, psi);
+    MD[n]->setValue(MDL_ANGLE_ROT, rot);
+    MD[n]->setValue(MDL_ANGLE_TILT, tilt);
+    MD[n]->setValue(MDL_ANGLE_PSI, psi);
 }
 
 /** Get Euler angles from image header
@@ -462,26 +497,26 @@ void ImageBase::setEulerAngles(double rot, double tilt, double psi,
 void ImageBase::getEulerAngles(double &rot, double &tilt, double &psi,
                                const size_t n) const
 {
-    MD[n].getValue(MDL_ANGLE_ROT, rot);
-    MD[n].getValue(MDL_ANGLE_TILT, tilt);
-    MD[n].getValue(MDL_ANGLE_PSI, psi);
+    MD[n]->getValue(MDL_ANGLE_ROT, rot);
+    MD[n]->getValue(MDL_ANGLE_TILT, tilt);
+    MD[n]->getValue(MDL_ANGLE_PSI, psi);
 }
 
 /** Set origin offsets in image header
      */
 void ImageBase::setShifts(double xoff, double yoff, double zoff, const size_t n)
 {
-    MD[n].setValue(MDL_SHIFT_X, xoff);
-    MD[n].setValue(MDL_SHIFT_Y, yoff);
-    MD[n].setValue(MDL_SHIFT_Z, zoff);
+    MD[n]->setValue(MDL_SHIFT_X, xoff);
+    MD[n]->setValue(MDL_SHIFT_Y, yoff);
+    MD[n]->setValue(MDL_SHIFT_Z, zoff);
 }
 /** Get origin offsets from image header
   */
 void ImageBase::getShifts(double &xoff, double &yoff, double &zoff, const size_t n) const
 {
-    MD[n].getValue(MDL_SHIFT_X, xoff);
-    MD[n].getValue(MDL_SHIFT_Y, yoff);
-    MD[n].getValue(MDL_SHIFT_Z, zoff);
+    MD[n]->getValue(MDL_SHIFT_X, xoff);
+    MD[n]->getValue(MDL_SHIFT_Y, yoff);
+    MD[n]->getValue(MDL_SHIFT_Z, zoff);
 }
 
 void ImageBase::getDimensions(size_t &Xdim, size_t &Ydim, size_t &Zdim, size_t &Ndim) const

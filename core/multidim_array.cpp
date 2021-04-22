@@ -1095,6 +1095,8 @@ void MultidimArray<T>::resize(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim
 template<typename T>
 void MultidimArray<T>::sort(MultidimArray<T> &result) const
 {
+    checkDimension(1);
+
     result = *this;
     std::sort(result.data, result.data + result.nzyxdim);
 }

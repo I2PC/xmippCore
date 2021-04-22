@@ -1,6 +1,7 @@
 /***************************************************************************
  *
  * Authors:    J.M. De la Rosa Trevin (jmdelarosa@cnb.csic.es)
+ *             Jan Horacek (xhorace4@fi.muni.cz)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -23,20 +24,12 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-#include <algorithm>
-#include <sstream>
 #include <iomanip>
-#include "metadata_label.h"
+#include <sstream>
+#include "metadata_object.h"
+#include "metadata_static.h"
 #include "xmipp_error.h"
 #include "xmipp_macros.h"
-
-//This is needed for static memory allocation
-//std::map<MDLabel, MDLabelData> MDL::data;
-MDLabelData * MDL::data[MDL_LAST_LABEL+1];
-std::map<std::string, MDLabel> MDL::names;
-MDRow MDL::emptyHeader;
-MDLabelStaticInit MDL::initialization; //Just for initialization
-MDLabel MDL::bufferIndex;
 
 #define DOUBLE2STREAM(d) \
         if (withFormat) {\
@@ -49,276 +42,6 @@ MDLabel MDL::bufferIndex;
         os << i;
         //this must have 20 since SIZE_MAX = 18446744073709551615 size
 
-
-void MDL::addLabel(const MDLabel label, const MDLabelType type, const String &name, int tags)
-{
-  if (names.find(name) != names.end())
-    REPORT_ERROR(ERR_ARG_INCORRECT, formatString("MDL::addLabel, label '%s' already exists.", name.c_str()));
-
-    data[(int)label] = new MDLabelData(type, name, tags);
-    names[name] = label;
-}//close function addLabel
-
-/**
- * Extra alias can be defined through the environment var XMIPP_EXTRA_ALIASES
- * the syntax is the following
- * XMIPP_EXTRA_ALIASES='anglePsi=otherAnglePsi;shiftX=otherShiftX;shiftY:otherShift'
- * The = sign will add a label, and the alias name will replace the current one (replace=True)
- * if the : sign is used, only a normal alias will added
- */
-void MDL::addExtraAliases()
-{
-  const char * extra_aliases = getenv("XMIPP_EXTRA_ALIASES");
-
-  if (extra_aliases)
-  {
-      StringVector sv, pair;
-      String eq = "=", co = ":";
-      tokenize(extra_aliases, sv, ";");
-      MDLabel label;
-      bool replace;
-
-      for (std::vector<String>::iterator it = sv.begin(); it != sv.end(); ++it)
-      {
-          if (it->find(eq) != it->npos)
-          {
-              tokenize(*it, pair, "=");
-              replace = true;
-          }
-          else if (it->find(co) != it->npos)
-          {
-              tokenize(*it, pair, co);
-              replace = false;
-          }
-          else
-              REPORT_ERROR(ERR_ARG_INCORRECT, "Invalid pair separator, use = or :");
-          label = MDL::str2Label(pair[0]);
-          // Add the label alias
-          if (label != MDL_UNDEFINED)
-              addLabelAlias(label, pair[1], replace);
-          else
-              REPORT_ERROR(ERR_ARG_INCORRECT,
-                           formatString("Invalid label name: %s found in environment var XMIPP_EXTRA_ALIASES", pair[0].c_str()));
-      }
-  }
-}//close function addLabel
-
-void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace,
-                        MDLabelType type)
-{
-    names[alias] = label;
-    if (replace)
-    {
-        data[(int)label]->str = alias;
-        if (type != LABEL_NOTYPE)
-            data[(int)label]->type = type;
-    }
-}//close function addLabel
-
-MDLabel MDL::getNewAlias(const String &alias, MDLabelType type)
-{
-    MDLabel newLabel = MDL::bufferIndex;
-
-    if (newLabel == MDL_LAST_LABEL)
-        REPORT_ERROR(ERR_ARG_INCORRECT, "Not more buffer labels to use!!!");
-
-    addLabelAlias(newLabel, alias, true, type);
-    MDL::bufferIndex = (MDLabel)((int)newLabel + 1);
-
-    return newLabel;
-}//close function getNewAlias
-
-void MDL::resetBufferIndex()
-{
-    MDL::bufferIndex = BUFFER_01;
-} // close function resetBufferIndex
-
-void MDL::str2LabelVector(const String &labelsStr, std::vector<MDLabel> &labels)
-{
-    labels.clear();
-    StringVector parts;
-    splitString(labelsStr, " ", parts);
-    for (size_t i = 0; i < parts.size(); ++i)
-        if (MDL::isValidLabel(parts[i]))
-            labels.push_back(MDL::str2Label(parts[i]));
-        else
-            REPORT_ERROR(ERR_PARAM_INCORRECT, formatString("Unknown label '%s' received.", parts[i].c_str()));
-}
-
-MDLabel  MDL::str2Label(const String &labelName)
-{
-    if (names.find(labelName) == names.end())
-        return MDL_UNDEFINED;
-    return names[labelName];
-}//close function str2Label
-
-String  MDL::label2Str(const MDLabel &label)
-{
-    return  (isValidLabel(label)) ? data[(int)label]->str : "";
-}//close function label2Str
-
-String MDL::label2StrSql(const MDLabel label)
-{
-  String labelSqlite = "\"" + label2Str(label) + "\"";
-  return labelSqlite;
-  //return label2Str(label);
-}
-
-String MDL::label2SqlColumn(const MDLabel label)
-{
-    std::stringstream ss;
-    ss << MDL::label2StrSql(label) << " ";
-
-    switch (MDL::labelType(label))
-    {
-    case LABEL_BOOL: //bools are int in sqlite3
-    case LABEL_INT:
-    case LABEL_SIZET:
-        ss << "INTEGER";
-        break;
-    case LABEL_DOUBLE:
-        ss << "REAL";
-        break;
-    case LABEL_STRING:
-        ss << "TEXT";
-        break;
-    case LABEL_VECTOR_DOUBLE:
-    case LABEL_VECTOR_SIZET:
-        ss << "TEXT";
-        break;
-    case LABEL_NOTYPE:
-    	ss << "NO_TYPE";
-    	break;
-    }
-    return ss.str();
-}
-
-String MDL::labelType2Str(MDLabelType type)
-{
-    switch (type)
-    {
-    case LABEL_STRING:
-        return "STRING";
-    case LABEL_DOUBLE:
-        return "DOUBLE";
-    case LABEL_INT:
-        return "INT";
-    case LABEL_BOOL:
-        return "BOOL";
-    case LABEL_VECTOR_DOUBLE:
-        return "VECTOR(DOUBLE)";
-    case LABEL_SIZET:
-        return "SIZE_T";
-    case LABEL_VECTOR_SIZET:
-        return "VECTOR(SIZE_T)";
-    case LABEL_NOTYPE:
-    	return "NO_TYPE";
-    }
-    return "UNKNOWN";
-}
-
-bool MDL::isInt(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_INT);
-}
-bool MDL::isLong(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_SIZET);
-}
-bool MDL::isBool(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_BOOL);
-}
-bool MDL::isString(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_STRING);
-}
-bool MDL::isDouble(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_DOUBLE);
-}
-bool MDL::isVector(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_VECTOR_DOUBLE);
-}
-bool MDL::isVectorLong(const MDLabel label)
-{
-    return (data[(int)label]->type == LABEL_VECTOR_SIZET);
-}
-bool MDL::isValidLabel(const MDLabel &label)
-{
-    return label > MDL_UNDEFINED &&
-           label < MDL_LAST_LABEL &&
-           data[(int)label] != NULL;
-}
-
-bool MDL::isValidLabel(const String &labelName)
-{
-    return isValidLabel(str2Label(labelName));
-}
-
-MDLabelType MDL::labelType(const MDLabel label)
-{
-    return data[(int)label]->type;
-}
-
-MDLabelType MDL::labelType(const String &labelName)
-{
-    return data[str2Label(labelName)]->type;
-}
-
-std::map<String, MDLabel>& MDL::getLabelDict()
-{
-    return names;
-}
-
-bool MDL::hasTag(const MDLabel label, const int tags)
-{
-    return data[(int)label]->tags & tags;
-}
-
-bool MDL::isTextFile(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_TEXTFILE;
-}
-
-bool MDL::isMetadata(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_METADATA;
-}
-
-bool MDL::isCtfParam(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_CTFPARAM;
-}
-
-bool MDL::isImage(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_IMAGE;
-}
-
-bool MDL::isStack(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_STACK;
-}
-
-bool MDL::isMicrograph(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_MICROGRAPH;
-}
-
-bool MDL::isPSD(const MDLabel label)
-{
-    return data[(int)label]->tags & TAGLABEL_PSD;
-}
-
-bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel label)
-{
-    std::vector<MDLabel>::const_iterator location;
-    location = std::find(labelsVector.begin(), labelsVector.end(), label);
-
-    return (location != labelsVector.end());
-}
 
 void MDObject::copy(const MDObject &obj)
 {
@@ -350,6 +73,7 @@ MDObject::MDObject(const MDObject & obj)
     data.doubleValue = 0;
     copy(obj);
 }
+
 MDObject & MDObject::operator = (const MDObject &obj)
 {
     data.doubleValue = 0;
@@ -357,7 +81,6 @@ MDObject & MDObject::operator = (const MDObject &obj)
     return *this;
 }
 
-//----------- Implementation of MDValue -----------------
 inline void MDObject::labelTypeCheck(MDLabelType checkingType) const
 {
     if (this->type != checkingType)
@@ -697,7 +420,7 @@ bool MDObject::fromStream(std::istream &is, bool fromString)
             //  data.vectorValue = new std::vector<double>;
             data.vectorValue->clear();
             while (is >> d) //This will stop at ending "]"
-                data.vectorValue->push_back(d);
+                data.vectorValue->emplace_back(d);
             if (!fromString)
             {
                 is.clear(); //this is for clear the fail state after found ']'
@@ -711,7 +434,7 @@ bool MDObject::fromStream(std::istream &is, bool fromString)
             //  data.vectorValue = new std::vector<double>;
             data.vectorValueLong->clear();
             while (is >> value) //This will stop at ending "]"
-                data.vectorValueLong->push_back(value);
+                data.vectorValueLong->emplace_back(value);
             if (!fromString)
             {
                 is.clear(); //this is for clear the fail state after found ']'
@@ -738,178 +461,88 @@ bool MDObject::fromChar(const char * szChar)
     std::stringstream ss(szChar);
     return fromStream(ss);
 }
+
+bool MDObject::operator==(const MDObject &obj) const {
+    return this->eq(obj, 0);
+}
+
+bool MDObject::eq(const MDObject &obj, double epsilon) const {
+    // FIXME: allow to compare e.g. int & double & longint
+    if (this->label != obj.label)
+        return false;
+
+    if (this->type != obj.type)
+        throw std::logic_error("MDObject: cannot compare == objects of different type");
+
+    switch (this->type) {
+        case LABEL_INT:
+            return this->data.intValue == obj.data.intValue;
+
+        case LABEL_BOOL:
+            return this->data.boolValue == obj.data.boolValue;
+
+        case LABEL_SIZET:
+            return this->data.longintValue == obj.data.longintValue;
+
+        case LABEL_DOUBLE:
+            return std::abs(this->data.doubleValue - obj.data.doubleValue) <= epsilon;
+
+        case LABEL_STRING:
+            return *(this->data.stringValue) == *(obj.data.stringValue);
+
+        case LABEL_VECTOR_DOUBLE:
+            if (this->data.vectorValue->size() != obj.data.vectorValue->size())
+                return false;
+            for (size_t i = 0; i < this->data.vectorValue->size(); i++)
+                if (std::abs((*this->data.vectorValue)[i] - (*obj.data.vectorValue)[i]) > epsilon)
+                    return false;
+            return true;
+
+        case LABEL_VECTOR_SIZET:
+            return *(this->data.vectorValueLong) == *(obj.data.vectorValueLong);
+
+        default:
+            throw std::logic_error("MDObject: unknown data type");
+    };
+}
+
+bool MDObject::operator<=(const MDObject &obj) const {
+    // FIXME: allow to compare e.g. int & double & longint
+    if (this->type == LABEL_INT)
+        return this->data.intValue <= obj.data.intValue;
+    else if (this->type == LABEL_BOOL)
+        return this->data.boolValue <= obj.data.boolValue;
+    else if (this->type == LABEL_SIZET)
+        return this->data.longintValue <= obj.data.longintValue;
+    else if (this->type == LABEL_DOUBLE)
+        return this->data.doubleValue <= obj.data.doubleValue;
+
+    throw std::logic_error("MDObject: cannot compare this type on <=");
+}
+
+bool MDObject::operator!=(const MDObject &obj) const {
+    return !(*this == obj);
+}
+
+bool MDObject::operator>=(const MDObject &obj) const {
+    return (!(*this <= obj) || (*this == obj));
+}
+
+bool MDObject::operator<(const MDObject &obj) const {
+    return ((*this <= obj) && (*this != obj));
+}
+
+bool MDObject::operator>(const MDObject &obj) const {
+    return ((*this >= obj) && (*this != obj));
+}
+
 //MDObject & MDRow::operator [](MDLabel label)
 //{
 //    for (iterator it = begin(); it != end(); ++it)
 //        if ((*it)->label == label)
 //            return *(*it);
 //    MDObject * pObj = new MDObject(label);
-//    push_back(pObj);
+//    emplace_back(pObj);
 //
 //    return *pObj;
 //}
-
-void MDRow::clear()
-{
-    _size = 0;
-    //Just initialize all pointers with NULL value
-    FOR_ALL_LABELS()
-    {
-        delete objects[_label];
-        objects[_label] = NULL;
-    }
-}
-
-bool MDRow::empty() const
-{
-    return _size == 0;
-}
-
-void MDRow::resetGeo(bool addLabels)
-{
-    setValue(MDL_ORIGIN_X,  0., addLabels);
-    setValue(MDL_ORIGIN_Y,  0., addLabels);
-    setValue(MDL_ORIGIN_Z,  0., addLabels);
-    setValue(MDL_SHIFT_X,   0., addLabels);
-    setValue(MDL_SHIFT_Y,   0., addLabels);
-    setValue(MDL_SHIFT_Z,   0., addLabels);
-    setValue(MDL_ANGLE_ROT, 0., addLabels);
-    setValue(MDL_ANGLE_TILT,0., addLabels);
-    setValue(MDL_ANGLE_PSI, 0., addLabels);
-    setValue(MDL_WEIGHT,   1., addLabels);
-    setValue(MDL_FLIP,     false, addLabels);
-    setValue(MDL_SCALE,    1., addLabels);
-}
-
-int MDRow::size() const
-{
-    return _size;
-}
-
-std::vector<MDLabel> MDRow::getLabels() const {
-    std::vector<MDLabel> res;
-    res.reserve(_size);
-    for (int i = 0; i < _size; ++i){
-        const MDLabel &label = order[i];
-        if (containsLabel(label)) {
-            res.push_back(label);
-        }
-    }
-    return res;
-}
-
-void MDRow::addLabel(MDLabel label)
-{
-    if (objects[label] == NULL)
-    {
-        objects[label] = new MDObject(label);
-        order[_size] = label;
-        ++_size;
-    }
-}
-
-MDObject * MDRow::getObject(MDLabel label) const
-{
-    return objects[label];
-}
-
-/** Get value */
-bool MDRow::getValue(MDObject &object) const
-{
-    int _label = object.label;
-    if (objects[_label] == NULL)
-        return false;
-    object.copy(*(objects[_label]));
-    return true;
-}
-
-/** Useful macro for copy values */
-/** Set value */
-void MDRow::setValue(const MDObject &object)
-{
-    int _label = object.label;
-    if (objects[_label] == NULL)
-    {
-        objects[_label] = new MDObject(object);
-        order[_size] = object.label;
-        ++_size;
-    }
-    else
-        objects[_label]->copy(object);
-}
-
-void MDRow::setValueFromStr(MDLabel label, const String &value)
-{
-    MDObject mdValue(label);
-    mdValue.fromString(value);
-    setValue(mdValue);
-}
-
-MDRow::~MDRow()
-{
-    MDObject ** ptrObjectsLabel=&(objects[0]);
-    FOR_ALL_LABELS()
-    {
-        delete *ptrObjectsLabel;
-        ++ptrObjectsLabel;
-    }
-}
-
-MDRow::MDRow(const MDRow & row)
-{
-    _size = 0;
-    //Just initialize all pointers with NULL value
-    memset(objects, 0, MDL_LAST_LABEL * sizeof(size_t));
-    copy(row);
-}
-
-MDRow::MDRow()
-{
-    _size = 0;
-    //Just initialize all pointers with NULL value
-    memset(objects, 0, MDL_LAST_LABEL * sizeof(size_t));
-}
-
-MDRow& MDRow::operator = (const MDRow &row)
-{
-    copy(row);
-    return *this;
-}
-
-void MDRow::copy(const MDRow &row)
-{
-    //Copy existing MDObjects from row
-    //and delete unexisting ones
-    _size = row._size;
-    MDObject ** ptrObjectsLabel=&(objects[0]);
-    MDObject * const * ptrRowObjectsLabel=&(row.objects[0]);
-    FOR_ALL_LABELS()
-    {
-        if (*ptrRowObjectsLabel == NULL)
-        {
-            delete *ptrObjectsLabel;
-            *ptrObjectsLabel = NULL;
-        }
-        else
-        {
-            if (*ptrObjectsLabel == NULL)
-                *ptrObjectsLabel = new MDObject(*(*ptrRowObjectsLabel));
-            else
-                (*ptrObjectsLabel)->copy(*(*ptrRowObjectsLabel));
-        }
-        ++ptrObjectsLabel;
-        ++ptrRowObjectsLabel;
-    }
-    //copy the order of labels
-    memcpy(order, row.order, sizeof(int)*_size);
-}
-
-std::ostream& operator << (std::ostream &out, const MDRow &row)
-{
-    for (int i = 0; i < row._size; ++i)
-    {
-        row.objects[row.order[i]]->toStream(out);
-        out << " ";
-    }
-    return out;
-}
