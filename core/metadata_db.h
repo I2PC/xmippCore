@@ -160,6 +160,7 @@ public:
      * Copies MetaDataDb from an existing MetaData object.
      */
     MetaDataDb& operator =(const MetaDataDb &md);
+    MetaDataDb& operator =(const MetaData &md);
 
 
     /** Destructor

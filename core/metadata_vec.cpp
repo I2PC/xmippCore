@@ -39,7 +39,7 @@
 #endif
 
 MetaDataVec::MetaDataVec() {
-    init(std::vector<MDLabel>());
+    init({});
 }
 
 MetaDataVec::MetaDataVec(const std::vector<MDLabel> &labelsVector) {
@@ -57,6 +57,7 @@ MetaDataVec::MetaDataVec(const FileName &fileName) {
 }
 
 MetaDataVec::MetaDataVec(const MetaData &md) {
+    init({});
     *this = md;
 }
 

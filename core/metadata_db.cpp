@@ -455,7 +455,8 @@ size_t MetaDataDb::addRow(const MDRow &row)
 {
     size_t id = addObject();
     for (auto obj : row)
-        setValue(*obj, id);
+        if (obj->label != MDL_FIRST_LABEL)
+            setValue(*obj, id);
 
     return id;
 }
@@ -559,7 +560,16 @@ MetaDataDb::MetaDataDb()
 }//close MetaData default Constructor
 
 MetaDataDb::MetaDataDb(const MetaData &md) {
-	// FIXME: TODO
+    myMDSql = new MDSql(this);
+    init({});
+    *this = md;
+}
+
+MetaDataDb& MetaDataDb::operator=(const MetaData &md) {
+    this->copyInfo(md);
+    for (const auto& row : md)
+        this->addRow(row);
+    return *this;
 }
 
 MetaDataDb::MetaDataDb(const std::vector<MDLabel> &labelsVector)
