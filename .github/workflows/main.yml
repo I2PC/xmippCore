@@ -40,7 +40,7 @@ jobs:
       - name: Create Travis variables
         run: |
           echo "TRAVIS_PULL_REQUEST_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
-          echo "TRAVIS_BRANCH=${GITHUB_REF}" >> $GITHUB_ENV
+          echo "TRAVIS_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
           
       - name: Fetching Xmipp
         run: ./scripts/travis_build
