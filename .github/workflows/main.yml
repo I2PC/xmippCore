@@ -67,7 +67,7 @@ jobs:
   
       - name: Compile Xmipp
         run: ./xmipp noAsk
-        working-directory: ${{ BUILD_DIR }}
+        working-directory: ${{ env.BUILD_DIR }}
         env:
           TRAVIS: 1
           BUILD_TESTS: False
