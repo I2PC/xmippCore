@@ -36,6 +36,9 @@ jobs:
           path: sonarCache
           key: ${{ runner.os }}-sonarCache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-sonarCache-
+
+      - name: Export CI variables
+        run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
           
       - name: Fetching Xmipp
         run: ./scripts/ci_build
@@ -48,6 +51,7 @@ jobs:
           wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip          
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
+	working-directory: ${{ env.BUILD_DIR }}
       
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
@@ -62,8 +66,7 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
   
-      - name: Export CI variables
-        run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
+
   
       - name: Compile Xmipp
         run: ./xmipp noAsk
