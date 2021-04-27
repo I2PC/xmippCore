@@ -64,19 +64,10 @@ jobs:
 
       - name: Export CI variables
         run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
-
-      - name: Debug
-        run: |
-          pwd
-          ls
-        working-directory: ${BUILD_DIR}
   
       - name: Compile Xmipp
-        run: |
-          ls
-          pwd
-          ./xmipp noAsk
-        working-directory: ./${BUILD_DIR}
+        run: ./xmipp noAsk
+        working-directory: ./${{BUILD_DIR}}
         env:
           TRAVIS: 1
           BUILD_TESTS: False
