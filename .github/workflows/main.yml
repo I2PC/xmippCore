@@ -67,9 +67,9 @@ jobs:
 
       - name: Debug
         run: |
-          ls
           pwd
-          ls ${BUILD_DIR} || true
+          ls
+        working-directory: ${BUILD_DIR}
   
       - name: Compile Xmipp
         run: |
