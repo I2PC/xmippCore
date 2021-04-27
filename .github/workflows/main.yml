@@ -62,9 +62,12 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
   
+      - name: Export CI variables
+        run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
+  
       - name: Compile Xmipp
         run: ./xmipp noAsk
-        working-directory: ./CIBuild
+        working-directory: ${{ BUILD_DIR }}
         env:
           TRAVIS: 1
           BUILD_TESTS: False
