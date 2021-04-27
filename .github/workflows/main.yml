@@ -51,7 +51,7 @@ jobs:
           wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip          
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
-	working-directory: ${{ env.BUILD_DIR }}
+        working-directory: ${{ env.BUILD_DIR }}
       
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
