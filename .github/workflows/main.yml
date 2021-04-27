@@ -65,6 +65,12 @@ jobs:
       - name: Export CI variables
         run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
 
+      - name: Debug
+        run: |
+          ls
+          pwd
+          ls ${BUILD_DIR} || true
+  
       - name: Compile Xmipp
         run: |
           ls
