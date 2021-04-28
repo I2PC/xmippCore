@@ -24,9 +24,11 @@
 
 import os
 import subprocess
+import shutil
 
 XMIPP = 'xmipp'
 REPOSITORIES = {XMIPP: 'https://github.com/I2PC/xmipp.git'}
+BUILD_DIR = 'CIBuild'
 
 
 def green(text):
@@ -57,23 +59,32 @@ def runJob(cmd, cwd='./', show_output=True, log=None, show_command=True):
 
 
 def checkout(repo, branch):
-    repo_dir = '.'
-    runJob('git init', show_output=False)
-    _, branch = getBranch(repo, repo_dir)
+    _, branch = getBranch(repo)
     print(green('Checkout ' + repo + ' ...'))
-    runJob('git remote add origin {}'.format(REPOSITORIES[repo]),
-           show_output=False)
-    runJob('git fetch && git checkout origin/{} -ft'.format(branch),
-           show_output=False)
+    runJob('git clone --single-branch --branch {} {} {}'.format(branch, REPOSITORIES[repo], BUILD_DIR))
 
 
-def getCurrentTravisBranch():
+def removePrefix(text, prefix):
+    if text.startswith(prefix):
+        return text[len(prefix):]
+    return text
+
+
+def getCurrentCIBranch():
     # see https://docs.travis-ci.com/user/environment-variables/
+    # see https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
     # On Travis, PR will have the TRAVIS_PULL_REQUEST_BRANCH variable non-empty
     # otherwise the TRAVIS_BRANCH will hold the name of the current branch
+    # On Github Actions, GITHUB_REF will hold either the tag or branch (including prefix) to the branch which triggered 
+    # the workflow
+    # For pull request, GITHUB_HEAD_REF will be set (no prefix)
     current_branch = (
         os.environ.get('TRAVIS_PULL_REQUEST_BRANCH') or
-        os.environ.get('TRAVIS_BRANCH'))
+        os.environ.get('TRAVIS_BRANCH') or
+        os.environ.get('GITHUB_HEAD_REF') or
+        os.environ.get('GITHUB_REF'))
+    current_branch = removePrefix(current_branch, 'refs/heads/')
+    current_branch = removePrefix(current_branch, 'refs/tags/')
     print(green("Detected branch: " + current_branch))
     return current_branch is not None, current_branch
 
@@ -90,9 +101,9 @@ def getAllBranches(repo):
     return False, None
 
 
-def getBranch(repo, repo_dir):
+def getBranch(repo):
     # we need to get current branch of the xmipp
-    r1, branchHint = getCurrentTravisBranch()
+    r1, branchHint = getCurrentCIBranch()
     r2, branches = getAllBranches(repo)
     if r1 and r2 and branchHint in branches:
         return True, branchHint
@@ -122,16 +133,12 @@ def getDefaultBranch(repo):
 
 
 def main():
-    # move all files into proper location
-    src_dir = os.path.join('src', 'xmippCore')
-    # create src directory and move all there.
-    # ignore error (moving 'src' to 'src' and dot files)
-    runJob('mkdir -p {0} && mv ./* ./.* {0} 2>/dev/null'.format(src_dir))
     # get xmipp
     checkout(XMIPP, None)
-    # replace sonar settings
-    sonar_file = os.path.join(src_dir, 'sonar-project.properties')
-    runJob('mv -f {} .'.format(sonar_file))
+    # copy current dir to right location
+    dst = os.path.join(BUILD_DIR, 'src', 'xmippCore')
+    shutil.copytree('.', dst, ignore=shutil.ignore_patterns(BUILD_DIR))
+    # xmipp is ready to be build
 
 if __name__ == '__main__':
     main()
