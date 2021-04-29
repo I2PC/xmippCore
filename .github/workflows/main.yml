@@ -66,14 +66,12 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
   
-
-  
       - name: Compile Xmipp
         run: ./xmipp noAsk
         working-directory: ${{ env.BUILD_DIR }}
         env:
-          TRAVIS: 1
-          BUILD_TESTS: False
+          CIBuild: 1
+          BUILD_TESTS: True
 
       # If we got here, Xmipp can be build with this xmippCore
       # Build only the core to be able to run the static code analysis
