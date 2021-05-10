@@ -1262,7 +1262,7 @@ void MetaDataDb::copyColumn(MDLabel labelDest, MDLabel labelSrc)
 {
     String srcName = MDL::label2Str(labelSrc);
     if (!containsLabel(labelSrc))
-        REPORT_ERROR(ERR_ARG_MISSING, formatString("Source label: '%s' doesn't exist on metadata", srcName.c_str()));
+        REPORT_ERROR(ERR_ARG_MISSING, formatString("Source label: '%s' doesn't exist on metadata", srcName));
     addLabel(labelDest);
 
     String destName = MDL::label2Str(labelDest);
@@ -1273,10 +1273,8 @@ void MetaDataDb::copyColumn(MDLabel labelDest, MDLabel labelSrc)
 void MetaDataDb::copyColumnTo(MetaData &md, MDLabel labelDest, MDLabel labelSrc)
 {
     if (!containsLabel(labelSrc))
-    {
-        const char * srcName = MDL::label2Str(labelSrc).c_str();
-        REPORT_ERROR(ERR_ARG_MISSING, formatString("Source label: '%s' doesn't exist on metadata", srcName));
-    }
+        REPORT_ERROR(ERR_ARG_MISSING, formatString("Source label: '%s' doesn't exist on metadata",
+                     MDL::label2Str(labelSrc)));
     md.addLabel(labelDest);
     std::vector<MDObject> values;
     getColumnValues(labelSrc, values);
@@ -1286,11 +1284,8 @@ void MetaDataDb::copyColumnTo(MetaData &md, MDLabel labelDest, MDLabel labelSrc)
 void MetaDataDb::renameColumn(MDLabel oldLabel, MDLabel newLabel)
 {
     if (!containsLabel(oldLabel))
-    {
-        const char * srcName = MDL::label2Str(oldLabel).c_str();
         REPORT_ERROR(ERR_ARG_MISSING, formatString("Source label: '%s' doesn't exist on metadata",
-                     srcName));
-    }
+                     MDL::label2Str(oldLabel)));
     std::vector<MDLabel> vOldLabel(1);
     vOldLabel[0]=oldLabel;
     std::vector<MDLabel> vNewLabel(1);

@@ -136,7 +136,7 @@ MDLabel MDL::str2Label(const String &labelName)
     return names[labelName];
 }
 
-String  MDL::label2Str(const MDLabel &label)
+String MDL::label2Str(const MDLabel &label)
 {
     return (isValidLabel(label)) ? data[(int)label]->str : "";
 }

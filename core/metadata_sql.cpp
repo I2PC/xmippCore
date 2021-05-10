@@ -291,15 +291,15 @@ bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const st
 {
     bool r = true;          // Return value.
     int rc;
+    size_t columnCount = 0;
 
     // Add values.
-    if (desiredLabels==NULL)
+    if (desiredLabels == nullptr)
     {
-        bindValue( this->preparedStmt, 1, *(columnValues[0]));
+        bindValue(this->preparedStmt, 1, *(columnValues[0]));
         for (size_t i=1; i<columnValues.size() ;i++)
-        {
-            bindValue( this->preparedStmt, i+1, *(columnValues[i]));
-        }
+            bindValue(this->preparedStmt, i+1, *(columnValues[i]));
+        columnCount = columnValues.size();
     }
     // Add only desired columns.
     else
@@ -310,19 +310,17 @@ bool MDSql::setObjectValues(int id, const std::vector<T> &columnValues, const st
             {
                 if (columnValues[j]->label == (*desiredLabels)[i])
                 {
-                    bindValue( this->preparedStmt, i+1, *(columnValues[j]));
+                    bindValue(this->preparedStmt, i+1, *(columnValues[j]));
                     break;
                 }
             }
         }
+        columnCount = desiredLabels->size();
     }
 
     // id != -1 means there is a WHERE clause in the query sentence and id must be added.
     if (id != -1)
-    {
-        // FIXME: if desiredLabels == nullptr, segfault is generated
-        sqlite3_bind_int(this->preparedStmt, desiredLabels->size(), id);
-    }
+        sqlite3_bind_int(this->preparedStmt, columnCount, id);
 
     // Execute statement.
     rc = sqlite3_step( this->preparedStmt);
