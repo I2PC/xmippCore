@@ -39,7 +39,7 @@ void MDL::addLabel(const MDLabel label, const MDLabelType type, const String &na
   if (names.find(name) != names.end())
     REPORT_ERROR(ERR_ARG_INCORRECT, formatString("MDL::addLabel, label '%s' already exists.", name.c_str()));
 
-    data[(int)label] = new MDLabelData(type, name, tags);
+    data[label] = new MDLabelData(type, name, tags);
     names[name] = label;
 }
 
@@ -93,9 +93,9 @@ void MDL::addLabelAlias(const MDLabel label, const String &alias, bool replace,
     names[alias] = label;
     if (replace)
     {
-        data[(int)label]->str = alias;
+        data[label]->str = alias;
         if (type != LABEL_NOTYPE)
-            data[(int)label]->type = type;
+            data[label]->type = type;
     }
 }
 
@@ -202,44 +202,44 @@ String MDL::labelType2Str(MDLabelType type)
 
 bool MDL::isInt(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_INT);
+    return (data[label]->type == LABEL_INT);
 }
 
 bool MDL::isLong(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_SIZET);
+    return (data[label]->type == LABEL_SIZET);
 }
 
 bool MDL::isBool(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_BOOL);
+    return (data[label]->type == LABEL_BOOL);
 }
 
 bool MDL::isString(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_STRING);
+    return (data[label]->type == LABEL_STRING);
 }
 
 bool MDL::isDouble(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_DOUBLE);
+    return (data[label]->type == LABEL_DOUBLE);
 }
 
 bool MDL::isVector(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_VECTOR_DOUBLE);
+    return (data[label]->type == LABEL_VECTOR_DOUBLE);
 }
 
 bool MDL::isVectorLong(const MDLabel label)
 {
-    return (data[(int)label]->type == LABEL_VECTOR_SIZET);
+    return (data[label]->type == LABEL_VECTOR_SIZET);
 }
 
 bool MDL::isValidLabel(const MDLabel &label)
 {
     return label > MDL_UNDEFINED &&
            label < MDL_LAST_LABEL &&
-           data[(int)label] != NULL;
+           data[label] != NULL;
 }
 
 bool MDL::isValidLabel(const String &labelName)
@@ -249,7 +249,7 @@ bool MDL::isValidLabel(const String &labelName)
 
 MDLabelType MDL::labelType(const MDLabel label)
 {
-    return data[(int)label]->type;
+    return data[label]->type;
 }
 
 MDLabelType MDL::labelType(const String &labelName)
@@ -264,42 +264,42 @@ std::map<String, MDLabel>& MDL::getLabelDict()
 
 bool MDL::hasTag(const MDLabel label, const int tags)
 {
-    return data[(int)label]->tags & tags;
+    return data[label]->tags & tags;
 }
 
 bool MDL::isTextFile(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_TEXTFILE;
+    return data[label]->tags & TAGLABEL_TEXTFILE;
 }
 
 bool MDL::isMetadata(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_METADATA;
+    return data[label]->tags & TAGLABEL_METADATA;
 }
 
 bool MDL::isCtfParam(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_CTFPARAM;
+    return data[label]->tags & TAGLABEL_CTFPARAM;
 }
 
 bool MDL::isImage(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_IMAGE;
+    return data[label]->tags & TAGLABEL_IMAGE;
 }
 
 bool MDL::isStack(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_STACK;
+    return data[label]->tags & TAGLABEL_STACK;
 }
 
 bool MDL::isMicrograph(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_MICROGRAPH;
+    return data[label]->tags & TAGLABEL_MICROGRAPH;
 }
 
 bool MDL::isPSD(const MDLabel label)
 {
-    return data[(int)label]->tags & TAGLABEL_PSD;
+    return data[label]->tags & TAGLABEL_PSD;
 }
 
 MDRowSql MDL::emptyHeaderSql() {
