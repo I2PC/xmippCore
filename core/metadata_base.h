@@ -102,6 +102,17 @@ public:
     ObjectDoesNotExist() : std::logic_error("Object does not exist") {};
 };
 
+class NotImplemented : public std::logic_error {
+public:
+    NotImplemented(const std::string& str) : std::logic_error(str) {};
+    // NotImplemented() : std::logic_error("Function not yet implemented") {};
+};
+
+class ColumnDoesNotExist : public std::logic_error {
+public:
+    ColumnDoesNotExist() : std::logic_error("Column does not exist") {};
+};
+
 /** Class to manage data files.
  *
  * The MetaData class manages all procedures related to
@@ -395,8 +406,6 @@ public:
 
     virtual std::unique_ptr<MDRow> getRow(size_t id) = 0;
     virtual std::unique_ptr<const MDRow> getRow(size_t id) const = 0;
-
-    virtual bool getRow(MDRow &row, size_t id) = 0;
 
     /** Set label values from string representation.
      */

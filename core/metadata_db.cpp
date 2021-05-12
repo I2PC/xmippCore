@@ -240,10 +240,24 @@ std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) {
 }
 
 std::unique_ptr<const MDRow> MetaDataDb::getRow(size_t id) const {
-    return std::move(getRowSql(id));
+    return std::move(getRow(id));
 }
 
-bool MetaDataDb::getRow(MDRow &row, size_t id)
+MDRowSql MetaDataDb::getRowSql(size_t id) {
+    MDRowSql row;
+    if (!getRow(row, id))
+        throw ObjectDoesNotExist();
+    return row;
+}
+
+const MDRowSql MetaDataDb::getRowSql(size_t id) const {
+    MDRowSql row;
+    if (!getRow(row, id))
+        throw ObjectDoesNotExist();
+    return row;
+}
+
+bool MetaDataDb::getRow(MDRowSql &row, size_t id) const
 {
     if (id == BAD_OBJID)
         REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
@@ -260,26 +274,6 @@ bool MetaDataDb::getRow(MDRow &row, size_t id)
     for (auto &v : values)
         row.setValue(v);
     return true;
-}
-
-std::unique_ptr<const MDRowSql> MetaDataDb::getRowSql(size_t id) const
-{
-    if (id == BAD_OBJID)
-        REPORT_ERROR(ERR_MD_NOACTIVE, "getValue: please provide objId other than -1");
-    // get active labels
-    auto values = getObjectsForActiveLabels();
-    // get values from the row
-    if ( ! sqlUtils::select(id,
-            myMDSql->db,
-            myMDSql->tableName(myMDSql->tableId),
-            values)) return nullptr;
-    // fill them
-    return memoryUtils::make_unique<const MDRowSql>(values);
-}
-
-bool MetaDataDb::getRowSql(MDRowSql &row, size_t id)
-{
-    return getRow(row, id);
 }
 
 bool MetaDataDb::getRow2(MDRow &row, size_t id) const

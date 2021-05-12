@@ -34,23 +34,6 @@
 #include "metadata_base_it.h"
 #include "utils/memory_utils.h"
 
-class NotImplemented : public std::logic_error {
-public:
-    NotImplemented(const std::string& str) : std::logic_error(str) {};
-    // NotImplemented() : std::logic_error("Function not yet implemented") {};
-};
-
-class ColumnDoesNotExist : public std::logic_error {
-public:
-    ColumnDoesNotExist() : std::logic_error("Column does not exist") {};
-};
-
-class RowDoesNotExist : public std::logic_error {
-public:
-    RowDoesNotExist() : std::logic_error("Row does not exist") {};
-};
-
-
 using MetaDataVecRow = std::vector<MDObject>;
 
 /** Class to manage data files.
@@ -218,8 +201,7 @@ public:
     MDRowVec getRowVec(size_t id);
     const MDRowVec getRowVec(size_t id) const;
 
-    bool getRow(MDRow &row, size_t id) override;
-    void getRow(MDRowVec &row, size_t id);
+    void getRow(MDRowVec &row, size_t id); // FIXME: deprecated, use getRow above
 
     bool getRowValues(size_t id, std::vector<MDObject> &values) const override;
     size_t getRowId(size_t i) const;

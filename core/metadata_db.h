@@ -271,9 +271,10 @@ public:
     std::unique_ptr<MDRow> getRow(size_t id) override;
     std::unique_ptr<const MDRow> getRow(size_t id) const override;
 
-    bool getRow(MDRow &row, size_t id) override;
-    std::unique_ptr<const MDRowSql> getRowSql(size_t id) const;
-    bool getRowSql(MDRowSql &row, size_t id);
+    MDRowSql getRowSql(size_t id);
+    const MDRowSql getRowSql(size_t id) const;
+
+    bool getRow(MDRowSql &row, size_t id) const; // FIXME: deprecated, use getRow above
 
     bool getAllRows(std::vector<MDRowSql> &rows) const;
     bool getRow2(MDRow &row, size_t id) const;

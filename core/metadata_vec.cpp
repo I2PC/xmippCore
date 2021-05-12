@@ -297,14 +297,6 @@ const MDRowVec MetaDataVec::getRowVec(size_t id) const {
     return MDRowVec(this->_rows[i], i, this->_label_to_col);
 }
 
-bool MetaDataVec::getRow(MDRow &row, size_t id) {
-    int i = this->_rowIndex(id);
-    if (i < 0)
-        return false;
-    row = MDRowVec(this->_rows[i], i, this->_label_to_col);
-    return true;
-}
-
 void MetaDataVec::getRow(MDRowVec &row, size_t id) {
     size_t i = this->_rowIndexSafe(id);
     row = MDRowVec(this->_rows[i], i, this->_label_to_col);
