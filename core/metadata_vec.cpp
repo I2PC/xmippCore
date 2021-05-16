@@ -627,6 +627,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
             const MDLabel label = static_cast<MDLabel>(i);
             if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1) &&
                 (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
+                os << " _" << MDL::label2Str(label) << " ";
                 this->_getObject(0, label).toStream(os);
                 os << '\n';
             }
