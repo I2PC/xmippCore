@@ -321,6 +321,28 @@ void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap) {
         if (row.getValue(MDL_FLIP, auxBool))
             rowAux.setValue(MDL_FLIP, auxBool);
     }
+
+    //apply geo has not been defined for volumes
+    //and only make sense when reading data
+    if (data.getDim() < 3 && dataMode >= DATA)
+    {
+        Matrix2D<double> A;
+        if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
+            getTransformationMatrix(A, only_apply_shifts);
+        else
+        {
+            String matrixStr;
+            row.getValue(MDL_TRANSFORM_MATRIX, matrixStr);
+            string2TransformationMatrix(matrixStr, A, 3);
+        }
+
+        if (!A.isIdentity())
+        {
+            MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
+            applyGeometry(BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
+                          wrap);
+        }
+    }
 }
 
 //template int Image<std::complex<double> >::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);
