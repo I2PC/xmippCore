@@ -277,29 +277,33 @@ std::unique_ptr<MDRow> MetaDataVec::getRow(size_t id) {
     int i = this->_rowIndex(id);
     if (i < 0)
         return nullptr;
-    return memoryUtils::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
+    return memoryUtils::make_unique<MDRowVec>(
+        this->_rows[i], i, this->_label_to_col, this->_col_to_label, this->_no_columns
+    );
 }
 
 std::unique_ptr<const MDRow> MetaDataVec::getRow(size_t id) const {
     int i = this->_rowIndex(id);
     if (i < 0)
         return nullptr;
-    return memoryUtils::make_unique<MDRowVec>(this->_rows[i], i, this->_label_to_col);
+    return memoryUtils::make_unique<MDRowVec>(
+        this->_rows[i], i, this->_label_to_col, this->_col_to_label, this->_no_columns
+    );
 }
 
 MDRowVec MetaDataVec::getRowVec(size_t id) {
     size_t i = this->_rowIndexSafe(id);
-    return MDRowVec(this->_rows[i], i, this->_label_to_col);
+    return MDRowVec(this->_rows[i], i, this->_label_to_col, this->_col_to_label, this->_no_columns);
 }
 
 const MDRowVec MetaDataVec::getRowVec(size_t id) const {
     size_t i = this->_rowIndexSafe(id);
-    return MDRowVec(this->_rows[i], i, this->_label_to_col);
+    return MDRowVec(this->_rows[i], i, this->_label_to_col, this->_col_to_label, this->_no_columns);
 }
 
 void MetaDataVec::getRow(MDRowVec &row, size_t id) {
     size_t i = this->_rowIndexSafe(id);
-    row = MDRowVec(this->_rows[i], i, this->_label_to_col);
+    row = MDRowVec(this->_rows[i], i, this->_label_to_col, this->_col_to_label, this->_no_columns);
 }
 
 bool MetaDataVec::getRowValues(size_t id, std::vector<MDObject> &values) const {

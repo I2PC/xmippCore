@@ -25,30 +25,38 @@
 
 #include <algorithm>
 #include <sstream>
+#include <cassert>
 #include "metadata_row_vec.h"
 
 MDRowVec::MDRowVec()
-    : _in_metadata(false) {
+    : _col_to_label(nullptr), _no_columns(nullptr), _in_metadata(false) {
     _row = new std::vector<MDObject>();
     _label_to_col = new std::array<int, MDL_LAST_LABEL>();
     std::fill(_label_to_col->begin(), _label_to_col->end(), -1);
 }
 
-MDRowVec::MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col)
-    : _row(&row), _rowi(rowi), _label_to_col(&label_to_col), _in_metadata(true)
+MDRowVec::MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col,
+                   std::vector<MDLabel>& col_to_label, size_t& no_columns)
+    : _row(&row), _rowi(rowi), _label_to_col(&label_to_col), _col_to_label(&col_to_label),
+      _no_columns(&no_columns), _in_metadata(true)
     {}
 
-MDRowVec::MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col)
+MDRowVec::MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col,
+                   const std::vector<MDLabel>& col_to_label, const size_t& no_columns)
     : _row(const_cast<std::vector<MDObject>*>(&row)),
        _rowi(rowi),
-       _label_to_col(const_cast<std::array<int, MDL_LAST_LABEL>*>(&label_to_col)), _in_metadata(true)
+       _label_to_col(const_cast<std::array<int, MDL_LAST_LABEL>*>(&label_to_col)),
+       _col_to_label(const_cast<std::vector<MDLabel>*>(&col_to_label)),
+       _no_columns(const_cast<size_t*>(&no_columns)),
+       _in_metadata(true)
        // This is very nasty hack. I was unable to solve situation nicely.
        // Creator of the object must pay close attention to create 'const MDRowVec' when instantiating from
        // const MetaData. This should be ok as crator is only in MetaDataVec.
     {}
 
 MDRowVec::MDRowVec(const MDRowVec &other)
-    : _rowi(other._rowi), _in_metadata(other._in_metadata)
+    : _rowi(other._rowi), _col_to_label(other._col_to_label), _no_columns(other._no_columns),
+      _in_metadata(other._in_metadata)
     {
     if (_in_metadata) {
         _row = other._row;
@@ -61,7 +69,9 @@ MDRowVec::MDRowVec(const MDRowVec &other)
 
 MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
     _rowi = other._rowi;
+    _no_columns = other._no_columns;
     _in_metadata = other._in_metadata;
+    _col_to_label = other._col_to_label;
 
     if (_in_metadata) {
         _row = other._row;
@@ -91,6 +101,8 @@ int MDRowVec::size() const {
 
 void MDRowVec::clear() {
     _row->clear();
+    if (!_in_metadata)
+        std::fill(_label_to_col->begin(), _label_to_col->end(), -1);
 }
 
 bool MDRowVec::containsLabel(MDLabel label) const {
@@ -107,10 +119,29 @@ std::vector<MDLabel> MDRowVec::labels() const {
 
 void MDRowVec::addLabel(MDLabel label) {
     // Warning: not adding to all rows!
-    if ((*_label_to_col)[label] < 0) {
-        (*_label_to_col)[label] = _row->size();
-        _row->emplace_back(MDObject(label));
+    if ((*_label_to_col)[label] < 0)
+        newCol(label);
+}
+
+size_t MDRowVec::newCol(const MDLabel label) {
+    size_t i;
+    if (_no_columns != nullptr)
+        i = ++(*_no_columns);
+    else
+        i = _row->size();
+
+    if (_col_to_label != nullptr) {
+        (*_col_to_label)[i] = label;
+        while (_row->size() < i) {
+            size_t j = _row->size();
+            _row->emplace_back(MDObject((*_col_to_label)[j]));
+        }
     }
+
+    assert(_row->size() == i);
+    (*_label_to_col)[label] = i;
+    _row->emplace_back(MDObject(label));
+    return i;
 }
 
 MDObject *MDRowVec::getObject(MDLabel label) {
@@ -142,10 +173,11 @@ bool MDRowVec::getValue(MDObject &object) const {
 void MDRowVec::setValue(const MDObject &object) {
     MDLabel _label = object.label;
     if ((*_label_to_col)[_label] < 0) {
-        (*_label_to_col)[_label] = _row->size();
-        _row->emplace_back(object);
-    } else
+        size_t i = newCol(_label);
+        (*_row)[i] = object;
+    } else {
         (*_row)[(*_label_to_col)[_label]] = object;
+    }
 }
 
 MDObject* MDRowVec::iteratorValue(size_t i) {

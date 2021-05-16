@@ -41,15 +41,20 @@ private:
     std::vector<MDObject>* _row;
     size_t _rowi;
     std::array<int, MDL_LAST_LABEL>* _label_to_col;
+    std::vector<MDLabel>* _col_to_label;
+    size_t* _no_columns; // global number of columns in whole MetaData
     bool _in_metadata;
 
     MDObject* iteratorValue(size_t i) override;
     const MDObject* iteratorValue(size_t i) const override;
+    size_t newCol(const MDLabel);
 
 public:
     MDRowVec();
-    MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col);
-    MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col);
+    MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col,
+             std::vector<MDLabel>& col_to_label, size_t& no_columns);
+    MDRowVec(const std::vector<MDObject>& row, size_t rowi, const std::array<int, MDL_LAST_LABEL>& label_to_col,
+             const std::vector<MDLabel>& col_to_label, const size_t& no_columns);
     MDRowVec(const MDRowVec&);
     MDRowVec& operator = (const MDRowVec&);
     virtual ~MDRowVec();

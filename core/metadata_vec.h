@@ -471,7 +471,7 @@ public:
         MDVecRowIterator(typename TypeHelpers::choose<IsConst, const MetaDataVec&, MetaDataVec&>::type &mdv, size_t i)
             : _mdv(mdv), _i(i) {
                 if (_i < _mdv.size())
-                    _row.reset(new RowType(mdv._rows.at(i), i, mdv._label_to_col));
+                    _row.reset(new RowType(mdv._rows.at(i), i, mdv._label_to_col, mdv._col_to_label, mdv._no_columns));
                 else
                     _row = nullptr;
             }
@@ -483,7 +483,7 @@ public:
         void increment() override {
             _i++;
             if (_i < _mdv.size())
-                _row.reset(new RowType(_mdv._rows.at(_i), _i, _mdv._label_to_col));
+                _row.reset(new RowType(_mdv._rows.at(_i), _i, _mdv._label_to_col, _mdv._col_to_label, _mdv._no_columns));
             else
                 _row = nullptr;
         }
