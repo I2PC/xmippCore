@@ -103,14 +103,8 @@ public:
 
     template <typename T>
     void setValue(MDLabel label, const T &d, bool addLabel = true) {
-        MDObject *obj = getObject(label);
-        if (obj == nullptr && addLabel) {
-            this->addLabel(label);
-            obj = getObject(label);
-        }
-
-        if (obj != nullptr)
-            obj->setValue(d);
+        if (this->containsLabel(label) || addLabel)
+            this->setValue(MDObject(label, d));
     }
 
     virtual void setValue(const MDObject &object) = 0;

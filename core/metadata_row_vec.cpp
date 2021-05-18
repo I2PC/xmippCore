@@ -172,7 +172,8 @@ bool MDRowVec::getValue(MDObject &object) const {
 
 void MDRowVec::setValue(const MDObject &object) {
     MDLabel _label = object.label;
-    if ((*_label_to_col)[_label] < 0) {
+    size_t coli = (*_label_to_col)[_label];
+    if ((coli < 0) || (coli >= _row->size())) {
         size_t i = newCol(_label);
         (*_row)[i] = object;
     } else {
