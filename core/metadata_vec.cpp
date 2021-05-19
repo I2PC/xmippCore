@@ -62,6 +62,9 @@ MetaDataVec::MetaDataVec(const MetaData &md) {
 }
 
 MetaDataVec& MetaDataVec::operator=(const MetaData &md) {
+    if (&md == this)
+        return *this;
+
     this->copyInfo(md);
     for (const auto& row : md)
         this->addRow(row);
@@ -721,6 +724,7 @@ void MetaDataVec::replace(const MDLabel label, const String &oldStr, const Strin
 }
 
 void MetaDataVec::randomize(const MetaData &MDin) {
+    *this = MDin;
     std::random_device rd;
     auto g = std::mt19937(rd());
     std::shuffle(this->_rows.begin(), this->_rows.end(), g);
