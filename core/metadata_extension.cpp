@@ -32,7 +32,7 @@ void getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd
     params.wrap = wrap;
     for (size_t id : md.ids())
     {
-        size_t enabled;
+        int enabled;
         md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
         if (enabled < 1)
             continue;
@@ -59,7 +59,7 @@ void getStatistics(const MetaData &md, Image<double> & _ave, Image<double> & _sd
     // Calculate SD
     for (size_t id : md.ids())
     {
-        size_t enabled;
+        int enabled;
         md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
         if (enabled < 1)
             continue;
@@ -161,7 +161,7 @@ void getAverageApplyGeo(const MetaData &md, MultidimArray<double> & _ave, MDLabe
 
     for (size_t id : md.ids())
     {
-        size_t enabled;
+        int enabled;
         md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
         if (enabled < 1)
             continue;
@@ -200,7 +200,7 @@ void getStatistics(const MetaData &md, double& _ave, double& _sd, double& _min,
     FileName fnImg;
     for (size_t id : md.ids())
     {
-        size_t enabled;
+        int enabled;
         md.getValueOrDefault(MDL_ENABLED, enabled, id, 1); // default = enabled
         if (enabled < 1)
             continue;
