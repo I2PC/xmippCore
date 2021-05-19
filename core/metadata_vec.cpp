@@ -769,7 +769,7 @@ bool MetaDataVec::_rowsEq(const MetaDataVecRow& a, const MetaDataVecRow& b) cons
     return true;
 }
 
-void MetaDataVec::sort(MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
+void MetaDataVec::sort(const MetaDataVec &MDin, const MDLabel sortLabel, bool asc, int limit, int offset) {
     *this = MDin;
 
     int label_index = this->_labelIndex(sortLabel);
@@ -796,9 +796,22 @@ void MetaDataVec::sort(MetaDataVec &MDin, const String &sortLabel, bool asc, int
     throw NotImplemented("sort not implemented");
 }
 
-void MetaDataVec::split(size_t n, std::vector<MetaDataVec> &results, const MDLabel sortLabel) {
-    // TODO
-    throw NotImplemented("split not implemented");
+void MetaDataVec::split(size_t parts, std::vector<MetaDataVec> &results, const MDLabel sortLabel) const {
+    if (parts > this->size())
+        REPORT_ERROR(ERR_MD, "MetaDataDb::split: Couldn't split a metadata in more parts than its size");
+
+    MetaDataVec sorted;
+    sorted.sort(*this, sortLabel);
+
+    results.clear();
+    results.resize(parts);
+    for (size_t i = 0; i < parts; i++) {
+        MetaDataVec &md = results[i];
+        size_t firsti, lasti;
+        divide_equally(sorted.size(), parts, i, firsti, lasti);
+        for (size_t j = firsti; j <= lasti; j++)
+            md.addRow(sorted.getRowVec(sorted.getRowId(j)));
+    }
 }
 
 void MetaDataVec::selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel) {

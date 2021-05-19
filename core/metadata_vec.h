@@ -427,7 +427,7 @@ public:
     * Limit fixes the maximum number of returned rows
     * Offset skips the first N rows
     */
-    void sort(MetaDataVec &MDin,
+    void sort(const MetaDataVec &MDin,
               const MDLabel sortLabel,
               bool asc=true,
               int limit=-1,
@@ -460,7 +460,7 @@ public:
      * @endcode
      */
     void split(size_t n, std::vector<MetaDataVec> &results,
-               const MDLabel sortLabel=MDL_OBJID);
+               const MDLabel sortLabel=MDL_OBJID) const;
 
     /** Select random subset */
     void selectRandomSubset(const MetaData &mdIn, size_t numberOfObjects, const MDLabel sortLabel=MDL_OBJID) override;
