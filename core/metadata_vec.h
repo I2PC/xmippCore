@@ -188,7 +188,9 @@ public:
         return MetaData::setValue(label, valueIn, id);
     }
 
-    bool getValue(MDObject &mdValueOut, size_t id) const;
+    bool getValue(MDObject &mdValueOut, size_t id) const override;
+    MDObject &getValue(MDLabel, size_t id);
+    const MDObject &getValue(MDLabel, size_t id) const;
 
     template<class T>
     bool getValue(const MDLabel label, T &valueOut, size_t id) const {

@@ -273,6 +273,14 @@ bool MetaDataVec::getValue(MDObject &mdValueOut, size_t id) const {
     return true;
 }
 
+MDObject &MetaDataVec::getValue(MDLabel label, size_t id) {
+    return this->_getObject(this->_rowIndexSafe(id), label);
+}
+
+const MDObject &MetaDataVec::getValue(MDLabel label, size_t id) const {
+    return this->_getObject(this->_rowIndexSafe(id), label);
+}
+
 std::unique_ptr<MDRow> MetaDataVec::getRow(size_t id) {
     int i = this->_rowIndex(id);
     if (i < 0)

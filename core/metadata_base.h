@@ -320,6 +320,7 @@ public:
      */
     virtual bool setValue(const MDObject &mdValueIn, size_t id) = 0;
     virtual bool getValue(MDObject &mdValueOut, size_t id) const = 0;
+    // FIXME: deprecated; this function should return MDObject, it is const-unsafe
 
     /** Get the value of some label.
      * from the object that has id 'objectId'
