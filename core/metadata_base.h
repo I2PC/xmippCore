@@ -360,26 +360,34 @@ public:
     /** Get all values of a column as a vector.
      */
     template<class T>
-    void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
+    std::vector<T> getColumnValues(const MDLabel label) const {
+        std::vector<T> result;
         T value;
         MDObject mdValueOut(label);
         std::vector<size_t> objectsId;
         findObjects(objectsId);
         size_t n = objectsId.size();
-        valuesOut.clear();
-        valuesOut.reserve(n);
-        for (size_t i = 0; i < n; ++i)
-        {
+        result.reserve(n);
+        for (size_t i = 0; i < n; ++i) {
             getValue(mdValueOut, objectsId[i]);
             mdValueOut.getValue(value);
-            valuesOut.emplace_back(value);
+            result.emplace_back(value);
         }
+        return result;
     }
 
+    // FIXME: deprecated
+    template<class T>
+    void getColumnValues(const MDLabel label, std::vector<T>& out) const {
+        out = this->getColumnValues<T>(label);
+    }
+
+    // FIXME: add proper return value
     virtual bool getRowValues(size_t id, std::vector<MDObject> &values) const = 0;
 
     /** Get all values of a column as a vector.
      */
+    // FIXME: add proper return value
     virtual void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const = 0;
 
     /** Set all values of a column as a vector.
