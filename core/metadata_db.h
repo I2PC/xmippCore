@@ -243,6 +243,11 @@ public:
     void getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const override;
 
     template<class T>
+    std::vector<T> getColumnValues(const MDLabel label) const {
+        return MetaData::getColumnValues<T>(label);
+    }
+
+    template<class T>
     void getColumnValues(const MDLabel label, std::vector<T> &valuesOut) const {
         return MetaData::getColumnValues(label, valuesOut);
     }
