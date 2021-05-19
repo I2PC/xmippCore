@@ -510,12 +510,14 @@ bool MDObject::operator<=(const MDObject &obj) const {
     // FIXME: allow to compare e.g. int & double & longint
     if (this->type == LABEL_INT)
         return this->data.intValue <= obj.data.intValue;
-    else if (this->type == LABEL_BOOL)
+    if (this->type == LABEL_BOOL)
         return this->data.boolValue <= obj.data.boolValue;
-    else if (this->type == LABEL_SIZET)
+    if (this->type == LABEL_SIZET)
         return this->data.longintValue <= obj.data.longintValue;
-    else if (this->type == LABEL_DOUBLE)
+    if (this->type == LABEL_DOUBLE)
         return this->data.doubleValue <= obj.data.doubleValue;
+    if (this->type == LABEL_STRING)
+        return this->data.stringValue->compare(*obj.data.stringValue) <= 0;
 
     throw std::logic_error("MDObject: cannot compare this type on <=");
 }
