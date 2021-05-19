@@ -126,7 +126,7 @@ void MDRowVec::addLabel(MDLabel label) {
 size_t MDRowVec::newCol(const MDLabel label) {
     size_t i;
     if (_no_columns != nullptr)
-        i = ++(*_no_columns);
+        i = (*_no_columns)++;
     else
         i = _row->size();
 
