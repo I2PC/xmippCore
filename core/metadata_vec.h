@@ -197,6 +197,20 @@ public:
         return MetaData::getValue(label, valueOut, id);
     }
 
+    template<class T>
+    T getValue(const MDLabel label, size_t id) {
+        T res;
+        this->getValue(label, id).getValue(res);
+        return res;
+    }
+
+    template<class T>
+    const T getValue(const MDLabel label, size_t id) const {
+        T res;
+        this->getValue(label, id).getValue(res);
+        return res;
+    }
+
     std::unique_ptr<MDRow> getRow(size_t id) override;
     std::unique_ptr<const MDRow> getRow(size_t id) const override;
 
