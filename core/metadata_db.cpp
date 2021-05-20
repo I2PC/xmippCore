@@ -240,7 +240,10 @@ std::unique_ptr<MDRow> MetaDataDb::getRow(size_t id) {
 }
 
 std::unique_ptr<const MDRow> MetaDataDb::getRow(size_t id) const {
-    return std::move(getRow(id));
+    std::unique_ptr<MDRowSql> row(new MDRowSql());
+    if (!getRow(*row, id))
+        return nullptr;
+    return std::move(row);
 }
 
 MDRowSql MetaDataDb::getRowSql(size_t id) {
