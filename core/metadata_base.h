@@ -394,20 +394,11 @@ public:
      */
     template<class T>
     void setColumnValues(const MDLabel label, const std::vector<T> &valuesIn) {
-        bool addObjects=false;
-        if (size()==0)
-            addObjects=true;
-        if (valuesIn.size()!=size() && !addObjects)
+        if (valuesIn.size() != size())
             REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Input vector must be of the same size as the metadata");
-        if (!addObjects) {
-            size_t n = 0;
-            for (auto& row : *this)
-                row.setValue(label, valuesIn[n++]);
-        } else {
-            size_t nmax=valuesIn.size();
-            for (size_t n=0; n<nmax; ++n)
-                setValue(label, valuesIn[n], addObject());
-        }
+        size_t n = 0;
+        for (auto& row : *this)
+            row.setValue(label, valuesIn[n++]);
     }
 
     virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
