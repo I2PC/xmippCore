@@ -31,6 +31,7 @@
 #include "metadata_label.h"
 #include "metadata_object.h"
 #include "choose.h"
+#include <stdexcept>
 
 /** Get value */
 //    template <typename T >
