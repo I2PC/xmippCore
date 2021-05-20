@@ -353,6 +353,7 @@ void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
         labelIndex = this->_labelIndex(valuesIn[i].label);
         if (labelIndex < 0)
             throw ColumnDoesNotExist(); // internal error
+        this->_expand(this->_rows[i], valuesIn[i].label);
         this->_rows[i][labelIndex] = valuesIn[i];
     }
 }
