@@ -368,7 +368,8 @@ public:
         size_t n = objectsId.size();
         result.reserve(n);
         for (size_t i = 0; i < n; ++i) {
-            getValue(mdValueOut, objectsId[i]);
+            if (!getValue(mdValueOut, objectsId[i]))
+                throw std::logic_error("Column does not exist!");
             result.emplace_back(mdValueOut.getValue2(T()));
         }
         return result;
