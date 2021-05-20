@@ -44,6 +44,11 @@ MDRowSql& MDRowSql::operator = (const MDRowSql &row) {
     return *this;
 }
 
+MDRow& MDRowSql::operator = (const MDRow& row) {
+    *this = dynamic_cast<const MDRowSql&>(row);
+    return *this;
+}
+
 MDRowSql::MDRowSql(const std::vector<MDObject> &values) {
     _objects.fill(nullptr);
     for (size_t i = 0; i < values.size(); i++) {

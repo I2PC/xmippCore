@@ -54,6 +54,8 @@ public:
     virtual int size() const = 0; /** Return number of labels present */
     virtual void clear() = 0;
 
+    virtual MDRow& operator = (const MDRow&) = 0;
+
     virtual size_t id() const {
         return getObject(MDL_OBJID)->getValue2(size_t());
     }

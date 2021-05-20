@@ -84,6 +84,11 @@ MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
     return *this;
 }
 
+MDRow& MDRowVec::operator = (const MDRow& row) {
+    *this = dynamic_cast<const MDRowVec&>(row);
+    return *this;
+}
+
 MDRowVec::~MDRowVec() {
     if (!_in_metadata) {
         delete _row;

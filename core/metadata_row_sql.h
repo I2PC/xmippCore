@@ -49,6 +49,7 @@ public:
     ~MDRowSql();
     MDRowSql(const MDRowSql &row);
     MDRowSql(const std::vector<MDObject> &values);
+    MDRow& operator = (const MDRow&) override;
     MDRowSql& operator = (const MDRowSql &row);
 
     size_t id() const override { return this->_id; }

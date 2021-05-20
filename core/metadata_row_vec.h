@@ -57,6 +57,7 @@ public:
              const std::vector<MDLabel>& col_to_label, const size_t& no_columns);
     MDRowVec(const MDRowVec&);
     MDRowVec& operator = (const MDRowVec&);
+    MDRow& operator = (const MDRow& row);
     virtual ~MDRowVec();
 
     bool empty() const override;
