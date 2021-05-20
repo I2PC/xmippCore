@@ -54,9 +54,7 @@ public:
     virtual void clear() = 0;
 
     virtual size_t id() const {
-        size_t id;
-        getObject(MDL_OBJID)->getValue(id);
-        return id;
+        return getObject(MDL_OBJID)->getValue2(size_t());
     }
 
     virtual bool containsLabel(MDLabel label) const = 0;
@@ -85,21 +83,58 @@ public:
     virtual const MDObject* getObject(MDLabel label) const = 0;
 
     template <typename T>
-    bool getValue(MDLabel label, T &d) const {
+    T& getValue(MDLabel label) {
+        MDObject* ptr = getObject(label);
+        if (ptr == nullptr)
+            throw std::logic_error("Object does not exist!");
+        return ptr->getValue2(T());
+    }
+
+    template <typename T>
+    const T& getValue(MDLabel label) const {
+        const MDObject* ptr = getObject(label);
+        if (ptr == nullptr)
+            throw std::logic_error("Object does not exist!");
+        return *ptr;
+    }
+
+    template <typename T>
+    bool getValue(MDLabel label, T &d) const { // FIXME: deprecated
         auto *obj = getObject(label);
         if (obj == nullptr)
             return false;
-        obj->getValue(d);
+        d = obj->getValue2(T());
         return true;
     }
 
+    bool getValue(MDObject &object) const { // FIXME: deprecated
+        const MDObject* ptr = this->getObject(object.label);
+        if (ptr != nullptr)
+            object = *ptr;
+        return (ptr != nullptr);
+    }
+
+    template <typename T>
+    const T& getValueOrDefault(MDLabel label, const T& def) const {
+        const MDObject* ptr = getObject(label);
+        if (ptr == nullptr)
+            return def;
+        return ptr->getValue2(T());
+    }
+
+    template <typename T>
+    T& getValueOrDefault(MDLabel label, const T& def) {
+        const MDObject* ptr = getObject(label);
+        if (ptr == nullptr)
+            return def;
+        return ptr->getValue2(T());
+    }
+
     template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const {
+    void getValueOrDefault(MDLabel label, T &d, T1 def) const { // FIXME: deprecated
         if (!getValue(label, d))
             d = (T) def;
     }
-
-    virtual bool getValue(MDObject &object) const = 0;
 
     template <typename T>
     void setValue(MDLabel label, const T &d, bool addLabel = true) {

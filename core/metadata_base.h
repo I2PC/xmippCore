@@ -341,7 +341,7 @@ public:
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
             return false;
-        mdValueOut.getValue(valueOut);
+        valueOut = mdValueOut.getValue2(T());
         return true;
     }
 
@@ -362,7 +362,6 @@ public:
     template<class T>
     std::vector<T> getColumnValues(const MDLabel label) const {
         std::vector<T> result;
-        T value;
         MDObject mdValueOut(label);
         std::vector<size_t> objectsId;
         findObjects(objectsId);
@@ -370,8 +369,7 @@ public:
         result.reserve(n);
         for (size_t i = 0; i < n; ++i) {
             getValue(mdValueOut, objectsId[i]);
-            mdValueOut.getValue(value);
-            result.emplace_back(value);
+            result.emplace_back(mdValueOut.getValue2(T()));
         }
         return result;
     }

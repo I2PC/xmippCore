@@ -71,7 +71,6 @@ public:
     MDObject *getObject(MDLabel label) override;
     const MDObject *getObject(MDLabel label) const override;
 
-    bool getValue(MDObject &object) const override;
     void setValue(const MDObject &object) override;
 
     friend std::ostream& operator << (std::ostream &out, const MDRowVec &row);
@@ -79,13 +78,29 @@ public:
     // Templated functions from based class must be retemplated
 
     template <typename T>
-    bool getValue(MDLabel label, T &d) const { return MDRow::getValue(label, d); }
-
-    template <typename T, typename T1>
-    void getValueOrDefault(MDLabel label, T &d, T1 def) const { return MDRow::getValueOrDefault(label, d, def); }
+    T& getValue(MDLabel label) { return MDRow::getValue<T>(label); }
 
     template <typename T>
-    void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue(label, d, addLabel); }
+    const T& getValue(MDLabel label) const { return MDRow::getValue<T>(label); }
+
+    template <typename T>
+    bool getValue(MDLabel label, T &d) const { // FIXME: deprecated
+        return MDRow::getValue<T>(label, d);
+    }
+
+    template <typename T>
+    const T& getValueOrDefault(MDLabel label, const T& def) const { return MDRow::getValueOrDefault<T>(label, def); }
+
+    template <typename T>
+    T& getValueOrDefault(MDLabel label, const T& def) { return MDRow::getValueOrDefault<T>(label, def); }
+
+    template <typename T, typename T1>
+    void getValueOrDefault(MDLabel label, T &d, T1 def) const { // FIXME: deprecated
+        return MDRow::getValueOrDefault<T, T1>(label, d, def);
+    }
+
+    template <typename T>
+    void setValue(MDLabel label, const T &d, bool addLabel = true) { return MDRow::setValue<T>(label, d, addLabel); }
 
     friend class MetaDataVec;
 };

@@ -326,18 +326,14 @@ bool MetaDataVec::getRowValues(size_t id, std::vector<MDObject> &values) const {
 }
 
 size_t MetaDataVec::getRowId(size_t i) const {
-    size_t id;
-    this->_getObject(i, MDL_OBJID).getValue(id);
-    return id;
+    return this->_getObject(i, MDL_OBJID).getValue2(size_t());
 }
 
 size_t MetaDataVec::getRowId(const MetaDataVecRow& row) const {
     int labelIndex = _labelIndex(MDL_OBJID);
     if (labelIndex < 0)
         throw ColumnDoesNotExist();
-    size_t id;
-    row.at(labelIndex).getValue(id);
-    return id;
+    return row.at(labelIndex).getValue2(size_t());
 }
 
 void MetaDataVec::getColumnValues(const MDLabel label, std::vector<MDObject> &valuesOut) const {
@@ -408,6 +404,7 @@ bool MetaDataVec::removeLabel(const MDLabel label) {
             this->_col_to_label[this->_label_to_col[i]] = MDLabel(i);
         }
     }
+    this->_no_columns--;
     return true;
 }
 

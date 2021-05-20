@@ -94,33 +94,52 @@ public:
     /// Destructor
     ~MDObject();
 
-    //These getValue also do a compilation type checking
+    //These getValue2 also do a compilation type checking
     //when expanding templates functions and only
     //will allow the supported types
     //TODO: think if the type check if needed here
-    void  getValue(int &iv) const;
-    void  getValue(double &dv) const;
-    void  getValue(bool &bv) const;
-    void  getValue(String &sv) const;
-    void  getValue(std::vector<double> &vv) const;
-    void  getValue(std::vector<size_t> &vv) const;
-    void  getValue(size_t &lv) const;
-    void  getValue(float &floatvalue) const;
+
+    // FIXME: methods below were orignally marked 'getValue', nowever they
+    // took value via parameter and set value to parameter. This behavior has
+    // changed. To force the programmer to read value from return type (no
+    // from parameter), mehotds were temporary renamed, because compiler would
+    // not otherwise fail. When whole xmipp is compiled and all occurenced of
+    // old 'getValue' are replaced with 'getValue2', these methods could be
+    // renamed back to 'getValue'.
+
+    const int& getValue2(int) const;
+    const double& getValue2(double) const;
+    const bool&  getValue2(bool) const;
+    const String& getValue2(String) const;
+    const std::vector<double>& getValue2(std::vector<double>) const;
+    const std::vector<size_t>& getValue2(std::vector<size_t>) const;
+    const size_t& getValue2(size_t) const;
+    const float getValue2(float) const;
+
+    int& getValue2(int);
+    double& getValue2(double);
+    bool&  getValue2(bool);
+    String& getValue2(String);
+    std::vector<double>& getValue2(std::vector<double>);
+    std::vector<size_t>& getValue2(std::vector<size_t>);
+    size_t& getValue2(size_t);
+    float getValue2(float);
+
     /**
-     * Do not use getValue with char, use string.
+     * Do not use getValue2 with char, use string.
      * chars are banned from metadata class.
      */
-    void  getValue(char*  &charvalue) const = delete;
+    void getValue2(char*) const = delete;
 
-    void  setValue(const int &iv);
-    void  setValue(const double &dv);
-    void  setValue(const bool &bv);
-    void  setValue(const String &sv);
-    void  setValue(const std::vector<double> &vv);
-    void  setValue(const std::vector<size_t> &vv);
-    void  setValue(const size_t &lv);
-    void  setValue(const float &floatvalue);
-    void  setValue(const char*  &charvalue);
+    void setValue(const int &iv);
+    void setValue(const double &dv);
+    void setValue(const bool &bv);
+    void setValue(const String &sv);
+    void setValue(const std::vector<double> &vv);
+    void setValue(const std::vector<size_t> &vv);
+    void setValue(const size_t &lv);
+    void setValue(const float &floatvalue);
+    void setValue(const char*  &charvalue);
     void toStream(std::ostream &os, bool withFormat = false, bool isSql=false, bool escape=true) const;
     String toString(bool withFormat = false, bool isSql=false) const;
     bool fromStream(std::istream &is, bool fromString=false);

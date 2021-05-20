@@ -199,16 +199,12 @@ public:
 
     template<class T>
     T getValue(const MDLabel label, size_t id) {
-        T res;
-        this->getValue(label, id).getValue(res);
-        return res;
+        return this->getValue(label, id).getValue2(T());
     }
 
     template<class T>
     const T getValue(const MDLabel label, size_t id) const {
-        T res;
-        this->getValue(label, id).getValue(res);
-        return res;
+        return this->getValue(label, id).getValue2(T());
     }
 
     std::unique_ptr<MDRow> getRow(size_t id) override;

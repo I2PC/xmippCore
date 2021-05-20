@@ -1310,22 +1310,16 @@ void MetaDataDb::aggregateSingleSizeT(MDObject &mdValueOut, AggregateOperation o
 
 double MetaDataDb::getColumnMax(MDLabel column)
 {
-    double max;
     MDObject result(column);
     aggregateSingle(result, AGGR_MAX, column);
-    result.getValue(max);
-    return max;
-
+    return result.getValue2(double());
 }
 
 double MetaDataDb::getColumnMin(MDLabel column)
 {
-    double min;
     MDObject result(column);
     aggregateSingle(result, AGGR_MIN, column);
-    result.getValue(min);
-    return min;
-
+    return result.getValue2(double());
 }
 
 

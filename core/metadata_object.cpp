@@ -172,50 +172,87 @@ MDObject::~MDObject()
         delete data.vectorValueLong;
 }
 
-//These getValue also do a compilation type checking
+//These getValue2 also do a compilation type checking
 //when expanding templates functions and only
 //will allow the supported types
 //TODO: think if the type check if needed here
-void MDObject::getValue(int &iv) const
-{
+
+int& MDObject::getValue2(int) {
     labelTypeCheck(LABEL_INT);
-    iv = this->data.intValue;
+    return this->data.intValue;
 }
-void MDObject::getValue(double &dv) const
-{
+
+const int& MDObject::getValue2(int ) const {
+    labelTypeCheck(LABEL_INT);
+    return this->data.intValue;
+}
+
+double& MDObject::getValue2(double) {
     labelTypeCheck(LABEL_DOUBLE);
-    dv = this->data.doubleValue;
+    return this->data.doubleValue;
 }
-void MDObject::getValue(bool &bv) const
-{
+
+const double& MDObject::getValue2(double) const {
+    labelTypeCheck(LABEL_DOUBLE);
+    return this->data.doubleValue;
+}
+
+bool& MDObject::getValue2(bool) {
     labelTypeCheck(LABEL_BOOL);
-    bv = this->data.boolValue;
+    return this->data.boolValue;
 }
-void MDObject::getValue(String &sv) const
-{
+
+const bool& MDObject::getValue2(bool) const {
+    labelTypeCheck(LABEL_BOOL);
+    return this->data.boolValue;
+}
+
+String& MDObject::getValue2(String) {
     labelTypeCheck(LABEL_STRING);
-    sv = *(this->data.stringValue);
+    return *(this->data.stringValue);
 }
-void  MDObject::getValue(std::vector<double> &vv) const
-{
+
+const String& MDObject::getValue2(String) const {
+    labelTypeCheck(LABEL_STRING);
+    return *(this->data.stringValue);
+}
+
+std::vector<double>& MDObject::getValue2(std::vector<double>) {
     labelTypeCheck(LABEL_VECTOR_DOUBLE);
-    vv = *(this->data.vectorValue);
+    return *(this->data.vectorValue);
 }
-void  MDObject::getValue(std::vector<size_t> &vv) const
-{
+
+const std::vector<double>& MDObject::getValue2(std::vector<double>) const {
+    labelTypeCheck(LABEL_VECTOR_DOUBLE);
+    return *(this->data.vectorValue);
+}
+
+std::vector<size_t>& MDObject::getValue2(std::vector<size_t>) {
     labelTypeCheck(LABEL_VECTOR_SIZET);
-    vv = *(this->data.vectorValueLong);
+    return *(this->data.vectorValueLong);
 }
-void MDObject::getValue(size_t &lv) const
-{
+
+const std::vector<size_t>& MDObject::getValue2(std::vector<size_t>) const {
+    labelTypeCheck(LABEL_VECTOR_SIZET);
+    return *(this->data.vectorValueLong);
+}
+
+size_t& MDObject::getValue2(size_t) {
     labelTypeCheck(LABEL_SIZET);
-    lv = this->data.longintValue;
+    return this->data.longintValue;
 }
-void MDObject::getValue(float &floatvalue) const
-{
-    double tmp;
-    getValue(tmp);
-    floatvalue = (float) tmp;
+
+const size_t& MDObject::getValue2(size_t) const {
+    labelTypeCheck(LABEL_SIZET);
+    return this->data.longintValue;
+}
+
+float MDObject::getValue2(float) {
+    return getValue2(0.); // double
+}
+
+const float MDObject::getValue2(float) const {
+    return getValue2(0.); // double
 }
 
 void MDObject::setValue(const int &iv)
@@ -223,6 +260,7 @@ void MDObject::setValue(const int &iv)
     labelTypeCheck(LABEL_INT);
     this->data.intValue = iv;
 }
+
 void MDObject::setValue(const double &dv)
 {
     labelTypeCheck(LABEL_DOUBLE);
@@ -240,25 +278,30 @@ void MDObject::setValue(const String &sv)
     labelTypeCheck(LABEL_STRING);
     *(this->data.stringValue) = sv;
 }
+
 void  MDObject::setValue(const std::vector<double> &vv)
 {
     labelTypeCheck(LABEL_VECTOR_DOUBLE);
     *(this->data.vectorValue) = vv;
 }
+
 void  MDObject::setValue(const std::vector<size_t> &vv)
 {
     labelTypeCheck(LABEL_VECTOR_SIZET);
     *(this->data.vectorValueLong) = vv;
 }
+
 void MDObject::setValue(const size_t &lv)
 {
     labelTypeCheck(LABEL_SIZET);
     this->data.longintValue = lv;
 }
+
 void MDObject::setValue(const float &floatvalue)
 {
     setValue((double) floatvalue);
 }
+
 void MDObject::setValue(const char*  &charvalue)
 {
     setValue(String(charvalue));

@@ -160,16 +160,6 @@ const MDObject *MDRowVec::getObject(MDLabel label) const {
     return &_row->at((*_label_to_col)[label]);
 }
 
-bool MDRowVec::getValue(MDObject &object) const {
-    MDLabel _label = object.label;
-    if ((*_label_to_col)[_label] < 0)
-        return false;
-    if ((*_label_to_col)[_label] >= static_cast<int>(_row->size()))
-        return false;
-    object.copy(_row->at((*_label_to_col)[_label]));
-    return true;
-}
-
 void MDRowVec::setValue(const MDObject &object) {
     MDLabel _label = object.label;
     size_t coli = (*_label_to_col)[_label];

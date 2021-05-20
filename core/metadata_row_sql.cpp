@@ -107,14 +107,6 @@ MDObject *MDRowSql::getObject(MDLabel label) {
     return _objects[label];
 }
 
-bool MDRowSql::getValue(MDObject &object) const {
-    int _label = object.label;
-    if (_objects[_label] == nullptr)
-        return false;
-    object.copy(*(_objects[_label]));
-    return true;
-}
-
 void MDRowSql::setValue(const MDObject &object) {
     int _label = object.label;
     if (_objects[_label] == nullptr) {
