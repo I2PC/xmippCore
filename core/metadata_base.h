@@ -397,8 +397,8 @@ public:
         if (valuesIn.size() != size())
             REPORT_ERROR(ERR_MD_OBJECTNUMBER, "Input vector must be of the same size as the metadata");
         size_t n = 0;
-        for (auto& row : *this)
-            row.setValue(label, valuesIn[n++]);
+        for (size_t objId : this->ids())
+            this->setValue(label, valuesIn[n++], objId);
     }
 
     virtual void setColumnValues(const std::vector<MDObject> &valuesIn) = 0;
