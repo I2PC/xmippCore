@@ -51,15 +51,18 @@ void ImageBase::init()
 }
 
 void ImageBase::copy(const ImageBase& other) {
-    mdaBase = other.mdaBase;
     MDMainHeader = other.MDMainHeader;
-
-    for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
-        const MDRow& row = *rowPtr;
-        if (dynamic_cast<MDRowVec*>(rowPtr.get()) != nullptr)
-            MD.push_back(std::unique_ptr<MDRow>(new MDRowVec(dynamic_cast<const MDRowVec&>(row))));
-        if (dynamic_cast<MDRowSql*>(rowPtr.get()) != nullptr)
-            MD.push_back(std::unique_ptr<MDRow>(new MDRowSql(dynamic_cast<const MDRowSql&>(row))));
+    MD.clear();
+    MD.reserve(other.MD.size());
+    if ((other.MD.size() > 0) && (dynamic_cast<MDRowVec*>(other.MD[0].get()) != nullptr))
+        for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
+            const MDRow& row = *rowPtr;
+            MD.emplace_back(std::unique_ptr<MDRow>(new MDRowVec(dynamic_cast<const MDRowVec&>(row))));
+    }
+    if ((other.MD.size() > 0) && (dynamic_cast<MDRowSql*>(other.MD[0].get()) != nullptr))
+        for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
+            const MDRow& row = *rowPtr;
+            MD.emplace_back(std::unique_ptr<MDRow>(new MDRowSql(dynamic_cast<const MDRowSql&>(row))));
     }
 
     filename = other.filename;
