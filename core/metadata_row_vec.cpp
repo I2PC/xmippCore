@@ -67,6 +67,22 @@ MDRowVec::MDRowVec(const MDRowVec &other)
     }
 }
 
+MDRowVec MDRowVec::deepCopy(const MDRowVec& row) {
+    MDRowVec newRow(row);
+    if (newRow._in_metadata)
+        newRow.detach();
+    return newRow;
+}
+
+void MDRowVec::detach() {
+    if (!this->_in_metadata)
+        return;
+
+    this->_in_metadata = false;
+    this->_row = new std::vector<MDObject>(*(this->_row));
+    this->_label_to_col = new std::array<int, MDL_LAST_LABEL>(*(this->_label_to_col));
+}
+
 MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
     _rowi = other._rowi;
     _no_columns = other._no_columns;

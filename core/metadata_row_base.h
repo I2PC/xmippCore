@@ -50,6 +50,8 @@
 /** Abstract class (API) for holding an entire row of posible MDObject */
 class MDRow {
 public:
+    virtual void detach() {}
+
     virtual bool empty() const = 0;
     virtual int size() const = 0; /** Return number of labels present */
     virtual void clear() = 0;

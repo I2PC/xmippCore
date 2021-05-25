@@ -50,6 +50,8 @@ private:
     size_t newCol(const MDLabel);
 
 public:
+    static MDRowVec deepCopy(const MDRowVec&);
+
     MDRowVec();
     MDRowVec(std::vector<MDObject>& row, size_t rowi, std::array<int, MDL_LAST_LABEL>& label_to_col,
              std::vector<MDLabel>& col_to_label, size_t& no_columns);
@@ -59,6 +61,8 @@ public:
     MDRowVec& operator = (const MDRowVec&);
     MDRow& operator = (const MDRow& row);
     virtual ~MDRowVec();
+
+    void detach() override;
 
     bool empty() const override;
     int size() const override;
