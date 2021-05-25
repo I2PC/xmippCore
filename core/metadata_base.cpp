@@ -149,6 +149,7 @@ void MetaData::clear() {
     _inFile = FileName();
     _precision = 1000;
     _maxRows = 0;
+    _parsedLines = 0;
 }
 
 void MetaData::copyInfo(const MetaData& md) {
