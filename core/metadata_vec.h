@@ -335,7 +335,7 @@ public:
      */
 
     /** Write rows data to disk. */
-    void _writeRows(std::ostream &os) const;
+    void _writeRows(std::ostream &os) const override;
 
     /** Write metadata to disk. Guess blockname from filename
      * @code
@@ -348,15 +348,6 @@ public:
     /** Write metadata to out stream
      */
     void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const;
-
-    /** Append data lines to file.
-     * This function can be used to add new data to
-     * an existing metadata. Now should be used with
-     * files with only one metadata, maybe can be extended later.
-     * For now it will not check any compatibility beetween the
-     * existent metadata and the new data to append.
-     */
-    void append(const FileName &outFile) const;
 
     /** Read metadata from xml file
      *

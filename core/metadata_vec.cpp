@@ -644,11 +644,6 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
     }
 }
 
-void MetaDataVec::append(const FileName &outFile) const {
-    // TODO
-    throw NotImplemented("append not implemented");
-}
-
 void MetaDataVec::_parseObjects(std::istream &is, std::vector<MDObject*> &columnValues,
                                 const std::vector<MDLabel> *desiredLabels, bool firstTime) {
     for (size_t i = 0; i < columnValues.size(); i++) {

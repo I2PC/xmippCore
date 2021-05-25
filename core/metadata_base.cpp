@@ -632,3 +632,15 @@ void MetaData::writeStar(const FileName &outFile, const String & blockName, Writ
     REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
 #endif
 }
+
+void MetaData::append(const FileName &outFile) const
+{
+    if (outFile.exists())
+    {
+        std::ofstream ofs(outFile.c_str(), std::ios_base::app);
+        _writeRows(ofs);
+        ofs.close();
+    }
+    else
+        write(outFile);
+}

@@ -523,9 +523,20 @@ public:
      * @{
      */
 
+    virtual void _writeRows(std::ostream &os) const = 0;
+
     virtual void write(const FileName &outFile, WriteModeMetaData mode=MD_OVERWRITE) const = 0;
     virtual void write(std::ostream &os, const String & blockName="",WriteModeMetaData mode=MD_OVERWRITE) const = 0;
     virtual void print() const { this->write(std::cout); }
+
+    /** Append data lines to file.
+     * This function can be used to add new data to
+     * an existing metadata. Now should be used with
+     * files with only one metadata, maybe can be extended later.
+     * For now it will not check any compatibility beetween the
+     * existent metadata and the new data to append.
+     */
+    void append(const FileName &outFile) const;
 
     /** Read data from file. Guess the blockname from the filename
      * @code

@@ -847,18 +847,6 @@ void MetaDataDb::write(const FileName &_outFile, WriteModeMetaData mode) const
     }
 }
 
-void MetaDataDb::append(const FileName &outFile) const
-{
-    if (outFile.exists())
-    {
-        std::ofstream ofs(outFile.c_str(), std::ios_base::app);
-        _writeRows(ofs);
-        ofs.close();
-    }
-    else
-        write(outFile);
-}
-
 void MetaDataDb::_writeRows(std::ostream &os) const
 {
     for (const auto& row : *this)
