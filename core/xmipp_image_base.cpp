@@ -54,15 +54,17 @@ void ImageBase::copy(const ImageBase& other) {
     MDMainHeader = other.MDMainHeader;
     MD.clear();
     MD.reserve(other.MD.size());
-    if ((other.MD.size() > 0) && (dynamic_cast<MDRowVec*>(other.MD[0].get()) != nullptr))
+    if ((other.MD.size() > 0) && (dynamic_cast<MDRowVec*>(other.MD[0].get()) != nullptr)) {
         for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
             const MDRow& row = *rowPtr;
             MD.emplace_back(std::unique_ptr<MDRow>(new MDRowVec(dynamic_cast<const MDRowVec&>(row))));
+        }
     }
-    if ((other.MD.size() > 0) && (dynamic_cast<MDRowSql*>(other.MD[0].get()) != nullptr))
+    if ((other.MD.size() > 0) && (dynamic_cast<MDRowSql*>(other.MD[0].get()) != nullptr)) {
         for (const std::unique_ptr<MDRow>& rowPtr : other.MD) {
             const MDRow& row = *rowPtr;
             MD.emplace_back(std::unique_ptr<MDRow>(new MDRowSql(dynamic_cast<const MDRowSql&>(row))));
+        }
     }
 
     filename = other.filename;
