@@ -304,10 +304,11 @@ void XmippMetadataProgram::showProgress()
 
 void XmippMetadataProgram::setupRowOut(const FileName &fnImgIn, const MDRow &rowIn, const FileName &fnImgOut, MDRow &rowOut) const
 {
-    if (keep_input_columns)
-        rowOut = rowIn;
-    else
-        rowOut.clear();
+    rowOut.clear();
+    if (keep_input_columns) {
+        for (const MDObject* col : rowIn)
+            rowOut.setValue(*col);
+    }
     rowOut.setValue(image_label, fnImgOut);
     rowOut.setValue(MDL_ENABLED, 1);
 
