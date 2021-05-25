@@ -232,8 +232,8 @@ size_t MetaDataVec::addRow(const MDRow &row) {
 
     assert(this->_id_to_index.find(rowId) == this->_id_to_index.end());
 
-    if (rowId == this->_next_id)
-        this->_next_id++;
+    if (rowId >= this->_next_id)
+        this->_next_id = rowId+1;
     this->_id_to_index[rowId] = _rows.size()-1;
     return rowId;
 }
