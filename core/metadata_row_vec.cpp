@@ -82,6 +82,7 @@ void MDRowVec::detach() {
     this->_row = new std::vector<MDObject>(*(this->_row));
     this->_label_to_col = new std::array<int, MDL_LAST_LABEL>(*(this->_label_to_col));
     this->_col_to_label = nullptr;
+    this->_no_columns = nullptr;
 }
 
 MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
