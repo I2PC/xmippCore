@@ -141,7 +141,7 @@ protected:
     /** This two variables will be used to read the metadata information (labels and size)
      * or maybe a few rows only
      */
-    size_t _maxRows, _parsedLines;
+    size_t _maxRows = 0, _parsedLines = 0;
 
     void copyInfo(const MetaData& md);
     double precision() const;

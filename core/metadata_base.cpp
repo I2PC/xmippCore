@@ -148,7 +148,6 @@ void MetaData::clear() {
     _isColumnFormat = true;
     _inFile = FileName();
     _precision = 1000;
-    _maxRows = 0;
     _parsedLines = 0;
 }
 
