@@ -73,10 +73,15 @@ MetaDataVec& MetaDataVec::operator=(const MetaData &md) {
 
 void MetaDataVec::init(const std::vector<MDLabel> &labelsVector) {
     this->clear();
-    size_t col = 0;
+    _label_to_col[MDL_OBJID] = 0;
+    _col_to_label.push_back(MDL_OBJID);
+    size_t col = 1;
     for (const auto label : labelsVector) {
-        _label_to_col[label] = col;
-        col++;
+        if (label != MDL_OBJID) {
+            _label_to_col[label] = col;
+            _col_to_label.push_back(label);
+            col++;
+        }
     }
     _no_columns = col;
 }
@@ -181,6 +186,21 @@ void MetaDataVec::clear() {
 }
 
 void MetaDataVec::_setRow(const MDRow &row, size_t index) {
+    size_t newRowSize = 0;
+    for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
+        MDLabel label = static_cast<MDLabel>(labeli);
+        if (row.containsLabel(label)) {
+            if (!this->containsLabel(label))
+                newRowSize = this->size();
+            else if (this->_label_to_col[label]+1 > newRowSize)
+                newRowSize = this->_label_to_col[label]+1;
+        }
+    }
+
+    for (size_t column = 0; (column < this->_col_to_label.size()) && (column < newRowSize); ++column)
+        if ((this->_col_to_label[column] != MDL_OBJID) && (!row.containsLabel(this->_col_to_label[column])))
+            throw ColumnDoesNotExist("New row does not contain required MetaData columns!");
+
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
         if (row.containsLabel(label) && !this->containsLabel(label))

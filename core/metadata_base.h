@@ -111,6 +111,7 @@ public:
 class ColumnDoesNotExist : public std::logic_error {
 public:
     ColumnDoesNotExist() : std::logic_error("Column does not exist") {};
+    ColumnDoesNotExist(const std::string& str) : std::logic_error(str) {};
 };
 
 /** Class to manage data files.
