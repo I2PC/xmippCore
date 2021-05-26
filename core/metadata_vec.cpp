@@ -1,5 +1,5 @@
 /**************************************************************************
- *
+ i
  * Authors:      J.R. Bilbao-Castro (jrbcast@ace.ual.es)
  *               Jan Horacek (xhorace4@fi.muni.cz)
  *
@@ -598,10 +598,12 @@ void MetaDataVec::_writeRows(std::ostream &os) const {
     for (const MetaDataVecRow& row : this->_rows) {
         for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
             const MDLabel label = static_cast<MDLabel>(i);
-            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1) &&
-                (this->_labelIndex(label) < static_cast<int>(row.size()))) {
+            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1)) {
                 os.width(1);
-                this->_getObject(row, label).toStream(os, true);
+                if (this->_labelIndex(label) < static_cast<int>(row.size()))
+                    this->_getObject(row, label).toStream(os, true);
+                else
+                    os << "ERR";
                 os << " ";
             }
         }
@@ -637,10 +639,12 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
 
         for (size_t i = 0; i < MDL_LAST_LABEL; i++) {
             const MDLabel label = static_cast<MDLabel>(i);
-            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1) &&
-                (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))) {
+            if ((label != MDL_STAR_COMMENT) && (label != MDL_OBJID) && (this->_label_to_col[i] > -1)) {
                 os << " _" << MDL::label2Str(label) << " ";
-                this->_getObject(0, label).toStream(os);
+                if (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))
+                    this->_getObject(this->_rows[0], label).toStream(os);
+                else
+                    os << "ERR";
                 os << '\n';
             }
         }
