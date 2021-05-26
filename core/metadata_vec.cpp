@@ -248,11 +248,14 @@ int MetaDataVec::getMaxStringLength(const MDLabel thisLabel) const {
 }
 
 bool MetaDataVec::setValueCol(const MDObject &mdValueIn) {
-    int labelIndex = this->_labelIndex(mdValueIn.label);
-    if (labelIndex < 0)
-        return false;
-    for (auto& vecRow : this->_rows)
-        vecRow.at(labelIndex) = mdValueIn;
+    const auto &label = mdValueIn.label;
+    int labelIndex = this->_labelIndex(label);
+    if (labelIndex < 0) {
+        this->addLabel(label);
+        labelIndex = this->_labelIndex(label);
+        for (auto &r : _rows) _expand(r, labelIndex);
+    }
+    for (auto &r : _rows) r[labelIndex] = mdValueIn;
     return true;
 }
 
