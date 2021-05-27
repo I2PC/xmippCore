@@ -154,15 +154,20 @@ size_t MDRowVec::newCol(const MDLabel label) {
         i = _row->size();
 
     if (_col_to_label != nullptr) {
-        (*_col_to_label)[i] = label;
         while (_row->size() < i) {
             size_t j = _row->size();
-            _row->emplace_back(MDObject((*_col_to_label)[j]));
+            _row->emplace_back(MDObject((*_col_to_label).at(j)));
+        }
+        if (i < (*_col_to_label).size()) {
+            (*_col_to_label).at(i) = label;
+        } else {
+            assert(i == (*_col_to_label).size());
+            (*_col_to_label).push_back(label);
         }
     }
 
     assert(_row->size() == i);
-    (*_label_to_col)[label] = i;
+    (*_label_to_col).at(label) = i;
     _row->emplace_back(MDObject(label));
     return i;
 }
