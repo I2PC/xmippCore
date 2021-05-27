@@ -338,7 +338,23 @@ public:
      * @endcode
      */
     template<class T>
-    bool getValue(const MDLabel label, T &valueOut, size_t id) const {
+    const T& getValue(const MDLabel label, size_t id) const {
+        MDObject mdValueOut(label);
+        if (!getValue(mdValueOut, id))
+            throw ObjectDoesNotExist();
+        return mdValueOut.getValue2(T());
+    }
+
+    template<class T>
+    T& getValue(const MDLabel label, size_t id) {
+        MDObject mdValueOut(label);
+        if (!getValue(mdValueOut, id))
+            throw ObjectDoesNotExist();
+        return mdValueOut.getValue2(T());
+    }
+
+    template<class T>
+    bool getValue(const MDLabel label, T &valueOut, size_t id) const { // FIXME: deprecated
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
             return false;
@@ -347,13 +363,39 @@ public:
     }
 
     template<class T>
-    void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const {
+    const T& getValueOrAbort(const MDLabel label, size_t id) const {
+        return getValue<T>(label, id);
+    }
+
+    template<class T>
+    T& getValueOrAbort(const MDLabel label, size_t id) {
+        return getValue<T>(label, id);
+    }
+
+    template<class T>
+    void getValueOrAbort(const MDLabel label, T &valueOut, size_t id) const { // FIXME: deprecated
         if (!getValue(label, valueOut,id))
             REPORT_ERROR(ERR_ARG_MISSING,(String)"Cannot find label: " + MDL::label2Str(label));
     }
 
+    template <typename T>
+    const T& getValueOrDefault(const MDLabel label, size_t id, const T &_default) const {
+        MDObject mdValueOut(label);
+        if (!getValue(mdValueOut, id))
+            return _default;
+        return mdValueOut.getValue2(T());
+    }
+
+    template <typename T>
+    T& getValueOrDefault(const MDLabel label, size_t id, T &_default) {
+        MDObject mdValueOut(label);
+        if (!getValue(mdValueOut, id))
+            return _default;
+        return mdValueOut.getValue2(T());
+    }
+
     template <typename T, typename T1>
-    void getValueOrDefault(const MDLabel label, T &valueOut, size_t id, const T1 &_default) const {
+    void getValueOrDefault(const MDLabel label, T &valueOut, size_t id, const T1 &_default) const { // FIXME: deprecated
         if (!getValue(label, valueOut,id))
             valueOut = (T) _default;
     }
