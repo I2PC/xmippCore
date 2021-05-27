@@ -100,7 +100,7 @@ public:
         const MDObject* ptr = getObject(label);
         if (ptr == nullptr)
             throw std::logic_error("Object does not exist!");
-        return *ptr;
+        return ptr->getValue2(T());
     }
 
     template <typename T>
