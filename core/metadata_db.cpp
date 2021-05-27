@@ -849,14 +849,17 @@ void MetaDataDb::write(const FileName &_outFile, WriteModeMetaData mode) const
 
 void MetaDataDb::_writeRows(std::ostream &os) const
 {
+
+    auto sortedLabels = this->_activeLabels;
+    std::sort(sortedLabels.begin(), sortedLabels.end());    
     for (const auto& row : *this)
     {
-        for (size_t i = 0; i < this->_activeLabels.size(); i++)
+        for (size_t i = 0; i < sortedLabels.size(); i++)
         {
-            if (this->_activeLabels[i] != MDL_STAR_COMMENT)
+            if (sortedLabels[i] != MDL_STAR_COMMENT)
             {
                 os.width(1);
-                row.getObject(this->_activeLabels[i])->toStream(os, true);
+                row.getObject(sortedLabels[i])->toStream(os, true);
                 os << " ";
             }
         }
@@ -880,10 +883,11 @@ void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaDa
         //write md columns in 3rd comment line of the header
         os << _szBlockName << '\n';
         os << "loop_" << '\n';
-        const auto noOfLabels = this->_activeLabels.size();
-        for (size_t i = 0; i < noOfLabels; i++)
+        auto sortedLabels = this->_activeLabels;
+        std::sort(sortedLabels.begin(), sortedLabels.end());
+        for (size_t i = 0; i < sortedLabels.size(); i++)
         {
-            const auto &label = this->_activeLabels.at(i);
+            const auto &label = sortedLabels.at(i);
             if (label != MDL_STAR_COMMENT)
             {
                 os << " _" << MDL::label2Str(label) << '\n';
@@ -902,13 +906,14 @@ void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaDa
 
         if (id != BAD_OBJID)
         {
-            const auto noOfLabels = this->_activeLabels.size();
-            for (size_t i = 0; i < noOfLabels; i++)
+            auto sortedLabels = this->_activeLabels;
+            std::sort(sortedLabels.begin(), sortedLabels.end());
+            for (size_t i = 0; i < sortedLabels.size(); i++)
             {
-                const auto &label = this->_activeLabels.at(i);
+                const auto &label = sortedLabels.at(i);
                 if (label != MDL_STAR_COMMENT)
                 {
-                    MDObject mdValue(this->_activeLabels[i]);
+                    MDObject mdValue(label);
                     os << " _" << MDL::label2Str(label) << " ";
                     myMDSql->getObjectValue(id, mdValue);
                     mdValue.toStream(os);
