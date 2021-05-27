@@ -50,7 +50,7 @@ protected:
     std::vector<MDLabel> _col_to_label;
     size_t _no_columns = 0;
     std::unordered_map<size_t, size_t> _id_to_index;
-    size_t _next_id = 0;
+    size_t _next_id = 1;
 
     /** Init, do some initializations tasks, used in constructors
      * @ingroup MetaDataConstructors

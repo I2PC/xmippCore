@@ -182,7 +182,7 @@ void MetaDataVec::clear() {
     this->_col_to_label.clear();
     this->_id_to_index.clear();
     this->_no_columns = 0;
-    this->_next_id = 0;
+    this->_next_id = 1;
 }
 
 void MetaDataVec::_setRow(const MDRow &row, size_t index) {
@@ -234,7 +234,7 @@ size_t MetaDataVec::addRow(const MDRow &row) {
     _rows.emplace_back(newRow);
     this->_setRow(row, _rows.size()-1);
 
-    if (!row.containsLabel(MDL_OBJID)) {
+    if ((!row.containsLabel(MDL_OBJID)) || (row.getValue<size_t>(MDL_OBJID) == BAD_OBJID)) {
         MetaDataVecRow& _row = this->_rows[_rows.size()-1];
         if (!this->containsLabel(MDL_OBJID))
             this->addLabel(MDL_OBJID);
