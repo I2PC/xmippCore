@@ -325,6 +325,26 @@ void XmippMetadataProgram::checkPoint()
 {
 }
 
+bool XmippMetadataProgram::getImageToProcess(size_t &objId)
+{
+    
+    if (nullptr == iter) {
+        iter = std::unique_ptr<MetaData::id_iterator>(new MetaData::id_iterator(mdIn->ids().begin()));
+        time_bar_done = 0;
+    } else {
+        if (*iter == mdIn->ids().end()) {
+            throw std::logic_error("Iterating behind the end of the metadata");
+        }
+        ++(*iter);
+    }
+    bool isValid = *iter != mdIn->ids().end();
+    if (isValid) {
+        ++time_bar_done;
+        objId = **iter;
+    }
+    return isValid;
+}
+
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
@@ -336,8 +356,6 @@ void XmippMetadataProgram::run()
 
     startProcessing();
 
-
-
     if (!oroot.empty())
     {
         if (oext.empty())
@@ -348,12 +366,13 @@ void XmippMetadataProgram::run()
         pathBaseName   = fullBaseName.getDir();
     }
 
-    size_t objIndex = 1; // start at 1
-    time_bar_done = 0;
-
-    for (const auto& row : *mdIn)
+    size_t objId;
+    size_t objIndex = 0;
+    while (getImageToProcess(objId))
     {
-        row.getValue(image_label, fnImg);
+        ++objIndex; //increment for composing starting at 1
+        auto rowIn = mdIn->getRow(objId);
+        rowIn->getValue(image_label, fnImg);
 
         if (fnImg.empty())
             break;
@@ -388,20 +407,18 @@ void XmippMetadataProgram::run()
             }
             else
                 fnImgOut = fnImg;
-            setupRowOut(fnImg, row, fnImgOut, rowOut);
+            setupRowOut(fnImg, *rowIn.get(), fnImgOut, rowOut);
         }
         else if (produces_a_metadata)
-            setupRowOut(fnImg, row, fnImgOut, rowOut);
+            setupRowOut(fnImg, *rowIn.get(), fnImgOut, rowOut);
 
-        processImage(fnImg, fnImgOut, row, rowOut);
+        processImage(fnImg, fnImgOut, *rowIn.get(), rowOut);
 
         if (each_image_produces_an_output || produces_a_metadata)
             mdOut.addRow(rowOut);
 
         checkPoint();
         showProgress();
-        objIndex++;
-        time_bar_done++;
     }
     wait();
 
