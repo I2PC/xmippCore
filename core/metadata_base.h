@@ -379,7 +379,7 @@ public:
     }
 
     template <typename T>
-    const T& getValueOrDefault(const MDLabel label, size_t id, const T &_default) const {
+    const T getValueOrDefault(const MDLabel label, size_t id, const T &_default) const {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
             return _default;
@@ -387,7 +387,7 @@ public:
     }
 
     template <typename T>
-    T& getValueOrDefault(const MDLabel label, size_t id, T &_default) {
+    T getValueOrDefault(const MDLabel label, size_t id, T &_default) {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
             return _default;
