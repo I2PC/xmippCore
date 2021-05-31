@@ -182,6 +182,7 @@ void XmippMetadataProgram::setup(MetaData *md, const FileName &out, const FileNa
     this->oroot = oroot;
     this->image_label = image_label;
     this->doRun = true;
+    this->iter = nullptr;
 
     if (remove_disabled)
         mdIn->removeDisabled();
@@ -327,7 +328,6 @@ void XmippMetadataProgram::checkPoint()
 
 bool XmippMetadataProgram::getImageToProcess(size_t &objId)
 {
-    
     if (nullptr == iter) {
         iter = std::unique_ptr<MetaData::id_iterator>(new MetaData::id_iterator(mdIn->ids().begin()));
         time_bar_done = 0;
