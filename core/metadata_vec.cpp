@@ -186,6 +186,13 @@ void MetaDataVec::clear() {
 }
 
 void MetaDataVec::_setRow(const MDRow &row, size_t index) {
+    if (dynamic_cast<const MDRowVec*>(&row) != nullptr) {
+        // No not change same row
+        const MDRowVec& mdRowVec = dynamic_cast<const MDRowVec&>(row);
+        if ((mdRowVec._in_metadata) && (mdRowVec._rowi == index) && (mdRowVec._row == &this->_rows[index]))
+            return;
+    }
+
     size_t newRowSize = 0;
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
