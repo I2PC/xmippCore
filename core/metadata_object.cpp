@@ -51,17 +51,20 @@ void MDObject::copy(const MDObject &obj)
     chr = obj.chr;
     if (type == LABEL_STRING)
     {
-        delete data.stringValue;
+        if (data.stringValue != nullptr)
+            delete data.stringValue;
         data.stringValue = new String(*(obj.data.stringValue));
     }
     else if (type == LABEL_VECTOR_DOUBLE)
     {
-        delete data.vectorValue;
+        if (data.vectorValue != nullptr)
+            delete data.vectorValue;
         data.vectorValue = new std::vector<double>(*(obj.data.vectorValue));
     }
     else if (type == LABEL_VECTOR_SIZET)
     {
-        delete data.vectorValueLong;
+        if (data.vectorValueLong != nullptr)
+            delete data.vectorValueLong;
         data.vectorValueLong = new std::vector<size_t>(*(obj.data.vectorValueLong));
     }
     else
