@@ -57,6 +57,7 @@ public:
     virtual void clear() = 0;
 
     virtual MDRow& operator = (const MDRow&) = 0;
+    virtual ~MDRow() = default;
 
     virtual size_t id() const {
         return getObject(MDL_OBJID)->getValue2(size_t());
