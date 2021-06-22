@@ -814,7 +814,7 @@ void MetaDataVec::sort(const MetaDataVec &MDin, const MDLabel sortLabel, bool as
         );
 
         this->_rows.erase(this->_rows.begin(), this->_rows.begin()+offset);
-        if (limit > 0)
+        if ((limit > 0) && (limit < this->_rows.size()))
             this->_rows.erase(this->_rows.begin()+limit, this->_rows.end());
 
         this->_recalc_id_to_index();
@@ -852,8 +852,7 @@ void MetaDataVec::selectRandomSubset(const MetaData &mdIn, size_t numberOfObject
 
 void MetaDataVec::selectPart(const MetaData &mdIn, size_t startPosition, size_t numberOfObjects,
                              const MDLabel sortLabel) {
-    // TODO
-    throw NotImplemented("selectPart not implemented");
+    this->sort(mdIn, sortLabel, true, numberOfObjects, startPosition);
 }
 
 /*void makeAbsPath(const MDLabel label=MDL_IMAGE);*/
