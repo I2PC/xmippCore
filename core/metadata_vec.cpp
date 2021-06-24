@@ -206,7 +206,8 @@ void MetaDataVec::_setRow(const MDRow &row, size_t index) {
 
     for (size_t column = 0; (column < this->_col_to_label.size()) && (column < newRowSize); ++column)
         if ((this->_col_to_label[column] != MDL_OBJID) && (!row.containsLabel(this->_col_to_label[column])))
-            throw ColumnDoesNotExist("New row does not contain required MetaData columns!");
+            throw ColumnDoesNotExist("New row does not contain required MetaData column: "+
+                                     MDL::label2Str(this->_col_to_label[column])+"!");
 
     for (size_t labeli = 0; labeli < MDL_LAST_LABEL; ++labeli) {
         MDLabel label = static_cast<MDLabel>(labeli);
