@@ -490,11 +490,11 @@ bool MetaDataVec::removeObject(size_t id) {
     if (i < 0)
         return false;
 
-    this->_id_to_index.erase(i);
+    this->_id_to_index.erase(id);
     this->_rows.erase(this->_rows.begin()+i);
 
     for (size_t j = i; j < this->_rows.size(); j++)
-        this->_id_to_index[this->getRowId(i)]--;
+        this->_id_to_index[this->getRowId(j)]--;
 
     return true;
 }
