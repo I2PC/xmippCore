@@ -101,14 +101,14 @@ MDObject& MetaDataVec::_getObject(size_t i, MDLabel label) {
 const MDObject& MetaDataVec::_getObject(const MetaDataVecRow& row, MDLabel label) const {
     int labelIndex = this->_labelIndex(label);
     if ((labelIndex < 0) || (static_cast<size_t>(labelIndex) >= row.size()))
-        throw ColumnDoesNotExist();
+        throw ColumnDoesNotExist(label, getFilename());
     return row.at(labelIndex);
 }
 
 MDObject& MetaDataVec::_getObject(MetaDataVecRow& row, MDLabel label) const {
     int labelIndex = this->_labelIndex(label);
     if (labelIndex < 0)
-        throw ColumnDoesNotExist();
+        throw ColumnDoesNotExist(label, getFilename());
     return row.at(labelIndex);
 }
 
@@ -121,7 +121,7 @@ int MetaDataVec::_rowIndex(size_t id) const {
 size_t MetaDataVec::_rowIndexSafe(size_t id) const {
     int i = this->_rowIndex(id);
     if (i == -1)
-        throw ObjectDoesNotExist();
+        throw ObjectDoesNotExist(id, getFilename());
     return i;
 }
 
@@ -363,7 +363,7 @@ size_t MetaDataVec::getRowId(size_t i) const {
 size_t MetaDataVec::getRowId(const MetaDataVecRow& row) const {
     int labelIndex = _labelIndex(MDL_OBJID);
     if (labelIndex < 0)
-        throw ColumnDoesNotExist();
+        throw ColumnDoesNotExist(MDL_OBJID, getFilename());
     return row.at(labelIndex).getValue2(size_t());
 }
 
@@ -371,7 +371,7 @@ void MetaDataVec::getColumnValues(const MDLabel label, std::vector<MDObject> &va
     valuesOut.clear();
     int labelIndex = this->_labelIndex(label);
     if (labelIndex < 0)
-        throw ColumnDoesNotExist();
+        throw ColumnDoesNotExist(label, getFilename());
     for (const auto& vecRow : this->_rows)
         valuesOut.emplace_back(vecRow.at(labelIndex));
 }
@@ -383,7 +383,7 @@ void MetaDataVec::setColumnValues(const std::vector<MDObject> &valuesIn) {
             this->addLabel(valuesIn[i].label);
         labelIndex = this->_labelIndex(valuesIn[i].label);
         if (labelIndex < 0)
-            throw ColumnDoesNotExist(); // internal error
+            throw ColumnDoesNotExist(valuesIn[i].label, getFilename());
         this->_expand(this->_rows[i], valuesIn[i].label);
         this->_rows[i][labelIndex] = valuesIn[i];
     }
@@ -631,7 +631,7 @@ void MetaDataVec::_writeRows(std::ostream &os) const {
                 if (this->_labelIndex(label) < static_cast<int>(row.size()))
                     this->_getObject(row, label).toStream(os, true);
                 else
-                    os << "ERR";
+                    throw ColumnDoesNotExist(label, getFilename());
                 os << " ";
             }
         }
@@ -672,7 +672,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
                 if (this->_labelIndex(label) < static_cast<int>(this->_rows[0].size()))
                     this->_getObject(this->_rows[0], label).toStream(os);
                 else
-                    os << "ERR";
+                    throw ColumnDoesNotExist(label, getFilename());
                 os << '\n';
             }
         }
@@ -928,7 +928,7 @@ void MetaDataVec::renameColumn(MDLabel oldLabel, MDLabel newLabel) {
     assert(!this->containsLabel(newLabel));
     int labeloldi = this->_labelIndex(oldLabel);
     if (labeloldi < 0)
-        throw ColumnDoesNotExist();
+        throw ColumnDoesNotExist(oldLabel, getFilename());
 
     this->_label_to_col[newLabel] = labeloldi;
     this->_label_to_col[oldLabel] = -1;

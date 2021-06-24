@@ -99,19 +99,19 @@ mdBlock;
 
 class ObjectDoesNotExist: public std::logic_error {
 public:
-    ObjectDoesNotExist() : std::logic_error("Object does not exist") {};
+    ObjectDoesNotExist(MDLabel label, size_t id) : std::logic_error("Label '" + MDL::label2Str(label) + " does not exist for id " + std::to_string(id)) {};
+    ObjectDoesNotExist(size_t id, const FileName &fn) : std::logic_error("Row with id " + std::to_string(id) + " does not exist" + (fn.isEmpty() ? "" : " in " + fn)) {};
 };
 
 class NotImplemented : public std::logic_error {
 public:
     NotImplemented(const std::string& str) : std::logic_error(str) {};
-    // NotImplemented() : std::logic_error("Function not yet implemented") {};
 };
 
 class ColumnDoesNotExist : public std::logic_error {
 public:
-    ColumnDoesNotExist() : std::logic_error("Column does not exist") {};
-    ColumnDoesNotExist(const std::string& str) : std::logic_error(str) {};
+    ColumnDoesNotExist(MDLabel label, const FileName &fn) : std::logic_error("Column '" + MDL::label2Str(label) + " does not exist" + (fn.isEmpty() ? "" : " in " + fn)) {};
+    ColumnDoesNotExist(const std::string &msg) : std::logic_error(msg) {};
 };
 
 /** Class to manage data files.
