@@ -249,14 +249,14 @@ std::unique_ptr<const MDRow> MetaDataDb::getRow(size_t id) const {
 MDRowSql MetaDataDb::getRowSql(size_t id) {
     MDRowSql row;
     if (!getRow(row, id))
-        throw ObjectDoesNotExist();
+        throw ObjectDoesNotExist(id, getFilename());
     return row;
 }
 
 const MDRowSql MetaDataDb::getRowSql(size_t id) const {
     MDRowSql row;
     if (!getRow(row, id))
-        throw ObjectDoesNotExist();
+        throw ObjectDoesNotExist(id, getFilename());
     return row;
 }
 
