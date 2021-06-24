@@ -348,7 +348,6 @@ bool XmippMetadataProgram::getImageToProcess(size_t &objId)
 void XmippMetadataProgram::run()
 {
     FileName fnImg, fnImgOut, fullBaseName;
-    MDRowVec rowOut;
     mdOut.clear(); //this allows multiple runs of the same Program object
 
     //Perform particular preprocessing
@@ -378,6 +377,8 @@ void XmippMetadataProgram::run()
             break;
 
         fnImgOut = fnImg;
+
+        MDRowVec rowOut;
 
         if (each_image_produces_an_output)
         {
