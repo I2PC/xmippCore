@@ -1963,7 +1963,7 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
     x = scalex * (STARTINGX(m) - XX(center_of_rot));
 
     distances(7) = (int) floor(sqrt(x * x + y * y + z * z)); //x0 y0 zf
-    int dim = (int) CEIL(distances.computeMax()) + 1;
+    int dim = CEIL(distances.computeMax()) + 1;
     if (rounding)
         dim++;
 
@@ -1980,8 +1980,8 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
         XX(idx) = scalex * (j - XX(center_of_rot));
 
         // Determine distance to the center
-        double module = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
-        int distance = (rounding) ? (int) round(module) : (int) floor(module);
+        double mod = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
+        int distance = rounding ? (int) round(mod) : (int) floor(mod);
 
         // Sum the value to the pixels with the same distance
         DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
