@@ -1923,8 +1923,7 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
 {
     Matrix1D< double > idx(3);
 
-    size_t sizemax = std::max(XSIZE(m), YSIZE(m));
-    sizemax = std::max(ZSIZE(m), sizemax);
+    size_t sizemax = std::max({XSIZE(m), YSIZE(m), ZSIZE(m)});
     double scalex = XSIZE(m)/sizemax;
     double scaley = YSIZE(m)/sizemax;
     double scalez = ZSIZE(m)/sizemax;
@@ -1941,28 +1940,28 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
     double y = scaley * (STARTINGY(m) - YY(center_of_rot));
     double x = scalex * (STARTINGX(m) - XX(center_of_rot));
 
-    distances(0) = (int) floor(sqrt(x * x + y * y + z * z)); //x0 y0 z0
+    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
     x = scalex * (FINISHINGX(m) - XX(center_of_rot));
 
-    distances(1) = (int) floor(sqrt(x * x + y * y + z * z)); //xf y0 z0
+    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
     y = scaley * (FINISHINGY(m) - YY(center_of_rot));
 
-    distances(2) = (int) floor(sqrt(x * x + y * y + z * z)); //xf yf z0
+    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
     x = scalex * (STARTINGX(m) - XX(center_of_rot));
 
-    distances(3) = (int) floor(sqrt(x * x + y * y + z * z)); //x0 yf z0
+    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
     z = scalez * (FINISHINGZ(m) - ZZ(center_of_rot));
 
-    distances(4) = (int) floor(sqrt(x * x + y * y + z * z)); //x0 yf zf
+    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
     x = scalex * (FINISHINGX(m) - XX(center_of_rot));
 
-    distances(5) = (int) floor(sqrt(x * x + y * y + z * z)); //xf yf zf
+    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
     y = scaley * (STARTINGY(m) - YY(center_of_rot));
 
-    distances(6) = (int) floor(sqrt(x * x + y * y + z * z)); //xf y0 zf
+    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
     x = scalex * (STARTINGX(m) - XX(center_of_rot));
 
-    distances(7) = (int) floor(sqrt(x * x + y * y + z * z)); //x0 y0 zf
+    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
     int dim = CEIL(distances.computeMax()) + 1;
     if (rounding)
         dim++;
