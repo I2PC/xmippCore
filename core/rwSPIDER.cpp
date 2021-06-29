@@ -23,8 +23,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <cmath>
 #include "xmipp_image_base.h"
-
+#include "xmipp_memory.h"
 /*
  Based on rwSPIDER.h
  Header file for reading and writing SPIDER files
@@ -134,25 +135,26 @@ struct SPIDERhead
 */
 #include "metadata_label.h"
 #include <errno.h>
+#include <memory>
 
-int  ImageBase::readSPIDER(size_t select_img)
-{
+int ImageBase::readSPIDER(size_t start_img, size_t batch_size) {
 #undef DEBUG
     //#define DEBUG
 #ifdef DEBUG
-    printf("DEBUG readSPIDER: Reading Spider file\n");
+    printf("DEBUG readSPIDER: Reading Spider file, start_img = %lu, batch_size = %lu\n", start_img, batch_size);
 #endif
 #undef DEBUG
 
-    SPIDERhead* header = new SPIDERhead;
-    if ( fread( header, SPIDERSIZE, 1, fimg ) != 1 )
+    // SPIDERhead* header = new SPIDERhead;
+    std::unique_ptr<SPIDERhead> header( new SPIDERhead() );
+    if ( fread( header.get(), SPIDERSIZE, 1, fimg ) != 1 )
         REPORT_ERROR(ERR_IO_NOREAD, formatString("rwSPIDER: cannot read Spider main header from file %s"
                      ". Error message: %s", filename.c_str() ,strerror(errno)));
 
     // Determine byte order and swap bytes if from different-endian machine
     if ( (swap = (( fabs(header->nslice) > SWAPTRIG ) || ( fabs(header->iform) > 1000 ) ||
                  ( fabs(header->nslice) < 1 ))) )
-        swapPage((char *) header, SPIDERSIZE - 180, DT_Float);
+        swapPage((char *) header.get(), SPIDERSIZE - 180, DT_Float);
 
     if(header->labbyt != header->labrec*header->lenbyt)
         REPORT_ERROR(ERR_IO_NOTFILE,formatString("Invalid Spider file:  %s", filename.c_str()));
@@ -188,34 +190,39 @@ int  ImageBase::readSPIDER(size_t select_img)
 
     // Map the parameters, REad the whole object (-1) or a slide
     // Only handle stacks of images not of volumes
-    if(!isStack)
+
+    if(!isStack) {
         _nDimSet = 1;
-    else
-        _nDimSet = (select_img == ALL_IMAGES) ? _nDim : 1;
+    }
+    else if (batch_size == ALL_IMAGES) {
+        _nDimSet = _nDim - start_img + 1;
+    } else {
+        _nDimSet = std::min( start_img + batch_size - 1, _nDim ) - start_img + 1;
+    }
 
     setDimensions(_xDim, _yDim, _zDim, _nDimSet);
 
     //image is in stack? and set right initial and final image
-    size_t header_size = offset;
+    const size_t header_size = offset;
 
     if ( isStack)
     {
-        if ( select_img > _nDim )
-            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readSpider (%s): Image number %lu exceeds stack size %lu" ,filename.c_str(),select_img, _nDim));
+        if ( start_img > _nDim )
+            REPORT_ERROR(ERR_INDEX_OUTOFBOUNDS, formatString("readSpider (%s): Image number %lu exceeds stack size %lu" ,filename.c_str(),start_img, _nDim));
         offset += offset;
     }
 
     if (dataMode == HEADER || (dataMode == _HEADER_ALL && _nDimSet > 1)) // Stop reading if not necessary
     {
-        delete header;
         return 0;
     }
 
-    size_t datasize_n  = _xDim*_yDim*_zDim;
-    size_t image_size  = header_size + datasize_n*sizeof(float);
-    size_t pad         = (size_t) header->labbyt;
-    size_t   imgStart = IMG_INDEX(select_img);
-    size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : _nDim;
+    const size_t datasize_n  = _xDim*_yDim*_zDim;
+    const size_t image_size  = header_size + datasize_n*sizeof(float);
+    const size_t pad         = (size_t) header->labbyt;
+    const size_t   imgStart  = IMG_INDEX(start_img);
+    const size_t   imgEnd    = start_img + _nDimSet - 1;
+    // printf( "start_img = %lu, batch_size = %lu, _nDim = %lu, _nDimSet = %lu, imgEnd = %lu\n", start_img, batch_size, _nDim, _nDimSet, imgEnd );
     size_t   img_seek = header_size + imgStart * image_size;
 
     MD.clear();
@@ -234,10 +241,10 @@ int  ImageBase::readSPIDER(size_t select_img)
 
         if(isStack)
         {
-            if ( fread( header, SPIDERSIZE, 1, fimg ) != 1 )
+            if ( fread( header.get(), SPIDERSIZE, 1, fimg ) != 1 )
                 REPORT_ERROR(ERR_IO_NOREAD, formatString("rwSPIDER: cannot read Spider image %lu header", i));
             if ( swap )
-                swapPage((char *) header, SPIDERSIZE - 180, DT_Float);
+                swapPage((char *) header.get(), SPIDERSIZE - 180, DT_Float);
         }
         if (dataMode == _HEADER_ALL || dataMode == _DATA_ALL)
         {
@@ -263,20 +270,34 @@ int  ImageBase::readSPIDER(size_t select_img)
             MD[n].setValue(MDL_SCALE, daux);
         }
     }
-    delete header;
 
     if (dataMode < DATA)   // Don't read  data if not necessary but read the header
         return 0;
 
 #ifdef DEBUG
-
     std::cerr<<"DEBUG readSPIDER: header_size = "<<header_size<<" image_size = "<<image_size<<std::endl;
     std::cerr<<"DEBUG readSPIDER: select_img= "<<select_img<<" n= "<<Ndim<<" pad = "<<pad<<std::endl;
 #endif
     //offset should point to the begin of the data
-    readData(fimg, select_img, datatype, pad );
+    readData(fimg, start_img, datatype, pad );
 
-    return(0);
+    return 0;
+}
+
+int  ImageBase::readSPIDER(size_t select_img)
+{
+#undef DEBUG
+    // #define DEBUG
+#ifdef DEBUG
+    printf("DEBUG readSPIDER: Reading Spider file\n");
+#endif
+#undef DEBUG
+
+    if ( select_img == ALL_IMAGES ) {
+        return readSPIDER( 1, ALL_IMAGES );
+    }
+    return readSPIDER(select_img, 1);
+
 }
 /************************************************************************
 @Function: writeSPIDER
@@ -370,7 +391,7 @@ int  ImageBase::writeSPIDER(size_t select_img, bool isStack, int mode)
         header->nsam = 2*xstore;
     }
 
-    //#define DEBUG
+    // #define DEBUG
 #ifdef DEBUG
     printf("DEBUG writeSPIDER: Size: %g %g %g %d %g\n",
            header->nsam,

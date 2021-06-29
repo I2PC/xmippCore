@@ -25,7 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "jpeglib.h"
-
+#include "xmipp_error.h"
 
 //#include <jpeglib.h>
 
@@ -141,8 +141,6 @@ int ImageBase::writeJPEG(size_t select_img, bool isStack, int mode, String bitDe
 
     //Selection of output datatype
     DataType myTypeID = myT();
-
-    castMode = CW_CONVERT;
 
     if (mmapOnWrite)
     {

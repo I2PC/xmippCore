@@ -26,40 +26,23 @@
 #ifndef CORE_METADATASQL_H
 #define CORE_METADATASQL_H
 
-#include <iostream>
-#include <map>
-#include "xmipp_strings.h"
 #include <sqlite3.h>
+#include "xmipp_strings.h"
 #include "metadata_label.h"
-#include <vector>
+#include "xmipp_error.h"
+#include "metadata_sql_operations.h"
+
 class MDSqlStaticInit;
 class MDQuery;
 class MetaData;
 class MDCache;
+class FileName;
 
 /** @addtogroup MetaData
  * @{
  */
 
-/** Posible Aggregation Operations in a MetaData */
-enum AggregateOperation
-{
-    AGGR_COUNT, AGGR_MAX, AGGR_MIN, AGGR_SUM, AGGR_AVG
-};
-
-/** Posible Set Operations with MetaData */
-enum SetOperation
-{
-    UNION, UNION_DISTINCT, INTERSECTION, SUBSTRACTION, INNER_JOIN, LEFT_JOIN, OUTER_JOIN,NATURAL_JOIN,REMOVE_DUPLICATE, DISTINCT
-};
-
-/** Enumeration of JOIN types for this operation */
-enum JoinType
-{
-    INNER=INNER_JOIN, LEFT=LEFT_JOIN, OUTER=OUTER_JOIN,NATURAL=NATURAL_JOIN
-};
-
-#include "metadata.h"
+//#include "metadata.h"
 
 /* return number of tables from a metadata file saved as sqlite */
 int getBlocksInMetaDataFileDB(const FileName &inFile, StringVector& blockList);
@@ -149,11 +132,11 @@ private:
    /** Rename Column
     * SQLite itself does not support it. So some hacking is needed here
     */
-    bool renameColumn(const std::vector<MDLabel> oldLabel, const std::vector<MDLabel> newlabel);
+    bool renameColumn(const std::vector<MDLabel> &oldLabel, const std::vector<MDLabel> &newlabel);
 
     /** Insert a new register inserting input columns.
      */
-    bool setObjectValues( size_t id, const std::vector<MDObject*> columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
+    bool setObjectValues( size_t id, const std::vector<MDObject*> &columnValues, const std::vector<MDLabel> *desiredLabels=NULL);
 
     /**Set the value of an object in an specified column.
      */
@@ -165,7 +148,7 @@ private:
 
     /** Get the values of several objects.
      */
-    bool getObjectsValues( std::vector<MDLabel> labels, std::vector<MDObject> *values);
+    bool getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values);
 
     /** Get the value of an object.
      */
@@ -228,7 +211,7 @@ private:
     /** This function will be used to create o delete an index over a column.
      *Those indexes will improve searchs, but inserts will become expensives
      */
-    void indexModify(const std::vector<MDLabel> columns, bool create=true);
+    void indexModify(const std::vector<MDLabel> &columns, bool create=true);
 
     /** Some iteration methods
      */
@@ -278,9 +261,9 @@ private:
     bool dropTable();
     bool createTable(const std::vector<MDLabel> * labelsVector = NULL, bool withObjID=true);
     bool insertValues(double a, double b);
-    bool initializeSelect( bool addWhereObjId, std::vector<MDLabel> labels);
+    bool initializeSelect( bool addWhereObjId, const std::vector<MDLabel> &labels);
     bool initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values);
-    bool initializeUpdate( std::vector<MDLabel> labels);
+    bool initializeUpdate(const std::vector<MDLabel> &labels);
     void finalizePreparedStmt(void);
     void prepareStmt(const std::stringstream &ss, sqlite3_stmt *stmt);
     bool execSingleStmt(const std::stringstream &ss);
@@ -349,17 +332,7 @@ public:
     }
 
     /** Return the LIMIT string to be used in SQL */
-    String limitString() const
-    {
-        if (limit == -1 && offset > 0)
-            REPORT_ERROR(ERR_MD_SQL, "Sqlite does not support OFFSET without LIMIT");
-        std::stringstream ss;
-        if (limit != -1)
-            ss << " LIMIT " << limit << " ";
-        if (offset > 0)
-            ss << " OFFSET " << offset << " ";
-        return ss.str();
-    }
+    String limitString() const;
 
     /** Return the WHERE string to be used in SQL query */
     String whereString() const
@@ -568,12 +541,7 @@ public:
         query2 = new MDValueRelational(o2, LE);
 
     }
-    virtual String queryStringFunc() const
-    {
-        std::stringstream ss;
-        ss << "(" << query1->queryStringFunc() << " AND " << query2->queryStringFunc() << ")";
-        return ss.str();
-    }
+    virtual String queryStringFunc() const;
 
     ~MDValueRange()
     {
@@ -659,19 +627,7 @@ public:
         operations.clear();
     }
 
-    virtual String queryStringFunc() const
-    {
-        if (queries.size() > 0)
-        {
-            std::stringstream ss;
-            ss << "(" << queries[0]->queryStringFunc() << ") ";
-            for (size_t i = 1; i < queries.size(); i++)
-                ss << operations[i] << " (" << queries[i]->queryStringFunc() << ") ";
-
-            return ss.str();
-        }
-        return " ";
-    }
+    virtual String queryStringFunc() const;
 
 }
 ;//end of class MDMultiQuery

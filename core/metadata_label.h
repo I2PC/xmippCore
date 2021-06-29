@@ -27,12 +27,8 @@
 #define CORE_METADATALABEL_H
 
 #include <map>
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <fstream>
-#include "xmipp_funcs.h"
 #include "xmipp_strings.h"
+#include <vector>
 
 class MDLabelData;
 class MDObject;
@@ -72,6 +68,7 @@ enum MDLabel
     MDL_AVG_CHANGES_OFFSETS, /// Average change in offset (double pixels)
     MDL_AVG_CHANGES_CLASSES, /// Average change in class assignment(double dimensionaless)
     MDL_AVGPMAX, ///< Average (per class) of the maximum value of normalized probability function) (double)
+    MDL_BFACTOR, /// <Bfactor of a map, or even a local bfactor
     MDL_BGMEAN, ///< Mean background value for an image
     MDL_BLOCK_NUMBER, ///< Current block number (for incremental EM)
 
@@ -364,6 +361,7 @@ enum MDLabel
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
+    MDL_RESIDUE,        //<residue of an atomic model (int)
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)
@@ -371,6 +369,8 @@ enum MDLabel
     MDL_RESOLUTION_FREQ, ///<Frequency in 1/A (double)
     MDL_RESOLUTION_FREQ2, ///< Frequency in 1/A squared (double)
     MDL_RESOLUTION_FREQREAL, ///< Frequency in A (double)
+    MDL_RESOLUTION_FSO, ///<Fourier shell occupancy (double)
+    MDL_RESOLUTION_LOCAL_RESIDUE, ///< Frequency in A of the local resolution of a residue (double)
     MDL_RESOLUTION_LOG_STRUCTURE_FACTOR, ///<Logarithm of the structure factor
     MDL_RESOLUTION_SSNR, ///<Fourier shell correlation (double)
     MDL_RESOLUTION_STRUCTURE_FACTOR, ///<Structure factor
@@ -1053,18 +1053,6 @@ public:
     void  setValue(const size_t &lv);
     void  setValue(const float &floatvalue);
     void  setValue(const char*  &charvalue);
-
-#define DOUBLE2STREAM(d) \
-        if (withFormat) {\
-                (os) << std::setw(12); \
-                (os) << (((d) != 0. && ABS(d) < 0.001) ? std::scientific : std::fixed);\
-            } os << d;
-
-#define INT2STREAM(i) \
-        if (withFormat) os << std::setw(20); \
-        os << i;
-        //this must have 20 since SIZE_MAX = 18446744073709551615 size
-
     void toStream(std::ostream &os, bool withFormat = false, bool isSql=false, bool escape=true) const;
     String toString(bool withFormat = false, bool isSql=false) const;
     bool fromStream(std::istream &is, bool fromString=false);
@@ -1105,7 +1093,12 @@ public:
     /** Destructor */
     ~MDRow();
     /** True if this row contains this label */
-    bool containsLabel(MDLabel label) const;
+    inline bool containsLabel(MDLabel label) const {
+        return objects[label] != NULL;
+    }
+
+    /** Returns all labels defined for this row */
+    std::vector<MDLabel> getLabels() const;
 
     /** Add a new label */
     void addLabel(MDLabel label);
@@ -1202,7 +1195,7 @@ public:
     static void str2LabelVector(const String &labelsStr, std::vector<MDLabel> &labels);
     static MDLabel str2Label(const String &labelName);
     /** Converts MDLabel to string */
-    static String label2Str(const MDLabel label);
+    static String label2Str(const MDLabel &label);
     /** Same as label2Str but escaping with '' to use in Sqlite. */
     static String label2StrSql(const MDLabel label);
     /** Converts MDLabel to string representing SQL column*/
@@ -1222,7 +1215,7 @@ public:
     static bool isDouble(const MDLabel label);
     static bool isVector(const MDLabel label);
     static bool isVectorLong(const MDLabel label);
-    static bool isValidLabel(const MDLabel label);
+    static bool isValidLabel(const MDLabel &label);
     static bool isValidLabel(const String &labelName);
     static MDLabelType labelType(const MDLabel label);
     static MDLabelType labelType(const String &labelName);
@@ -1332,6 +1325,7 @@ private:
         MDL::addLabel(MDL_AVG_CHANGES_CLASSES, LABEL_DOUBLE, "avgChanClass");
         MDL::addLabel(MDL_AVGPMAX, LABEL_DOUBLE, "avgPMax");
 
+        MDL::addLabel(MDL_BFACTOR, LABEL_DOUBLE, "bFactor");
         MDL::addLabel(MDL_BGMEAN, LABEL_DOUBLE, "bgMean");
         MDL::addLabel(MDL_BLOCK_NUMBER, LABEL_INT, "blockNumber");
 
@@ -1716,13 +1710,16 @@ private:
         MDL::addLabelAlias(MDL_REF, "Ref");
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
 
+        MDL::addLabel(MDL_RESIDUE, LABEL_INT, "residue");
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
+        MDL::addLabel(MDL_RESOLUTION_FSO, LABEL_DOUBLE, "resolutionFSO");
         MDL::addLabel(MDL_RESOLUTION_FRC, LABEL_DOUBLE, "resolutionFRC");
         MDL::addLabel(MDL_RESOLUTION_FRCRANDOMNOISE, LABEL_DOUBLE, "resolutionFRCRandomNoise");
         MDL::addLabel(MDL_RESOLUTION_FREQ, LABEL_DOUBLE, "resolutionFreqFourier");
         MDL::addLabel(MDL_RESOLUTION_FREQ2, LABEL_DOUBLE, "resolutionFreqFourier2");
         MDL::addLabel(MDL_RESOLUTION_FREQREAL, LABEL_DOUBLE, "resolutionFreqReal");
+        MDL::addLabel(MDL_RESOLUTION_LOCAL_RESIDUE, LABEL_DOUBLE, "localresolutionResidue");
         MDL::addLabel(MDL_RESOLUTION_LOG_STRUCTURE_FACTOR, LABEL_DOUBLE, "resolutionLogStructure");
         MDL::addLabel(MDL_RESOLUTION_STRUCTURE_FACTOR, LABEL_DOUBLE, "resolutionStructure");
         MDL::addLabel(MDL_RESOLUTION_SSNR, LABEL_DOUBLE, "resolutionSSNR");
