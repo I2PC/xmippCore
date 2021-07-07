@@ -30,6 +30,7 @@
 #include "metadata_static.h"
 #include "xmipp_error.h"
 #include "xmipp_macros.h"
+#include <limits>
 
 #define DOUBLE2STREAM(d) \
         if (withFormat) {\
@@ -121,48 +122,43 @@ MDObject::MDObject(MDLabel label)
 
 ///Constructors for each Label supported type
 ///these constructor will do the labels type checking
-MDObject::MDObject(MDLabel label, const int &intValue)
+MDObject::MDObject(MDLabel label, const int &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_INT);
-    this->data.intValue = intValue;
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const double &doubleValue)
+MDObject::MDObject(MDLabel label, const double &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_DOUBLE);
-    this->data.doubleValue = doubleValue;
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const bool &boolValue)
+MDObject::MDObject(MDLabel label, const bool &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_BOOL);
-    this->data.boolValue = boolValue;
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const String &stringValue)
+MDObject::MDObject(MDLabel label, const String &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_STRING);
-    this->data.stringValue = new String(stringValue);
+    this->data.stringValue = new String();
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const std::vector<double> &vectorValue)
+MDObject::MDObject(MDLabel label, const std::vector<double> &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_VECTOR_DOUBLE);
-    this->data.vectorValue = new std::vector<double>(vectorValue);
+    this->data.vectorValue = new std::vector<double>();
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const std::vector<size_t> &vectorValueLong)
+MDObject::MDObject(MDLabel label, const std::vector<size_t> &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_VECTOR_SIZET);
-    this->data.vectorValueLong = new std::vector<size_t>(vectorValueLong);
+    this->data.vectorValueLong = new std::vector<size_t>();
+    this->setValue(v);
 }
-MDObject::MDObject(MDLabel label, const size_t &longintValue)
+MDObject::MDObject(MDLabel label, const size_t &v)
 {
     MDOBJECT_INIT();
-    labelTypeCheck(LABEL_SIZET);
-    this->data.longintValue = longintValue;
-
+    this->setValue(v);
 }
 
 MDObject::~MDObject()
@@ -267,7 +263,7 @@ void MDObject::setValue(const int &iv)
 void MDObject::setValue(const double &dv)
 {
     labelTypeCheck(LABEL_DOUBLE);
-    this->data.doubleValue = dv;
+    this->data.doubleValue = safeDouble(dv);
 }
 
 void MDObject::setValue(const bool &bv)
@@ -285,7 +281,11 @@ void MDObject::setValue(const String &sv)
 void  MDObject::setValue(const std::vector<double> &vv)
 {
     labelTypeCheck(LABEL_VECTOR_DOUBLE);
-    *(this->data.vectorValue) = vv;
+    const auto size = vv.size();
+    this->data.vectorValue->resize(size);
+    for (size_t i = 0; i < size; ++i) {
+        this->data.vectorValue->operator[](i) = safeDouble(vv[i]);
+    }
 }
 
 void  MDObject::setValue(const std::vector<size_t> &vv)
@@ -583,6 +583,17 @@ bool MDObject::operator<(const MDObject &obj) const {
 bool MDObject::operator>(const MDObject &obj) const {
     return ((*this >= obj) && (*this != obj));
 }
+
+double MDObject::safeDouble(const double v) const {
+        if (std::isnan(v)) {
+            // when saving NaN to sqlite3 db, the actually inserted value is sth very close to zero (0)
+            // this was causing incompatibilities between (non)sqlite versions of metadata
+            std::cerr << "Warning: trying to work with NaN in MDObject with label " << MDL::label2Str(this->label)
+            << ". Using std::numeric_limits<double>::min() instead for backward compatilibity.\n";
+            return std::numeric_limits<double>::min();
+        }
+        return v;
+    }
 
 //MDObject & MDRow::operator [](MDLabel label)
 //{

@@ -157,6 +157,9 @@ public:
     bool operator > (const MDObject &obj) const;
 
     friend class MDSql;
+
+private:
+    double safeDouble(const double v) const;
 }
 ; //close class MDObject
 
