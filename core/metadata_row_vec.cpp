@@ -95,7 +95,9 @@ MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
         _row = other._row;
         _label_to_col = other._label_to_col;
     } else {
+        delete _row;
         _row = new std::vector<MDObject>(*(other._row));
+        delete _label_to_col;
         _label_to_col = new std::array<int, MDL_LAST_LABEL>(*(other._label_to_col));
     }
 
