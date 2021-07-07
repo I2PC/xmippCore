@@ -49,6 +49,7 @@ private:
     MetaDataVec mdOut; //TODO: can be treated by reference as mdIn for
     // uses from another programs...
     std::unique_ptr<MetaData::id_iterator> iter;
+    size_t iterIndex;
 
 public:
     /// The input metadata should not be used
@@ -130,7 +131,7 @@ protected:
     virtual void preProcess();
     virtual void postProcess();
     virtual void processImage(const FileName &fnImg, const FileName &fnImgOut, const MDRow &rowIn, MDRow &rowOut) = 0;
-    virtual bool getImageToProcess(size_t &objId);
+    virtual bool getImageToProcess(size_t &objId, size_t &objIndex);
     virtual void show();
     /** Do some stuff before starting processing
      * in a parallel environment usually this only be executed

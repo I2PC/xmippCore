@@ -326,21 +326,24 @@ void XmippMetadataProgram::checkPoint()
 {
 }
 
-bool XmippMetadataProgram::getImageToProcess(size_t &objId)
+bool XmippMetadataProgram::getImageToProcess(size_t &objId, size_t &objIndex)
 {
     if (nullptr == iter) {
         iter = std::unique_ptr<MetaData::id_iterator>(new MetaData::id_iterator(mdIn->ids().begin()));
+        iterIndex = 0;
         time_bar_done = 0;
     } else {
         if (*iter == mdIn->ids().end()) {
             throw std::logic_error("Iterating behind the end of the metadata");
         }
+        ++iterIndex;
         ++(*iter);
     }
     bool isValid = *iter != mdIn->ids().end();
     if (isValid) {
         ++time_bar_done;
         objId = **iter;
+        objIndex = iterIndex;
     }
     return isValid;
 }
@@ -366,8 +369,8 @@ void XmippMetadataProgram::run()
     }
 
     size_t objId;
-    size_t objIndex = 0;
-    while (getImageToProcess(objId))
+    size_t objIndex;
+    while (getImageToProcess(objId, objIndex))
     {
         ++objIndex; //increment for composing starting at 1
         auto rowIn = mdIn->getRow(objId);
