@@ -1369,3 +1369,4 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
 
 template void reduceBSpline<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
 template void produceSplineCoefficients<bool>(int, MultidimArray<double>&, MultidimArray<bool> const&);
+template void expandBSpline<double>(int, MultidimArray<double>&, const MultidimArray<double> &);
