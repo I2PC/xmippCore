@@ -117,7 +117,8 @@ int  ImageBase::readPIF(size_t select_img)
     size_t headerOffset  = PIFHEADERSIZE;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     PIFDataHeader dataHeader;
 
@@ -134,15 +135,15 @@ int  ImageBase::readPIF(size_t select_img)
 
         if (dataMode == _HEADER_ALL || dataMode == _DATA_ALL)
         {
-            MD[n].setValue(MDL_ORIGIN_X, (double)dataHeader.nxstart);
-            MD[n].setValue(MDL_ORIGIN_Y, (double)dataHeader.nystart);
-            MD[n].setValue(MDL_ORIGIN_Z, (double)dataHeader.nzstart);
-            MD[n].setValue(MDL_ANGLE_ROT, (double)dataHeader.alpha);
-            MD[n].setValue(MDL_ANGLE_TILT, (double)dataHeader.beta);
-            MD[n].setValue(MDL_ANGLE_PSI, (double)dataHeader.gamma);
-            MD[n].setValue(MDL_SAMPLINGRATE_X, (double)dataHeader.xlength/aDim.xdim);
-            MD[n].setValue(MDL_SAMPLINGRATE_Y, (double)dataHeader.ylength/aDim.ydim);
-            MD[n].setValue(MDL_SAMPLINGRATE_Z, (double)dataHeader.zlength/aDim.zdim);
+            MD[n]->setValue(MDL_ORIGIN_X, (double)dataHeader.nxstart);
+            MD[n]->setValue(MDL_ORIGIN_Y, (double)dataHeader.nystart);
+            MD[n]->setValue(MDL_ORIGIN_Z, (double)dataHeader.nzstart);
+            MD[n]->setValue(MDL_ANGLE_ROT, (double)dataHeader.alpha);
+            MD[n]->setValue(MDL_ANGLE_TILT, (double)dataHeader.beta);
+            MD[n]->setValue(MDL_ANGLE_PSI, (double)dataHeader.gamma);
+            MD[n]->setValue(MDL_SAMPLINGRATE_X, (double)dataHeader.xlength/aDim.xdim);
+            MD[n]->setValue(MDL_SAMPLINGRATE_Y, (double)dataHeader.ylength/aDim.ydim);
+            MD[n]->setValue(MDL_SAMPLINGRATE_Z, (double)dataHeader.zlength/aDim.zdim);
         }
     }
 

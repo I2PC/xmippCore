@@ -30,7 +30,8 @@
 #include <algorithm>
 
 #include "histogram.h"
-#include "metadata.h"
+#include "metadata_vec.h"
+#include "metadata_row_vec.h"
 
 /* ------------------------------------------------------------------------- */
 /* HISTOGRAMS 1D                                                             */
@@ -129,17 +130,17 @@ void Histogram1D::write(const FileName &fn,
                         MDLabel mdlValue,
                         MDLabel mdlCount)
 {
-    MetaData auxMD;
-    MDRow row;
+    MetaDataVec auxMD;
+    MDRowVec row;
     double auxD;
     size_t auxT;
     FOR_ALL_ELEMENTS_IN_ARRAY1D(*this)
     {
         index2val(i, auxD);
         this->index2val(i, auxD);
-        row.setValue(mdlValue,auxD);
+        row.setValue(mdlValue, auxD);
         auxT=(size_t)A1D_ELEM(*this, i);
-        row.setValue(mdlCount,auxT);
+        row.setValue(mdlCount, auxT);
         auxMD.addRow(row);
     }
     auxMD.write(fn);

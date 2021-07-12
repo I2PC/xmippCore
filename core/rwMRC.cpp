@@ -276,7 +276,8 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     const size_t   imgEnd = start_img + _nDimSet - 1;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     /* As MRC does not support stacks, we use the geometry stored in the header
     for any image when we simulate the file is a stack.*/
@@ -285,25 +286,25 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
         double aux;
         for ( size_t i = 0; i < imgEnd - imgStart; ++i )
         {
-            MD[i].setValue(MDL_SHIFT_X, (double) -header->nxStart);
-            MD[i].setValue(MDL_SHIFT_Y, (double) -header->nyStart);
-            MD[i].setValue(MDL_SHIFT_Z, (double) -header->nzStart);
+            MD[i]->setValue(MDL_SHIFT_X, (double) -header->nxStart);
+            MD[i]->setValue(MDL_SHIFT_Y, (double) -header->nyStart);
+            MD[i]->setValue(MDL_SHIFT_Z, (double) -header->nzStart);
 
             // We include auto detection of MRC2000 or CCP4 style origin based on http://situs.biomachina.org/fmap.pdf
             if (header->xOrigin != 0)
-                MD[i].setValue(MDL_ORIGIN_X, (double)-header->xOrigin);
+                MD[i]->setValue(MDL_ORIGIN_X, (double)-header->xOrigin);
             else if (header->nxStart != 0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_X,aux))
-                MD[i].setValue(MDL_ORIGIN_X, -header->nxStart/aux);
+                MD[i]->setValue(MDL_ORIGIN_X, -header->nxStart/aux);
 
             if (header->yOrigin !=0)
-                MD[i].setValue(MDL_ORIGIN_Y, (double)-header->yOrigin);
+                MD[i]->setValue(MDL_ORIGIN_Y, (double)-header->yOrigin);
             else if(header->nyStart !=0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_Y,aux))
-                MD[i].setValue(MDL_ORIGIN_Y, -header->nyStart/aux);
+                MD[i]->setValue(MDL_ORIGIN_Y, -header->nyStart/aux);
 
             if (header->zOrigin != 0)
-                MD[i].setValue(MDL_ORIGIN_Z, (double)-header->zOrigin);
+                MD[i]->setValue(MDL_ORIGIN_Z, (double)-header->zOrigin);
             else if(header->nzStart !=0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_Z,aux))
-                MD[i].setValue(MDL_ORIGIN_Z, -header->nzStart/aux);
+                MD[i]->setValue(MDL_ORIGIN_Z, -header->nzStart/aux);
         }
     }
 
@@ -529,11 +530,11 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
 
         if ((dataMode == _HEADER_ALL || dataMode == _DATA_ALL))
         {
-#define SET_HEADER_SHIFT(field, label)  MD[0].getValueOrDefault(label, aux, 0.); header->field = -(int) round(aux)
+#define SET_HEADER_SHIFT(field, label)  MD[0]->getValueOrDefault(label, aux, 0.); header->field = -(int) round(aux)
             SET_HEADER_SHIFT(nxStart, MDL_SHIFT_X);
             SET_HEADER_SHIFT(nyStart, MDL_SHIFT_Y);
             SET_HEADER_SHIFT(nzStart, MDL_SHIFT_Z);
-#define SET_HEADER_ORIGIN(field, label1, label2)  MD[0].getValueOrDefault(label1, aux, 0.);MDMainHeader.getValueOrDefault(label2, aux2, 0.);\
+#define SET_HEADER_ORIGIN(field, label1, label2)  MD[0]->getValueOrDefault(label1, aux, 0.);MDMainHeader.getValueOrDefault(label2, aux2, 0.);\
               header->field = (float) (aux * aux2)
 
             SET_HEADER_ORIGIN(xOrigin, MDL_ORIGIN_X, MDL_SAMPLINGRATE_X);
