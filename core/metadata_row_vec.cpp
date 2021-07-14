@@ -86,6 +86,14 @@ void MDRowVec::detach() {
 }
 
 MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
+    if (this == &other)
+        return *this;
+
+    if (!_in_metadata) {
+        delete _row;
+        delete _label_to_col;
+    }
+
     _rowi = other._rowi;
     _no_columns = other._no_columns;
     _in_metadata = other._in_metadata;
@@ -95,9 +103,7 @@ MDRowVec &MDRowVec::operator = (const MDRowVec &other) {
         _row = other._row;
         _label_to_col = other._label_to_col;
     } else {
-        delete _row;
         _row = new std::vector<MDObject>(*(other._row));
-        delete _label_to_col;
         _label_to_col = new std::array<int, MDL_LAST_LABEL>(*(other._label_to_col));
     }
 
