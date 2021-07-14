@@ -198,7 +198,6 @@ private:
         MDL::addLabelAlias(MDL_CLASSIFICATION_INTRACLASS_DISTANCE, "ClassificationIntraclassDistance");
         MDL::addLabel(MDL_COLOR, LABEL_INT, "color");
         MDL::addLabel(MDL_COMMENT, LABEL_STRING, "comment");
-        MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "consensusCost");
         MDL::addLabel(MDL_COST, LABEL_DOUBLE, "cost");
         MDL::addLabel(MDL_COST_PERCENTILE, LABEL_DOUBLE, "costPerc");
         MDL::addLabel(MDL_COORD_CONSENSUS_SCORE, LABEL_DOUBLE, "CoordConsScore");
