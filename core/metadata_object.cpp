@@ -73,20 +73,17 @@ void MDObject::copy(const MDObject &obj)
         data.vectorValue = new std::vector<double>(*(obj.data.vectorValue));
     else if (type == LABEL_VECTOR_SIZET)
         data.vectorValueLong = new std::vector<size_t>(*(obj.data.vectorValueLong));
-    }
     else
         data = obj.data;
 }
 
 MDObject::MDObject(const MDObject & obj)
 {
-    data.doubleValue = 0;
     copy(obj);
 }
 
 MDObject & MDObject::operator = (const MDObject &obj)
 {
-    data.doubleValue = 0;
     copy(obj);
     return *this;
 }

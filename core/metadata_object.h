@@ -53,7 +53,7 @@ class MDObject
 {
 public:
 
-    ObjectData data;
+    ObjectData data = {0};
     bool failed; // Set to True if the parsing from Star files fails
     char chr; //literal char for string, could be SPACE, QUOT or DQUOT
 
@@ -61,7 +61,7 @@ public:
     void copy(const MDObject &obj);
 
     MDLabel label;
-    MDLabelType type;
+    MDLabelType type = LABEL_INT;
     /** Copy constructor */
     MDObject(const MDObject & obj);
     /** Assign operator */
