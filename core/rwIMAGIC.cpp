@@ -203,7 +203,9 @@ int  ImageBase::readIMAGIC(size_t select_img)
     fseek( fhed, IMG_INDEX(select_img) * IMAGICSIZE, SEEK_SET );
 
     MD.clear();
-    MD.resize(_nDim,MDL::emptyHeader);
+    for (size_t i = 0; i < _nDim; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+
     double daux=1.;
     for ( size_t i = 0; i < _nDim; ++i )
     {
@@ -215,14 +217,14 @@ int  ImageBase::readIMAGIC(size_t select_img)
 
             if (dataMode == _HEADER_ALL || dataMode == _DATA_ALL)
             {
-                MD[i].setValue(MDL_SHIFT_X,  (double)-1. * header->ixold);
-                MD[i].setValue(MDL_SHIFT_Y,  (double)-1. * header->iyold);
-                MD[i].setValue(MDL_SHIFT_Z,  0.);
-                MD[i].setValue(MDL_ANGLE_ROT, (double)-1. * header->euler_alpha);
-                MD[i].setValue(MDL_ANGLE_TILT,(double)-1. * header->euler_beta);
-                MD[i].setValue(MDL_ANGLE_PSI, (double)-1. * header->euler_gamma);
-                MD[i].setValue(MDL_WEIGHT,   1.);
-                MD[i].setValue(MDL_SCALE, daux);
+                MD[i]->setValue(MDL_SHIFT_X,  (double)-1. * header->ixold);
+                MD[i]->setValue(MDL_SHIFT_Y,  (double)-1. * header->iyold);
+                MD[i]->setValue(MDL_SHIFT_Z,  0.);
+                MD[i]->setValue(MDL_ANGLE_ROT, (double)-1. * header->euler_alpha);
+                MD[i]->setValue(MDL_ANGLE_TILT,(double)-1. * header->euler_beta);
+                MD[i]->setValue(MDL_ANGLE_PSI, (double)-1. * header->euler_gamma);
+                MD[i]->setValue(MDL_WEIGHT,   1.);
+                MD[i]->setValue(MDL_SCALE, daux);
             }
         }
     }
@@ -448,7 +450,7 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
     fseek(fimg, datasize   * imgStart, SEEK_SET);
     fseek(fhed, IMAGICSIZE * imgStart, SEEK_SET);
 
-    std::vector<MDRow>::iterator it = MD.begin();
+    auto it = MD.begin();
 
     for (size_t i = 0; i < Ndim; ++i, ++it)
     {
@@ -458,8 +460,8 @@ int  ImageBase::writeIMAGIC(size_t select_img, int mode, const String &bitDepth,
         // Write the individual image header
         if (it != MD.end() && (dataMode == _HEADER_ALL || dataMode == _DATA_ALL))
         {
-#define SET_HEADER_VALUEInt(field, label)  it->getValueOrDefault((label), (aux), 0); header.field = -(int)(aux)
-#define SET_HEADER_VALUEDouble(field, label)  it->getValueOrDefault((label), (aux), 0.); header.field = -(float)(aux)
+#define SET_HEADER_VALUEInt(field, label)  (*it)->getValueOrDefault((label), (aux), 0); header.field = -(int)(aux)
+#define SET_HEADER_VALUEDouble(field, label)  (*it)->getValueOrDefault((label), (aux), 0.); header.field = -(float)(aux)
 
             SET_HEADER_VALUEInt(ixold, MDL_SHIFT_X);
             SET_HEADER_VALUEInt(iyold, MDL_SHIFT_Y);
