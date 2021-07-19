@@ -25,6 +25,10 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/* This file defines common API of all metadata rows (abstract class).
+ * Classes like MDRowVec & MDRowSql implement this API.
+ */
+
 #ifndef CORE_METADATA_ROW_BASE_H
 #define CORE_METADATA_ROW_BASE_H
 
@@ -47,9 +51,11 @@
      REPORT_ERROR(ERR_ARG_MISSING,(String)"Cannot find label: " + MDL::label2Str(__label) );
 
 
-/** Abstract class (API) for holding an entire row of posible MDObject */
 class MDRow {
 public:
+    /* Row could be attached to metadata (contains pointers to MetaData) or detached
+     * from metadata (contains data itself). To detach row, call this method.
+     */
     virtual void detach() {}
 
     virtual bool empty() const = 0;

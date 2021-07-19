@@ -29,12 +29,16 @@
 
 #include "metadata_row_base.h"
 
-/** Class for holding an entire row of posible MDObject */
-/* Row could be attached to OR detached from metadata
+/* Class for holding an entire row of MDObject in MetaDataVec.
+ * Row could be attached to OR detached from metadata
  * - Detached row: holds its own _row & _label_to_col. When copied, content of
  *   these objects is copied, not just pointer.
  * - Attached row: _row and _label_to_col points directly to Metadata object.
  *   When copied, just pointers are copied. Assumed to be read-only.
+ * NOTES:
+ *  1) It's fast to create MDRowVec from MetaDataVec row, because only pointers
+ *     are initialized. No data are copied.
+ *  2) Adding MDRowVec to MetaDataVec requires copying all rows.
  */
 class MDRowVec : public MDRow {
 private:

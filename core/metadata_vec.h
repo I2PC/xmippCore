@@ -23,6 +23,13 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/* This file defines MetaDataVec class.
+ * MetaDataVec implementst MetaData API (see metadata_base.h).
+ * It is fast in-memory storage of metadata in std::vector.
+ * Notes:
+ *  1) It's fast to iterate either over rows or over ids.
+ */
+
 #ifndef VEC_METADATA_H
 #define VEC_METADATA_H
 
@@ -36,13 +43,6 @@
 
 using MetaDataVecRow = std::vector<MDObject>;
 
-/** Class to manage data files.
- *
- * The MetaData class manages all procedures related to
- * metadata. MetaData is intended to group together old
- * Xmipp specific files like Docfiles, Selfiles, etc..
- *
- */
 class MetaDataVec: public MetaData {
 protected:
     std::vector<MetaDataVecRow> _rows;

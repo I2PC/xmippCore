@@ -25,6 +25,11 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/* MDObject stores single MetaData value.
+ * Each column in each metadata row contains MDObject.
+ * It can contain multiple types of data (see ObjectData).
+ */
+
 #ifndef CORE_METADATA_OBJECT_H
 #define CORE_METADATA_OBJECT_H
 
@@ -99,7 +104,7 @@ public:
     //will allow the supported types
     //TODO: think if the type check if needed here
 
-    // FIXME: methods below were orignally marked 'getValue', nowever they
+    // FIXME: methods below were orignally marked 'getValue', however they
     // took value via parameter and set value to parameter. This behavior has
     // changed. To force the programmer to read value from return type (no
     // from parameter), mehotds were temporary renamed, because compiler would

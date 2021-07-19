@@ -1,6 +1,7 @@
 /***************************************************************************
  *
  * Authors:     J.M. de la Rosa Trevin (jmdelarosa@cnb.csic.es)
+ *              Jan Horacek (xhorace4@fi.muni.cz)
  *
  * Unidad de  Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
@@ -22,5 +23,19 @@
  *  All comments concerning this program package may be sent to the
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
+
+/* There was an original database (MetaDataDb) implementation of MetaData in
+ * this file till 2021, when MetaData were split into MetaDataDb & MetaDataVec
+ * with aim to achive higner speeds via saving metadata in std::vectors instead
+ * of sql database.
+ *
+ * This file is present for backward-compatibility only and as general
+ * description of metadata.
+
+ * Current MetaData implementation:
+ *  1) metadata_base.(h|cpp): common MetaData API definition
+ *  2) metadata_vec.(h|cpp): vector MetaData implementation
+ *  3) metadata_db.(h|cpp): old datababse MetaData implementation
+ */
 
 #include "metadata_db.h"
