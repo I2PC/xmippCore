@@ -1808,7 +1808,7 @@ void radialAveragePrecomputeDistance(const MultidimArray< T >& m,
     // dimension of the radial average vector
     MultidimArray< int > distances(8);
 
-    double z = STARTINGZ(m) - ZZ(center_of_rot);
+	double z = STARTINGZ(m) - ZZ(center_of_rot);
 	double y = STARTINGY(m) - YY(center_of_rot);
 	double x = STARTINGX(m) - XX(center_of_rot);
 
