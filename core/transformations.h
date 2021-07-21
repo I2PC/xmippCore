@@ -1808,22 +1808,32 @@ void radialAveragePrecomputeDistance(const MultidimArray< T >& m,
     // dimension of the radial average vector
     MultidimArray< int > distances(8);
 
-    const double z0 = STARTINGZ(m) - ZZ(center_of_rot);
-    const double y0 = STARTINGY(m) - YY(center_of_rot);
-    const double x0 = STARTINGX(m) - XX(center_of_rot);
+    double z = STARTINGZ(m) - ZZ(center_of_rot);
+	double y = STARTINGY(m) - YY(center_of_rot);
+	double x = STARTINGX(m) - XX(center_of_rot);
 
-    const double xf = FINISHINGX(m) - XX(center_of_rot);
-    const double yf = FINISHINGY(m) - YY(center_of_rot);
-    const double zf = FINISHINGZ(m) - ZZ(center_of_rot);
+	distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = FINISHINGX(m) - XX(center_of_rot);
 
-    distances(0) = (int) floor(sqrt(x0 * x0 + y0 * y0 + z0 * z0));
-    distances(1) = (int) floor(sqrt(xf * xf + y0 * y0 + z0 * z0));
-    distances(2) = (int) floor(sqrt(xf * xf + yf * yf + z0 * z0));
-    distances(3) = (int) floor(sqrt(x0 * x0 + yf * yf + z0 * z0));
-    distances(4) = (int) floor(sqrt(x0 * x0 + yf * yf + zf * zf));
-    distances(5) = (int) floor(sqrt(xf * xf + yf * yf + zf * zf));
-    distances(6) = (int) floor(sqrt(xf * xf + y0 * y0 + zf * zf));
-    distances(7) = (int) floor(sqrt(x0 * x0 + y0 * y0 + zf * zf));
+	distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
+	y = FINISHINGY(m) - YY(center_of_rot);
+
+	distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = STARTINGX(m) - XX(center_of_rot);
+
+	distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
+	z = FINISHINGZ(m) - ZZ(center_of_rot);
+
+	distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = FINISHINGX(m) - XX(center_of_rot);
+
+	distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
+	y = STARTINGY(m) - YY(center_of_rot);
+
+	distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = STARTINGX(m) - XX(center_of_rot);
+
+	distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
 
     dim = (int) CEIL(distances.computeMax()) + 1;
     if (rounding)
@@ -1909,7 +1919,7 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
                    Matrix1D< int >& center_of_rot,
                    MultidimArray< T >& radial_mean,
                    MultidimArray< int >& radial_count,
-                   const bool& rounding = false)
+                   bool rounding = false)
 {
     Matrix1D< double > idx(3);
 
@@ -1926,33 +1936,24 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
     // dimension of the radial average vector
     MultidimArray< int > distances(8);
 
-    double z = scalez * (STARTINGZ(m) - ZZ(center_of_rot));
-    double y = scaley * (STARTINGY(m) - YY(center_of_rot));
-    double x = scalex * (STARTINGX(m) - XX(center_of_rot));
+	const double z0 = STARTINGZ(m) - ZZ(center_of_rot);
+	const double y0 = STARTINGY(m) - YY(center_of_rot);
+	const double x0 = STARTINGX(m) - XX(center_of_rot);
 
-    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = scalex * (FINISHINGX(m) - XX(center_of_rot));
+	const double xf = FINISHINGX(m) - XX(center_of_rot);
+	const double yf = FINISHINGY(m) - YY(center_of_rot);
+	const double zf = FINISHINGZ(m) - ZZ(center_of_rot);
 
-    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = scaley * (FINISHINGY(m) - YY(center_of_rot));
+	distances(0) = (int) floor(sqrt(x0 * x0 + y0 * y0 + z0 * z0));
+	distances(1) = (int) floor(sqrt(xf * xf + y0 * y0 + z0 * z0));
+	distances(2) = (int) floor(sqrt(xf * xf + yf * yf + z0 * z0));
+	distances(3) = (int) floor(sqrt(x0 * x0 + yf * yf + z0 * z0));
+	distances(4) = (int) floor(sqrt(x0 * x0 + yf * yf + zf * zf));
+	distances(5) = (int) floor(sqrt(xf * xf + yf * yf + zf * zf));
+	distances(6) = (int) floor(sqrt(xf * xf + y0 * y0 + zf * zf));
+	distances(7) = (int) floor(sqrt(x0 * x0 + y0 * y0 + zf * zf));
 
-    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = scalex * (STARTINGX(m) - XX(center_of_rot));
-
-    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
-    z = scalez * (FINISHINGZ(m) - ZZ(center_of_rot));
-
-    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = scalex * (FINISHINGX(m) - XX(center_of_rot));
-
-    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = scaley * (STARTINGY(m) - YY(center_of_rot));
-
-    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = scalex * (STARTINGX(m) - XX(center_of_rot));
-
-    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
-    int dim = CEIL(distances.computeMax()) + 1;
+    int dim = CEIL(distances.computeMax());
     if (rounding)
         dim++;
 
