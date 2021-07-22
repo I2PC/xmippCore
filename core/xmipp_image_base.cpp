@@ -804,9 +804,9 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
         ext_name.contains("stk") || ext_name.contains("vol"))
         err = readSPIDER(select_img);
-    else if (ext_name.contains("mrcs")||ext_name.contains("st"))//mrc stack MUST go BEFORE plain MRC
+    else if (ext_name.contains("mrcs")||ext_name.contains("st")||ext_name.contains("preali")||ext_name.contains("ali"))//mrc stack MUST go BEFORE plain MRC
         err = readMRC(select_img,true);
-    else if (ext_name.contains("mrc")||ext_name.contains("map"))//mrc
+    else if (ext_name.contains("mrc")||ext_name.contains("map")||ext_name.contains("rec"))//mrc
         err = readMRC(select_img,false);
     else if (ext_name.contains("img") || ext_name.contains("hed"))//
         err = readIMAGIC(select_img);//imagic is always an stack
