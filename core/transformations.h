@@ -31,6 +31,7 @@
 #include "multidim_array.h"
 #include "multidim_array_generic.h"
 #include "transformations_defines.h"
+#include <algorithm>
 
 
 class MDRow;
@@ -1953,37 +1954,37 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
 	distances(6) = (int) floor(sqrt(xf * xf + y0 * y0 + zf * zf));
 	distances(7) = (int) floor(sqrt(x0 * x0 + y0 * y0 + zf * zf));
 
-    int dim = CEIL(distances.computeMax());
-    if (rounding)
-        dim++;
+	int dim = CEIL(distances.computeMax()) + 1;
+	if (rounding)
+		dim++;
 
-    // Define the vectors
-    radial_mean.initZeros(dim);
-    radial_count.initZeros(dim);
+	// Define the vectors
+	radial_mean.initZeros(dim);
+	radial_count.initZeros(dim);
 
-    // Perform the radial sum and count pixels that contribute to every
-    // distance
-    FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
-    {
-        ZZ(idx) = scalez * (k - ZZ(center_of_rot));
-        YY(idx) = scaley * (i - YY(center_of_rot));
-        XX(idx) = scalex * (j - XX(center_of_rot));
+	// Perform the radial sum and count pixels that contribute to every
+	// distance
+	FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
+	{
+		ZZ(idx) = scalez * (k - ZZ(center_of_rot));
+		YY(idx) = scaley * (i - YY(center_of_rot));
+		XX(idx) = scalex * (j - XX(center_of_rot));
 
-        // Determine distance to the center
-        double mod = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
-        int distance = rounding ? (int) round(mod) : (int) floor(mod);
+		// Determine distance to the center
+		double mod = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
+		int distance = rounding ? (int) round(mod) : (int) floor(mod);
 
-        // Sum the value to the pixels with the same distance
-        DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
+		// Sum the value to the pixels with the same distance
+		DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
 
-        // Count the pixel
-        DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
-    }
+		// Count the pixel
+		DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
+	}
 
-    // Perform the mean
-    FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
-      if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
-        DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+	// Perform the mean
+	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
+	  if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
+		DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
 }
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
