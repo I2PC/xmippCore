@@ -24,17 +24,9 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/* This file defines abstract class MetaData which defines an API for all
- * MetaData implementations. MetaData class cannot be instantiated however
- * it could be passed to functions via reference or pointer where only
- * common MetaData functions are required:
- *  void foo(MetaData&);
- *  void boo(MetaData*);
- *
- * This code won't compile:
- *  void roo(MetaData& md) { md.someDbSpeficicOperation(); }
- * This code will compile:
- *  void roo(MetaDataDb& md) { md.someDbSpeficicOperation(); }
+/**
+ * This file defines abstract class MetaData which defines an API for all
+ * MetaData implementations.
  */
 
 #ifndef CORE_METADATA_H
@@ -65,18 +57,6 @@
 #define FILENAME_XMIPP_STAR "# XMIPP_STAR_1"
 #define FILENAME_XMIPP_SQLITE "SQLite format 3"
 #define DEFAULT_BLOCK_NAME "noname"
-
-/* ITERATING OVER METADATA
- * You can iterate directly over abstract MetaData as well as over specific MetaData*.
- * You can iterate over:
- *  1) Ids of rows (arbitrary size_t): for (size_t id : md.ids())
- *  2) Rows: for (const MDRow& row : md)
- * Never rely on any properties of IDs! E.g. they are ascending, positive, continuous etc.
- * There is a hierarchy of MDRow classes copying MetaData hierarchy: MDRow, MDRowVec, MDRowSql.
- * If you need row-specific function, do a dynamic cast:
- * for (const MDRow& row : md) { const MDRowVec& rowv = dynamic_cast<MDRowVec&>(row); }
- * You need to make sure type of md is MetaDataVec (otherwise exception is thrown).
- */
 
 // FIXME: deprecated
 // Preffered iterating is on right side of these macros
@@ -139,6 +119,33 @@ public:
 };
 
 
+/**
+ * Definition of API of all MetaDatas.
+ *
+ * MetaData class cannot be instantiated however it could be passed to functions
+ * as reference or pointer where only common MetaData functions are required:
+ *  - `void foo(MetaData&);`
+ *  - `void boo(MetaData*);`
+ *
+ * This code doesn't compile:
+ *  `void roo(MetaData& md) { md.someDbSpeficicOperation(); }`
+ *
+ * This code compiles:
+ *  `void roo(MetaDataDb& md) { md.someDbSpeficicOperation(); }`
+ *
+ * ### Iterating over MetaData
+ * You can iterate directly over abstract MetaData as well as over specific MetaData*.
+ * You can iterate over:
+ *  1. Ids of rows (arbitrary size_t): `for (size_t id : md.ids())`
+ *  2. Rows: `for (const MDRow& row : md)`
+ *
+ * ### Useful information
+ * - Never rely on any properties of IDs! E.g. they are ascending, positive, continuous etc.
+ * - There is a hierarchy of MDRow classes copying MetaData hierarchy: MDRow, MDRowVec, MDRowSql.
+ *   If you need row-specific function, do a dynamic cast:
+ *   `for (const MDRow& row : md) { const MDRowVec& rowv = dynamic_cast<MDRowVec&>(row); }`
+ *   You need to make sure type of md is MetaDataVec (otherwise exception is thrown).
+ */
 class MetaData {
 protected:
     /* Allows a fast search for pairs where the value is
