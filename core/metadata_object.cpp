@@ -253,7 +253,7 @@ float MDObject::getValue2(float) {
     return getValue2(0.); // double
 }
 
-const float MDObject::getValue2(float) const {
+float MDObject::getValue2(float) const {
     return getValue2(0.); // double
 }
 
