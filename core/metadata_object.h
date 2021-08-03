@@ -114,7 +114,7 @@ public:
     const std::vector<double>& getValue2(std::vector<double>) const;
     const std::vector<size_t>& getValue2(std::vector<size_t>) const;
     const size_t& getValue2(size_t) const;
-    const float getValue2(float) const;
+    float getValue2(float) const;
 
     int& getValue2(int);
     double& getValue2(double);
