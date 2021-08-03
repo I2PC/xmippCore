@@ -744,28 +744,31 @@ void ImageBase::closeFile(ImageFHandler* hFile) const
     delete hFile;
 }
 
-bool isDynamicMRCS(const String &ext)
-{
-    FileName mrcStackExtensions;
-    if (getenv("XMIPP_MRC_STACK_EXTENSIONS"))
-    	mrcStackExtensions=getenv("XMIPP_MRC_STACK_EXTENSIONS");
-    String plainExt = ext;
-    size_t found = ext.find_first_of("%");
-    if (found!=String::npos)
-        plainExt = ext.substr(0, found) ;
-    return mrcStackExtensions.contains(plainExt);
-}
-
-bool isDynamicMRC(const String &ext)
+bool isDynamicMRC(const char * envvar, const String &ext)
 {
     FileName mrcExtensions;
-    if (getenv("XMIPP_MRC_EXTENSIONS"))
-    	mrcExtensions=getenv("XMIPP_MRC_EXTENSIONS");
+    if (getenv(envvar))
+    	mrcExtensions=getenv(envvar);
     String plainExt = ext;
     size_t found = ext.find_first_of("%");
     if (found!=String::npos)
-        plainExt = ext.substr(0, found) ;
+        plainExt = ext.substr(0, found);
+    else
+    	return false;
     return mrcExtensions.contains(plainExt);
+}
+
+bool isMRCStack(const FileName &ext_name)
+{
+	return ext_name.contains("mrcs") || ext_name.contains("st") ||
+	       ext_name.contains("preali") || ext_name.contains("ali") ||
+		   isDynamicMRC("XMIPP_MRC_STACK_EXTENSIONS",ext_name);
+}
+
+bool isMRCImageOrVolume(const FileName &ext_name)
+{
+	return ext_name.contains("mrc") || ext_name.contains("map") ||
+    	   ext_name.contains("rec") || isDynamicMRC("XMIPP_MRC_EXTENSIONS",ext_name);
 }
 
 /* Internal read image file method.
@@ -830,12 +833,9 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
     if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
         ext_name.contains("stk") || ext_name.contains("vol"))
         err = readSPIDER(select_img);
-    else if (ext_name.contains("mrcs") || ext_name.contains("st") ||
-    		 ext_name.contains("preali") || ext_name.contains("ali") ||
-			 isDynamicMRCS(ext_name)) //mrc stack MUST go BEFORE plain MRC
+    else if (isMRCStack(ext_name)) //mrc stack MUST go BEFORE plain MRC
         err = readMRC(select_img,true);
-    else if (ext_name.contains("mrc") || ext_name.contains("map") ||
-    		ext_name.contains("rec") || isDynamicMRC(ext_name)) //mrc
+    else if (isMRCImageOrVolume(ext_name)) //mrc
         err = readMRC(select_img,false);
     else if (ext_name.contains("img") || ext_name.contains("hed"))//
         err = readIMAGIC(select_img);//imagic is always an stack
@@ -912,12 +912,9 @@ int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t sta
     if (ext_name.contains("spi") || ext_name.contains("xmp")  ||
         ext_name.contains("stk") || ext_name.contains("vol")) {
         err = readSPIDER(start_img, batch_size);
-    } else if (ext_name.contains("mrcs") || ext_name.contains("st") ||
-    		   ext_name.contains("preali") || ext_name.contains("ali") ||
-			   isDynamicMRCS(ext_name)) { //mrc stack MUST go BEFORE plain MRC
+    } else if (isMRCStack(ext_name)) { //mrc stack MUST go BEFORE plain MRC
         err = readMRC(start_img, batch_size, true);
-    } else if (ext_name.contains("mrc") || ext_name.contains("map") ||
-    		   ext_name.contains("rec") || isDynamicMRC(ext_name)) {//mrc
+    } else if (isMRCImageOrVolume(ext_name)) {//mrc
         err = readMRC(start_img, batch_size, false);
     } else {
         REPORT_ERROR(ERR_NOT_IMPLEMENTED, "Reading of a range of files is implemented only for SPIDER and MRC stack.");
@@ -1047,11 +1044,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         err = writeSPIDER(select_img,isStack,mode);
     else if (ext_name.contains("stk"))
         err = writeSPIDER(select_img,true,mode);
-    else if (ext_name.contains("mrc") || ext_name.contains("map") ||
-             ext_name.contains("mrcs") || ext_name.contains("st") ||
-             ext_name.contains("preali") || ext_name.contains("ali") ||
-             ext_name.contains("rec") || isDynamicMRCS(ext_name) ||
-             isDynamicMRC(ext_name))
+    else if (isMRCStack(ext_name) || isMRCImageOrVolume(ext_name))
         writeMRC(select_img,isStack,mode,imParam,castMode);
     else if (ext_name.contains("img") || ext_name.contains("hed"))
         writeIMAGIC(select_img,mode,imParam,castMode);
