@@ -7164,9 +7164,9 @@ std::string alglib::arraytostring(const double *ptr, ae_int_t n, int _dps)
 {
     std::string result;
     ae_int_t i;
-    char buf[64];
+    char buf[67];
     char mask1[64];
-    char mask2[64];
+    char mask2[66];
     int dps = _dps>=0 ? _dps : -_dps;
     result = "[";
     if( sprintf(mask1, "%%.%d%s", dps, _dps>=0 ? "f" : "e")>=(int)sizeof(mask1) )
