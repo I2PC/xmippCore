@@ -118,13 +118,6 @@ public:
     MetaDataVec(const MetaData &md);
     MetaDataVec(const MetaDataVec &md) = default;
 
-    /** Assignment operator
-     *
-     * Copies MetaData from an existing MetaData object.
-     */
-    MetaDataVec& operator=(const MetaData &md);
-    MetaDataVec& operator=(const MetaDataVec &md) = default;
-
     virtual ~MetaDataVec() {}
 
     /**Clear all data
@@ -153,7 +146,7 @@ public:
      * @{
      */
 
-    size_t addRow(const MDRow &row);
+    size_t addRow(const MDRow &row) override;
 
     void addRows(const std::vector<MDRowVec> &rows);
 

@@ -559,14 +559,7 @@ MetaDataDb::MetaDataDb()
 MetaDataDb::MetaDataDb(const MetaData &md) {
     myMDSql = new MDSql(this);
     init({});
-    *this = md;
-}
-
-MetaDataDb& MetaDataDb::operator=(const MetaData &md) {
-    this->copyInfo(md);
-    for (const auto& row : md)
-        this->addRow(row);
-    return *this;
+    MetaData::operator=(md);
 }
 
 MetaDataDb::MetaDataDb(const std::vector<MDLabel> &labelsVector)
@@ -588,11 +581,11 @@ MetaDataDb::MetaDataDb(const MetaDataDb &md)
     copyMetadata(md);
 }//close MetaData copy Constructor
 
-MetaDataDb& MetaDataDb::operator =(const MetaDataDb &md)
+MetaDataDb& MetaDataDb::operator=(const MetaDataDb &md)
 {
     copyMetadata(md);
     return *this;
-}//close metadata operator =
+}
 
 MetaDataDb::~MetaDataDb()
 {
