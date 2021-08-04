@@ -61,15 +61,6 @@ MetaDataVec::MetaDataVec(const MetaData &md) {
     *this = md;
 }
 
-MetaDataVec& MetaDataVec::operator=(const MetaData &md) {
-    if (&md == this)
-        return *this;
-
-    this->copyInfo(md);
-    for (const auto& row : md)
-        this->addRow(row);
-    return *this;
-}
 
 void MetaDataVec::init(const std::vector<MDLabel> &labelsVector) {
     this->clear();

@@ -313,6 +313,19 @@ public:
         return setValue(MDObject(label, valueIn), id);
     }
 
+    virtual size_t addRow(const MDRow &row) = 0;
+
+    virtual MetaData& operator=(const MetaData &md) {
+        if (&md == this) {
+            return *this;
+        }
+        this->clear();
+        this->copyInfo(md);
+        for (const auto& row : md)
+            this->addRow(row);
+        return *this;
+    };
+
     /** This functions are using MDObject for set real values
      * there is an explicit function signature
      * foreach type supported in Metadata.

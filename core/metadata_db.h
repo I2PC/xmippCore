@@ -159,9 +159,7 @@ public:
      *
      * Copies MetaDataDb from an existing MetaData object.
      */
-    MetaDataDb& operator =(const MetaDataDb &md);
-    MetaDataDb& operator =(const MetaData &md);
-
+    MetaDataDb& operator=(const MetaDataDb &md);
 
     /** Destructor
      *
@@ -295,7 +293,7 @@ public:
     bool initAddRow(const MDRow &row);
     bool execAddRow(const MDRow &row);
     void finalizeAddRow(void);
-    size_t addRow(const MDRow &row);
+    size_t addRow(const MDRow &row) override;
     void addRowOpt(const MDRowSql &row);
     void addRows(const std::vector<MDRowSql> &rows);
     void addMissingLabels(const MDRow &row);
