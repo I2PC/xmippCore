@@ -30,7 +30,6 @@
 #include "xmipp_fftw.h"
 #include "xmipp_types.h"
 #include "xvsmooth.h"
-#include "metadata.h"
 
 
 ImageGeneric::ImageGeneric(DataType _datatype)

@@ -10,7 +10,6 @@
 
 #include "xmipp_filename.h"
 #include "xmipp_image.h"
-#include "metadata.h"
 #include "metadata_vec.h"
 #include "metadata_db.h"
 #include <stdlib.h>

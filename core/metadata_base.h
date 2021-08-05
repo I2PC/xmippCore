@@ -122,6 +122,28 @@ public:
 /**
  * Definition of API of all MetaDatas.
  *
+ * ### General information about metadata
+ *
+ * MetaData* class(es) implement a way to store metadata in xmipp programs.
+ * - MetaData is represented as as a database-like table.
+ * - Each intersection of row and column contains MDObject instance.
+ * - Each row has its label MDLabel.
+ * - Columns of all rows are same.
+ * - Metadata could be loaded from file, stored to file, iterated over, rows
+ *   can be added, removed, changed etc.
+ *
+ * There was a single original database (MetaDataDb) implementation of MetaData
+ * till 2021, when MetaData were split into MetaDataDb & MetaDataVec
+ * with aim to achive higner speeds via saving metadata in std::vectors instead
+ * of sql database.
+ *
+ * Current MetaData implementation:
+ *  1. metadata_base.(h|cpp): common MetaData API definition
+ *  2. metadata_vec.(h|cpp): vector MetaData implementation
+ *  3. metadata_db.(h|cpp): old datababse MetaData implementation
+ *
+ * ### MetaDataBase
+ *
  * MetaData class cannot be instantiated however it could be passed to functions
  * as reference or pointer where only common MetaData functions are required:
  *  - `void foo(MetaData&);`
@@ -134,12 +156,14 @@ public:
  *  `void roo(MetaDataDb& md) { md.someDbSpeficicOperation(); }`
  *
  * ### Iterating over MetaData
+ *
  * You can iterate directly over abstract MetaData as well as over specific MetaData*.
  * You can iterate over:
  *  1. Ids of rows (arbitrary size_t): `for (size_t id : md.ids())`
  *  2. Rows: `for (const MDRow& row : md)`
  *
  * ### Useful information
+ *
  * - See metadata.h file for general info about Metadata.
  * - Never rely on any properties of IDs! That is, do NOT assume that IDs are
  *   e.g. continuous or that they are ascending.
