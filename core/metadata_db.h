@@ -50,6 +50,7 @@
  * ### Notes
  *  1. It's quite fast to iterate over ids.
  *  2. It's slow to iterate over rows.
+ *  3. Best practices: <https://github.com/I2PC/xmipp-portal/wiki/MetaData---SQL-best-practices>
  */
 class MetaDataDb : public MetaData {
 protected:
