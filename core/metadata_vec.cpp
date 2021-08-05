@@ -58,7 +58,7 @@ MetaDataVec::MetaDataVec(const FileName &fileName) {
 
 MetaDataVec::MetaDataVec(const MetaData &md) {
     init({});
-    *this = md;
+    MetaData::operator=(md);
 }
 
 
