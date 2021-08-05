@@ -140,6 +140,7 @@ public:
  *  2. Rows: `for (const MDRow& row : md)`
  *
  * ### Useful information
+ * - See metadata.h file for general info about Metadata.
  * - Never rely on any properties of IDs! E.g. they are ascending, positive, continuous etc.
  * - There is a hierarchy of MDRow classes copying MetaData hierarchy: MDRow, MDRowVec, MDRowSql.
  *   If you need row-specific function, do a dynamic cast:

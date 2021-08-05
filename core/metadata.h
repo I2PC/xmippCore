@@ -24,7 +24,15 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/* There was an original database (MetaDataDb) implementation of MetaData in
+/** MetaData class implements a way to store metadata in xmipp programs.
+ * - MetaData is represented as as a database-like table.
+ * - Each intersection row row and column contains MDObject instance.
+ * - Each row has its label MDLabel.
+ * - Columns of all rows are same.
+ * - Metadata could be loaded from file, stored to file, iterated over, rows
+ *   can be added, removed, changed etc.
+ *
+ * There was an original database (MetaDataDb) implementation of MetaData in
  * this file till 2021, when MetaData were split into MetaDataDb & MetaDataVec
  * with aim to achive higner speeds via saving metadata in std::vectors instead
  * of sql database.
@@ -33,9 +41,9 @@
  * description of metadata.
 
  * Current MetaData implementation:
- *  1) metadata_base.(h|cpp): common MetaData API definition
- *  2) metadata_vec.(h|cpp): vector MetaData implementation
- *  3) metadata_db.(h|cpp): old datababse MetaData implementation
+ *  1. metadata_base.(h|cpp): common MetaData API definition
+ *  2. metadata_vec.(h|cpp): vector MetaData implementation
+ *  3. metadata_db.(h|cpp): old datababse MetaData implementation
  */
 
 #include "metadata_db.h"
