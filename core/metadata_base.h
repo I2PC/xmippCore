@@ -637,6 +637,10 @@ public:
                             const MDLabel sortLabel=MDL_OBJID) = 0;
 
     /** @} */
+
+    /** @name Iterators
+     *  @{
+     */
     friend struct MDBaseRowIterator<false>;
     friend struct MDBaseRowIterator<true>;
 
@@ -717,6 +721,8 @@ public:
 
     virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
     virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
+
+    /** @} */
 
     /** Fill column with constant value
      */

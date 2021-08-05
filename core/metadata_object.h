@@ -25,11 +25,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/* MDObject stores single MetaData value.
- * Each column in each metadata row contains MDObject.
- * It can contain multiple types of data (see ObjectData).
- */
-
 #ifndef CORE_METADATA_OBJECT_H
 #define CORE_METADATA_OBJECT_H
 
@@ -51,8 +46,9 @@ typedef union
     std::vector<size_t> * vectorValueLong;
 } ObjectData;
 
-/** Class to hold the labels values and type
- *
+/** MDObject stores single MetaData value.
+ * Each column in each metadata row contains MDObject.
+ * It can contain multiple types of data (see ObjectData).
  */
 class MDObject
 {

@@ -24,14 +24,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/* This file contains (old) database implementation of MetaData.
- * MetaData are stored in SQL database.
- * Some databse-specific commands are available in this implementation only.
- * NOTES:
- *  1) It's quite fast to iterate over ids.
- *  2) It's slow to iterate over rows.
- */
-
 #ifndef CORE_METADATA_DB_H
 #define CORE_METADATA_DB_H
 
@@ -50,6 +42,15 @@
 #include "xmipp_filename.h"
 #include "metadata_writemode.h"
 
+
+/** Old database implementation of MetaData.
+ * MetaData are stored in SQL database.
+ * Some database-specific commands are available in this implementation only.
+ *
+ * ### Notes
+ *  1. It's quite fast to iterate over ids.
+ *  2. It's slow to iterate over rows.
+ */
 class MetaDataDb : public MetaData {
 protected:
     /** This variables should only be used by MDSql

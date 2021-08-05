@@ -30,7 +30,7 @@
 
 #include "metadata_row_base.h"
 
-/* Class for holding an entire row of MDObject in MetaDataDb. */
+/** Class for holding an entire row of MDObject in MetaDataDb. */
 class MDRowSql : public MDRow {
 private:
     // Reserve space for the maximum different labels

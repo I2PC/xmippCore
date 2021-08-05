@@ -25,10 +25,6 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
-/* This file defines common API of all metadata rows (abstract class).
- * Classes like MDRowVec & MDRowSql implement this API.
- */
-
 #ifndef CORE_METADATA_ROW_BASE_H
 #define CORE_METADATA_ROW_BASE_H
 
@@ -51,6 +47,9 @@
      REPORT_ERROR(ERR_ARG_MISSING,(String)"Cannot find label: " + MDL::label2Str(__label) );
 
 
+/** Common API of all metadata rows (abstract class).
+ * Classes like MDRowVec & MDRowSql implement this API.
+ */
 class MDRow {
 public:
     /* Row could be attached to metadata (contains pointers to MetaData) or detached
