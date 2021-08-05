@@ -141,7 +141,8 @@ public:
  *
  * ### Useful information
  * - See metadata.h file for general info about Metadata.
- * - Never rely on any properties of IDs! E.g. they are ascending, positive, continuous etc.
+ * - Never rely on any properties of IDs! That is, do NOT assume that IDs are
+ *   e.g. continuous or that they are ascending.
  * - There is a hierarchy of MDRow classes copying MetaData hierarchy: MDRow, MDRowVec, MDRowSql.
  *   If you need row-specific function, do a dynamic cast:
  *   `for (const MDRow& row : md) { const MDRowVec& rowv = dynamic_cast<MDRowVec&>(row); }`
