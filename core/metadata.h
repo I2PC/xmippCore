@@ -26,7 +26,7 @@
 
 /** MetaData class implements a way to store metadata in xmipp programs.
  * - MetaData is represented as as a database-like table.
- * - Each intersection row row and column contains MDObject instance.
+ * - Each intersection of row and column contains MDObject instance.
  * - Each row has its label MDLabel.
  * - Columns of all rows are same.
  * - Metadata could be loaded from file, stored to file, iterated over, rows

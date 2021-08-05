@@ -43,7 +43,7 @@
 #include "metadata_writemode.h"
 
 
-/** Old database implementation of MetaData.
+/** Original database implementation of MetaData.
  * MetaData are stored in SQL database.
  * Some database-specific commands are available in this implementation only.
  *

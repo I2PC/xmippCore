@@ -39,7 +39,7 @@
  * ### Notes
  *  1. It's fast to create MDRowVec from MetaDataVec row, because only pointers
  *     are initialized. No data are copied.
- *  2. Adding MDRowVec to MetaDataVec requires copying all rows.
+ *  2. Adding MDRowVec to MetaDataVec requires copying whole row.
  */
 class MDRowVec : public MDRow {
 private:
