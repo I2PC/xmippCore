@@ -1917,25 +1917,25 @@ void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< d
 
 template<typename T>
 void radialAverageNonCubic(const MultidimArray< T >& m,
-                   Matrix1D< int >& center_of_rot,
-                   MultidimArray< T >& radial_mean,
-                   MultidimArray< int >& radial_count,
-                   bool rounding = false)
+		Matrix1D< int >& center_of_rot,
+		MultidimArray< T >& radial_mean,
+		MultidimArray< int >& radial_count,
+		bool rounding = false)
 {
-    Matrix1D< double > idx(3);
+	Matrix1D< double > idx(3);
 
-    size_t sizemax = std::max({XSIZE(m), YSIZE(m), ZSIZE(m)});
-    double scalex = XSIZE(m)/sizemax;
-    double scaley = YSIZE(m)/sizemax;
-    double scalez = ZSIZE(m)/sizemax;
+	size_t sizemax = std::max({XSIZE(m), YSIZE(m), ZSIZE(m)});
+	double scalex = XSIZE(m)/sizemax;
+	double scaley = YSIZE(m)/sizemax;
+	double scalez = ZSIZE(m)/sizemax;
 
-    // If center_of_rot was written for 2D image
-    if (center_of_rot.size() < 3)
-        center_of_rot.resize(3);
+	// If center_of_rot was written for 2D image
+	if (center_of_rot.size() < 3)
+		center_of_rot.resize(3);
 
-    // First determine the maximum distance that one should expect, to set the
-    // dimension of the radial average vector
-    MultidimArray< int > distances(8);
+	// First determine the maximum distance that one should expect, to set the
+	// dimension of the radial average vector
+	MultidimArray< int > distances(8);
 
 	const double z0 = STARTINGZ(m) - ZZ(center_of_rot);
 	const double y0 = STARTINGY(m) - YY(center_of_rot);
@@ -1983,7 +1983,7 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
 
 	// Perform the mean
 	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
-	  if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
+	if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
 		DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
 }
 
