@@ -26,7 +26,6 @@
 #include "xmipp_image_base.h"
 #include "xmipp_image.h"
 #include "xmipp_error.h"
-#include "metadata.h"
 
 #include <stdlib.h>
 

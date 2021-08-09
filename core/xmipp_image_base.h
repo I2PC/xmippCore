@@ -33,7 +33,7 @@
 #include "metadata_label.h"
 #include "metadata_row_vec.h"
 #include "metadata_static.h"
-#include "metadata.h"
+#include "metadata_db.h"
 #include "multidim_array_base.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"

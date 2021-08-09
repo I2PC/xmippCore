@@ -42,12 +42,15 @@
 #include "xmipp_filename.h"
 #include "metadata_writemode.h"
 
-/** Class to manage data files.
+
+/** Original database implementation of MetaData.
+ * MetaData are stored in SQL database.
+ * Some database-specific commands are available in this implementation only.
  *
- * The MetaData class manages all procedures related to
- * metadata. MetaData is intended to group together old
- * Xmipp specific files like Docfiles, Selfiles, etc..
- *
+ * ### Notes
+ *  1. It's quite fast to iterate over ids.
+ *  2. It's slow to iterate over rows.
+ *  3. Best practices: <https://github.com/I2PC/xmipp-portal/wiki/MetaData---SQL-best-practices>
  */
 class MetaDataDb : public MetaData {
 protected:

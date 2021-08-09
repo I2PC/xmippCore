@@ -23,6 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/** Definitions of API of MetaData iterators (abstract classes). */
+
 #ifndef IT_BASE_METADATA_H
 #define IT_BASE_METADATA_H
 

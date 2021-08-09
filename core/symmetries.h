@@ -32,8 +32,9 @@
 #include "matrix2d.h"
 #include "xmipp_funcs.h"
 #include "args.h"
-#include "metadata.h"
 #include "transformations.h"
+#include "metadata_base.h"
+#include "metadata_row_base.h"
 
 /**@defgroup SymmetryLists Symmetry handling
    @ingroup DataLibrary 

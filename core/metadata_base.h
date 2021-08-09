@@ -24,6 +24,11 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/**
+ * This file defines abstract class MetaData which defines an API for all
+ * MetaData implementations.
+ */
+
 #ifndef CORE_METADATA_H
 #define CORE_METADATA_H
 
@@ -52,7 +57,6 @@
 #define FILENAME_XMIPP_STAR "# XMIPP_STAR_1"
 #define FILENAME_XMIPP_SQLITE "SQLite format 3"
 #define DEFAULT_BLOCK_NAME "noname"
-
 
 // FIXME: deprecated
 // Preffered iterating is on right side of these macros
@@ -114,26 +118,76 @@ public:
     ColumnDoesNotExist(const std::string &msg) : std::logic_error(msg) {};
 };
 
-/** Class to manage data files.
+
+/**
+ * Definition of API of all MetaDatas.
  *
- * The MetaData class manages all procedures related to
- * metadata. MetaData is intended to group together old
- * Xmipp specific files like Docfiles, Selfiles, etc..
+ * ### General information about metadata
  *
+ * MetaData* class(es) implement a way to store metadata in xmipp programs.
+ * - MetaData is represented as as a database-like table.
+ * - Each intersection of row and column contains MDObject instance.
+ * - Each row has its label MDLabel.
+ * - Columns of all rows are same.
+ * - Metadata could be loaded from file, stored to file, iterated over, rows
+ *   can be added, removed, changed etc.
+ *
+ * There was a single original database (MetaDataDb) implementation of MetaData
+ * till 2021, when MetaData were split into MetaDataDb & MetaDataVec
+ * with aim to achive higner speeds via saving metadata in std::vectors instead
+ * of sql database.
+ *
+ * Current MetaData implementation:
+ *  1. metadata_base.(h|cpp): common MetaData API definition
+ *  2. metadata_vec.(h|cpp): vector MetaData implementation
+ *  3. metadata_db.(h|cpp): old datababse MetaData implementation
+ *
+ * ### MetaDataBase
+ *
+ * MetaData class cannot be instantiated however it could be passed to functions
+ * as reference or pointer where only common MetaData functions are required:
+ *  - `void foo(MetaData&);`
+ *  - `void boo(MetaData*);`
+ *
+ * This code doesn't compile:
+ *  `void roo(MetaData& md) { md.someDbSpeficicOperation(); }`
+ *
+ * This code compiles:
+ *  `void roo(MetaDataDb& md) { md.someDbSpeficicOperation(); }`
+ *
+ * ### Iterating over MetaData
+ *
+ * You can iterate directly over abstract MetaData as well as over specific MetaData*.
+ * You can iterate over:
+ *  1. Ids of rows (arbitrary size_t): `for (size_t id : md.ids())`
+ *  2. Rows: `for (const MDRow& row : md)`
+ *
+ * ### Useful information
+ *
+ * - See metadata.h file for general info about Metadata.
+ * - Never rely on any properties of IDs! That is, do NOT assume that IDs are
+ *   e.g. continuous or that they are ascending.
+ * - There is a hierarchy of MDRow classes copying MetaData hierarchy: MDRow, MDRowVec, MDRowSql.
+ *   If you need row-specific function, do a dynamic cast:
+ *   `for (const MDRow& row : md) { const MDRowVec& rowv = dynamic_cast<MDRowVec&>(row); }`
+ *   You need to make sure type of md is MetaDataVec (otherwise exception is thrown).
  */
 class MetaData {
+private:
+    bool _isColumnFormat; // Format for the file, column or row formatted
 protected:
-    // Allows a fast search for pairs where the value is
-    // a string, i.e. looking for filenames which is quite
-    // usual
+    /* Allows a fast search for pairs where the value is
+     * a string, i.e. looking for filenames which is quite usual.
+     */
     std::map<String, size_t> _fastStringSearch;
     MDLabel _fastStringSearchLabel;
     String _comment; ///< A general comment for the MetaData file
     ///comment is wraped in char_max length lines
 #define line_max 70
 
-    bool _isColumnFormat; ///< Format for the file, column or row formatted
+    
     int _precision = 1000;
+
     /**Input file name
      * Where does this MetaData come from/go to be stored?
      */
@@ -515,7 +569,7 @@ public:
      * //Import all objects with rotational angle greater that 60
      * A.importObjects(B, MDValuesGT(MDL_ANGLE_ROT, 60));
      * //Import all objects
-     * A.importObjects(B);     *
+     * A.importObjects(B);
      * @endcode
      */
     virtual void importObject(const MetaData &md, const size_t id, bool doClear=true) = 0;
@@ -622,9 +676,19 @@ public:
                             const MDLabel sortLabel=MDL_OBJID) = 0;
 
     /** @} */
+
+    /** @name Iterators
+     *  @{
+     */
     friend struct MDBaseRowIterator<false>;
     friend struct MDBaseRowIterator<true>;
 
+    /* To allow iteration over abstract MetaData, there is a hierarchy of iterators.
+       - MDBaseRowIterator, MDVecRowIterator, MDDbRowIterator
+       - MDBaseIdIterator, MDVecIdIterator, MDDbIdIterator
+     * Plus there are rowIterator & idIterator, which are common for all instances
+     * and just hold unique_ptr to appropriate implementation.
+     */
     template <bool IsConst>
     struct rowIterator {
     private:
@@ -678,6 +742,7 @@ public:
     using id_iterator = idIterator<false>;
     using id_const_iterator = idIterator<true>;
 
+    // This proxy allows to implement non-const & const iterator in one templated class.
     template <bool IsConst>
     struct IdIteratorProxy {
         typename TypeHelpers::choose<IsConst, const MetaData&, MetaData&>::type _md;
@@ -695,6 +760,8 @@ public:
 
     virtual IdIteratorProxy<false> ids() { return IdIteratorProxy<false>(*this); };
     virtual IdIteratorProxy<true> ids() const { return IdIteratorProxy<true>(*this); };
+
+    /** @} */
 
     /** Fill column with constant value
      */

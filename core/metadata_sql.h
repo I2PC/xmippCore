@@ -23,6 +23,8 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+/* SQL helpers for MetaDataDb */
+
 #ifndef CORE_METADATASQL_H
 #define CORE_METADATASQL_H
 

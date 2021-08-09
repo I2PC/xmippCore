@@ -46,8 +46,9 @@ typedef union
     std::vector<size_t> * vectorValueLong;
 } ObjectData;
 
-/** Class to hold the labels values and type
- *
+/** MDObject stores single MetaData value.
+ * Each column in each metadata row contains MDObject.
+ * It can contain multiple types of data (see ObjectData).
  */
 class MDObject
 {
@@ -99,7 +100,8 @@ public:
     //will allow the supported types
     //TODO: think if the type check if needed here
 
-    // FIXME: methods below were orignally marked 'getValue', nowever they
+    // ******* WARNING ******* 
+    // Methods below were orignally marked 'getValue', however they
     // took value via parameter and set value to parameter. This behavior has
     // changed. To force the programmer to read value from return type (no
     // from parameter), mehotds were temporary renamed, because compiler would
