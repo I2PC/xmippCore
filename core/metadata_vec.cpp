@@ -135,7 +135,7 @@ void MetaDataVec::read(const FileName &filename, const std::vector<MDLabel> *des
     blockName = escapeForRegularExpressions(blockName);
 
     this->clear();
-    this->_isColumnFormat = true;
+    this->setColumnFormat(true);
 
     if (extFile == "xml")
         this->readXML(_inFile, desiredLabels, blockName, decomposeStack);
@@ -649,7 +649,7 @@ void MetaDataVec::write(std::ostream &os, const String &blockName, WriteModeMeta
     String _szBlockName("data_");
     _szBlockName += blockName;
 
-    if (this->_isColumnFormat) {
+    if (this->isColumnFormat()) {
         // write md columns in 3rd comment line of the header
         os << _szBlockName << '\n';
         os << "loop_" << '\n';

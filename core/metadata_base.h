@@ -173,6 +173,8 @@ public:
  *   You need to make sure type of md is MetaDataVec (otherwise exception is thrown).
  */
 class MetaData {
+private:
+    bool _isColumnFormat; // Format for the file, column or row formatted
 protected:
     /* Allows a fast search for pairs where the value is
      * a string, i.e. looking for filenames which is quite usual.
@@ -183,7 +185,7 @@ protected:
     ///comment is wraped in char_max length lines
 #define line_max 70
 
-    bool _isColumnFormat; // Format for the file, column or row formatted
+    
     int _precision = 1000;
 
     /**Input file name

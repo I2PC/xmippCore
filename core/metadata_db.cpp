@@ -878,7 +878,7 @@ void MetaDataDb::write(std::ostream &os,const String &blockName, WriteModeMetaDa
     String _szBlockName("data_");
     _szBlockName += blockName;
 
-    if (_isColumnFormat)
+    if (this->isColumnFormat())
     {
         //write md columns in 3rd comment line of the header
         os << _szBlockName << '\n';
@@ -1001,7 +1001,7 @@ void MetaDataDb::read(const FileName &_filename,
 
     _clear();
     myMDSql->createMd();
-    _isColumnFormat = true;
+    this->setColumnFormat(true);
 
     if (extFile=="xml")
         readXML(inFile, desiredLabels, blockName, decomposeStack);
