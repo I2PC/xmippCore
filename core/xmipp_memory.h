@@ -40,7 +40,7 @@ template <class T> void ask_Tvector(T* &v, int nl, int nh)
 {
     if (nh - nl + 1 >= 1)
     {
-        v = (T *)malloc((unsigned)(nh - nl + 1) * sizeof(T));
+        v = (T *)calloc((unsigned)(nh - nl + 1), sizeof(T));
         if (!v) REPORT_ERROR(ERR_MEM_NOTENOUGH, "allocation failure in vector()");
         v -= nl;
     }
@@ -73,7 +73,7 @@ template <class T> void ask_Tmatrix(T ** &m, int nrl, int nrh,
 
         for (int i = nrl;i <= nrh;i++)
         {
-            m[i] = (T *) malloc((unsigned)(nch - ncl + 1) * sizeof(T));
+            m[i] = (T *) calloc((unsigned)(nch - ncl + 1), sizeof(T));
             if (!m[i]) REPORT_ERROR(ERR_MEM_NOTENOUGH, "allocation failure 2 in matrix()");
             m[i] -= ncl;
         }
@@ -115,7 +115,7 @@ template <class T> void ask_Tvolume(T *** &m, int nsl, int nsh, int nrl,
 
             for (int i = nrl;i <= nrh;i++)
             {
-                m[k][i] = (T *) malloc((unsigned)(nch - ncl + 1) * sizeof(T));
+                m[k][i] = (T *) calloc((unsigned)(nch - ncl + 1), sizeof(T));
                 if (!m[k][i]) REPORT_ERROR(ERR_MEM_NOTENOUGH, "allocation failure 2 in matrix()");
                 m[k][i] -= ncl;
             }
