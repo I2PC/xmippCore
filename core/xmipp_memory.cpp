@@ -38,7 +38,7 @@ char*  askMemory(size_t memsize)
 
     if ( ( ptr = (char *) calloc(1,memsize*sizeof(char)) ) == NULL )
     {
-        REPORT_ERROR(ERR_MEM_NOTENOUGH, formatString("askMemory:: Memory allocation of %ld bytes failed",memsize));
+        REPORT_ERROR(ERR_MEM_NOTENOUGH, formatString("askMemory:: Memory allocation of %lu bytes failed",memsize));
         return(NULL);
     }
 

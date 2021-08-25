@@ -446,6 +446,12 @@ public:
                     slope = 1;
                     min0 -= CHAR_MIN;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -470,6 +476,12 @@ public:
                 {
                     slope = 1;
                     min0 += CHAR_MIN;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
@@ -501,6 +513,12 @@ public:
                 {
                     slope = 1;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -531,6 +549,12 @@ public:
                 else if (castMode == CW_CONVERT && (myTypeId == DT_SChar))
                 {
                     slope = 1;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
@@ -564,6 +588,12 @@ public:
                 {
                     slope = 1;
                 }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
+                }
                 else
                 {
                     minF = 0;
@@ -594,6 +624,12 @@ public:
                          && (myTypeId == DT_Short || myTypeId == DT_SChar))
                 {
                     slope = 1;
+                }
+                else if (castMode == CW_CAST)
+                {
+                	minF  = 0;
+                	min0  = 0;
+                	slope = 1;
                 }
                 else
                 {
@@ -852,14 +888,8 @@ public:
     Image<T>&
     operator=(const Image<T> &op1)
     {
-        MD = op1.MD;
-        MDMainHeader = op1.MDMainHeader;
-        filename = op1.filename;
-        transform = op1.transform;
-
-        aDimFile = op1.aDimFile;
+        this->copy(op1);
         data = op1.data;
-
         return *this;
     }
 
@@ -969,8 +999,10 @@ public:
 protected:
 
     /** Apply geometry in referring metadata to the image */
-    void
-    applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP);
+    void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP) override;
+
+    //apply geo has not been defined for volumes
+    //and only make sense when reading data
 
     /** Set the image dimensions
      */

@@ -28,5 +28,5 @@
 
 int readJPEG(size_t select_img);
 
-int writeJPEG(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE, String bitDepth="", CastWriteMode castMode = CW_CAST);
+int writeJPEG(size_t select_img, bool isStack=false, int mode=WRITE_OVERWRITE, String bitDepth="", CastWriteMode castMode = CW_CONVERT);
 #endif /* RWJPEG_H_ */

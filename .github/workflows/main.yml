@@ -17,7 +17,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     # Disabling shallow clone is recommended for improving relevancy of reporting
@@ -36,14 +36,12 @@ jobs:
           path: sonarCache
           key: ${{ runner.os }}-sonarCache-${{ github.sha }}
           restore-keys: ${{ runner.os }}-sonarCache-
-          
-      - name: Create Travis variables
-        run: |
-          echo "TRAVIS_PULL_REQUEST_BRANCH=${GITHUB_HEAD_REF}" >> $GITHUB_ENV
-          echo "TRAVIS_BRANCH=${GITHUB_REF}" >> $GITHUB_ENV
+
+      - name: Export CI variables
+        run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
           
       - name: Fetching Xmipp
-        run: ./scripts/travis_build
+        run: ./scripts/ci_build
       
       - name: Prepare Sonar scanner
         run: |
@@ -53,6 +51,7 @@ jobs:
           wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip          
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
+        working-directory: ${{ env.BUILD_DIR }}
       
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
@@ -65,17 +64,21 @@ jobs:
           sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
 
       - name: Install dependencies
-        run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
-
+        run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
+  
       - name: Compile Xmipp
-        run: build-wrapper-linux-x86-64 --out-dir bw-outputs ./xmipp noAsk
+        run: ./xmipp noAsk
+        working-directory: ${{ env.BUILD_DIR }}
         env:
-          TRAVIS: 1
-          BUILD_TESTS: False
+          CIBuild: 1
+          BUILD_TESTS: True
 
-      # Since we moved files to be able to build Xmipp, we also changed git records -> the diff will git wrong results
-      - name: Restore repository
-        run: cp -rf src/xmippCore/.* . || true # ignore errors reported by cp 
+      # If we got here, Xmipp can be build with this xmippCore
+      # Build only the core to be able to run the static code analysis
+      - name: Compile XmippCore
+        run: |
+          cp ${BUILD_DIR}/xmipp.conf ./install
+          build-wrapper-linux-x86-64 --out-dir bw-outputs scons . -j4
 
       - name: SonarCloud Scan
         run: |

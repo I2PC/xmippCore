@@ -30,6 +30,7 @@
 #include "argsprinter.h"
 #include "xmipp_filename.h"
 #include "metadata_label.h"
+#include "metadata_static.h"
 
 typedef std::map<const char*, String> DictDB;
 

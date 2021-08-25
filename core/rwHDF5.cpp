@@ -247,7 +247,8 @@ int ImageBase::readHDF5(size_t select_img)
     size_t   imgEnd = (select_img != ALL_IMAGES) ? imgStart + 1 : aDim.ndim;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     if (dataMode < DATA)   // Don't read  data if not necessary but read the header
         return 0;

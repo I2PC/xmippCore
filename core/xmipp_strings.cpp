@@ -688,3 +688,10 @@ String escapeForRegularExpressions(const String &str)
 	aux=findAndReplace(str,"+","\\+");
 	return aux;
 }
+
+bool endsWith(const char* str1, const char* str2)
+{
+	int len1 = strlen(str1);
+	int len2 = strlen(str2);
+	return (len1 >= len2) && (0 == strcmp(str1 + len1 - len2, str2));
+}

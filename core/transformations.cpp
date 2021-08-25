@@ -26,7 +26,6 @@
 
 #include "transformations.h"
 #include "geometry.h"
-#include "metadata.h"
 #include "bilib/tboundaryconvention.h" // must be before other bilib includes
 #include "bilib/tsplinebasis.h"
 #include "bilib/kerneldiff1.h"
@@ -34,6 +33,7 @@
 #include "bilib/pyramidtools.h"
 #include "xmipp_fft.h"
 #include "bilib/kernel.h"
+#include "metadata_row_base.h"
 
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,
@@ -1369,3 +1369,4 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
 
 template void reduceBSpline<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
 template void produceSplineCoefficients<bool>(int, MultidimArray<double>&, MultidimArray<bool> const&);
+template void expandBSpline<double>(int, MultidimArray<double>&, const MultidimArray<double> &);
