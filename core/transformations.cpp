@@ -1378,9 +1378,9 @@ void radialAverageNonCubic(const MultidimArray< T >& m,
 	Matrix1D< double > idx(3);
 
 	size_t sizemax = std::max({XSIZE(m), YSIZE(m), ZSIZE(m)});
-	double scalex = XSIZE(m)/sizemax;
-	double scaley = YSIZE(m)/sizemax;
-	double scalez = ZSIZE(m)/sizemax;
+	double scalex = double(XSIZE(m)/sizemax);
+	double scaley = double(YSIZE(m)/sizemax);
+	double scalez = double(ZSIZE(m)/sizemax);
 
 	// If center_of_rot was written for 2D image
 	if (center_of_rot.size() < 3)
