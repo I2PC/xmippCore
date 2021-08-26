@@ -1368,5 +1368,17 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
 }
 
 template void reduceBSpline<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
-template void produceSplineCoefficients<bool>(int, MultidimArray<double>&, MultidimArray<bool> const&);
 template void expandBSpline<double>(int, MultidimArray<double>&, const MultidimArray<double> &);
+
+template void produceImageFromSplineCoefficients<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
+template void produceSplineCoefficients<bool>(int, MultidimArray<double>&, MultidimArray<bool> const&);
+template void produceSplineCoefficients<unsigned short>(int, MultidimArray<double>&, MultidimArray<unsigned short> const&);
+template void produceSplineCoefficients<unsigned int>(int, MultidimArray<double>&, MultidimArray<unsigned int> const&);
+template void produceSplineCoefficients<int>(int, MultidimArray<double>&, MultidimArray<int> const&);
+template void produceSplineCoefficients<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
+template void produceSplineCoefficients<unsigned char>(int, MultidimArray<double>&, MultidimArray<unsigned char> const&);
+template void produceSplineCoefficients<short>(int, MultidimArray<double>&, MultidimArray<short> const&);
+template void produceSplineCoefficients<long>(int, MultidimArray<double>&, MultidimArray<long> const&);
+template void produceSplineCoefficients<unsigned long>(int, MultidimArray<double>&, MultidimArray<unsigned long> const&);
+template void produceSplineCoefficients<char>(int, MultidimArray<double>&, MultidimArray<char> const&);
+template void produceSplineCoefficients<float>(int, MultidimArray<double>&, MultidimArray<float> const&);
