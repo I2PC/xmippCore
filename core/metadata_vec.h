@@ -36,12 +36,12 @@
 
 using MetaDataVecRow = std::vector<MDObject>;
 
-/** Class to manage data files.
+
+/** Fast in-memory storage of metadata in std::vector.
+ * MetaDataVec implements MetaData API (see metadata_base.h).
  *
- * The MetaData class manages all procedures related to
- * metadata. MetaData is intended to group together old
- * Xmipp specific files like Docfiles, Selfiles, etc..
- *
+ * ### Notes
+ *  1. It's fast to iterate either over rows or over ids.
  */
 class MetaDataVec: public MetaData {
 protected:
@@ -118,13 +118,6 @@ public:
     MetaDataVec(const MetaData &md);
     MetaDataVec(const MetaDataVec &md) = default;
 
-    /** Assignment operator
-     *
-     * Copies MetaData from an existing MetaData object.
-     */
-    MetaDataVec& operator=(const MetaData &md);
-    MetaDataVec& operator=(const MetaDataVec &md) = default;
-
     virtual ~MetaDataVec() {}
 
     /**Clear all data
@@ -153,8 +146,7 @@ public:
      * @{
      */
 
-    size_t addRow(const MDRow &row);
-
+    size_t addRow(const MDRow &row) override;
     void addRows(const std::vector<MDRowVec> &rows);
 
 
@@ -169,7 +161,6 @@ public:
         return MetaData::setValueCol(label, valueIn);
     }
 
-    //private:
     /** This functions are using MDObject for set real values
      * there is an explicit function signature
      * foreach type supported in Metadata.
@@ -244,6 +235,16 @@ public:
      */
     bool containsLabel(const MDLabel label) const override;
 
+    size_t firstRowId() const override;
+    size_t firstObject(const MDQuery&) const override;
+    size_t lastRowId() const override;
+
+    /** @} */
+
+    /** @name MetaData Manipulation
+     * @{
+     */
+
     /** Add a new label to the metadata.
      * By default the label is added at the end,
      * if the position is specified and is between 0 and n-1
@@ -304,10 +305,6 @@ public:
      */
     int removeObjects() override;
     int removeObjects(const MDQuery&) override;
-
-    size_t firstRowId() const override;
-    size_t firstObject(const MDQuery&) const override;
-    size_t lastRowId() const override;
 
     /** @name Search operations
      * @{
@@ -462,6 +459,11 @@ public:
     void makeAbsPath(const MDLabel label=MDL_IMAGE);
 
     /** @} */
+
+    /** @name Iterators
+     * @{
+     */
+
     template <bool IsConst>
     struct MDVecRowIterator : public MDBaseRowIterator<IsConst> {
     private:
@@ -557,6 +559,8 @@ public:
     id_const_iterator id_end() const override {
         return {memoryUtils::make_unique<MDVecIdIterator<true>>(*this, this->size())};
     }
+
+    /** @} */
 
     void fillConstant(MDLabel label, const String &value) override;
     void fillRandom(MDLabel label, const String &mode, double op1, double op2, double op3=0.) override;

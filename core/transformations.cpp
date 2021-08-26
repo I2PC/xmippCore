@@ -26,7 +26,6 @@
 
 #include "transformations.h"
 #include "geometry.h"
-#include "metadata.h"
 #include "bilib/tboundaryconvention.h" // must be before other bilib includes
 #include "bilib/tsplinebasis.h"
 #include "bilib/kerneldiff1.h"
@@ -35,6 +34,7 @@
 #include "xmipp_fft.h"
 #include "bilib/kernel.h"
 #include <algorithm>
+#include "metadata_row_base.h"
 
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,
