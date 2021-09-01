@@ -40,8 +40,9 @@ void _Xmipp_error(const ErrorType nerr, const String &what,
 
 // Object Constructor
 XmippError::XmippError(const ErrorType nerr, const String &what,
-                       const String &fileArg, const long lineArg)
+                       const String &fileArg, const long lineArg):std::runtime_error(what)
 {
+    std::runtime_error(what.c_str());
     __errno = nerr;
     msg = colorString(what.c_str(), RED);
     file = fileArg;
@@ -53,15 +54,15 @@ XmippError::XmippError(const ErrorType nerr, const String &what,
     //Store information about the stack calls
 //#ifdef LINUX
 //    void *array[10];
-//    size = backtrace(array, 10);
-//    strings = backtrace_symbols(array, size);
+//    size_t size = backtrace(array, 10);
+//    char ** strings = backtrace_symbols(array, size);
 //#endif
 }
 
-//Object Destructor
-XmippError::~XmippError()
+XmippError::XmippError(const std::string &what):std::runtime_error(what)
 {
-    //free(strings);
+   std::runtime_error(what.c_str());
+   XmippError(ERR_UNCLASSIFIED,what,"Unknown file",0);
 }
 
 // Show message
@@ -236,6 +237,11 @@ String XmippError::getDefaultMessage(ErrorType e)
     default:
         return "Unrecognized error code";
     }
+}
+
+const char* XmippError::what() const noexcept
+{
+  return getDefaultMessage().c_str();
 }
 
 void reportWarning(const String& what)

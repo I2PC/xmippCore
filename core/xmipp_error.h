@@ -25,7 +25,7 @@
 
 #ifndef CORE_XMIPP_ERROR_H
 #define CORE_XMIPP_ERROR_H
-
+#include <stdexcept>
 #include <iostream>
 #include "xmipp_strings.h"
 
@@ -245,14 +245,8 @@ void _Xmipp_error(const ErrorType nerr, const String& what,
  * exception handling mode is active (see Xmipp Configuration for details about
  * enabling the exception handling).
  */
-class XmippError
+class XmippError : public std::runtime_error
 {
-
-private:
-    //Variables to hold stack info
-    char ** strings;
-    size_t size;
-
 public:
     /** Error code */
     ErrorType __errno;
@@ -269,8 +263,9 @@ public:
     /** Constructor */
     XmippError(const ErrorType nerr, const String& what,
                const String &fileArg, const long lineArg);
-    /** Destructor */
-    ~XmippError();
+
+    /** Constructor */
+    XmippError(const std::string& what);
 
     /** Show an error */
     friend std::ostream& operator<<(std::ostream& o, XmippError& XE);
@@ -284,6 +279,8 @@ public:
     /** Get default message */
     static String getDefaultMessage(ErrorType e);
 
+    /** Get error message */
+    virtual char const * what() const noexcept;
 
 };
 
