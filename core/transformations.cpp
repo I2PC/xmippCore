@@ -33,6 +33,7 @@
 #include "bilib/pyramidtools.h"
 #include "xmipp_fft.h"
 #include "bilib/kernel.h"
+#include <algorithm>
 #include "metadata_row_base.h"
 
 template<typename T>
@@ -1367,6 +1368,79 @@ void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo,
     R = Rto * Rfrom.transpose();
 }
 
+template<typename T>
+void radialAverageNonCubic(const MultidimArray< T >& m,
+		Matrix1D< int >& center_of_rot,
+		MultidimArray< T >& radial_mean,
+		MultidimArray< int >& radial_count,
+		bool rounding)
+{
+	Matrix1D< double > idx(3);
+
+	size_t sizemax = std::max({XSIZE(m), YSIZE(m), ZSIZE(m)});
+	double scalex = double(XSIZE(m)/sizemax);
+	double scaley = double(YSIZE(m)/sizemax);
+	double scalez = double(ZSIZE(m)/sizemax);
+
+	// If center_of_rot was written for 2D image
+	if (center_of_rot.size() < 3)
+		center_of_rot.resize(3);
+
+	// First determine the maximum distance that one should expect, to set the
+	// dimension of the radial average vector
+	MultidimArray< int > distances(8);
+
+	const double z0 = STARTINGZ(m) - ZZ(center_of_rot);
+	const double y0 = STARTINGY(m) - YY(center_of_rot);
+	const double x0 = STARTINGX(m) - XX(center_of_rot);
+
+	const double xf = FINISHINGX(m) - XX(center_of_rot);
+	const double yf = FINISHINGY(m) - YY(center_of_rot);
+	const double zf = FINISHINGZ(m) - ZZ(center_of_rot);
+
+	distances(0) = (int) floor(sqrt(x0 * x0 + y0 * y0 + z0 * z0));
+	distances(1) = (int) floor(sqrt(xf * xf + y0 * y0 + z0 * z0));
+	distances(2) = (int) floor(sqrt(xf * xf + yf * yf + z0 * z0));
+	distances(3) = (int) floor(sqrt(x0 * x0 + yf * yf + z0 * z0));
+	distances(4) = (int) floor(sqrt(x0 * x0 + yf * yf + zf * zf));
+	distances(5) = (int) floor(sqrt(xf * xf + yf * yf + zf * zf));
+	distances(6) = (int) floor(sqrt(xf * xf + y0 * y0 + zf * zf));
+	distances(7) = (int) floor(sqrt(x0 * x0 + y0 * y0 + zf * zf));
+
+	int dim = CEIL(distances.computeMax()) + 1;
+	if (rounding)
+		dim++;
+
+	// Define the vectors
+	radial_mean.initZeros(dim);
+	radial_count.initZeros(dim);
+
+	// Perform the radial sum and count pixels that contribute to every
+	// distance
+	FOR_ALL_ELEMENTS_IN_ARRAY3D(m)
+	{
+		ZZ(idx) = scalez * (k - ZZ(center_of_rot));
+		YY(idx) = scaley * (i - YY(center_of_rot));
+		XX(idx) = scalex * (j - XX(center_of_rot));
+
+		// Determine distance to the center
+		double mod = sqrt(ZZ(idx)*ZZ(idx)+YY(idx)*YY(idx)+XX(idx)*XX(idx));
+		int distance = rounding ? (int) round(mod) : (int) floor(mod);
+
+		// Sum the value to the pixels with the same distance
+		DIRECT_MULTIDIM_ELEM(radial_mean,distance) += A3D_ELEM(m, k, i, j);
+
+		// Count the pixel
+		DIRECT_MULTIDIM_ELEM(radial_count,distance)++;
+	}
+
+	// Perform the mean
+	FOR_ALL_DIRECT_ELEMENTS_IN_ARRAY1D(radial_mean)
+	if (DIRECT_MULTIDIM_ELEM(radial_count,i) > 0)
+		DIRECT_MULTIDIM_ELEM(radial_mean,i) /= DIRECT_MULTIDIM_ELEM(radial_count,i);
+}
+
+
 template void reduceBSpline<double>(int, MultidimArray<double>&, MultidimArray<double> const&);
 template void expandBSpline<double>(int, MultidimArray<double>&, const MultidimArray<double> &);
 
@@ -1382,3 +1456,6 @@ template void produceSplineCoefficients<long>(int, MultidimArray<double>&, Multi
 template void produceSplineCoefficients<unsigned long>(int, MultidimArray<double>&, MultidimArray<unsigned long> const&);
 template void produceSplineCoefficients<char>(int, MultidimArray<double>&, MultidimArray<char> const&);
 template void produceSplineCoefficients<float>(int, MultidimArray<double>&, MultidimArray<float> const&);
+
+template void radialAverageNonCubic<double>(const MultidimArray<double>& m, Matrix1D< int >& center_of_rot, MultidimArray<double>& radial_mean, MultidimArray< int >& radial_count, bool rounding);
+
