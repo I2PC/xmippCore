@@ -280,7 +280,7 @@ public:
     static String getDefaultMessage(ErrorType e);
 
     /** Get error message */
-    virtual char const * what() const noexcept;
+    virtual char const * what() const noexcept override;
 
 };
 
