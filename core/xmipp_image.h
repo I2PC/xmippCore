@@ -1167,7 +1167,7 @@ private:
             }
             //if ( pad > 0 )
             //    freeMemory(padpage, pad*sizeof(char));
-            if (page > 0)
+            if (page)
                 freeMemory(page, pagesize * sizeof(char));
 
         }
@@ -1255,7 +1255,7 @@ private:
             printf("DEBUG readData4bit: Finished reading and converting data\n");
 #endif
         }
-        if (page > 0)
+        if (page)
             freeMemory(page, pagesizeM * sizeof(char));
 
         return;
