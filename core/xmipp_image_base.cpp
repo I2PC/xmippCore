@@ -1064,7 +1064,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
     else if (ext_name.contains("spe"))
         writeSPE(select_img,isStack,mode);
     else if (ext_name.contains("jpg"))
-        writeJPEG(select_img, false, WRITE_OVERWRITE, "", castMode);
+        writeJPEG(select_img, false, WRITE_OVERWRITE, "", CW_ADJUST);
     else if (ext_name.contains("hdf5") || ext_name.contains("h5"))
         writeHDF5(select_img);
     else
