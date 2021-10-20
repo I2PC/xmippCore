@@ -105,7 +105,8 @@ int ImageBase::readINF(size_t select_img,bool isStack)
         return 0;
 
     MD.clear();
-    MD.resize(imgEnd - imgStart,MDL::emptyHeader);
+    for (size_t i = 0; i < imgEnd-imgStart; i++)
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
     //#define DEBUG
 #ifdef DEBUG

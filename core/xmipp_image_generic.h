@@ -107,14 +107,14 @@ public:
      */
     void initGeometry(const size_t n = 0)
     {
-        image->MD[n]=MDL::emptyHeader;
+        MDL::emptifyHeader(*(image->MD[n]));
     }
 
     /** Return geometry row
      */
     MDRow& getGeometry(const size_t n = 0)
     {
-        return image->MD[n];
+        return *(image->MD[n]);
     }
 
     /** Get Image dimensions

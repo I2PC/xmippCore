@@ -28,6 +28,8 @@
 
 #include <sqlite3.h>
 #include "../metadata_label.h"
+#include "../metadata_object.h"
+#include "../metadata_static.h"
 
 class sqlUtils {
 public:
@@ -99,12 +101,10 @@ public:
         sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
 
         MDObject obj(label);
-        T val;
         // execute, extract value from each row
         while (sqlite3_step(stmt) == SQLITE_ROW) {
             extractValue(stmt, 0, obj);
-            obj.getValue(val);
-            values.emplace_back(val);
+            values.emplace_back(obj.getValue2(T()));
         }
 
         sqlite3_reset(stmt);

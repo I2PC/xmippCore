@@ -221,20 +221,71 @@ void Image<T>::getTransformationMatrix(Matrix2D<double> &A, bool only_apply_shif
     // This has only been implemented for 2D images...
     MULTIDIM_ARRAY(*this).checkDimension(2);
     A.resizeNoCopy(3, 3);
-    geo2TransformationMatrix(MD[n], A, only_apply_shifts);
+    geo2TransformationMatrix(*MD[n], A, only_apply_shifts);
 }
 
 template<typename T>
-void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
+void Image<T>::getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim,
+           int select_slice, size_t select_img)
 {
+    // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
+
+    size_t Zdim;
+    ArrayDim imAdim;
+    MULTIDIM_ARRAY(*this).getDimensions(imAdim);
+    MULTIDIM_ARRAY(*this).setXmippOrigin();
+
+    double scale;
+
+    // If only Xdim is passed, it is the higher allowable size, for any dimension
+    if (Ydim == 0 && imAdim.xdim < imAdim.ydim)
+    {
+        Ydim = Xdim;
+        scale = ((double) Ydim) / ((double) imAdim.ydim);
+        Xdim = (int) (scale * imAdim.xdim);
+    }
+    else
+    {
+        scale = ((double) Xdim) / ((double) imAdim.xdim);
+        if (Ydim == 0)
+            Ydim = (int) (scale * imAdim.ydim);
+    }
+
+    Image<T> &imgOut = *((Image<T>*) imgBOut);
+
+    int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
+
+    if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
+    {
+        movePointerTo(select_slice, select_img);
+        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim);
+    }
+    else // Otherwise, All slices or Central slice is selected
+    {
+        movePointerTo(ALL_SLICES, select_img);
+        Zdim = (select_slice == ALL_SLICES) ? imAdim.zdim : 1;
+        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim,
+                    Zdim);
+    }
+
+    movePointerTo();
+    IMGMATRIX(*this).resetOrigin();
+
+    // We set the actual dimesions of th MDA to the imageOut as if it were read from file.
+    imgOut.setADimFile(IMGMATRIX(imgOut).getDimensions());
+}
+
+template<typename T>
+void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap) {
     //This implementation does not handle stacks,
     //read in a block
     if (data.ndim != 1)
         REPORT_ERROR(ERR_MULTIDIM_SIZE,
                      "Geometric transformation cannot be applied to stacks!!!");
+
     if (MD.size() == 0)
-        MD.push_back(MDL::emptyHeader);
-    MDRow &rowAux = MD[0];
+        MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
+    MDRow &rowAux = *MD[0];
 
     if (!row.containsLabel(MDL_TRANSFORM_MATRIX))
     {
@@ -292,57 +343,6 @@ void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap)
                           wrap);
         }
     }
-}
-
-template<typename T>
-void Image<T>::getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim,
-           int select_slice, size_t select_img)
-{
-    // Zdim is used to choose the slices: -1 = CENTRAL_SLICE, 0 = ALL_SLICES, else This Slice
-
-    size_t Zdim;
-    ArrayDim imAdim;
-    MULTIDIM_ARRAY(*this).getDimensions(imAdim);
-    MULTIDIM_ARRAY(*this).setXmippOrigin();
-
-    double scale;
-
-    // If only Xdim is passed, it is the higher allowable size, for any dimension
-    if (Ydim == 0 && imAdim.xdim < imAdim.ydim)
-    {
-        Ydim = Xdim;
-        scale = ((double) Ydim) / ((double) imAdim.ydim);
-        Xdim = (int) (scale * imAdim.xdim);
-    }
-    else
-    {
-        scale = ((double) Xdim) / ((double) imAdim.xdim);
-        if (Ydim == 0)
-            Ydim = (int) (scale * imAdim.ydim);
-    }
-
-    Image<T> &imgOut = *((Image<T>*) imgBOut);
-
-    int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
-
-    if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
-    {
-        movePointerTo(select_slice, select_img);
-        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim);
-    }
-    else // Otherwise, All slices or Central slice is selected
-    {
-        movePointerTo(ALL_SLICES, select_img);
-        Zdim = (select_slice == ALL_SLICES) ? imAdim.zdim : 1;
-        scaleToSize(mode, IMGMATRIX(imgOut), IMGMATRIX(*this), Xdim, Ydim,
-                    Zdim);
-    }
-
-    movePointerTo();
-    IMGMATRIX(*this).resetOrigin();
-
-    // We set the actual dimesions of th MDA to the imageOut as if it were read from file.
-    imgOut.setADimFile(IMGMATRIX(imgOut).getDimensions());
 }
 
 //template int Image<std::complex<double> >::readPreview(FileName const&, unsigned long, unsigned long, int, unsigned long);

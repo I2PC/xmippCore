@@ -1808,32 +1808,32 @@ void radialAveragePrecomputeDistance(const MultidimArray< T >& m,
     // dimension of the radial average vector
     MultidimArray< int > distances(8);
 
-    double z = STARTINGZ(m) - ZZ(center_of_rot);
-    double y = STARTINGY(m) - YY(center_of_rot);
-    double x = STARTINGX(m) - XX(center_of_rot);
+	double z = STARTINGZ(m) - ZZ(center_of_rot);
+	double y = STARTINGY(m) - YY(center_of_rot);
+	double x = STARTINGX(m) - XX(center_of_rot);
 
-    distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = FINISHINGX(m) - XX(center_of_rot);
+	distances(0) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = FINISHINGX(m) - XX(center_of_rot);
 
-    distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = FINISHINGY(m) - YY(center_of_rot);
+	distances(1) = (int) floor(sqrt(x * x + y * y + z * z));
+	y = FINISHINGY(m) - YY(center_of_rot);
 
-    distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = STARTINGX(m) - XX(center_of_rot);
+	distances(2) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = STARTINGX(m) - XX(center_of_rot);
 
-    distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
-    z = FINISHINGZ(m) - ZZ(center_of_rot);
+	distances(3) = (int) floor(sqrt(x * x + y * y + z * z));
+	z = FINISHINGZ(m) - ZZ(center_of_rot);
 
-    distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = FINISHINGX(m) - XX(center_of_rot);
+	distances(4) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = FINISHINGX(m) - XX(center_of_rot);
 
-    distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
-    y = STARTINGY(m) - YY(center_of_rot);
+	distances(5) = (int) floor(sqrt(x * x + y * y + z * z));
+	y = STARTINGY(m) - YY(center_of_rot);
 
-    distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
-    x = STARTINGX(m) - XX(center_of_rot);
+	distances(6) = (int) floor(sqrt(x * x + y * y + z * z));
+	x = STARTINGX(m) - XX(center_of_rot);
 
-    distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
+	distances(7) = (int) floor(sqrt(x * x + y * y + z * z));
 
     dim = (int) CEIL(distances.computeMax()) + 1;
     if (rounding)
@@ -1913,6 +1913,13 @@ void radialAverageAxis(const MultidimArray< T >& in, char axis, MultidimArray< d
 	else
 		REPORT_ERROR(ERR_ARG_INCORRECT,"Not implemented yet");
 }
+
+template<typename T>
+void radialAverageNonCubic(const MultidimArray< T >& m,
+		Matrix1D< int >& center_of_rot,
+		MultidimArray< T >& radial_mean,
+		MultidimArray< int >& radial_count,
+		bool rounding = false);
 
 void radiallySymmetrize(const MultidimArray< double >& img, MultidimArray<double> &radialImg);
 
