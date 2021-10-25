@@ -562,6 +562,7 @@ private:
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
 
         MDL::addLabel(MDL_RESIDUE, LABEL_INT, "residue");
+        MDL::addLabel(MDL_RESOLUTION_ANISOTROPY, LABEL_DOUBLE, "resolutionAnisotropy");
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
         MDL::addLabel(MDL_RESOLUTION_FSO, LABEL_DOUBLE, "resolutionFSO");

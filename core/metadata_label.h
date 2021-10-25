@@ -363,6 +363,7 @@ enum MDLabel
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
     MDL_RESIDUE,        //<residue of an atomic model (int)
+    MDL_RESOLUTION_ANISOTROPY, ///<Resolution anisotropy used to sotre the significance of the Bingham Test (double)
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)
