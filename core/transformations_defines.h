@@ -27,9 +27,9 @@
 #define XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_
 
 
-namespace xmippTransformation
+namespace xmipp_transformation
 {
-	enum {NEAREST=0, LINEAR=1, BSPLINE2=2, BSPLINE3=3, BSPLINE4=4}; // Interpolation type
+	enum XmippInterpolation {NEAREST=0, LINEAR=1, BSPLINE2=2, BSPLINE3=3, BSPLINE4=4}; // Interpolation type
 	static const bool IS_INV=true;
 	static const bool IS_NOT_INV=false;
 	static const bool DONT_WRAP=false;

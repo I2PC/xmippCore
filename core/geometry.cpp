@@ -1069,14 +1069,14 @@ void Euler_rotate(const MultidimArray<double> &V, double rot, double tilt, doubl
 {
     Matrix2D<double> R;
     Euler_angles2matrix(rot, tilt, psi, R, true);
-    applyGeometry(1, result, V, R, xmippTransformation::IS_NOT_INV, xmippTransformation::DONT_WRAP);
+    applyGeometry(1, result, V, R, xmipp_transformation::IS_NOT_INV, xmipp_transformation::DONT_WRAP);
 }
 void Euler_rotate(const MultidimArrayGeneric &V, double rot, double tilt, double psi,
                   MultidimArray<double> &result)
 {
   Matrix2D<double> R;
   Euler_angles2matrix(rot, tilt, psi, R, true);
-#define APPLYGEO(type) applyGeometry(1, result, *((MultidimArray<type> *)V.im), R, xmippTransformation::IS_NOT_INV, xmippTransformation::DONT_WRAP);
+#define APPLYGEO(type) applyGeometry(1, result, *((MultidimArray<type> *)V.im), R, xmipp_transformation::IS_NOT_INV, xmipp_transformation::DONT_WRAP);
   SWITCHDATATYPE(V.datatype, APPLYGEO)
 #undef APPLYGEO
 }

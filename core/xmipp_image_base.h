@@ -147,7 +147,7 @@ struct ApplyGeoParams
         only_apply_shifts = false;
         datamode = DATA;
         select_img = ALL_IMAGES;
-        wrap = xmippTransformation::WRAP;
+        wrap = xmipp_transformation::WRAP;
     }
 };
 
@@ -833,7 +833,7 @@ protected:
     void closeFile(ImageFHandler* hFile = NULL) const;
 
     /** Internal apply geometrical transformations */
-    virtual void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = xmippTransformation::WRAP) = 0;
+    virtual void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = xmipp_transformation::WRAP) = 0;
 
     /** Internal read image file method.
      */
