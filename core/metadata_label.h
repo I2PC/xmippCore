@@ -91,6 +91,9 @@ enum MDLabel
     MDL_CORR_DENOISED_PROJECTION, ///<Correlation between the denoised image and the projection proposed
     MDL_CORR_DENOISED_NOISY, ///<Correlation between the denoised image and the noisy version
 
+    MDL_CLASS_INTERSECTION_SIZE_PVALUE, ///< P-value (1-percentile) of the class size compared to a random distribution (double in [0, 1])
+    MDL_CLASS_INTERSECTION_RELATIVE_SIZE_PVALUE, ///< P-value (1-percentile) of the relative class size (size/max(original_classes)) compared to a random distribution (double in [0, 1])
+
     MDL_CRYSTAL_CELLX, ///< Cell location for crystals
     MDL_CRYSTAL_CELLY, ///< Cell location for crystals
     MDL_CRYSTAL_LATTICE_A,   /// < Lattice vector for projection (vector double)
