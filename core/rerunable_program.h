@@ -71,7 +71,7 @@ protected:
    **/
   virtual std::vector<MDLabel> getLabelsForEmpty() = 0;
 
-  const auto &getFileName() const { return this->fnDone; }
+  const FileName &getFileName() const { return this->fnDone; }
 
   void setFileName(const FileName &fn) { fnDone = fn; }
 
