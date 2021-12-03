@@ -929,7 +929,8 @@ enum MDLabelType
     LABEL_STRING,
     LABEL_VECTOR_DOUBLE,
     LABEL_SIZET,
-    LABEL_VECTOR_SIZET
+    LABEL_VECTOR_SIZET,
+    LABEL_VECTOR_FLOAT
 };
 
 /** Possible types of the values of labels */

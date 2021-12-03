@@ -229,6 +229,16 @@ const std::vector<double>& MDObject::getValue2(std::vector<double>) const {
     return *(this->data.vectorValue);
 }
 
+std::vector<float>& MDObject::getValue2(std::vector<float>) {
+    labelTypeCheck(LABEL_VECTOR_FLOAT);
+    return *(this->data.vectorValueFloat);
+}
+
+const std::vector<float>& MDObject::getValue2(std::vector<float>) const {
+    labelTypeCheck(LABEL_VECTOR_FLOAT);
+    return *(this->data.vectorValueFloat);
+}
+
 std::vector<size_t>& MDObject::getValue2(std::vector<size_t>) {
     labelTypeCheck(LABEL_VECTOR_SIZET);
     return *(this->data.vectorValueLong);

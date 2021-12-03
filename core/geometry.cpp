@@ -1322,6 +1322,7 @@ double Bspline_model::evaluate(double x, double y) const
 
 // explicit instantiation
 template void Euler_angles2matrix<double>(double, double, double, Matrix2D<double>&, bool);
+template void Euler_angles2matrix<float>(float, float, float, Matrix2D<float>&, bool);
 template float Euler_distanceBetweenAngleSets<float>(
         float rot1, float tilt1, float psi1, float rot2, float tilt2, float psi2,
         bool only_projdir);
