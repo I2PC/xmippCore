@@ -46,16 +46,22 @@ protected:
    * This method will fill remove processed records from the md.
    * Md will not be changed if no data has been processed.
    **/
-  void createWorkFiles(bool resume, MetaData *md) {
+  virtual void createWorkFiles(bool resume, MetaData *md) {
+    if (nullptr == md) {
+      REPORT_ERROR(ERR_MD,
+                   "Null pointer passed. "
+                   "If you can reproduce this, please contact developers.");
+    }
     if (resume && fnDone.exists()) {
       MetaDataDb done(fnDone);
       auto *toDo = dynamic_cast<MetaDataDb *>(md);
       if (nullptr == toDo) {
-        REPORT_ERROR(ERR_MD,
-                     "Bad cast to MetaDataDb or null pointer passed. "
-                     "If you can reproduce this, please contact developers.");
+        MetaDataDb tmp(*md);
+        tmp.subtraction(done, MDL_IMAGE);
+        *md = tmp;
+      } else {
+        toDo->subtraction(done, MDL_IMAGE);
       }
-      toDo->subtraction(done, MDL_IMAGE);
     } else // if not exists create metadata only with headers
     {
       MetaDataVec mdDone;
