@@ -369,7 +369,7 @@ public:
 
     virtual size_t addRow(const MDRow &row) = 0;
 
-    virtual MetaData& operator=(const MetaData &md) {
+    MetaData& operator=(const MetaData &md) {
         if (&md == this) {
             return *this;
         }
