@@ -44,6 +44,11 @@ from glob import glob
 import fnmatch
 import platform
 import SCons.SConf
+
+
+import platform
+print(platform.python_version())
+
 from configparser import ConfigParser, ParsingError
     
 MACOSX = (platform.system() == 'Darwin')
