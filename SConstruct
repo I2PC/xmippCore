@@ -34,7 +34,7 @@ import os
 import sys
 import shutil
 from os.path import join
-from SCons import Node, Script, EnsurePythonVersion
+from SCons import Node, Script
 EnsurePythonVersion(3, 3)
 try:
  from itertools import izip
