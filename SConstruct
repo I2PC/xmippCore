@@ -44,10 +44,7 @@ from glob import glob
 import fnmatch
 import platform
 import SCons.SConf
-try:
-    from ConfigParser import ConfigParser, ParsingError
-except ImportError:
-    from configparser import ConfigParser, ParsingError  # Python 3
+from configparser import ConfigParser, ParsingError
     
 MACOSX = (platform.system() == 'Darwin')
 WINDOWS = (platform.system() == 'Windows')
