@@ -29,13 +29,13 @@
 
 # Builders and pseudobuilders used be SConscript to install things.
 
+EnsurePythonVersion(3, 3)
 
 import os
 import sys
 import shutil
 from os.path import join
 from SCons import Node, Script
-EnsurePythonVersion(3, 3)
 try:
  from itertools import izip
 except:
@@ -45,11 +45,6 @@ from glob import glob
 import fnmatch
 import platform
 import SCons.SConf
-
-
-import platform
-print(platform.python_version())
-
 from configparser import ConfigParser, ParsingError
     
 MACOSX = (platform.system() == 'Darwin')
