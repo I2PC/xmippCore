@@ -118,7 +118,9 @@ def appendUnique(elist, element):
 cf = ConfigParser()
 cf.optionxform = str  # keep case (stackoverflow.com/questions/1611799)
 try:
-    configFile = "xmipp.conf" if 'CIBuild' in os.environ else "../../xmipp.conf" 
+    configFile = "../../xmipp.conf"
+    if not os.path.isfile(configFile): # in case of the CI build
+        configFile = "xmipp.conf" # config file will be directly in the folder
     cf.read_file(open(configFile))
 except OSError:
     sys.exit("Config file not found.")
