@@ -77,8 +77,8 @@ jobs:
       # Build only the core to be able to run the static code analysis
       - name: Compile XmippCore
         run: |
+          cp ${BUILD_DIR}/xmipp.conf ./
           build-wrapper-linux-x86-64 --out-dir bw-outputs /usr/bin/env python3 $(which scons) . -j4
-        working-directory: ${{ env.BUILD_DIR }}/src/xmippCore
 
       - name: SonarCloud Scan
         run: |
