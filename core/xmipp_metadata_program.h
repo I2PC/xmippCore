@@ -132,7 +132,7 @@ protected:
     virtual void postProcess();
     virtual void processImage(const FileName &fnImg, const FileName &fnImgOut, const MDRow &rowIn, MDRow &rowOut) = 0;
     virtual bool getImageToProcess(size_t &objId, size_t &objIndex);
-    virtual void show();
+    void show() const override;
     /** Do some stuff before starting processing
      * in a parallel environment usually this only be executed
      * by master.
