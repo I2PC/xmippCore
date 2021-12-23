@@ -26,16 +26,16 @@
 #ifndef XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_
 #define XMIPPCORE_CORE_TRANSFORMATIONS_DEFINES_H_
 
-#define NEAREST 0
-#define LINEAR 1
-#define BSPLINE2 2
-#define BSPLINE3 3
-#define BSPLINE4 4
 
-#define IS_INV true
-#define IS_NOT_INV false
-#define DONT_WRAP false
-#define WRAP true
+namespace xmipp_transformation
+{
+	enum XmippInterpolation {NEAREST=0, LINEAR=1, BSPLINE2=2, BSPLINE3=3, BSPLINE4=4}; // Interpolation type
+	static const bool IS_INV=true;
+	static const bool IS_NOT_INV=false;
+	static const bool DONT_WRAP=false;
+	static const bool WRAP=true;
+}
+
 #ifndef DBL_EPSILON
 #define DBL_EPSILON 1e-50
 #endif

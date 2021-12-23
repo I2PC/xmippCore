@@ -769,7 +769,7 @@ public:
     }
 
     void
-    selfApplyGeometry(int SplineDegree, bool wrap = WRAP,
+    selfApplyGeometry(int SplineDegree, bool wrap = xmipp_transformation::WRAP,
                       bool only_apply_shifts = false);
 
     /* Read an image with a lower resolution as a preview image.
@@ -999,7 +999,7 @@ public:
 protected:
 
     /** Apply geometry in referring metadata to the image */
-    void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = WRAP) override;
+    void applyGeo(const MDRow &row, bool only_apply_shifts = false, bool wrap = xmipp_transformation::WRAP) override;
 
     //apply geo has not been defined for volumes
     //and only make sense when reading data

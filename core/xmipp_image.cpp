@@ -69,7 +69,7 @@ int Image<T>::readPreview(const FileName &name, size_t Xdim, size_t Ydim,
             Ydim = (int) (scale * imYdim);
     }
 
-    int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
+    int mode = (scale <= 1) ? xmipp_transformation::NEAREST : xmipp_transformation::LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
 
     if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
     {
@@ -208,7 +208,7 @@ void Image<T>::selfApplyGeometry(int SplineDegree, bool wrap,
         if (!A.isIdentity())
         {
             MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
-            applyGeometry(SplineDegree, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
+            applyGeometry(SplineDegree, MULTIDIM_ARRAY(*this), tmp, A, xmipp_transformation::IS_NOT_INV,
                           wrap);
         }
     }
@@ -253,7 +253,7 @@ void Image<T>::getPreview(ImageBase *imgBOut, size_t Xdim, size_t Ydim,
 
     Image<T> &imgOut = *((Image<T>*) imgBOut);
 
-    int mode = (scale <= 1) ? NEAREST : LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
+    int mode = (scale <= 1) ? xmipp_transformation::NEAREST : xmipp_transformation::LINEAR; // If scale factor is higher than 1, LINEAR mode is used to avoid artifacts
 
     if (select_slice > ALL_SLICES) // In this case a specific slice number has been chosen (Not central slice)
     {
@@ -339,7 +339,7 @@ void Image<T>::applyGeo(const MDRow &row, bool only_apply_shifts, bool wrap) {
         if (!A.isIdentity())
         {
             MultidimArray<T> tmp = MULTIDIM_ARRAY(*this);
-            applyGeometry(BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, IS_NOT_INV,
+            applyGeometry(xmipp_transformation::BSPLINE3, MULTIDIM_ARRAY(*this), tmp, A, xmipp_transformation::IS_NOT_INV,
                           wrap);
         }
     }
