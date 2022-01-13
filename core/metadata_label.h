@@ -300,6 +300,7 @@ enum MDLabel
     MDL_NMA_MAXRANGE, ///< Maximum value observed for a given NMA mode
     MDL_NMA_MODEFILE, ///< File with an NMA mode
     MDL_NMA_SCORE, ///< NMA Score of a given mode
+    MDL_NMA_EIGENVAL, ///< NMA Eigenvalue of a given mode
     MDL_NOISE_ANGLES, ///< Noise description for projected angles
     MDL_NOISE_PARTICLE_COORD, ///< Noise description for particle's center coordenates (when projecting)
     MDL_NOISE_COORD,  //Use instead of MDL_NOISE_PARTICLE_COORD in future
