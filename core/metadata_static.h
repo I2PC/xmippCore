@@ -503,6 +503,7 @@ private:
         MDL::addLabel(MDL_NMA_MODEFILE, LABEL_STRING, "nmaModefile", TAGLABEL_TEXTFILE);
         MDL::addLabelAlias(MDL_NMA_MODEFILE, "NMAModefile");//3.0
         MDL::addLabel(MDL_NMA_SCORE, LABEL_DOUBLE, "nmaScore");
+        MDL::addLabel(MDL_NMA_EIGENVAL, LABEL_DOUBLE, "nmaEigenval");
         MDL::addLabel(MDL_NOISE_ANGLES, LABEL_VECTOR_DOUBLE, "noiseAngles");
         MDL::addLabel(MDL_NOISE_COORD, LABEL_VECTOR_DOUBLE, "noiseCoord");
         MDL::addLabel(MDL_NOISE_PARTICLE_COORD, LABEL_VECTOR_DOUBLE, "noiseParticleCoord");
