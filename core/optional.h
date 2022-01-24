@@ -10,7 +10,9 @@
 
 #if __cplusplus >= 201703L
 #include <optional>
-namespace core::optional=std::optional
+namespace core{
+using std::optional;
+}
 #else
 
 #include <utility>

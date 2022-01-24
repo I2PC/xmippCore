@@ -300,6 +300,7 @@ enum MDLabel
     MDL_NMA_MAXRANGE, ///< Maximum value observed for a given NMA mode
     MDL_NMA_MODEFILE, ///< File with an NMA mode
     MDL_NMA_SCORE, ///< NMA Score of a given mode
+    MDL_NMA_EIGENVAL, ///< NMA Eigenvalue of a given mode
     MDL_NOISE_ANGLES, ///< Noise description for projected angles
     MDL_NOISE_PARTICLE_COORD, ///< Noise description for particle's center coordenates (when projecting)
     MDL_NOISE_COORD,  //Use instead of MDL_NOISE_PARTICLE_COORD in future
@@ -363,6 +364,7 @@ enum MDLabel
     MDL_REFMD, ///< Name of Metadata file for all references(string)
 
     MDL_RESIDUE,        //<residue of an atomic model (int)
+    MDL_RESOLUTION_ANISOTROPY, ///<Resolution anisotropy used to store the significance of the Bingham Test (double)
     MDL_RESOLUTION_DPR, ///<differential phase residual (double)
     MDL_RESOLUTION_ERRORL2, ///<Error in l2 (double)
     MDL_RESOLUTION_FRC, ///<Fourier shell correlation (double)

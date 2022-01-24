@@ -194,12 +194,6 @@ void scale3DMatrix(const Matrix1D< double >& sc, Matrix2D< double > &m,
  */
 void rotation3DMatrixFromIcoOrientations(const char* icoFrom, const char* icoTo, Matrix2D<double> &R);
 
-#define NEAREST 0
-#define LINEAR 1
-#define BSPLINE2 2
-#define BSPLINE3 3
-#define BSPLINE4 4
-
 namespace applyGeometryImpl {
 
 template<typename T1,typename T, bool wrap>
@@ -1330,7 +1324,7 @@ void rotate(int SplineDegree,
             MultidimArray<T>& V2,
             const MultidimArray<T>& V1,
             double ang, char axis = 'Z',
-            bool wrap = DONT_WRAP, T outside = 0)
+            bool wrap = xmipp_transformation::DONT_WRAP, T outside = 0)
 {
     Matrix2D< double > tmp;
     if (V1.getDim()==2)
@@ -1344,7 +1338,7 @@ void rotate(int SplineDegree,
     else
         REPORT_ERROR(ERR_MULTIDIM_DIM,"rotate ERROR: rotate only valid for 2D or 3D arrays");
 
-    applyGeometry(SplineDegree, V2, V1, tmp, IS_NOT_INV, wrap, outside);
+    applyGeometry(SplineDegree, V2, V1, tmp, xmipp_transformation::IS_NOT_INV, wrap, outside);
 }
 
 /** Rotate an array around a given system axis.
@@ -1356,7 +1350,7 @@ template<typename T>
 void selfRotate(int SplineDegree,
                 MultidimArray<T>& V1,
                 double ang, char axis = 'Z',
-                bool wrap = DONT_WRAP, T outside = 0)
+                bool wrap = xmipp_transformation::DONT_WRAP, T outside = 0)
 {
     MultidimArray<T> aux = V1;
     V1.initZeros();
@@ -1379,7 +1373,7 @@ void translate(int SplineDegree,
                MultidimArray<T> &V2,
                const MultidimArray<T> &V1,
                const Matrix1D< double >& v,
-               bool wrap = WRAP, T outside = 0)
+               bool wrap = xmipp_transformation::WRAP, T outside = 0)
 {
     Matrix2D< double > tmp;
     if (V1.getDim()==2)
@@ -1388,7 +1382,7 @@ void translate(int SplineDegree,
         translation3DMatrix(v, tmp,true);
     else
         REPORT_ERROR(ERR_MULTIDIM_DIM,"translate ERROR: translate only valid for 2D or 3D arrays");
-    applyGeometry(SplineDegree, V2, V1, tmp, IS_INV, wrap, outside);
+    applyGeometry(SplineDegree, V2, V1, tmp, xmipp_transformation::IS_INV, wrap, outside);
 }
 
 /** Translate an array.
@@ -1400,7 +1394,7 @@ template<typename T>
 void selfTranslate(int SplineDegree,
                    MultidimArray<T>& V1,
                    const Matrix1D< double >& v,
-                   bool wrap = WRAP, T outside = 0)
+                   bool wrap = xmipp_transformation::WRAP, T outside = 0)
 {
     MultidimArray<T> aux = V1;
     V1.initZeros();
@@ -1417,7 +1411,7 @@ template<typename T>
 void translateCenterOfMassToCenter(int SplineDegree,
                                    MultidimArray<T> &V2,
                                    const MultidimArray<T> &V1,
-                                   bool wrap = WRAP)
+                                   bool wrap = xmipp_transformation::WRAP)
 {
     V2 = V1;
     V2.setXmippOrigin();
@@ -1435,7 +1429,7 @@ void translateCenterOfMassToCenter(int SplineDegree,
 template<typename T>
 void selfTranslateCenterOfMassToCenter(int SplineDegree,
                                        MultidimArray<T> &V1,
-                                       bool wrap = WRAP)
+                                       bool wrap = xmipp_transformation::WRAP)
 {
     MultidimArray<T> aux = V1;
     V1.initZeros();
@@ -1486,7 +1480,7 @@ void scaleToSize(int SplineDegree,
         REPORT_ERROR(ERR_MULTIDIM_DIM,"scaleToSize ERROR: scaleToSize only valid for 2D or 3D arrays");
 
     V2.setXmippOrigin();
-    applyGeometry(SplineDegree, V2, V1, tmp, IS_NOT_INV, WRAP, (T)0);
+    applyGeometry(SplineDegree, V2, V1, tmp, xmipp_transformation::IS_NOT_INV, xmipp_transformation::WRAP, (T)0);
 }
 
 /** Scales to a new size.
