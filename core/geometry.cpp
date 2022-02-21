@@ -75,8 +75,10 @@ double spherical_distance(const Matrix1D<double> &r1, const Matrix1D<double> &r2
     double r1r2 = XX(r1) * XX(r2) + YY(r1) * YY(r2) + ZZ(r1) * ZZ(r2);
     double R1 = sqrt(XX(r1) * XX(r1) + YY(r1) * YY(r1) + ZZ(r1) * ZZ(r1));
     double R2 = sqrt(XX(r2) * XX(r2) + YY(r2) * YY(r2) + ZZ(r2) * ZZ(r2));
-    double ang = acos(r1r2 / (R1 * R2));
-    return ang*R1;
+    double argument = r1r2 / (R1 * R2);
+    double ang = acos(CLIP(argument,-1.,1.));
+    double retVal = ang*R1;
+    return retVal;
 }
 
 /* Point to line distance -------------------------------------------------- */
