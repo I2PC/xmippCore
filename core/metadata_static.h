@@ -408,6 +408,12 @@ private:
         MDL::addLabel(MDL_FOM, LABEL_DOUBLE, "fom");
         MDL::addLabel(MDL_FRAME_ID, LABEL_SIZET, "frameId");
 
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX, LABEL_DOUBLE, "distance2MaxGraph");
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX_PREVIOUS, LABEL_DOUBLE, "distance2MaxGraphPrevious");
+        MDL::addLabel(MDL_GRAPH_CC, LABEL_DOUBLE, "graphCC");
+        MDL::addLabel(MDL_GRAPH_CC_PREVIOUS, LABEL_DOUBLE, "graphCCPrevious");
+        MDL::addLabel(MDL_ASSIGNED_DIR_REF_CC, LABEL_DOUBLE, "assignedDirRefCC");
+
         MDL::addLabel(MDL_IDX, LABEL_SIZET, "index");
         MDL::addLabel(MDL_IMAGE1, LABEL_STRING, "image1", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_IMAGE2, LABEL_STRING, "image2", TAGLABEL_IMAGE);
@@ -462,6 +468,7 @@ private:
         MDL::addLabel(MDL_MAXCC, LABEL_DOUBLE, "maxCC");
         MDL::addLabel(MDL_MAXCC_PERCENTILE, LABEL_DOUBLE, "maxCCPerc");
         MDL::addLabel(MDL_MAX, LABEL_DOUBLE, "max");
+        MDL::addLabel(MDL_MAXCC_PREVIOUS, LABEL_DOUBLE, "maxCCprevious");
         MDL::addLabel(MDL_MICROGRAPH_ID, LABEL_SIZET, "micrographId");
         MDL::addLabel(MDL_MICROGRAPH, LABEL_STRING, "micrograph", TAGLABEL_MICROGRAPH);
         MDL::addLabel(MDL_MICROGRAPH_MOVIE_ID, LABEL_SIZET, "micrographMovieId");
@@ -499,6 +506,7 @@ private:
         MDL::addLabel(MDL_NMA_MODEFILE, LABEL_STRING, "nmaModefile", TAGLABEL_TEXTFILE);
         MDL::addLabelAlias(MDL_NMA_MODEFILE, "NMAModefile");//3.0
         MDL::addLabel(MDL_NMA_SCORE, LABEL_DOUBLE, "nmaScore");
+        MDL::addLabel(MDL_NMA_EIGENVAL, LABEL_DOUBLE, "nmaEigenval");
         MDL::addLabel(MDL_NOISE_ANGLES, LABEL_VECTOR_DOUBLE, "noiseAngles");
         MDL::addLabel(MDL_NOISE_COORD, LABEL_VECTOR_DOUBLE, "noiseCoord");
         MDL::addLabel(MDL_NOISE_PARTICLE_COORD, LABEL_VECTOR_DOUBLE, "noiseParticleCoord");

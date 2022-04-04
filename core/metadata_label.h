@@ -232,6 +232,10 @@ enum MDLabel
     MDL_FLIP, ///< Flip the image? (bool)
     MDL_FOM, ///< Figure of Merit in 0-1 range (double)
     MDL_FRAME_ID, ///< Unique id of frame inside a Movie
+	MDL_GRAPH_DISTANCE2MAX, ///< Distance to graph filtered max
+	MDL_GRAPH_DISTANCE2MAX_PREVIOUS, ///< when previous assignment validation
+	MDL_GRAPH_CC, ///< Correlation between assigned direction and graph filtered maximum
+	MDL_GRAPH_CC_PREVIOUS, ///< when previous assignment validation
     MDL_IDX, ///< Index within a list (size_t)
     MDL_IMAGE, ///< Name of an image (std::string)
     MDL_IMAGE_COVARIANCE, ///< Name of the covariance imagee associated to this image
@@ -269,6 +273,7 @@ enum MDLabel
     MDL_MAXCC, ///< Maximum cross-correlation for the image (double)
     MDL_MAXCC_PERCENTILE, ///< Percentile of the maximum cross-correlation for the image (double)
     MDL_MAX, ///< Maximum value (double)
+	MDL_MAXCC_PREVIOUS, ///< Correlation from previous alignment
     MDL_MICROGRAPH, ///< Name of a micrograph (std::string)
     MDL_MICROGRAPH_ID, ///< Micrograph unique id for reference (MDL_ITEM_ID should be used for Micrographs list)
     MDL_MICROGRAPH_MOVIE, ///< Name of a movie (std::string)
@@ -303,6 +308,7 @@ enum MDLabel
     MDL_NMA_MAXRANGE, ///< Maximum value observed for a given NMA mode
     MDL_NMA_MODEFILE, ///< File with an NMA mode
     MDL_NMA_SCORE, ///< NMA Score of a given mode
+    MDL_NMA_EIGENVAL, ///< NMA Eigenvalue of a given mode
     MDL_NOISE_ANGLES, ///< Noise description for projected angles
     MDL_NOISE_PARTICLE_COORD, ///< Noise description for particle's center coordenates (when projecting)
     MDL_NOISE_COORD,  //Use instead of MDL_NOISE_PARTICLE_COORD in future
@@ -364,6 +370,7 @@ enum MDLabel
     MDL_REF, ///< Class to which the image belongs (int)
     MDL_REF2, ///< Store a second class (int)
     MDL_REFMD, ///< Name of Metadata file for all references(string)
+	MDL_ASSIGNED_DIR_REF_CC, ///< correlation of references assigned by two methods
 
     MDL_RESIDUE,        //<residue of an atomic model (int)
     MDL_RESOLUTION_ANISOTROPY, ///<Resolution anisotropy used to store the significance of the Bingham Test (double)
