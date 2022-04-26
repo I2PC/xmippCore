@@ -440,6 +440,7 @@ enum MDLabel
     MDL_SPH_TSNE_COEFF2D, ///tsne coefficients in 2D
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
+    MDL_SUBTRACTION_R2, ///< R2 coefficient of subtracted particle 
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
     MDL_SUMWEIGHT, ///< Sum of all weights in ML model
     MDL_SYMNO, ///< Symmetry number for a projection (used in ART)
