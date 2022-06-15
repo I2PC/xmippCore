@@ -215,6 +215,9 @@ private:
         MDL::addLabel(MDL_CORRELATION_MASK, LABEL_DOUBLE, "corrMask");
         MDL::addLabel(MDL_CORRELATION_WEIGHT, LABEL_DOUBLE, "corrWeight");
 
+        MDL::addLabel(MDL_CLASS_INTERSECTION_SIZE_PVALUE, LABEL_DOUBLE, "classIntersectionSizePValue");
+        MDL::addLabel(MDL_CLASS_INTERSECTION_RELATIVE_SIZE_PVALUE, LABEL_DOUBLE, "classIntersectionRelativeSizePValue");
+
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
         MDL::addLabel(MDL_CRYSTAL_DISAPPEAR_THRE, LABEL_DOUBLE, "crystalDisthresh");
@@ -667,6 +670,7 @@ private:
         MDL::addLabel(MDL_SPH_TSNE_COEFF2D, LABEL_VECTOR_DOUBLE, "sphTsne2D");
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
+        MDL::addLabel(MDL_SUBTRACTION_R2, LABEL_DOUBLE, "R2subtraction");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
         MDL::addLabel(MDL_SUMWEIGHT, LABEL_DOUBLE, "sumWeight");
         MDL::addLabel(MDL_SYMNO, LABEL_INT, "symNo");
