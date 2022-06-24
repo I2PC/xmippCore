@@ -612,7 +612,7 @@ struct tm* localtime_r (const time_t *clock, struct tm *result)
     memcpy(result,localtime(clock),sizeof(*result));
     return result;
 }
-void sincos(double angle, double * sine, double * cosine)
+void sin_cos(double angle, double * sine, double * cosine)
 {
     *sine = sin(angle);
     *cosine = cos(angle);

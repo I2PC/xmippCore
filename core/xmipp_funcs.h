@@ -204,7 +204,7 @@ public:
 /** Calculate sin and cos at the same time
  *
  */
-void sincos(double angle, double * sine, double * cosine);
+void sin_cos(double angle, double * sine, double * cosine);
 #endif
 
 /** Solve second degree equation
