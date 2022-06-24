@@ -367,7 +367,9 @@ void ShiftFFT(MultidimArray< std::complex< double > > & v,
             {
             	double *ptrv_kij=(double *)&DIRECT_A3D_ELEM(v,k,i,j);
                 dotp = (double)(j) * xxshift + zydot;
-                sincos(dotp,&b,&a);
+                //sincos(dotp,&b,&a);
+                b = sin(dotp);
+                a = cos(dotp);
                 c = *ptrv_kij;
                 d = *(ptrv_kij+1);
                 ac = a * c;
