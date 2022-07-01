@@ -247,6 +247,19 @@ void subtractColumnMeans(Matrix2D<double> &A)
 		MAT_ELEM(A,i,j)=MAT_ELEM(A,i,j)-VEC_ELEM(avg,j);
 }
 
+void subtractToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v) {
+    if(!v.isCol()) {
+        REPORT_ERROR(ERR_ARG_INCORRECT, "Input vector must be of column type");
+    }
+    if(MAT_YSIZE(A) != VEC_XSIZE(v)) {
+        REPORT_ERROR(ERR_ARG_INCORRECT, "Input vector has an inapropiate size");
+    }
+
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(A) {
+        MAT_ELEM(A, i, j) -= VEC_ELEM(v, i);
+    }
+}
+
 void schur(const Matrix2D<double> &M, Matrix2D<double> &O, Matrix2D<double> &T)
 {
 	alglib::real_2d_array a, s;
@@ -579,6 +592,23 @@ void orthogonalizeColumnsGramSchmidt(Matrix2D<double> &M)
 				MAT_ELEM(M,i,j2) -= K*MAT_ELEM(M,i,j1);
 		}
 	}
+}
+
+void normalizeColumnLengths(Matrix2D<double> &M) {
+	for(size_t j = 0; j < MAT_XSIZE(M); ++j) {
+        // Compute the length of the column
+        double length = 0.0;
+	    for(size_t i = 0; i < MAT_YSIZE(M); ++i) {
+            const auto& elem = MAT_ELEM(M, i, j);
+            length += elem*elem;
+        }
+        length = std::sqrt(length);
+
+        // Normalize the column
+	    for(size_t i = 0; i < MAT_YSIZE(M); ++i) {
+            MAT_ELEM(M, i, j) /= length;
+        }
+    }
 }
 
 template<typename T>

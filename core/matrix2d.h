@@ -1268,6 +1268,9 @@ void typeCast(const Matrix2D<T1>& v1,  Matrix2D<T1>& v2)
 /** Gram Schmidt orthogonalization by columns */
 void orthogonalizeColumnsGramSchmidt(Matrix2D<double> &M);
 
+/** Gram Schmidt orthogonalization by columns */
+void normalizeColumnLengths(Matrix2D<double> &M);
+
 /** Normalize columns.
  * So that they have zero mean and unit variance.
  */
@@ -1282,6 +1285,9 @@ void normalizeColumnsBetween0and1(Matrix2D<double> &A);
  * So that they have zero mean.
  */
 void subtractColumnMeans(Matrix2D<double> &A);
+
+/** Subtract a column vector to all columns */
+void subtractToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v);
 
 /** Matrix operation: B=A^t*A. */
 void matrixOperation_AtA(const Matrix2D <double> &A, Matrix2D<double> &B);
