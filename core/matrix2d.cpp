@@ -641,7 +641,7 @@ void Matrix2D<T>::computeRowMeans(Matrix1D<double> &Xmr) const
 template<typename T>
 void Matrix2D<T>::computeColMeans(Matrix1D<double> &Xmr) const
 {
-    Xmr.initZeros(MAT_YSIZE(*this));
+    Xmr.initZeros(MAT_XSIZE(*this));
     FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
         VEC_ELEM(Xmr,j)+=MAT_ELEM(*this,i,j);
     Xmr*=1.0/MAT_YSIZE(*this);
