@@ -391,6 +391,7 @@ public:
             delete[] vdata;
         vdata = NULL;
     }
+
     //@}
 
     ///@name Size and shape of Matrix1D
@@ -553,6 +554,27 @@ public:
     inline void setCol()
     {
         row = false;
+    }
+    //@}
+
+    /// @name Aliasing other data structures
+    //@{
+    /** Assign an alias
+     * WARNING: data must outlive this alias
+     */
+    inline void alias(T* data, size_t size, bool column = true) {
+        coreDeallocate();
+        destroyData = false;
+        vdata = data;
+        vdim = size;
+        row = !column;
+    } 
+
+    /** When used as an alias of a Matrix2D/Multidimarray,
+     * advance to the next aliased row
+     */
+    inline void aliasNextRow() {
+        vdata += vdim;
     }
     //@}
 
@@ -875,6 +897,11 @@ public:
      */
     void selfROUND();
 
+    /** Inverse (1/x) of each component
+     *
+     */
+    void selfInverse();
+
     /** Sort 1D vector elements
      *
      * Sort in ascending order the vector elements. You can use the "reverse"
@@ -1189,6 +1216,30 @@ void vectorProduct(const Matrix1D<T>& v1, const Matrix1D<T>& v2,
     YY(result) = ZZ(v1) * XX(v2) - XX(v1) * ZZ(v2);
     ZZ(result) = XX(v1) * YY(v2) - YY(v1) * XX(v2);
 }
+
+/** Squared Euclidean distance between two vectors
+ *
+ */
+template<typename T>
+T euclideanDistance2(const Matrix1D<T>& v1, const Matrix1D<T>& v2) {
+    if(!v1.sameShape(v2)) REPORT_ERROR(ERR_MATRIX_SIZE, "Both vectors must have same dimensions");
+    
+    T result = {};
+    FOR_ALL_ELEMENTS_IN_MATRIX1D(v1) {
+        const auto delta = VEC_ELEM(v1, i) - VEC_ELEM(v2, i);
+        result += delta*delta;
+    }
+    return result;
+}
+
+/** Euclidean distance between two vectors
+ *
+ */
+template<typename T>
+T euclideanDistance(const Matrix1D<T>& v1, const Matrix1D<T>& v2) {
+    return std::sqrt(euclideanDistance2(v1, v2));
+}
+
 
 /** Sort two vectors.
  * v1 and v2 must be of the same shape, if not an exception is thrown. After

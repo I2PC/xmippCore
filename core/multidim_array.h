@@ -413,6 +413,18 @@ public:
         this->destroyData = false;
     }
 
+    void getRowAlias(size_t n, size_t z, size_t y, Matrix1D<T>& v) {
+        if (n >= NSIZE(*this)) REPORT_ERROR(ERR_MULTIDIM_SIZE, "n is out of bounds");
+        if (z >= ZSIZE(*this)) REPORT_ERROR(ERR_MULTIDIM_SIZE, "z is out of bounds");
+        if (y >= YSIZE(*this)) REPORT_ERROR(ERR_MULTIDIM_SIZE, "y is out of bounds");
+        v.alias(&DIRECT_NZYX_ELEM(*this, n, z, y, 0), XSIZE(*this), false);
+    }
+    
+    void getSliceAlias(size_t n, size_t z, Matrix2D<T>& m) {
+        if (n >= NSIZE(*this)) REPORT_ERROR(ERR_MULTIDIM_SIZE, "n is out of bounds");
+        if (z >= ZSIZE(*this)) REPORT_ERROR(ERR_MULTIDIM_SIZE, "z is out of bounds");
+        m.alias(&DIRECT_NZYX_ELEM(*this, n, z, 0, 0), XSIZE(*this), YSIZE(*this), YXSIZE(*this));
+    }
 
 
     //@}

@@ -528,6 +528,14 @@ void Matrix1D<T>::selfROUND()
     }
 }
 
+template<typename T>
+void Matrix1D<T>::selfInverse() {
+    FOR_ALL_ELEMENTS_IN_MATRIX1D((*this)) {
+        VEC_ELEM(*this, i) = 1 / VEC_ELEM(*this, i);
+    }
+}
+
+
     /** Mean value of the vector */
 template<typename T>
 double Matrix1D<T>::computeMean() const

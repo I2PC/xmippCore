@@ -557,6 +557,19 @@ public:
      */
     void submatrix(int i0, int j0, int iF, int jF);
 
+    /** Alias a row with a vector
+     */
+    inline void getRowAlias(size_t row, Matrix1D<T>& v) {
+        if(row >= MAT_YSIZE(*this)) REPORT_ERROR(ERR_MATRIX_DIM, "row exceeds bounds");
+        v.alias(&MAT_ELEM(*this, row, 0), MAT_XSIZE(*this), false);
+    }
+    
+    /** Alias the first row with a vector
+     */
+    inline void getFirstRowAlias(Matrix1D<T>& v) {
+        v.alias(MATRIX2D_ARRAY(*this), MAT_XSIZE(*this), false);
+    }
+
     /** Same shape.
      *
      * Returns true if this object has got the same shape (origin and size)
@@ -584,6 +597,40 @@ public:
     inline size_t Ydim() const
     {
         return mdimy;
+    }
+    //@}
+
+    /// @name Aliasing other data structures
+    //@{
+    /** Assign an alias. 
+     * @note Data is expected to be in row-major order
+     * WARNING: data must outlive this alias
+     */
+    inline void alias(T* data, size_t nx, size_t ny, size_t n) {
+        coreDeallocate();
+        destroyData = false;
+        mappedData = false;
+        mdimx = nx;
+        mdimy = ny;
+        mdim = n;
+        mdata = data;
+    } 
+    
+    /// @name Aliasing other data structures
+    //@{
+    /** Assign an alias. 
+     * @note Data is expected to be in row-major order
+     * WARNING: data must outlive this alias
+     */
+    inline void alias(T* data, size_t nx, size_t ny) {
+        alias(data, nx, ny, nx*ny);
+    } 
+
+    /** When used as an alias of a Multidimarray,
+     * advance to the next aliased slice
+     */
+    inline void aliasNextSlice() {
+        mdata += mdim;
     }
     //@}
 
