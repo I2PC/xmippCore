@@ -995,7 +995,10 @@ void randomizePhases(MultidimArray<double> &Min, double wRandom)
         {
         	double alpha=rnd_unif(0,2*PI);
         	double c,s;
-        	sincos(alpha,&s,&c);
+        	//sincos(alpha,&s,&c);
+        	s = sin(alpha);
+            c = cos(alpha);
+
         	DIRECT_A3D_ELEM(F,k,i,j)*=std::complex<double>(s,c);
         }
     }

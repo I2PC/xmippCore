@@ -530,7 +530,9 @@ void rotation3DMatrix(double ang, const Matrix1D<double> &axis,
     else
         result.initIdentity(3);
     double s,c;
-    sincos(-DEG2RAD(ang),&s,&c);
+    //sincos(-DEG2RAD(ang),&s,&c);
+    s = sin(-DEG2RAD(ang));
+    c = cos(-DEG2RAD(ang));
     double c1=1-c;
     double x=XX(axis);
     double y=YY(axis);
