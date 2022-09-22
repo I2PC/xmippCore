@@ -91,7 +91,7 @@ void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<d
         }
     }
     // Compute the inverse of AtA
-    h.AtA.invAlgLib(h.AtAinv); // AtAinv is also square matrix, same size as AtA
+    h.AtA.inv(h.AtAinv); // AtAinv is also square matrix, same size as AtA
 
     assert(results.size() == h.bs.size());
     auto res_it = results.begin();
