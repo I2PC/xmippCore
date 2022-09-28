@@ -142,6 +142,7 @@ public:
     void setValue(const bool &bv);
     void setValue(const String &sv);
     void setValue(const std::vector<double> &vv);
+    void setValue(const std::vector<float> &vv);
     void setValue(const std::vector<size_t> &vv);
     void setValue(const size_t &lv);
     void setValue(const float &floatvalue);
@@ -166,6 +167,7 @@ public:
 
 private:
     double safeDouble(const double v) const;
+    float safeFloat(const float v) const;
 }
 ; //close class MDObject
 
