@@ -260,6 +260,19 @@ void subtractToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v) {
     }
 }
 
+void multiplyToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v) {
+    if(!v.isCol()) {
+        REPORT_ERROR(ERR_ARG_INCORRECT, "Input vector must be of column type");
+    }
+    if(MAT_YSIZE(A) != VEC_XSIZE(v)) {
+        REPORT_ERROR(ERR_ARG_INCORRECT, "Input vector has an inapropiate size");
+    }
+
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(A) {
+        MAT_ELEM(A, i, j) *= VEC_ELEM(v, i);
+    }
+}
+
 void schur(const Matrix2D<double> &M, Matrix2D<double> &O, Matrix2D<double> &T)
 {
 	alglib::real_2d_array a, s;

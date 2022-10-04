@@ -706,6 +706,14 @@ public:
                 return typeid(T) == typeid(float);
             case DT_Double:
                 return typeid(T) == typeid(double);
+            case DT_CShort:
+                return typeid(T) == typeid(std::complex<short>);
+            case DT_CInt:
+                return typeid(T) == typeid(std::complex<int>);
+            case DT_CFloat:
+                return typeid(T) == typeid(std::complex<float>);
+            case DT_CDouble:
+                return typeid(T) == typeid(std::complex<double>);
             default:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;

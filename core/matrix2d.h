@@ -1336,6 +1336,9 @@ void subtractColumnMeans(Matrix2D<double> &A);
 /** Subtract a column vector to all columns */
 void subtractToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v);
 
+/** Multiply a column vector to all columns */
+void multiplyToAllColumns(Matrix2D<double> &A, const Matrix1D<double> &v);
+
 /** Matrix operation: B=A^t*A. */
 void matrixOperation_AtA(const Matrix2D <double> &A, Matrix2D<double> &B);
 
