@@ -209,6 +209,9 @@ private:
         MDL::addLabel(MDL_CORRELATION_MASK, LABEL_DOUBLE, "corrMask");
         MDL::addLabel(MDL_CORRELATION_WEIGHT, LABEL_DOUBLE, "corrWeight");
 
+        MDL::addLabel(MDL_CLASS_INTERSECTION_SIZE_PVALUE, LABEL_DOUBLE, "classIntersectionSizePValue");
+        MDL::addLabel(MDL_CLASS_INTERSECTION_RELATIVE_SIZE_PVALUE, LABEL_DOUBLE, "classIntersectionRelativeSizePValue");
+
         MDL::addLabel(MDL_CRYSTAL_CELLX, LABEL_INT, "crystalCellx");
         MDL::addLabel(MDL_CRYSTAL_CELLY, LABEL_INT, "crystalCelly");
         MDL::addLabel(MDL_CRYSTAL_DISAPPEAR_THRE, LABEL_DOUBLE, "crystalDisthresh");
@@ -405,6 +408,12 @@ private:
         MDL::addLabel(MDL_FOM, LABEL_DOUBLE, "fom");
         MDL::addLabel(MDL_FRAME_ID, LABEL_SIZET, "frameId");
 
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX, LABEL_DOUBLE, "distance2MaxGraph");
+        MDL::addLabel(MDL_GRAPH_DISTANCE2MAX_PREVIOUS, LABEL_DOUBLE, "distance2MaxGraphPrevious");
+        MDL::addLabel(MDL_GRAPH_CC, LABEL_DOUBLE, "graphCC");
+        MDL::addLabel(MDL_GRAPH_CC_PREVIOUS, LABEL_DOUBLE, "graphCCPrevious");
+        MDL::addLabel(MDL_ASSIGNED_DIR_REF_CC, LABEL_DOUBLE, "assignedDirRefCC");
+
         MDL::addLabel(MDL_IDX, LABEL_SIZET, "index");
         MDL::addLabel(MDL_IMAGE1, LABEL_STRING, "image1", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_IMAGE2, LABEL_STRING, "image2", TAGLABEL_IMAGE);
@@ -459,6 +468,7 @@ private:
         MDL::addLabel(MDL_MAXCC, LABEL_DOUBLE, "maxCC");
         MDL::addLabel(MDL_MAXCC_PERCENTILE, LABEL_DOUBLE, "maxCCPerc");
         MDL::addLabel(MDL_MAX, LABEL_DOUBLE, "max");
+        MDL::addLabel(MDL_MAXCC_PREVIOUS, LABEL_DOUBLE, "maxCCprevious");
         MDL::addLabel(MDL_MICROGRAPH_ID, LABEL_SIZET, "micrographId");
         MDL::addLabel(MDL_MICROGRAPH, LABEL_STRING, "micrograph", TAGLABEL_MICROGRAPH);
         MDL::addLabel(MDL_MICROGRAPH_MOVIE_ID, LABEL_SIZET, "micrographMovieId");
@@ -496,6 +506,7 @@ private:
         MDL::addLabel(MDL_NMA_MODEFILE, LABEL_STRING, "nmaModefile", TAGLABEL_TEXTFILE);
         MDL::addLabelAlias(MDL_NMA_MODEFILE, "NMAModefile");//3.0
         MDL::addLabel(MDL_NMA_SCORE, LABEL_DOUBLE, "nmaScore");
+        MDL::addLabel(MDL_NMA_EIGENVAL, LABEL_DOUBLE, "nmaEigenval");
         MDL::addLabel(MDL_NOISE_ANGLES, LABEL_VECTOR_DOUBLE, "noiseAngles");
         MDL::addLabel(MDL_NOISE_COORD, LABEL_VECTOR_DOUBLE, "noiseCoord");
         MDL::addLabel(MDL_NOISE_PARTICLE_COORD, LABEL_VECTOR_DOUBLE, "noiseParticleCoord");
@@ -562,6 +573,7 @@ private:
         MDL::addLabel(MDL_REFMD, LABEL_STRING, "referenceMetaData", TAGLABEL_METADATA);
 
         MDL::addLabel(MDL_RESIDUE, LABEL_INT, "residue");
+        MDL::addLabel(MDL_RESOLUTION_ANISOTROPY, LABEL_DOUBLE, "resolutionAnisotropy");
         MDL::addLabel(MDL_RESOLUTION_DPR, LABEL_DOUBLE, "resolutionDPR");
         MDL::addLabel(MDL_RESOLUTION_ERRORL2, LABEL_DOUBLE, "resolutionErrorL2");
         MDL::addLabel(MDL_RESOLUTION_FSO, LABEL_DOUBLE, "resolutionFSO");
@@ -648,6 +660,7 @@ private:
         MDL::addLabel(MDL_SPH_TSNE_COEFF2D, LABEL_VECTOR_DOUBLE, "sphTsne2D");
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
+        MDL::addLabel(MDL_SUBTRACTION_R2, LABEL_DOUBLE, "R2subtraction");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
         MDL::addLabel(MDL_SUMWEIGHT, LABEL_DOUBLE, "sumWeight");
         MDL::addLabel(MDL_SYMNO, LABEL_INT, "symNo");

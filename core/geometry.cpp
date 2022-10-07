@@ -75,8 +75,10 @@ double spherical_distance(const Matrix1D<double> &r1, const Matrix1D<double> &r2
     double r1r2 = XX(r1) * XX(r2) + YY(r1) * YY(r2) + ZZ(r1) * ZZ(r2);
     double R1 = sqrt(XX(r1) * XX(r1) + YY(r1) * YY(r1) + ZZ(r1) * ZZ(r1));
     double R2 = sqrt(XX(r2) * XX(r2) + YY(r2) * YY(r2) + ZZ(r2) * ZZ(r2));
-    double ang = acos(r1r2 / (R1 * R2));
-    return ang*R1;
+    double argument = r1r2 / (R1 * R2);
+    double ang = acos(CLIP(argument,-1.,1.));
+    double retVal = ang*R1;
+    return retVal;
 }
 
 /* Point to line distance -------------------------------------------------- */
@@ -1069,14 +1071,14 @@ void Euler_rotate(const MultidimArray<double> &V, double rot, double tilt, doubl
 {
     Matrix2D<double> R;
     Euler_angles2matrix(rot, tilt, psi, R, true);
-    applyGeometry(1, result, V, R, IS_NOT_INV, DONT_WRAP);
+    applyGeometry(1, result, V, R, xmipp_transformation::IS_NOT_INV, xmipp_transformation::DONT_WRAP);
 }
 void Euler_rotate(const MultidimArrayGeneric &V, double rot, double tilt, double psi,
                   MultidimArray<double> &result)
 {
   Matrix2D<double> R;
   Euler_angles2matrix(rot, tilt, psi, R, true);
-#define APPLYGEO(type) applyGeometry(1, result, *((MultidimArray<type> *)V.im), R, IS_NOT_INV, DONT_WRAP);
+#define APPLYGEO(type) applyGeometry(1, result, *((MultidimArray<type> *)V.im), R, xmipp_transformation::IS_NOT_INV, xmipp_transformation::DONT_WRAP);
   SWITCHDATATYPE(V.datatype, APPLYGEO)
 #undef APPLYGEO
 }

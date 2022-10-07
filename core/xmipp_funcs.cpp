@@ -612,7 +612,7 @@ struct tm* localtime_r (const time_t *clock, struct tm *result)
     memcpy(result,localtime(clock),sizeof(*result));
     return result;
 }
-void sincos(double angle, double * sine, double * cosine)
+void sin_cos(double angle, double * sine, double * cosine)
 {
     *sine = sin(angle);
     *cosine = cos(angle);
@@ -1026,8 +1026,8 @@ void unmapFile(char *&map, size_t &size, int& fileDescriptor)
 /* Conversion little-big endian any size */
 void ByteSwap(unsigned char * b, int n)
 {
-    register int i = 0;
-    register int j = n - 1;
+    int i = 0;
+    int j = n - 1;
     while (i < j)
     {
         std::swap(b[i], b[j]);

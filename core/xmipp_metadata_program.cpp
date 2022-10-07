@@ -237,7 +237,7 @@ void XmippMetadataProgram::setup(MetaData *md, const FileName &out, const FileNa
         apply_geo = false;
 }//function setup
 
-void XmippMetadataProgram::show()
+void XmippMetadataProgram::show() const
 {
     if (verbose==0)
         return;
