@@ -244,6 +244,64 @@ void MultidimArray< std::complex< double > >::getImag(MultidimArray<double> & im
 
 }
 
+template<>
+void MultidimArray< std::complex< double > >::getAbs(MultidimArray<double> & absImg) const
+{
+    if (NZYXSIZE(*this) == 0)
+    {
+        absImg.clear();
+        return;
+    }
+
+    absImg.resizeNoCopy(*this);
+    auto* ptr1 = MULTIDIM_ARRAY(*this);
+
+    // Unroll the loop
+    const size_t unroll=4;
+    size_t nmax=(NZYXSIZE(*this)/unroll)*unroll;
+    for (size_t n=0; n<nmax; n+=unroll)
+    {
+        DIRECT_MULTIDIM_ELEM(absImg, n)   = std::abs((*ptr1++));
+        DIRECT_MULTIDIM_ELEM(absImg, n+1) = std::abs((*ptr1++));
+        DIRECT_MULTIDIM_ELEM(absImg, n+2) = std::abs((*ptr1++));
+        DIRECT_MULTIDIM_ELEM(absImg, n+3) = std::abs((*ptr1++));
+    }
+    // Do the remaining elements
+    for (size_t n=nmax; n<NZYXSIZE(*this); ++n)
+    {
+        DIRECT_MULTIDIM_ELEM(absImg, n) = std::abs((*ptr1++));
+    }
+}
+
+template<>
+void MultidimArray< std::complex< double > >::getAbs2(MultidimArray<double> & absImg) const
+{
+    if (NZYXSIZE(*this) == 0)
+    {
+        absImg.clear();
+        return;
+    }
+
+    absImg.resizeNoCopy(*this);
+    auto* ptr1 = MULTIDIM_ARRAY(*this);
+
+    // Unroll the loop
+    const size_t unroll=4;
+    size_t nmax=(NZYXSIZE(*this)/unroll)*unroll;
+    for (size_t n=0; n<nmax; n+=unroll)
+    {
+        DIRECT_MULTIDIM_ELEM(absImg, n  ) = ptr1->real()*ptr1->real() + ptr1->imag()*ptr1->imag(); ++ptr1;
+        DIRECT_MULTIDIM_ELEM(absImg, n+1) = ptr1->real()*ptr1->real() + ptr1->imag()*ptr1->imag(); ++ptr1;
+        DIRECT_MULTIDIM_ELEM(absImg, n+2) = ptr1->real()*ptr1->real() + ptr1->imag()*ptr1->imag(); ++ptr1;
+        DIRECT_MULTIDIM_ELEM(absImg, n+3) = ptr1->real()*ptr1->real() + ptr1->imag()*ptr1->imag(); ++ptr1;
+    }
+    // Do the remaining elements
+    for (size_t n=nmax; n<NZYXSIZE(*this); ++n)
+    {
+        DIRECT_MULTIDIM_ELEM(absImg, n) = ptr1->real()*ptr1->real() + ptr1->imag()*ptr1->imag(); ++ptr1;
+    }
+}
+
 
 template<>
 double MultidimArray<double>::interpolatedElement2D(double x, double y, double outside_value) const

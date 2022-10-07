@@ -1200,6 +1200,16 @@ public:
     {
         REPORT_ERROR(ERR_TYPE_INCORRECT, "MultidimArray: Non complex datatype.");
     }
+    
+    void getAbs(MultidimArray< double > & absImg) const
+    {
+        REPORT_ERROR(ERR_TYPE_INCORRECT, "MultidimArray: Non complex datatype.");
+    }
+    
+    void getAbs2(MultidimArray< double > & absImg) const
+    {
+        REPORT_ERROR(ERR_TYPE_INCORRECT, "MultidimArray: Non complex datatype.");
+    }
 
 
     /** 3D Logical to physical index translation.
@@ -4028,6 +4038,10 @@ template<>
 void MultidimArray< std::complex< double > >::getReal(MultidimArray<double> & realImg) const;
 template<>
 void MultidimArray< std::complex< double > >::getImag(MultidimArray<double> & imagImg) const;
+template<>
+void MultidimArray< std::complex< double > >::getAbs(MultidimArray<double> & absImg) const;
+template<>
+void MultidimArray< std::complex< double > >::getAbs2(MultidimArray<double> & absImg) const;
 
 //@}
 #endif
