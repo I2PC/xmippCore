@@ -449,6 +449,11 @@ enum MDLabel
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)
 
     MDL_TEST_SIZE,// < number of test assigned to a program
+    MDL_TILT_ANALYSIS_MEAN, // <Mean correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_STD, // <STD correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MIN, // <Min correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MAX, // <Max correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_PSDs, // <Image composed of the PSDs of each segment of a micrograph
 
     MDL_VOLUME_SCORE_SUM, /// < Score corresponding to the sum of cc with cc>threshold
     MDL_VOLUME_SCORE_SUM_TH, ///< Score corresponding to the sum of cc-threshold with cc>threshold
