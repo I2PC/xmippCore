@@ -44,6 +44,7 @@ typedef union
     String * stringValue;
     std::vector<double> * vectorValue;
     std::vector<size_t> * vectorValueLong;
+    std::vector<float> * vectorValueFloat;
 } ObjectData;
 
 /** MDObject stores single MetaData value.
@@ -77,6 +78,7 @@ public:
     MDObject(MDLabel label, const bool &boolValue);
     MDObject(MDLabel label, const String &stringValue);
     MDObject(MDLabel label, const std::vector<double> &vectorValue);
+    MDObject(MDLabel label, const std::vector<float> &vectorValueFloat);
     MDObject(MDLabel label, const std::vector<size_t> &vectorValueLong);
     MDObject(MDLabel label, const size_t &longintValue);
 
@@ -114,6 +116,7 @@ public:
     const bool&  getValue2(bool) const;
     const String& getValue2(String) const;
     const std::vector<double>& getValue2(std::vector<double>) const;
+    const std::vector<float>& getValue2(std::vector<float>) const;
     const std::vector<size_t>& getValue2(std::vector<size_t>) const;
     const size_t& getValue2(size_t) const;
     float getValue2(float) const;
@@ -123,6 +126,7 @@ public:
     bool&  getValue2(bool);
     String& getValue2(String);
     std::vector<double>& getValue2(std::vector<double>);
+    std::vector<float>& getValue2(std::vector<float>);
     std::vector<size_t>& getValue2(std::vector<size_t>);
     size_t& getValue2(size_t);
     float getValue2(float);
@@ -138,6 +142,7 @@ public:
     void setValue(const bool &bv);
     void setValue(const String &sv);
     void setValue(const std::vector<double> &vv);
+    void setValue(const std::vector<float> &vv);
     void setValue(const std::vector<size_t> &vv);
     void setValue(const size_t &lv);
     void setValue(const float &floatvalue);
@@ -162,6 +167,7 @@ public:
 
 private:
     double safeDouble(const double v) const;
+    float safeFloat(const float v) const;
 }
 ; //close class MDObject
 

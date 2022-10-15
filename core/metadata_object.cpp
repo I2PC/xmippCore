@@ -229,6 +229,16 @@ const std::vector<double>& MDObject::getValue2(std::vector<double>) const {
     return *(this->data.vectorValue);
 }
 
+std::vector<float>& MDObject::getValue2(std::vector<float>) {
+    labelTypeCheck(LABEL_VECTOR_FLOAT);
+    return *(this->data.vectorValueFloat);
+}
+
+const std::vector<float>& MDObject::getValue2(std::vector<float>) const {
+    labelTypeCheck(LABEL_VECTOR_FLOAT);
+    return *(this->data.vectorValueFloat);
+}
+
 std::vector<size_t>& MDObject::getValue2(std::vector<size_t>) {
     labelTypeCheck(LABEL_VECTOR_SIZET);
     return *(this->data.vectorValueLong);
@@ -288,6 +298,16 @@ void  MDObject::setValue(const std::vector<double> &vv)
     this->data.vectorValue->resize(size);
     for (size_t i = 0; i < size; ++i) {
         this->data.vectorValue->operator[](i) = safeDouble(vv[i]);
+    }
+}
+
+void  MDObject::setValue(const std::vector<float> &vv)
+{
+    labelTypeCheck(LABEL_VECTOR_FLOAT);
+    const auto size = vv.size();
+    this->data.vectorValueFloat->resize(size);
+    for (size_t i = 0; i < size; ++i) {
+        this->data.vectorValueFloat->operator[](i) = safeFloat(vv[i]);
     }
 }
 
@@ -594,6 +614,17 @@ double MDObject::safeDouble(const double v) const {
             std::cerr << "Warning: trying to work with NaN in MDObject with label " << MDL::label2Str(this->label)
             << ". Using std::numeric_limits<double>::min() instead for backward compatilibity.\n";
             return std::numeric_limits<double>::min();
+        }
+        return v;
+    }
+
+float MDObject::safeFloat(const float v) const {
+        if (std::isnan(v)) {
+            // when saving NaN to sqlite3 db, the actually inserted value is sth very close to zero (0)
+            // this was causing incompatibilities between (non)sqlite versions of metadata
+            std::cerr << "Warning: trying to work with NaN in MDObject with label " << MDL::label2Str(this->label)
+            << ". Using std::numeric_limits<float>::min() instead for backward compatilibity.\n";
+            return std::numeric_limits<float>::min();
         }
         return v;
     }
