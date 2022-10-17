@@ -248,6 +248,9 @@ void XmippProgram::read(const String &argumentsLine)
 
     generateCommandLine(argumentsLine, argc, argv, copy);
     read(argc, (const char **)argv);
+    delete[] copy;
+    delete[] argv[0]; // the only one allocated, the rest is pointing to 'copy'
+    delete[] argv;
 }
 
 int XmippProgram::tryRun()
