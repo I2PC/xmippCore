@@ -512,13 +512,11 @@ void matrixOperation_AtB(const Matrix2D <double> &A, const Matrix2D<double> &B, 
 
 void matrixOperation_Atx(const Matrix2D <double> &A, const Matrix1D<double> &x, Matrix1D<double> &y)
 {
-    y.resizeNoCopy(MAT_XSIZE(A));
-    for (size_t i = 0; i < MAT_XSIZE(A); ++i)
+    y.initZeros(MAT_XSIZE(A));
+    for (size_t k = 0; k < MAT_YSIZE(A); ++k)
 	{
-		double aux=0.;
-		for (size_t k = 0; k < MAT_YSIZE(A); ++k)
-			aux += MAT_ELEM(A, k, i) * VEC_ELEM(x, k);
-		VEC_ELEM(y, i)=aux;
+        for (size_t i = 0; i < MAT_XSIZE(A); ++i)
+			VEC_ELEM(y, i) += MAT_ELEM(A, k, i) * VEC_ELEM(x, k);
 	}
 }
 
