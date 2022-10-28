@@ -286,11 +286,7 @@ public:
     bool getRow2(MDRow &row, size_t id) const;
 
     /** Copy all the values in the input row in the current metadata*/
-    bool initSetRow(const MDRow &row);
-    bool execSetRow(const MDRow &row, size_t id);
-    void finalizeSetRow(void);
     bool setRow(const MDRow &row, size_t id);
-    bool setRow2(const MDRow &row, size_t id);
 
     /** Add a new Row and set values, return the objId of newly added object */
     bool initAddRow(const MDRow &row);

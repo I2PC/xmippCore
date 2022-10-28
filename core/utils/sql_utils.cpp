@@ -182,6 +182,56 @@ std::string sqlUtils::createSelectQuery(
     return ss.str();
 }
 
+std::string sqlUtils::createUpdateQuery(
+        const std::vector<const MDObject*> &values,
+        const std::string &table,
+        size_t id) {
+    std::stringstream cols;
+    const auto len = values.size();
+    for (size_t i = 0; i < len; ++i) {
+        cols << MDL::label2StrSql(values.at(i)->label);
+        cols << "=?";
+        if (len != (i + 1)) {
+            cols << ", ";
+        }
+    }
+    std::stringstream ss;
+    ss << "UPDATE " << table << " SET "
+            << cols.str()
+            << " WHERE objID=" << id << ";";
+    return ss.str();
+}
+
+bool sqlUtils::update(const std::vector<const MDObject*> &values,
+            sqlite3 *db, const std::string &table, size_t id) {
+    if (0 == values.size()) {
+        return true;
+    }
+    // assuming all records are the same
+    auto query = createUpdateQuery(values, table, id);
+    sqlite3_stmt *stmt = nullptr;
+    sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+    // FIXME currently, whole db is in one huge transaction. Finish whatever might be pending,
+    // do our business in a clean transaction and start a new transaction after (not to break the original code)
+    commitTrans(db);
+    beginTrans(db);
+
+    // bind proper values
+    for (size_t i = 0; i < values.size(); ++i) {
+        bindValue(stmt, i + 1, *values.at(i));
+    }
+    // execute
+    sqlite3_step(stmt);
+    sqlite3_clear_bindings(stmt);
+    sqlite3_reset(stmt);
+
+    sqlite3_finalize(stmt);
+    endTrans(db);
+    beginTrans(db);
+
+    return checkError(db);
+}
+
 std::string sqlUtils::createInsertQuery(
         const std::vector<const MDObject*> &values,
         const std::string &table) {
@@ -204,7 +254,7 @@ std::string sqlUtils::createInsertQuery(
     return ss.str();
 }
 
-bool sqlUtils::insert(std::vector<std::vector<const MDObject*>> records,
+bool sqlUtils::insert(const std::vector<std::vector<const MDObject*>> &records,
         sqlite3 *db, const std::string &table) {
     if (0 == records.size()) {
         return true;
