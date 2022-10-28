@@ -138,6 +138,15 @@ bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel
     return (location != labelsVector.end());
 }
 
+void MetaData::keepLabels(const std::vector<MDLabel> &labels) {
+    auto active = this->getActiveLabels();
+    for (auto &l : active) {
+        if (!vectorContainsLabel(labels, l)) {
+            this->removeLabel(l);
+        }
+    }
+}
+
 void MetaData::clear() {
     _comment.clear();
     _fastStringSearch.clear();
