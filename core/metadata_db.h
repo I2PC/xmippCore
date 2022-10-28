@@ -327,11 +327,6 @@ public:
      */
     bool removeLabel(const MDLabel label) override;
 
-    /** Remove all the labels from the metadata but the
-     * ones given in labels vector.
-     */
-    bool keepLabels(const std::vector<MDLabel> &labels) override;
-
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else
      * the given objectId is used. If there is already an object whose

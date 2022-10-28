@@ -632,18 +632,6 @@ bool MetaDataDb::removeLabel(const MDLabel label)
     return true;
 }
 
-bool MetaDataDb::keepLabels(const std::vector<MDLabel> &labels)
-{
-    for (size_t i = 0; i < this->_activeLabels.size();)
-    {
-        if (!vectorContainsLabel(labels, this->_activeLabels[i]))
-            removeLabel(this->_activeLabels[i]);
-        else
-            ++i;
-    }
-    return true;
-}
-
 size_t MetaDataDb::addObject()
 {
     return (size_t)myMDSql->addRow();

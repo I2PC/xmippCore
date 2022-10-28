@@ -552,7 +552,7 @@ public:
     /** Remove all the labels from the metadata but the
      * ones given in labels vector.
      */
-    virtual bool keepLabels(const std::vector<MDLabel> &labels) = 0;
+    void keepLabels(const std::vector<MDLabel> &labels);
 
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else
