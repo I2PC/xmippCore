@@ -140,7 +140,7 @@ bool vectorContainsLabel(const std::vector<MDLabel>& labelsVector, const MDLabel
 
 void MetaData::keepLabels(const std::vector<MDLabel> &labels) {
     auto active = this->getActiveLabels();
-    for (auto &l : active) {
+    for (const auto &l : active) {
         if (!vectorContainsLabel(labels, l)) {
             this->removeLabel(l);
         }
