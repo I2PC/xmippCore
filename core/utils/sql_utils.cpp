@@ -204,7 +204,7 @@ std::string sqlUtils::createUpdateQuery(
 
 bool sqlUtils::update(const std::vector<const MDObject*> &values,
             sqlite3 *db, const std::string &table, size_t id) {
-    if (0 == values.size()) {
+    if (values.empty()) {
         return true;
     }
     // assuming all records are the same
@@ -217,7 +217,7 @@ bool sqlUtils::update(const std::vector<const MDObject*> &values,
     beginTrans(db);
 
     // bind proper values
-    for (size_t i = 0; i < values.size(); ++i) {
+    for (auto i = 0; i < values.size(); ++i) {
         bindValue(stmt, i + 1, *values.at(i));
     }
     // execute

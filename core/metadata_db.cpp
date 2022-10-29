@@ -304,7 +304,7 @@ bool MetaDataDb::getRow2(MDRow &row, size_t id) const
 
 bool MetaDataDb::setRow(const MDRow &row, size_t id) 
 {
-    if (0 == row.size()) {
+    if (row.empty()) {
         return true;
     }
     addMissingLabels(row);
@@ -315,8 +315,6 @@ bool MetaDataDb::setRow(const MDRow &row, size_t id)
     for (const MDObject* obj : row) {
         labels.emplace_back(obj->label);
     }
-    const auto noOfLabels = labels.size();
-
     // extract values to be added
     std::vector<const MDObject*> vals;
     vals.reserve(row.size());
@@ -324,7 +322,7 @@ bool MetaDataDb::setRow(const MDRow &row, size_t id)
         vals.emplace_back(row.getObject(l));
     }
     // update values to db
-    return sqlUtils::update(vals, myMDSql->db,
+    return sqlUtils::update(vals, MDSql::db,
                     myMDSql->tableName(myMDSql->tableId), id);
 }
 
