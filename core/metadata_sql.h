@@ -269,7 +269,6 @@ private:
     bool insertValues(double a, double b);
     bool initializeSelect( bool addWhereObjId, const std::vector<MDLabel> &labels);
     bool initializeInsert(const std::vector<MDLabel> *labels, const std::vector<MDObject*> &values);
-    bool initializeUpdate(const std::vector<MDLabel> &labels);
     void finalizePreparedStmt(void);
     void prepareStmt(const std::stringstream &ss, sqlite3_stmt *stmt);
     bool execSingleStmt(const std::stringstream &ss);

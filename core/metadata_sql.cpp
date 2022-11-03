@@ -509,52 +509,6 @@ bool MDSql::initializeInsert(const std::vector<MDLabel> *labels, const std::vect
     return(createdOK);
 }
 
-bool MDSql::initializeUpdate(const std::vector<MDLabel> &labels)
-{
-    int     i=0;                // Loop counter.
-    int     length=0;           // # labels.
-    bool    createdOK=true;     // Return value.
-
-    // Get # labels.
-    length = labels.size();
-
-    // Check there are labels.
-    if (length > 0)
-    {
-        // Clear preparedStream.
-        this->preparedStream.str(std::string());
-
-        // Initialize SQL sentence.
-        this->preparedStream << "UPDATE " << tableName(tableId) << " SET ";
-
-        // Add labels.
-        this->preparedStream << MDL::label2StrSql(labels[0]) << "=?";
-        for (i=1; i<length ;i++)
-        {
-            this->preparedStream << ", " << MDL::label2StrSql(labels[i]) << "=?";
-        }
-
-        // Insert where clause.
-        this->preparedStream << " WHERE objID=?;";
-
-        // Prepare statement.
-        if (sqlite3_prepare_v2(db, this->preparedStream.str().c_str(), -1, &this->preparedStmt, &zLeftover) != SQLITE_OK)
-        {
-            printf( "initializeUpdate: could not prepare statement: %s\n", sqlite3_errmsg(db) );
-            this->preparedStmt = NULL;
-            createdOK = false;
-        }
-    }
-    else
-    {
-        this->preparedStmt = NULL;
-        createdOK = false;
-    }
-
-    return(createdOK);
-}
-
-
 bool MDSql::getObjectsValues(const std::vector<MDLabel> &labels, std::vector<MDObject> &values)
 {
     bool ret=true;              // Return value.
