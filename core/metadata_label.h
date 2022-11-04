@@ -50,12 +50,15 @@ enum MDLabel
 
     MDL_ANGLE_PSI, ///< Psi angle of an image (double,degrees)
     MDL_ANGLE_PSI2, ///< Psi angle of an image (double,degrees)
+    MDL_ANGLE_PSI3, ///< Psi angle of an image (double,degrees)
     MDL_ANGLE_PSI_DIFF, ///< difference between psi angles (double,degrees)
     MDL_ANGLE_ROT, ///< Rotation angle of an image (double,degrees)
     MDL_ANGLE_ROT2, ///< Rotation angle of an image (double,degrees)
+    MDL_ANGLE_ROT3, ///< Rotation angle of an image (double,degrees)
     MDL_ANGLE_ROT_DIFF, ///< difference between rot angles (double,degrees)
     MDL_ANGLE_TILT, ///< Tilting angle of an image (double,degrees)
     MDL_ANGLE_TILT2, ///< Tilting angle of an image (double,degrees)
+    MDL_ANGLE_TILT3, ///< Tilting angle of an image (double,degrees)
     MDL_ANGLE_TILT_DIFF, ///< difference between tilt angles (double,degrees)
     MDL_ANGLE_DIFF0, ///< difference between two angles (double,degrees)
     MDL_ANGLE_DIFF, ///< difference between two angles (double,degrees)
@@ -423,11 +426,15 @@ enum MDLabel
     MDL_SERIE, ///< A collection of micrographs, e.g. a tilt serie (std::string)
     MDL_SHIFT_X, ///< Shift for the image in the X axis (double)
     MDL_SHIFT_X2, ///< Shift for the image in the X axis (double)
+    MDL_SHIFT_X3, ///< Shift for the image in the X axis (double)
     MDL_SHIFT_X_DIFF, ///< difference in Shift along X axis (double)
     MDL_SHIFT_Y, ///< Shift for the image in the Y axis (double)
     MDL_SHIFT_Y2, ///< Shift for the image in the Y axis (double)
+    MDL_SHIFT_Y3, ///< Shift for the image in the Y axis (double)
     MDL_SHIFT_Y_DIFF, ///< difference in Shift along  Y axis (double)
     MDL_SHIFT_Z, ///< Shift for the image in the Z axis (double)
+    MDL_SHIFT_Z2, ///< Shift for the image in the Z axis (double)
+    MDL_SHIFT_Z3, ///< Shift for the image in the Z axis (double)
     MDL_SHIFT_DIFF0, ///< shift difference (double)
     MDL_SHIFT_DIFF, ///< shift difference (double)
     MDL_SHIFT_DIFF2, ///< shift difference (double)
@@ -449,6 +456,11 @@ enum MDLabel
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)
 
     MDL_TEST_SIZE,// < number of test assigned to a program
+    MDL_TILT_ANALYSIS_MEAN, // <Mean correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_STD, // <STD correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MIN, // <Min correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_MAX, // <Max correlation between the PSD segments of a micrograph
+    MDL_TILT_ANALYSIS_PSDs, // <Image composed of the PSDs of each segment of a micrograph
 
     MDL_VOLUME_SCORE_SUM, /// < Score corresponding to the sum of cc with cc>threshold
     MDL_VOLUME_SCORE_SUM_TH, ///< Score corresponding to the sum of cc-threshold with cc>threshold
@@ -933,7 +945,8 @@ enum MDLabelType
     LABEL_STRING,
     LABEL_VECTOR_DOUBLE,
     LABEL_SIZET,
-    LABEL_VECTOR_SIZET
+    LABEL_VECTOR_SIZET,
+    LABEL_VECTOR_FLOAT
 };
 
 /** Possible types of the values of labels */

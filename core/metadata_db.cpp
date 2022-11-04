@@ -302,86 +302,28 @@ bool MetaDataDb::getRow2(MDRow &row, size_t id) const
     return(success);
 }
 
-bool MetaDataDb::initSetRow(const MDRow &row)
+bool MetaDataDb::setRow(const MDRow &row, size_t id) 
 {
-    int     j=0;                    // Loop counter.
-    bool    success=true;               // Return value.
-    std::vector<MDLabel>   labels;      // Columns labels.
+    if (row.empty()) {
+        return true;
+    }
+    addMissingLabels(row);
 
-    // Set label vector size.
-    labels.resize(row.size());
-
-    // Build labels vector:
-    j = 0;
+    // create mask of valid labels
+    std::vector<MDLabel> labels;
+    labels.reserve(row.size());
     for (const MDObject* obj : row) {
-        addLabel(obj->label);
-        labels[j] = obj->label;
-        j++;
+        labels.emplace_back(obj->label);
     }
-    labels.resize(j);
-
-    // Prepare statement.
-    if (!myMDSql->initializeUpdate(labels))
-    {
-        success = false;
+    // extract values to be added
+    std::vector<const MDObject*> vals;
+    vals.reserve(row.size());
+    for (const auto &l : labels) {
+        vals.emplace_back(row.getObject(l));
     }
-
-    return(success);
-}
-
-
-bool MetaDataDb::execSetRow(const MDRow &row, size_t id)
-{
-
-    std::vector<const MDObject*> mdValues;
-    std::vector<MDLabel> mdLabels;
-
-    // Set values vector size.
-    mdValues.resize(row.size());
-    mdLabels.resize(row.size());
-
-    // Build values vector.
-    int i = 0;
-    for (const MDObject* obj : row) {
-        addLabel(obj->label);
-        mdValues[i] = obj;
-        mdLabels[i] = obj->label;
-        i++;
-    }
-
-    // Execute statement.
-    return !myMDSql->setObjectValues(id, mdValues, &mdLabels);
-}
-
-void MetaDataDb::finalizeSetRow(void)
-{
-    myMDSql->finalizePreparedStmt();
-}
-
-
-bool MetaDataDb::setRow(const MDRow &row, size_t id)
-{
-    for (auto obj : row)
-        setValue(*obj, id);
-    return true;
-}
-
-bool MetaDataDb::setRow2(const MDRow &row, size_t id)
-{
-    bool success = true;
-
-    // Initialize UPDATE.
-    success = initSetRow( row);
-    if (success)
-    {
-        // Execute UPDATE.
-        success = execSetRow( row, id);
-
-        // Finalize UPDATE.
-        finalizeSetRow();
-    }
-
-    return(success);
+    // update values to db
+    return sqlUtils::update(vals, MDSql::db,
+                    myMDSql->tableName(myMDSql->tableId), id);
 }
 
 
@@ -629,18 +571,6 @@ bool MetaDataDb::removeLabel(const MDLabel label)
         return false;
 
     this->_activeLabels.erase(location);
-    return true;
-}
-
-bool MetaDataDb::keepLabels(const std::vector<MDLabel> &labels)
-{
-    for (size_t i = 0; i < this->_activeLabels.size();)
-    {
-        if (!vectorContainsLabel(labels, this->_activeLabels[i]))
-            removeLabel(this->_activeLabels[i]);
-        else
-            ++i;
-    }
     return true;
 }
 
