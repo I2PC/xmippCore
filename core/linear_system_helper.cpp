@@ -78,16 +78,16 @@ void solveLinearSystem(WeightedLeastSquaresHelperMany &h, std::vector<Matrix1D<d
     // for each row of the output
     for (size_t i = 0; i < sizeJ; ++i)
     {
-        // copy row of the At (nicely in memory)
-        // for each column of the output
-        for (size_t j = 0; j < sizeJ; ++j)
+        // for each column of the output (notice that we read row-wise from At)
+        for (size_t j = i; j < sizeJ; ++j)
         {
             double AtA_ij = 0;
             // multiply elementwise row by row from At
             for (size_t k = 0; k < sizeI; ++k) {
                 AtA_ij += h.At.mdata[i * sizeI + k] * h.At.mdata[j * sizeI + k];
             }
-            h.AtA.mdata[i * sizeJ + j] = AtA_ij;
+            // AtA is symmetric, so we don't need to iterate over everything
+            h.AtA.mdata[i * sizeJ + j] = h.AtA.mdata[j * sizeJ + i] = AtA_ij;
         }
     }
     // Compute the inverse of AtA
