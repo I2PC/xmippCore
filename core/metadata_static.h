@@ -671,6 +671,8 @@ private:
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
         MDL::addLabel(MDL_SUBTRACTION_R2, LABEL_DOUBLE, "R2subtraction");
+        MDL::addLabel(MDL_SUBTRACTION_BETA0, LABEL_DOUBLE, "B0subtraction");
+        MDL::addLabel(MDL_SUBTRACTION_BETA1, LABEL_DOUBLE, "B1subtraction");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
         MDL::addLabel(MDL_SUMWEIGHT, LABEL_DOUBLE, "sumWeight");
         MDL::addLabel(MDL_SYMNO, LABEL_INT, "symNo");
