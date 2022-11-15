@@ -286,11 +286,7 @@ public:
     bool getRow2(MDRow &row, size_t id) const;
 
     /** Copy all the values in the input row in the current metadata*/
-    bool initSetRow(const MDRow &row);
-    bool execSetRow(const MDRow &row, size_t id);
-    void finalizeSetRow(void);
     bool setRow(const MDRow &row, size_t id);
-    bool setRow2(const MDRow &row, size_t id);
 
     /** Add a new Row and set values, return the objId of newly added object */
     bool initAddRow(const MDRow &row);
@@ -326,11 +322,6 @@ public:
      * make a copy of the MetaData.
      */
     bool removeLabel(const MDLabel label) override;
-
-    /** Remove all the labels from the metadata but the
-     * ones given in labels vector.
-     */
-    bool keepLabels(const std::vector<MDLabel> &labels) override;
 
     /** Adds a new, empty object to the objects map. If objectId == -1
      * the new ID will be that for the last object inserted + 1, else

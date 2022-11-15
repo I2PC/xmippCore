@@ -431,11 +431,6 @@ bool MetaDataVec::removeLabel(const MDLabel label) {
     return true;
 }
 
-bool MetaDataVec::keepLabels(const std::vector<MDLabel> &labels) {
-    // FIXME: implement
-    throw NotImplemented("keepLabels not implemented"); // not implemented yet
-}
-
 size_t MetaDataVec::addObject() {
     MDRowVec row;
     row.setValue(MDObject(MDL_OBJID, this->_next_id));

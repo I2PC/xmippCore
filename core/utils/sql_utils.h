@@ -122,7 +122,7 @@ public:
      * @param table to be altered
      * @return true on success
      */
-    static bool insert(std::vector<std::vector<const MDObject*>> records,
+    static bool insert(const std::vector<std::vector<const MDObject*>> &records,
             sqlite3 *db, const std::string &table);
 
     /**
@@ -134,6 +134,17 @@ public:
      */
     static bool insert(const std::vector<const MDObject*> &values,
             sqlite3 *db, const std::string &table);
+
+    /**
+     * Update a single row in the table
+     * @param values in the row to be updated (respective columns are expected to exists in the table)
+     * @param db to be altered
+     * @param table to be altered
+     * @param id of the row
+     * @return true on success
+     */
+    static bool update(const std::vector<const MDObject*> &values,
+            sqlite3 *db, const std::string &table, size_t id);
 
 protected:
     static inline void beginTrans(sqlite3 *db) {
@@ -163,6 +174,12 @@ protected:
     static std::string createInsertQuery(
             const std::vector<const MDObject*> &values,
             const std::string &table);
+
+    /** Create an update query for setting multiple values from a specific row */
+    static std::string createUpdateQuery(
+        const std::vector<const MDObject*> &values,
+        const std::string &table,
+        size_t id);
 
 private:
     /** FIXME this is copied directly from metadata_sql.h */
