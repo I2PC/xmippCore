@@ -840,6 +840,14 @@ void Matrix2D<T>::rowEnergySum(Matrix1D<T> &sum) const
 }
 
 template<typename T>
+void Matrix2D<T>::colEnergySum(Matrix1D<T> &sum) const
+{
+    sum.initZeros(MAT_XSIZE(*this));
+    FOR_ALL_ELEMENTS_IN_MATRIX2D(*this)
+        VEC_ELEM(sum,j) += MAT_ELEM(*this,i,j)*MAT_ELEM(*this,i,j);
+}
+
+template<typename T>
 void Matrix2D<T>::fromVector(const Matrix1D<T>& op1)
 {
     // Null vector => Null matrix

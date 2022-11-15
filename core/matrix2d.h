@@ -905,6 +905,10 @@ public:
      * Sum of the squared values by row */
     void rowEnergySum(Matrix1D<T> &sum) const;
 
+    /** Get col energy sum.
+     * Sum of the squared values by col */
+    void colEnergySum(Matrix1D<T> &sum) const;
+
     /** Produce a 2D array suitable for working with Numerical Recipes
     *
     * This function must be used only as a preparation for routines which need
