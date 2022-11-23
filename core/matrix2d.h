@@ -1355,6 +1355,9 @@ void matrixOperation_AB(const Matrix2D <double> &A, const Matrix2D<double> &B, M
 /** Matrix operation: y=A*x. */
 void matrixOperation_Ax(const Matrix2D <double> &A, const Matrix1D<double> &x, Matrix1D<double> &y);
 
+/** Matrix operation: y=y+A*x. */
+void matrixOperation_add_Ax(const Matrix2D <double> &A, const Matrix1D<double> &x, Matrix1D<double> &y);
+
 /** Matrix operation: C=A*B^t. */
 void matrixOperation_ABt(const Matrix2D <double> &A, const Matrix2D <double> &B, Matrix2D<double> &C);
 

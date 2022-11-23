@@ -458,6 +458,14 @@ void matrixOperation_Ax(const Matrix2D <double> &A, const Matrix1D<double> &x, M
 	}
 }
 
+void matrixOperation_add_Ax(const Matrix2D <double> &A, const Matrix1D<double> &x, Matrix1D<double> &y) {
+	for (size_t i = 0; i < MAT_YSIZE(A); ++i)
+	{
+		for (size_t k = 0; k < MAT_XSIZE(A); ++k)
+			VEC_ELEM(y, i) += MAT_ELEM(A, i, k) * VEC_ELEM(x, k);
+	}
+}
+
 void matrixOperation_AtA(const Matrix2D <double> &A, Matrix2D<double> &B)
 {
     B.resizeNoCopy(MAT_XSIZE(A), MAT_XSIZE(A));
