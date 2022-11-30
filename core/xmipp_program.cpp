@@ -368,6 +368,16 @@ double XmippProgram::getDoubleParam(const char * param, const char * subparam, i
     return textToFloat(progDef->getParam(param, subparam, arg));
 }
 
+float XmippProgram::getFloatParam(const char * param, int arg)
+{
+    return textToFloat(progDef->getParam(param, arg));
+}
+
+float XmippProgram::getFloatParam(const char * param, const char * subparam, int arg)
+{
+    return textToFloat(progDef->getParam(param, subparam, arg));
+}
+
 void XmippProgram::getListParam(const char * param, StringVector &list)
 {
     ParamDef * paramDef = progDef->findParam(param);
