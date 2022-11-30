@@ -157,8 +157,8 @@ public:
 
     /// Verbosity level
     int verbose;
-    /** debug flag and seed for randomization */
-    int debug, seed;
+    /** debug flag*/
+    int debug;
 
     /** @name Public common functions
      * The functions in this section are available for all programs
