@@ -139,6 +139,8 @@ public:
     int getIntParam(const char * param, const char * subparam, int arg = 0);
     double getDoubleParam(const char * param, int arg = 0);
     double getDoubleParam(const char * param, const char * subparam, int arg = 0);
+    float getFloatParam(const char * param, int arg = 0);
+    float getFloatParam(const char * param, const char * subparam, int arg = 0);
     /** Get arguments supplied to param as a list */
     void getListParam(const char * param, StringVector &list);
     /** Get the number of arguments supplied to the param */
@@ -157,8 +159,8 @@ public:
 
     /// Verbosity level
     int verbose;
-    /** debug flag and seed for randomization */
-    int debug, seed;
+    /** debug flag*/
+    int debug;
 
     /** @name Public common functions
      * The functions in this section are available for all programs
