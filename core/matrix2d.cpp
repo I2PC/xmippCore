@@ -32,6 +32,7 @@
 #include "xmipp_filename.h"
 #include "matrix1d.h"
 #include "xmipp_funcs.h"
+#include <sys/stat.h>
 
 template<typename T>
 T Matrix2D<T>::det() const

@@ -25,6 +25,9 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "metadata_static.h"
+#include "multidim_array_base.h"
+#include <cmath>
 
 /*
  * rwIMAGIC.h
@@ -159,7 +162,7 @@ int  ImageBase::readIMAGIC(size_t select_img)
 
     // Set min-max values and other statistical values
     if ( header->sigma == 0 && header->varian != 0 )
-        header->sigma = sqrt(header->varian);
+        header->sigma = std::sqrt(header->varian);
     if ( header->densmax == 0 && header->densmin == 0 && header->sigma != 0 )
     {
         header->densmin = header->avdens - header->sigma;

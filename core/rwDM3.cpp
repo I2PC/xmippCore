@@ -25,6 +25,7 @@
 
 #include "xmipp_image_base.h"
 #include "metadata_vec.h"
+#include "xmipp_funcs.h"
 
 ///@defgroup DM3 DM3 File format
 ///@ingroup ImageFormats

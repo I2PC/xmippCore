@@ -26,9 +26,6 @@
 #ifndef CORE_RWHDF5_H_
 #define CORE_RWHDF5_H_
 
-#include "hdf5.h"
-
-
 
 ///@defgroup HDF5 HDF5 File format
 ///@ingroup ImageFormats

@@ -25,6 +25,9 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include <tiffio.h>
+#include "multidim_array_base.h"
+#include "metadata_static.h"
 
 /**
  * castTiffTile2T

@@ -105,11 +105,7 @@ public:
 
     /** Init geometry transformation with defaults values
      */
-    void initGeometry(const size_t n = 0)
-    {
-        MDL::emptifyHeader(*(image->MD[n]));
-    }
-
+    void initGeometry(const size_t n = 0);
     /** Return geometry row
      */
     MDRow& getGeometry(const size_t n = 0)
