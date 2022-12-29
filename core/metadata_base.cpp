@@ -33,6 +33,8 @@
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
 #endif
+#include "metadata_db.h"
+#include "xmipp_funcs.h"
 
 // Get the blocks available
 void getBlocksInMetaDataFile(const FileName &inFile, StringVector& blockList)

@@ -31,6 +31,8 @@
 #include "xmipp_image_generic.h"
 #include "matrix2d.h"
 #include "transformations.h"
+#include <sys/stat.h>
+#include "metadata_static.h"
 
 template<typename T>
 int Image<T>::readPreview(const FileName &name, size_t Xdim, size_t Ydim,
@@ -87,6 +89,52 @@ int Image<T>::readPreview(const FileName &name, size_t Xdim, size_t Ydim,
     IMGMATRIX(*this).resetOrigin();
     return err;
 }
+
+template<typename T>
+void Image<T>::mmapFile()
+    {
+#ifdef XMIPP_MMAP
+        if (this->hFile->mode == WRITE_READONLY)
+            mFd = open(dataFName.c_str(), O_RDONLY, S_IREAD);
+        else
+            mFd = open(dataFName.c_str(), O_RDWR, S_IREAD | S_IWRITE);
+
+        if (mFd == -1)
+        {
+            if (errno == EACCES)
+                REPORT_ERROR(ERR_IO_NOPERM,
+                             formatString(
+                                     "Image Class::mmapFile: permission denied when opening %s",
+                                     dataFName.c_str()));
+            else
+                REPORT_ERROR(ERR_IO_NOTOPEN,
+                             "Image Class::mmapFile: Error opening the image file to be mapped.");
+        }
+        char * map;
+        const size_t pagesize = sysconf(_SC_PAGESIZE);
+        size_t offsetPages = (mappedOffset / pagesize) * pagesize;
+        mappedOffset -= offsetPages;
+        mappedSize -= offsetPages;
+
+        if (this->hFile->mode == WRITE_READONLY)
+            map = (char*) mmap(0, mappedSize, PROT_READ, MAP_SHARED, mFd,
+                               offsetPages);
+        else
+            map = (char*) mmap(0, mappedSize, PROT_READ | PROT_WRITE, MAP_SHARED,
+                               mFd, offsetPages);
+
+        if (map == MAP_FAILED)
+            REPORT_ERROR(ERR_MMAP_NOTADDR,
+                         formatString("Image Class::mmapFile: mmap of image file failed. Error: %s", strerror(errno)));
+        data.data = reinterpret_cast<T*>(map + mappedOffset);
+        data.nzyxdimAlloc = XSIZE(data) * YSIZE(data) * ZSIZE(data) * NSIZE(data);
+#else
+
+        REPORT_ERROR(ERR_MMAP,"Mapping not supported in Windows");
+#endif
+
+    }
+
 
 // Special cases for complex numbers
 template<>

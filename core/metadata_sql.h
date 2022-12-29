@@ -28,7 +28,6 @@
 #ifndef CORE_METADATASQL_H
 #define CORE_METADATASQL_H
 
-#include <sqlite3.h>
 #include "xmipp_strings.h"
 #include "metadata_label.h"
 #include "xmipp_error.h"
@@ -41,6 +40,10 @@ class MDQuery;
 class MetaDataDb;
 class MDCache;
 class FileName;
+class sqlite3_stmt;
+class sqlite3_context;
+class sqlite3_value;
+class sqlite3;
 
 /** @addtogroup MetaData
  * @{

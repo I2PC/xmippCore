@@ -25,6 +25,8 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "xmipp_funcs.h"
+#include "metadata_static.h"
 
 #define PIFHEADERSIZE sizeof(PIFDataHeader) // size of EM file header
 

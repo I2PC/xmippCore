@@ -25,6 +25,8 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
+#include "metadata_static.h"
+#include "xmipp_funcs.h"
 
 ///@defgroup SPE Princeton Instruments File Format
 ///@ingroup ImageFormats

@@ -33,6 +33,8 @@
 #include "xmipp_image_macros.h"
 #include "xmipp_image_generic.h"
 
+#include <sys/stat.h>
+
 
 String FileNameVersion=METADATA_XMIPP_STAR;
 

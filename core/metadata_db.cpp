@@ -33,6 +33,7 @@
 #include "xmipp_image.h"
 #include "metadata_sql.h"
 #include "metadata_generator.h"
+#include "xmipp_funcs.h"
 
 
 //-----Constructors and related functions ------------

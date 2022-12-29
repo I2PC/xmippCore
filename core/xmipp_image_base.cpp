@@ -28,8 +28,24 @@
 #include "xmipp_error.h"
 
 #include <stdlib.h>
+#include "metadata_static.h"
+#include "metadata_base.h"
+#include "xmipp_funcs.h"
+#include <tiffio.h>
+#include <hdf5.h>
 
 //This is needed for static memory allocation
+
+void ImageBase::initGeometry(const size_t n)
+{
+    MDL::emptifyHeader(*MD[n]);
+}
+
+void ImageBase::setDimensions(ArrayDim &aDim)
+{
+    mdaBase->setDimensions(aDim);
+    aDimFile = aDim;
+}
 
 void ImageBase::init()
 {
