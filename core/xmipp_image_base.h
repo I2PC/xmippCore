@@ -35,13 +35,14 @@
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
 
+#include <H5Ipublic.h>
+
 template<typename T>
 class Matrix2D;
 template<typename T>
 class Image;
 struct tiff;
 typedef struct tiff TIFF;
-typedef int64_t hid_t;
 class MultidimArrayBase;
 class MetaData;
 
