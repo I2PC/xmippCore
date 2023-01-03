@@ -27,64 +27,19 @@
 #include "xmipp_error.h"
 #include "xmipp_color.h"
 
-/* Exception handling ------------------------------------------------------ */
-void _Xmipp_error(const ErrorType nerr, const String &what,
-                  const String &file, const long line)
-{
-    XmippError xe(nerr, what, file, line);
-    std::cerr << xe << std::endl;
-    //std::cout << nerr << ": " << what << std::endl
-    //<< "File: " << file << " line: " << line << std::endl;
-    exit(nerr);
-}
 
 // Object Constructor
 XmippError::XmippError(const ErrorType nerr, const String &what,
-                       const String &fileArg, const long lineArg):std::runtime_error(what.c_str())
-{
-    __errno = nerr;
-    msg = colorString(what.c_str(), RED);
-    file = fileArg;
-    line = lineArg;
-    char* path = getenv("XMIPP_DEBUG");
-    if (path != NULL)
-        std::cout << "XMIPP_DEBUG: " << getMessage() << std::endl;
+                       const String &fileArg, const long lineArg)
+                       :std::runtime_error(XmippError::getMessage(nerr, what, fileArg, lineArg)), __errno(nerr)
+{}
 
-    //Store information about the stack calls
-//#ifdef LINUX
-//    void *array[10];
-//    size_t size = backtrace(array, 10);
-//    char ** strings = backtrace_symbols(array, size);
-//#endif
-}
-
-XmippError::XmippError(const std::string &what):XmippError(ERR_UNCLASSIFIED,what,"Unknown file",0)
-{
-
-}
-
-// Show message
-std::ostream& operator << (std::ostream& o, XmippError& xe)
-{
-    String error = formatString("XMIPP_ERROR %d: %s", xe.__errno, xe.getDefaultMessage().c_str());
-    o << colorString(error.c_str(), RED) << std::endl;
-    o << colorString(xe.msg.c_str(), RED) << std::endl;
-    error = formatString("File: %s line: %ld", xe.file.c_str(), xe.line);
-    o << colorString(error.c_str(), RED) << std::endl;
-    return o;
-}
-
-String XmippError::getMessage() const
-{
-      String error = formatString("XMIPP_ERROR %d: %s\n   ", __errno, getDefaultMessage().c_str());
-      error += msg;
-      error += formatString("\n   File: %s line: %ld\n", file.c_str(), line);
+String XmippError::getMessage(const ErrorType nerr, const String& what,
+               const String &fileArg, const long lineArg) {
+      String error = formatString("XMIPP_ERROR %d: %s\n   ", nerr, getDefaultMessage(nerr).c_str());
+      error += what;
+      error += formatString("\n   File: %s line: %ld\n", fileArg.c_str(), lineArg);
       return error;
-}
-
-String XmippError::getDefaultMessage() const
-{
-    return getDefaultMessage(__errno);
 }
 
 String XmippError::getDefaultMessage(ErrorType e)
@@ -235,11 +190,6 @@ String XmippError::getDefaultMessage(ErrorType e)
     default:
         return "Unrecognized error code";
     }
-}
-
-const char* XmippError::what() const noexcept
-{
-  return getMessage().c_str();
 }
 
 void reportWarning(const String& what)

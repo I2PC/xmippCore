@@ -209,28 +209,16 @@ void XmippProgram::read(int argc, const char ** argv, bool reportErrors)
     }
     else
     {
-        try
+       
+        this->argc = argc;
+        this->argv = argv;
+        progDef->read(argc, argv, reportErrors);
+        if (!checkBuiltIns())
         {
-            this->argc = argc;
-            this->argv = argv;
-            progDef->read(argc, argv, reportErrors);
-            if (!checkBuiltIns())
-            {
-                if (verbose) //if 0, ignore the parameter, useful for mpi programs
-                    verbose = getIntParam("--verbose");
-                this->readParams();
-                doRun = !checkParam("--xmipp_validate_params"); //just validation, not run
-            }
-        }
-        catch (XmippError &xe)
-        {
-            ///If an input error, shows error message
-            if (verbose)
-            {
-                std::cerr << xe;
-                std::cerr << "For more info use --help" << std::endl;
-            }
-            errorCode = xe.__errno;
+            if (verbose) //if 0, ignore the parameter, useful for mpi programs
+                verbose = getIntParam("--verbose");
+            this->readParams();
+            doRun = !checkParam("--xmipp_validate_params"); //just validation, not run
         }
     }
 }
@@ -255,16 +243,8 @@ void XmippProgram::read(const String &argumentsLine)
 
 int XmippProgram::tryRun()
 {
-    try
-    {
-        if (doRun)
-            this->run();
-    }
-    catch (XmippError &xe)
-    {
-        std::cerr << xe;
-        errorCode = xe.__errno;
-    }
+    if (doRun)
+        this->run();
     return errorCode;
 }
 /** Init progress */
