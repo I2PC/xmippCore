@@ -584,7 +584,8 @@ void CenterOriginFFT(MultidimArray< std::complex< double > > & v, bool forward);
 
 /** Xmipp image -> Xmipp PSD.
     The log10 is taken, outliers rejected and the image is reorganized. */
-void xmipp2PSD(const MultidimArray<double> &input, MultidimArray<double> &output,
+template<typename T>
+void xmipp2PSD(const MultidimArray<T> &input, MultidimArray<T> &output,
                bool takeLog=true);
 
 /** Xmipp image -> Xmipp CTF.

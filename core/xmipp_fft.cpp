@@ -439,24 +439,24 @@ void CenterOriginFFT(MultidimArray< std::complex< double > > & v, bool forward)
 }
 
 /* Xmipp image -> Xmipp PSD ------------------------------------------------ */
-void xmipp2PSD(const MultidimArray<double> &input, MultidimArray<double> &output,
+template<typename T>
+void xmipp2PSD(const MultidimArray<T> &input, MultidimArray<T> &output,
                bool takeLog)
 {
     output = input;
     CenterFFT(output, true);
-    double min_val = output.computeMax();
-    FOR_ALL_ELEMENTS_IN_ARRAY2D(output)
-    {
-        double pixval=A2D_ELEM(output,i,j);
-        if (pixval > 0 && pixval < min_val)
-            min_val = pixval;
-    }
-    if (takeLog)
-    {
+    if (takeLog) {
+        auto min_val = std::numeric_limits<T>::max();
+        FOR_ALL_ELEMENTS_IN_ARRAY2D(output)
+        {
+            auto pixval=A2D_ELEM(output,i,j);
+            if (pixval > 0 && pixval < min_val)
+                min_val = pixval;
+        }
         min_val = 10 * log10(min_val);
         FOR_ALL_ELEMENTS_IN_ARRAY2D(output)
         {
-            double pixval=A2D_ELEM(output,i,j);
+            auto pixval=A2D_ELEM(output,i,j);
             if (pixval > 0)
                 A2D_ELEM(output,i,j) = 10 * log10(pixval);
             else
@@ -465,6 +465,8 @@ void xmipp2PSD(const MultidimArray<double> &input, MultidimArray<double> &output
     }
     reject_outliers(output);
 }
+template void xmipp2PSD<float>(const MultidimArray<float> &, MultidimArray<float>&, bool);
+template void xmipp2PSD<double>(const MultidimArray<double> &, MultidimArray<double>&, bool);
 
 /* Xmipp image -> Xmipp CTF ------------------------------------------------ */
 void xmipp2CTF(const MultidimArray<double> &input, MultidimArray<double> &output)
