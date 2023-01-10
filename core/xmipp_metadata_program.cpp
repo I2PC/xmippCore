@@ -65,15 +65,7 @@ XmippMetadataProgram::~XmippMetadataProgram()
 
 int XmippMetadataProgram::tryRead(int argc, const char ** argv, bool reportErrors)
 {
-    try
-    {
-        this->read( argc, argv,  reportErrors );
-    }
-    catch (XmippError &xe)
-    {
-        std::cerr << xe;
-        errorCode = xe.__errno;
-    }
+    this->read( argc, argv,  reportErrors );
     return errorCode;
 }
 
