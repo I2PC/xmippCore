@@ -23,10 +23,10 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <iostream>
 #include <stdlib.h>
 #include "xmipp_error.h"
 #include "xmipp_color.h"
-
 
 // Object Constructor
 XmippError::XmippError(const ErrorType nerr, const String &what,

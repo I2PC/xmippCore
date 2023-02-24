@@ -26,6 +26,7 @@
 #ifndef CORE_MATRIX1D_H_
 #define CORE_MATRIX1D_H_
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "xmipp_error.h"

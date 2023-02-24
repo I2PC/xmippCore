@@ -27,7 +27,6 @@
 
 #include <stdexcept>
 #include "xmipp_strings.h"
-#include <iostream>
 
 /** @defgroup ErrorHandling Error handling
  * @ingroup DataLibrary
