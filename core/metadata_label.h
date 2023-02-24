@@ -457,6 +457,7 @@ enum MDLabel
     MDL_TOMOGRAM_VOLUME, ///< Name for the reconstructed tomogram volume (std::string)
     MDL_TOMOGRAMMD, ///< Name for a Metadata file (std::string)
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)
+    MDL_TSID, ///<Tilt series id (std::string)
 
     MDL_TEST_SIZE,// < number of test assigned to a program
     MDL_TILT_ANALYSIS_MEAN, // <Mean correlation between the PSD segments of a micrograph

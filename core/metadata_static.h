@@ -680,6 +680,7 @@ private:
 
         MDL::addLabel(MDL_TOMOGRAM_VOLUME, LABEL_STRING, "tomogramVolume", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_TOMOGRAMMD, LABEL_STRING, "tomogramMetadata", TAGLABEL_METADATA);
+        MDL::addLabel(MDL_TSID, LABEL_STRING, "tiltSeriesId");
 
         MDL::addLabel(MDL_TRANSFORM_MATRIX, LABEL_STRING, "transformMatrix");
 

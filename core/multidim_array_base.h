@@ -142,12 +142,12 @@ class Matrix1D;
  * v is the array, l is the image, k =0, i is the Y index and j is the X index.
  * i and j) within the slice.
  */
-#define DIRECT_N_YX_ELEM(v, l, k, i, j) ((v).data[(l)*ZYXSIZE(v)             +((i)*XSIZE(v))+(j)])
+#define DIRECT_N_YX_ELEM(v, l, i, j) ((v).data[(l)*ZYXSIZE(v)             +((i)*XSIZE(v))+(j)])
 /** Access to a direct element.
  * v is the array, l is the image, k =0, i = 0 and j is the X index.
  * i and j) within the slice.
  */
-#define DIRECT_N__X_ELEM(v, l, k, i, j) ((v).data[(l)*ZYXSIZE(v)+(j)])
+#define DIRECT_N__X_ELEM(v, l, j) ((v).data[(l)*ZYXSIZE(v)+(j)])
 
 /** Multidim element: Logical access.
  */
