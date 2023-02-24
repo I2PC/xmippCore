@@ -29,6 +29,8 @@
 
 #include "metadata_row_base.h"
 
+#include <array>
+
 /** Class for holding an entire row of MDObject in MetaDataVec.
  * Row could be attached to OR detached from metadata
  * - Detached row: holds its own _row & _label_to_col. When copied, content of
