@@ -24,6 +24,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <iostream>
 #include <iomanip>
 #include <sstream>
 #include "metadata_object.h"

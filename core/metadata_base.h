@@ -36,6 +36,7 @@
 #include <map>
 #include <cmath>
 #include <memory>
+#include <iostream>
 
 #include "xmipp_error.h"
 #include "xmipp_filename.h"
