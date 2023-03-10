@@ -51,8 +51,6 @@ enum colorCode
     WHITE   =  7
 };
 
-void textcolor(int attr, int fg, int bg);
-
 String colorString(const char * msg, int color, int attribute = BRIGHT, int bgcolor=BLACK);
 
 

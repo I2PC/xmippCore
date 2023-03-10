@@ -402,6 +402,7 @@ private:
         MDL::addLabel(MDL_DM3_TAGCLASS, LABEL_STRING, "dm3TagClass");
         MDL::addLabel(MDL_DM3_TAGNAME, LABEL_STRING, "dm3TagName");
         MDL::addLabel(MDL_DM3_VALUE, LABEL_VECTOR_DOUBLE, "dm3Value");
+        MDL::addLabel(MDL_DOSE, LABEL_DOUBLE, "dose");
 
         MDL::addLabel(MDL_ENABLED, LABEL_INT, "enabled");
 
@@ -679,6 +680,7 @@ private:
 
         MDL::addLabel(MDL_TOMOGRAM_VOLUME, LABEL_STRING, "tomogramVolume", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_TOMOGRAMMD, LABEL_STRING, "tomogramMetadata", TAGLABEL_METADATA);
+        MDL::addLabel(MDL_TSID, LABEL_STRING, "tiltSeriesId");
 
         MDL::addLabel(MDL_TRANSFORM_MATRIX, LABEL_STRING, "transformMatrix");
 
@@ -699,6 +701,8 @@ private:
         MDL::addLabel(MDL_WEIGHT_JUMPER0, LABEL_DOUBLE, "weightJumper0");
         MDL::addLabel(MDL_WEIGHT_JUMPER, LABEL_DOUBLE, "weightJumper");
         MDL::addLabel(MDL_WEIGHT_JUMPER2, LABEL_DOUBLE, "weightJumper2");
+        MDL::addLabel(MDL_WEIGHT_REALCORR, LABEL_DOUBLE, "weightRealCorr");
+        MDL::addLabel(MDL_WEIGHT_PHASECORR, LABEL_DOUBLE, "weightPhaseCorr");
         MDL::addLabel(MDL_WEIGHT_SIGNIFICANT, LABEL_DOUBLE, "weightSignificant");
         MDL::addLabel(MDL_WEIGHT_SSNR, LABEL_DOUBLE, "weightSSNR");
 

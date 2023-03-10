@@ -37,6 +37,7 @@
 #ifdef XMIPP_MMAP
 #include <sys/mman.h>
 #endif
+#include "xmipp_funcs.h"
 
 MetaDataVec::MetaDataVec() {
     init({});

@@ -30,7 +30,13 @@
 #include "xmipp_fftw.h"
 #include "xmipp_types.h"
 #include "xvsmooth.h"
+#include "metadata_static.h"
+#include "metadata_base.h"
 
+void ImageGeneric::initGeometry(const size_t n)
+{
+    MDL::emptifyHeader(*(image->MD[n]));
+}
 
 ImageGeneric::ImageGeneric(DataType _datatype)
 {

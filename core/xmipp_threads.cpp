@@ -189,10 +189,10 @@ void * _threadMain(void * data)
             }
             catch (XmippError &xe)
             {
-                std::cerr << xe << std::endl
+                std::cerr << xe.what() << std::endl
                 << "In thread " << thArg->thread_id << std::endl;
 //                pthread_exit(NULL);
-                exit(-1);
+                exit(xe.__errno);
             }
         }
         else //exit thread

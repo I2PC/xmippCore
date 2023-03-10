@@ -23,6 +23,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <iostream>
 #include <sstream>
 #include "sql_utils.h"
 #include "../xmipp_error.h"

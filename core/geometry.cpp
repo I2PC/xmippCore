@@ -960,15 +960,7 @@ void Euler_Angles_after_compresion(const double rot, double tilt, double psi,
     Matrix2D<double> D_1(3, 3);
 
     //if D has not inverse we are not in business
-    try
-    {
-        D_1 = D.inv();
-    }
-    catch (XmippError &XE)
-    {
-        std::cout << XE;
-        exit(1);
-    }
+    D_1 = D.inv();
 
     Euler_direction(rot, tilt, psi, w);
     if (fabs(w(2)) > 0.999847695)/*cos one degree */

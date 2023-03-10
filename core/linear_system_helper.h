@@ -51,7 +51,7 @@ public:
     Matrix2D<double> At;
     std::vector<Matrix1D<double>> bs;
     Matrix1D<double> w; //Weights
-    Matrix1D<double> w_sqrt; //Weights squared, will be computed
+    Matrix1D<double> w_sqrt; //Square roots of weights, will be computed
     Matrix2D<double> AtA;
     Matrix2D<double> AtAinv;
     Matrix1D<double> Atb;

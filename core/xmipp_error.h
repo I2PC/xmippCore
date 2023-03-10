@@ -23,15 +23,10 @@
 *  e-mail address 'xmipp@cnb.csic.es'
 ***************************************************************************/
 
-#ifndef CORE_XMIPP_ERROR_H
-#define CORE_XMIPP_ERROR_H
-#include <stdexcept>
-#include <iostream>
-#include "xmipp_strings.h"
+#pragma once
 
-#ifdef LINUX
-#include <execinfo.h>
-#endif
+#include <stdexcept>
+#include "xmipp_strings.h"
 
 /** @defgroup ErrorHandling Error handling
  * @ingroup DataLibrary
@@ -204,28 +199,6 @@ enum ErrorType
 };
 
 
-/** MACROs that process XMIPP exceptions
- */
-#define XMIPP_TRY try{
-
-#define XMIPP_CATCH \
-	}\
-    catch (XmippError &xe)\
-    {\
-        std::cerr << xe;\
-        exit(-1);\
-    }
-
-/** Show message and exit
- *
- * This is an internal function (not to be used by programmers)
- * that shows the given message and exits with the error code.
- * This function is called when no exceptions are allowed.
- *
- */
-void _Xmipp_error(const ErrorType nerr, const String& what,
-                  const String &file, const long line);
-
 /** Show message and throw exception
  *
  * This macro shows the given message and exits with the error code.
@@ -248,40 +221,18 @@ void _Xmipp_error(const ErrorType nerr, const String& what,
 class XmippError : public std::runtime_error
 {
 public:
-    /** Error code */
-    ErrorType __errno;
-
-    /** Message shown */
-    String msg;
-
-    /** File producing the error */
-    String file;
-
-    /** Line number */
-    long line;
-
-    /** Constructor */
     XmippError(const ErrorType nerr, const String& what,
                const String &fileArg, const long lineArg);
 
-    /** Constructor */
-    XmippError(const std::string& what);
+    XmippError(const std::string &what):XmippError(ERR_UNCLASSIFIED,what,"Unknown file",0) {};
 
-    /** Show an error */
-    friend std::ostream& operator<<(std::ostream& o, XmippError& XE);
-
-    /** Get message */
-    String getMessage() const;
-
-    /** Get Default message */
-    String getDefaultMessage() const;
+    ErrorType __errno;
+private:
+    static String getMessage(const ErrorType nerr, const String& what,
+               const String &fileArg, const long lineArg);
 
     /** Get default message */
     static String getDefaultMessage(ErrorType e);
-
-    /** Get error message */
-    virtual char const * what() const noexcept override;
-
 };
 
 /** Print a report warning and continue the execution.
@@ -289,4 +240,3 @@ public:
 void reportWarning(const String& what);
 
 /* @} */
-#endif

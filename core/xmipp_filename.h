@@ -26,9 +26,6 @@
 #ifndef CORE_XMIPP_FILENAME_H_
 #define CORE_XMIPP_FILENAME_H_
 
-#include <vector>
-#include <sys/stat.h>
-
 //#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 //#endif /* HAVE_UNISTD_H */

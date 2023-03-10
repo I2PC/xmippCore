@@ -38,11 +38,11 @@ struct TIFFDirHead
     unsigned short  samplesPerPixel;
     unsigned int   imageWidth;
     unsigned int   imageLength;
-    uint16           imageSampleFormat;
+    uint16_t           imageSampleFormat;
     unsigned short  resUnit;
     float            xTiffRes,yTiffRes;
     unsigned int subFileType;
-    uint16 pNumber, pTotal; // pagenumber and total number of pages of current directory
+    uint16_t pNumber, pTotal; // pagenumber and total number of pages of current directory
     TIFFDirHead()
     {
         	bitsPerSample=samplesPerPixel=0;

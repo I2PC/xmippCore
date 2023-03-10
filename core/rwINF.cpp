@@ -25,6 +25,9 @@
 
 #include "xmipp_image_base.h"
 #include "args.h"
+#include "metadata_static.h"
+#include "xmipp_funcs.h"
+#include "multidim_array_base.h"
 
 ///@defgroup INF INF File format
 ///@ingroup ImageFormats

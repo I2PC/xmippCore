@@ -224,6 +224,7 @@ enum MDLabel
     MDL_DM3_TAGNAME,
     MDL_DM3_SIZE,
     MDL_DM3_VALUE,
+    MDL_DOSE, ///< Dose e/A^2 (double)
 
     //End of labels
 
@@ -456,6 +457,7 @@ enum MDLabel
     MDL_TOMOGRAM_VOLUME, ///< Name for the reconstructed tomogram volume (std::string)
     MDL_TOMOGRAMMD, ///< Name for a Metadata file (std::string)
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)
+    MDL_TSID, ///<Tilt series id (std::string)
 
     MDL_TEST_SIZE,// < number of test assigned to a program
     MDL_TILT_ANALYSIS_MEAN, // <Mean correlation between the PSD segments of a micrograph
@@ -478,6 +480,8 @@ enum MDLabel
     MDL_WEIGHT_JUMPER0, ///< Weight due to angular jumping
     MDL_WEIGHT_JUMPER, ///< Weight due to angular jumping
     MDL_WEIGHT_JUMPER2, ///< Weight due to angular jumping
+    MDL_WEIGHT_REALCORR, ///< Weight due correlation between two images/subtomos
+    MDL_WEIGHT_PHASECORR, ///< Weight due phase correlation between two images/subtomos
     MDL_WEIGHT_SIGNIFICANT, ///< Weight due to Angular significance
     MDL_WEIGHT_SSNR, ///< Weight due to SSNR
     MDL_WEIGHT_PRECISION_ALIGNABILITY, ///< Weight due to Alignability Precision

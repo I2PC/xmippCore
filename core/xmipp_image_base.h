@@ -30,24 +30,21 @@
 
 #include "xmipp_image_macros.h"
 #include "xmipp_datatype.h"
-#include "metadata_label.h"
 #include "metadata_row_vec.h"
-#include "metadata_static.h"
-#include "metadata_db.h"
-#include "multidim_array_base.h"
+#include "xmipp_array_dim.h"
 #include "xmipp_filename.h"
 #include "transformations_defines.h"
-#include "xmipp_funcs.h"
 
-//
-//// Includes for rwTIFF which cannot be inside it
-#include <tiffio.h>
-#include <hdf5.h>
+#include <H5Ipublic.h>
 
 template<typename T>
 class Matrix2D;
 template<typename T>
 class Image;
+struct tiff;
+typedef struct tiff TIFF;
+class MultidimArrayBase;
+class MetaData;
 
 /* Minimum size of a TIFF file to be mapped to a tempfile in case of mapping from
  * image file is required
@@ -554,10 +551,7 @@ public:
 
     /** Init geometry transformation with defaults values
      */
-    void initGeometry(const size_t n = 0)
-    {
-        MDL::emptifyHeader(*MD[n]);
-    }
+    void initGeometry(const size_t n = 0);
 
     /* Check if the label is in the individual header
     */
@@ -664,11 +658,7 @@ public:
 
     /** Set image dimensions */
     virtual void setDimensions(int Xdim, int Ydim, int Zdim, size_t Ndim) = 0;
-    virtual void setDimensions(ArrayDim &aDim)
-    {
-        mdaBase->setDimensions(aDim);
-        aDimFile = aDim;
-    }
+    virtual void setDimensions(ArrayDim &aDim);
 
 
     /** Set the information of the original image dimensions

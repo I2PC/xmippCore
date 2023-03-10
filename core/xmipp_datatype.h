@@ -27,6 +27,7 @@
 #define CORE_DATATYPE_H_
 
 #include <string>
+
 /** @defgroup Datatypes Datatypes for MultidimArrays
  *  @ingroup DataLibrary
 */

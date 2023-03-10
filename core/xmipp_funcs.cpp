@@ -25,6 +25,8 @@
 
 //#include <stdlib.h>
 //#include <time.h>
+#include <iostream>
+#include <fstream>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -32,7 +34,6 @@
 #include "xmipp_funcs.h"
 #include "numerical_recipes.h"
 #include "xmipp_filename.h"
-#include <fstream>
 
 //#include <typeinfo>
 //#include "xmipp_error.h"

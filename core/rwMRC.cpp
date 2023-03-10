@@ -27,6 +27,10 @@
 #include "xmipp_error.h"
 #include "xmipp_memory.h"
 
+#include "metadata_static.h"
+#include "multidim_array_base.h"
+#include "xmipp_funcs.h"
+
 #include <memory>
 /*
         Base on rwMRC.h

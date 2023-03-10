@@ -25,7 +25,9 @@
 
 #include "xmipp_image_base.h"
 #include "xmipp_hdf5.h"
-
+#include "multidim_array_base.h"
+#include "metadata_static.h"
+#include "xmipp_funcs.h"
 
 
 DataType ImageBase::datatypeH5(hid_t h5datatype)
