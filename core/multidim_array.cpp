@@ -1055,25 +1055,20 @@ void MultidimArray<T>::resize(size_t Ndim, size_t Zdim, size_t Ydim, size_t Xdim
     // Copy needed elements, fill with 0 if necessary
     if (copy)
     {
-        T zero=0; // Very useful for complex matrices
-        T *val=NULL;
-        for (size_t l = 0; l < Ndim; l++)
-            for (size_t k = 0; k < Zdim; k++)
-                for (size_t i = 0; i < Ydim; i++)
-                    for (size_t j = 0; j < Xdim; j++)
-                    {
-                        if (l >= NSIZE(*this))
-                            val = &zero;
-                        else if (k >= ZSIZE(*this))
-                            val = &zero;
-                        else if (i >= YSIZE(*this))
-                            val = &zero;
-                        else if (j >= XSIZE(*this))
-                            val = &zero;
-                        else
-                            val = &DIRECT_NZYX_ELEM(*this, l, k, i, j);
-                        new_data[l*ZYXdim + k*YXdim+i*Xdim+j] = *val;
-                    }
+        const auto nCopy = std::min(Ndim, NSIZE(*this));
+        const auto zCopy = std::min(Zdim, ZSIZE(*this));
+        const auto yCopy = std::min(Ydim, YSIZE(*this));
+        const auto xCopy = std::min(Xdim, XSIZE(*this));
+        const auto xCopyBytes = xCopy*sizeof(T);
+
+        for (size_t l = 0; l < nCopy; ++l) 
+            for (size_t k = 0; k < zCopy; ++k) 
+                for (size_t i = 0; i < yCopy; ++i) 
+                    memcpy(
+                        new_data + l*ZYXdim + k*YXdim + i*Xdim,
+                        data + l*zyxdim + k*yxdim + i*xdim,
+                        xCopyBytes
+                    );
     }
 
     // deallocate old array
