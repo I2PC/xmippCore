@@ -73,6 +73,9 @@ size_t gettypesize(DataType type)
     case DT_Bool:
         size = sizeof(bool);
         break;
+    case DT_HalfFloat:
+        size = 2;
+        break;
     default:
         size = 0;
     }
@@ -115,6 +118,8 @@ DataType str2Datatype(const std::string & str)
         datatype = DT_CDouble;
     else if (str=="bool")
         datatype = DT_Bool;
+    else if (str=="half")
+        datatype = DT_HalfFloat;
     else
         REPORT_ERROR(ERR_TYPE_INCORRECT, "datatypeString2int; unknown datatype");
 
@@ -156,6 +161,8 @@ std::string datatype2Str(DataType datatype)
         return "cdouble";
     case DT_Bool:
         return "bool";
+    case DT_HalfFloat:
+        return "half";
     default:
         return "unknown type";
     }
@@ -209,6 +216,9 @@ std::string datatype2StrLong(DataType datatype)
         break;
     case DT_Bool:
         return "Boolean (1-byte?)";
+        break;
+    case DT_HalfFloat:
+        return "Half precision floating point (2-byte)";
         break;
     case DT_Unknown:
         return "Unknown data type";
