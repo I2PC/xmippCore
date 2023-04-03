@@ -532,7 +532,7 @@ void applyGeometry(int SplineDegree,
                    MultidimArray<T>& __restrict__ V2,
                    const MultidimArray<T1>& __restrict__ V1,
                    const Matrix2D< T2 > &At, bool inv,
-                   bool wrap, T outside = 0, MultidimArray<double> *BcoeffsPtr=NULL)
+                   bool wrap, T outside = T(0), MultidimArray<double> *BcoeffsPtr=NULL)
 {
 #ifndef RELEASE_MODE
     if (&V1 == (MultidimArray<T1>*)&V2)

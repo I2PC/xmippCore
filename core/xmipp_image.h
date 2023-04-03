@@ -778,7 +778,7 @@ public:
     void
     mirrorX(void)
     {
-        T aux = 0;
+        T aux(0);
         size_t Z, Y, X, N, X2;
 
         X = XSIZE(data);
@@ -1414,6 +1414,8 @@ private:
         else if (typeid(T) == typeid(std::complex<double>))
             return DT_CDouble;
         else if (typeid(T) == typeid(bool))
+            return DT_HalfFloat;
+        else if (typeid(T) == typeid(half_float::half))
             return DT_Bool;
         else
             return DT_Unknown;
