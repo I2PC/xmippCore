@@ -392,6 +392,10 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
             wDType = DT_CFloat;
             header->mode = 4;
             break;
+        case DT_HalfFloat:
+            wDType = DT_HalfFloat;
+            header->mode = 12;
+            break;
         //case DT_UHalfByte:
         default:
             wDType = DT_Unknown;
@@ -424,6 +428,9 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
         case DT_CFloat:
         case DT_CDouble:
             header->mode = 4;
+            break;
+        case DT_HalfFloat:
+            header->mode = 12;
             break;
         default:
             REPORT_ERROR(ERR_TYPE_INCORRECT,"ERROR: incorrect MRC bits depth value.");
