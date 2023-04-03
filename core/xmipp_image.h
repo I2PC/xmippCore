@@ -734,6 +734,8 @@ public:
                 return typeid(T) == typeid(float);
             case DT_Double:
                 return typeid(T) == typeid(double);
+            case DT_HalfFloat:
+                return typeid(T) == typeid(half_float::half);
             default:
             {
                 std::cerr << "Datatype= " << datatype << std::endl;
