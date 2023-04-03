@@ -228,6 +228,9 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     case 6:
         datatype = DT_UShort;
         break;
+    case 12:
+        datatype = DT_HalfFloat;
+        break;
     case 101:
         datatype = DT_UHalfByte;
         break;

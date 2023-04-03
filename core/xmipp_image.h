@@ -35,6 +35,7 @@
 #include "multidim_array.h"
 #include "xmipp_image_base.h"
 #include "xmipp_memory.h"
+#include "utils/half.hpp"
 
 /// @addtogroup Images
 //@{
@@ -308,6 +309,19 @@ public:
                         ptrDest[i] = (T) *ptr;
                 }
                 break;
+            case DT_HalfFloat:
+            {
+                if (typeid(T) == typeid(half_float::half))
+                {
+                    memcpy(ptrDest, page, pageSize * sizeof(T));
+                }
+                else
+                {
+                    half_float::half * ptr = (half_float::half *) page;
+                    for (size_t i = 0; i < pageSize; ++i, ++ptr)
+                        ptrDest[i] = (T) *ptr;
+                }
+                break;
             }
             default:
             {
@@ -407,6 +421,20 @@ public:
                 else
                 {
                     char * ptr = (char *) page;
+                    for (size_t i = 0; i < pageSize; ++i, ++ptr)
+                        *ptr = (char) srcPtr[i];
+                }
+                break;
+            }
+            case DT_HalfFloat:
+            {
+                if (typeid(T) == typeid(half_float::half))
+                {
+                    memcpy(page, srcPtr, pageSize * sizeof(T));
+                }
+                else
+                {
+                    half_float::half * ptr = (half_float::half *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (char) srcPtr[i];
                 }

@@ -26,6 +26,7 @@
 #include <complex>
 #include "xmipp_datatype.h"
 #include "xmipp_error.h"
+#include "utils/half.hpp"
 
 
 // Get size of datatype
@@ -74,7 +75,7 @@ size_t gettypesize(DataType type)
         size = sizeof(bool);
         break;
     case DT_HalfFloat:
-        size = 2;
+        size = sizeof(half_float::half);
         break;
     default:
         size = 0;
