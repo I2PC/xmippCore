@@ -309,6 +309,7 @@ public:
                         ptrDest[i] = (T) *ptr;
                 }
                 break;
+            }
             case DT_HalfFloat:
             {
                 if (typeid(T) == typeid(half_float::half))
