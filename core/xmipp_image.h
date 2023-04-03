@@ -751,7 +751,7 @@ public:
     void
     mirrorY(void)
     {
-        T aux = 0;
+        T aux(0);
         size_t Z, Y, X, N, Y2;
 
         X = XSIZE(data);
