@@ -806,11 +806,11 @@ void progress_bar(long rlen)
     {
         totlen = -rlen;
         startt = currt;
-        fprintf(stderr, "0000/???? sec. ");
+        fprintf(stdout, "0000/???? sec. ");
         if (!queue)
             for (i = 0; i < 10; i++)
-                fprintf(stderr, "------");
-        fflush(stderr);
+                fprintf(stdout, "------");
+        fflush(stdout);
     }
     else if (totlen > 0)
     {
@@ -836,25 +836,25 @@ void progress_bar(long rlen)
         }
 
         if (hour)
-            fprintf(stderr, "\r%3.2f/%3.2f %s ", h1, h2, "hours");
+            fprintf(stdout, "\r%3.2f/%3.2f %s ", h1, h2, "hours");
         else if (min)
-            fprintf(stderr, "\r%3.2f/%3.2f %s ", m1, m2, "min");
+            fprintf(stdout, "\r%3.2f/%3.2f %s ", m1, m2, "min");
         else
-            fprintf(stderr, "\r%4u/%4u %4s ", (int)t1, (int)t2, "sec.");
+            fprintf(stdout, "\r%4u/%4u %4s ", (int)t1, (int)t2, "sec.");
 
         if (!queue)
         {
             i = (int)(60 * (1 - (double)(totlen - rlen) / totlen));
             while (i--)
-                fprintf(stderr, ".");
+                fprintf(stdout, ".");
         }
 
         if (rlen == totlen)
         {
-            fprintf(stderr, "\n");
+            fprintf(stdout, "\n");
             totlen = 0;
         }
-        fflush(stderr);
+        fflush(stdout);
     }
 }
 
