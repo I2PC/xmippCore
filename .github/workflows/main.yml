@@ -57,9 +57,9 @@ jobs:
         uses: hendrikmuhs/ccache-action@v1.0.3
         
       - name: Install CUDA
-        uses: Jimver/cuda-toolkit@v0.2.6
+        uses: Jimver/cuda-toolkit@v0.2.8
         with: 
-          cuda: 10.2.89
+          cuda: 11.7.0
           method: network
           sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
 
