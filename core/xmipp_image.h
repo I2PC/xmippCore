@@ -192,7 +192,7 @@ public:
                     memcpy(ptrDest, page, pageSize * sizeof(T));
                 else
                 {
-                    unsigned char * ptr = (unsigned char *) page;
+                    const auto* ptr = (unsigned char *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -206,7 +206,7 @@ public:
                 }
                 else
                 {
-                    signed char * ptr = (signed char *) page;
+                    const auto* ptr = (signed char *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -220,7 +220,7 @@ public:
                 }
                 else
                 {
-                    unsigned short * ptr = (unsigned short *) page;
+                    const auto* ptr = (unsigned short *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -234,7 +234,7 @@ public:
                 }
                 else
                 {
-                    short * ptr = (short *) page;
+                    const auto* ptr = (short *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -248,7 +248,7 @@ public:
                 }
                 else
                 {
-                    unsigned int * ptr = (unsigned int *) page;
+                    const auto* ptr = (unsigned int *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -262,7 +262,7 @@ public:
                 }
                 else
                 {
-                    int * ptr = (int *) page;
+                    const auto* ptr = (int *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -276,7 +276,7 @@ public:
                 }
                 else
                 {
-                    long * ptr = (long *) page;
+                    const auto* ptr = (long *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -290,7 +290,7 @@ public:
                 }
                 else
                 {
-                    float * ptr = (float *) page;
+                    const auto* ptr = (float *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -304,7 +304,7 @@ public:
                 }
                 else
                 {
-                    double * ptr = (double *) page;
+                    const auto* ptr = (double *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -318,7 +318,7 @@ public:
                 }
                 else
                 {
-                    half_float::half * ptr = (half_float::half *) page;
+                    const auto* ptr = (half_float::half *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         ptrDest[i] = (T) *ptr;
                 }
@@ -350,7 +350,7 @@ public:
                 }
                 else
                 {
-                    float * ptr = (float *) page;
+                    auto* ptr = (float *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (float) srcPtr[i];
                 }
@@ -364,7 +364,7 @@ public:
                 }
                 else
                 {
-                    double * ptr = (double *) page;
+                    auto* ptr = (double *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (double) srcPtr[i];
                 }
@@ -378,7 +378,7 @@ public:
                 }
                 else
                 {
-                    unsigned short * ptr = (unsigned short *) page;
+                    auto* ptr = (unsigned short *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (unsigned short) srcPtr[i];
                 }
@@ -392,7 +392,7 @@ public:
                 }
                 else
                 {
-                    short * ptr = (short *) page;
+                    auto* ptr = (short *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (short) srcPtr[i];
                 }
@@ -407,7 +407,7 @@ public:
                 }
                 else
                 {
-                    unsigned char * ptr = (unsigned char *) page;
+                    auto* ptr = (unsigned char *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (unsigned char) srcPtr[i];
                 }
@@ -421,7 +421,7 @@ public:
                 }
                 else
                 {
-                    char * ptr = (char *) page;
+                    auto* ptr = (char *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
                         *ptr = (char) srcPtr[i];
                 }
@@ -435,9 +435,9 @@ public:
                 }
                 else
                 {
-                    half_float::half * ptr = (half_float::half *) page;
+                    auto* ptr = (half_float::half *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
-                        *ptr = (char) srcPtr[i];
+                        *ptr = (half_float) srcPtr[i];
                 }
                 break;
             }
