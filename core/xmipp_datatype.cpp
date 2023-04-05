@@ -175,58 +175,40 @@ std::string datatype2StrLong(DataType datatype)
     {
     case DT_UHalfByte:
         return "Unsigned 4 bit type (UHalfInt8)";
-        break;
     case DT_UChar:
         return "Unsigned character or byte type (UInt8)";
-        break;
     case DT_SChar:
         return "Signed character (Int8)";
-        break;
     case DT_UShort:
         return "Unsigned short integer (UInt16)";
-        break;
     case DT_Short:
         return "Signed short integer (Int16)";
-        break;
     case DT_UInt:
         return "Unsigned integer (UInt32)";
-        break;
     case DT_Int:
         return "Signed integer (Int32)";
-        break;
     case DT_Long:
         return "Signed integer (4 or 8 byte, depending on system)";
-        break;
     case DT_Float:
         return "Floating point (4-byte)";
-        break;
     case DT_Double:
         return "Double precision floating point (8-byte)";
-        break;
     case DT_CShort:
         return "Complex two-byte integer (4-byte)";
-        break;
     case DT_CInt:
         return "Complex integer (8-byte)";
-        break;
     case DT_CFloat:
         return "Complex floating point (8-byte)";
-        break;
     case DT_CDouble:
         return "Complex floating point (16-byte)";
-        break;
     case DT_Bool:
         return "Boolean (1-byte?)";
-        break;
     case DT_HalfFloat:
         return "Half precision floating point (2-byte)";
-        break;
     case DT_Unknown:
         return "Unknown data type";
-        break;
     default:
         return "Undefined data type";
-        break;
     }
 }
 
