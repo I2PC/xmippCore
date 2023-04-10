@@ -55,13 +55,13 @@ jobs:
       
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
-        
+          
       - name: Install CUDA
         uses: Jimver/cuda-toolkit@v0.2.8
-        with: 
-          cuda: 11.7.0
-          method: network
-          sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
+        id: cuda-toolkit
+        with:
+          cuda: '11.7.0'
+          linux-local-args: '[ "--toolkit" ]'
 
       - name: Install dependencies
         run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
