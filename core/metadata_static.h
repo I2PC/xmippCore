@@ -419,6 +419,8 @@ private:
         MDL::addLabel(MDL_GRAPH_DISTANCE2MAX_PREVIOUS, LABEL_DOUBLE, "distance2MaxGraphPrevious");
         MDL::addLabel(MDL_GRAPH_CC, LABEL_DOUBLE, "graphCC");
         MDL::addLabel(MDL_GRAPH_CC_PREVIOUS, LABEL_DOUBLE, "graphCCPrevious");
+        MDL::addLabel(MDL_HALF1, LABEL_STRING, "half1");
+        MDL::addLabel(MDL_HALF2, LABEL_STRING, "half2");
         MDL::addLabel(MDL_ASSIGNED_DIR_REF_CC, LABEL_DOUBLE, "assignedDirRefCC");
 
         MDL::addLabel(MDL_IDX, LABEL_SIZET, "index");

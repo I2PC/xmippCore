@@ -240,6 +240,8 @@ enum MDLabel
 	MDL_GRAPH_DISTANCE2MAX_PREVIOUS, ///< when previous assignment validation
 	MDL_GRAPH_CC, ///< Correlation between assigned direction and graph filtered maximum
 	MDL_GRAPH_CC_PREVIOUS, ///< when previous assignment validation
+    MDL_HALF1, ///< Half map/image 1 file name (string)
+    MDL_HALF2, ///< Half map/image file name (string)
     MDL_IDX, ///< Index within a list (size_t)
     MDL_IMAGE, ///< Name of an image (std::string)
     MDL_IMAGE_COVARIANCE, ///< Name of the covariance imagee associated to this image
