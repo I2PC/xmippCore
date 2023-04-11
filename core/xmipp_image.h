@@ -437,7 +437,7 @@ public:
                 {
                     auto* ptr = (half_float::half *) page;
                     for (size_t i = 0; i < pageSize; ++i, ++ptr)
-                        *ptr = (half_float) srcPtr[i];
+                        *ptr = (half_float::half) srcPtr[i];
                 }
                 break;
             }
