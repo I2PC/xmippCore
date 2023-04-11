@@ -28,6 +28,7 @@
 
 #include "xmipp_datatype.h"
 #include "multidim_array.h"
+#include "utils/half.hpp"
 
 /* Switch among different datatypes.
  *
@@ -74,6 +75,9 @@
             break;\
         case DT_ULong:\
             {OP(unsigned long)};\
+            break;\
+        case DT_HalfFloat:\
+            {OP(half_float::half)};\
             break;\
             default:\
    REPORT_ERROR(ERR_ARG_INCORRECT,"Do not know how to handle this type at this point");\
@@ -377,8 +381,8 @@ public:
          */
     void computeStats(double& avg, double& stddev, double& minval, double& maxval) const
     {
-#define COMPUTESTATS(type) type Tminval=0; \
-                           type Tmaxval=0; \
+#define COMPUTESTATS(type) type Tminval(0); \
+                           type Tmaxval(0); \
                            ((MultidimArray<type>*)(im))->computeStats(avg, stddev, Tminval, Tmaxval);\
                            minval = Tminval;\
                            maxval = Tmaxval;

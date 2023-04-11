@@ -195,6 +195,13 @@ void ImageGeneric::setDatatype(DataType imgType)
             data = new MultidimArrayGeneric((MultidimArrayBase*) &(imT->data), datatype);
         }
         break;
+    case DT_HalfFloat:
+        {
+            Image<half_float::half> *imT = new Image<half_float::half>;
+            image = imT;
+            data = new MultidimArrayGeneric((MultidimArrayBase*) &(imT->data), datatype);
+        }
+        break;
     case DT_Unknown:
         REPORT_ERROR(ERR_IMG_UNKNOWN,"Datatype of the image file is unknown.");
         break;

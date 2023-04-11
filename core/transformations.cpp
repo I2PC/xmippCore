@@ -35,6 +35,7 @@
 #include "bilib/kernel.h"
 #include <algorithm>
 #include "metadata_row_base.h"
+#include "utils/half.hpp"
 
 template<typename T>
 void produceSplineCoefficients(int SplineDegree,
@@ -1458,6 +1459,7 @@ template void produceSplineCoefficients<long>(int, MultidimArray<double>&, Multi
 template void produceSplineCoefficients<unsigned long>(int, MultidimArray<double>&, MultidimArray<unsigned long> const&);
 template void produceSplineCoefficients<char>(int, MultidimArray<double>&, MultidimArray<char> const&);
 template void produceSplineCoefficients<float>(int, MultidimArray<double>&, MultidimArray<float> const&);
+template void produceSplineCoefficients<half_float::half>(int, MultidimArray<double>&, MultidimArray<half_float::half> const&);
 
 template void radialAverageNonCubic<double>(const MultidimArray<double>& m, Matrix1D< int >& center_of_rot, MultidimArray<double>& radial_mean, MultidimArray< int >& radial_count, bool rounding);
 
