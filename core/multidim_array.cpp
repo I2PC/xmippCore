@@ -1181,6 +1181,7 @@ template void MultidimArray<unsigned char>::initRandom(double, double, RandomMod
 template void MultidimArray<unsigned int>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned long>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned short>::initRandom(double, double, RandomMode);
+template void MultidimArray<half_float::half>::initRandom(double, double, RandomMode);
 
 // write
 template void MultidimArray<bool>::write(FileName const&) const;
