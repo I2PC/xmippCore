@@ -32,6 +32,7 @@
 #include "numerical_recipes.h"
 #include "xmipp_funcs.h"
 #include "xmipp_filename.h"
+#include "utils/half.hpp"
 
 template<typename T>
 void MultidimArray<T>::getSliceAsMatrix(size_t k, Matrix2D<T> &m) const
@@ -1145,6 +1146,7 @@ template FILE* MultidimArray<unsigned int>::mmapFile(unsigned int*&, unsigned lo
 template FILE* MultidimArray<unsigned long>::mmapFile(unsigned long*&, unsigned long) const;
 template FILE* MultidimArray<unsigned short>::mmapFile(unsigned short*&, unsigned long) const;
 template FILE* MultidimArray<std::complex<double>>::mmapFile(std::complex<double>*&, unsigned long) const;
+template FILE* MultidimArray<half_float::half>::mmapFile(half_float::half*&, unsigned long) const;
 
 // resize
 template void MultidimArray<bool>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
@@ -1158,6 +1160,7 @@ template void MultidimArray<unsigned int>::resize(unsigned long, unsigned long, 
 template void MultidimArray<unsigned long>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<unsigned short>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 template void MultidimArray<std::complex<double>>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
+template void MultidimArray<half_float::half>::resize(unsigned long, unsigned long, unsigned long, unsigned long, bool);
 
 // index sort
 template void MultidimArray<float>::indexSort(MultidimArray<int>&) const;
@@ -1173,6 +1176,7 @@ template void MultidimArray<unsigned char>::initRandom(double, double, RandomMod
 template void MultidimArray<unsigned int>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned long>::initRandom(double, double, RandomMode);
 template void MultidimArray<unsigned short>::initRandom(double, double, RandomMode);
+template void MultidimArray<half_float::half>::initRandom(double, double, RandomMode);
 
 // write
 template void MultidimArray<bool>::write(FileName const&) const;

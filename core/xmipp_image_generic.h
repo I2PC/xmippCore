@@ -190,6 +190,7 @@ public:
         case DT_Short:
             return 15;
         case DT_UShort:
+        case DT_HalfFloat:
             return 16;
         case DT_SChar:
             return 7;
