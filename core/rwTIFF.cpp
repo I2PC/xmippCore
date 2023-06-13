@@ -23,6 +23,7 @@
  *  e-mail address 'xmipp@cnb.csic.es'
  ***************************************************************************/
 
+#include <cstdint>
 #include "xmipp_image_base.h"
 #include "xmipp_error.h"
 #include <tiffio.h>
@@ -261,7 +262,7 @@ int ImageBase::readTIFF(size_t select_img, bool isStack)
     for (size_t i = 0; i < aDim.ndim; i++)
         MD.push_back(std::unique_ptr<MDRowVec>(new MDRowVec(MDL::emptyHeaderVec())));
 
-    uint32 rowsperstrip;
+    uint32_t rowsperstrip;
     tsize_t scanline;
 
     unsigned int x, y;
@@ -494,19 +495,19 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
         TIFFSetField(tif, TIFFTAG_YRESOLUTION,    dhMain.yTiffRes);
         TIFFSetField(tif, TIFFTAG_PHOTOMETRIC,    PHOTOMETRIC_MINISBLACK);
         TIFFSetField(tif, TIFFTAG_COMPRESSION,    COMPRESSION_NONE);
-        TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,   (uint32) dhMain.imageLength);
+        TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,   (uint32_t) dhMain.imageLength);
         TIFFSetField(tif, TIFFTAG_PLANARCONFIG,   PLANARCONFIG_CONTIG);
         TIFFSetField(tif, TIFFTAG_SOFTWARE,       "Xmipp 3.0");
 
         if (aDim.ndim == 1 && isStack == false)
         {
             TIFFSetField(tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x0);
-            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16) 0, (uint16) 0);
+            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16_t) 0, (uint16_t) 0);
         }
         else
         {
             TIFFSetField(tif, TIFFTAG_SUBFILETYPE, (unsigned int) 0x2);
-            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16) i, (uint16) aDim.ndim);
+            TIFFSetField(tif, TIFFTAG_PAGENUMBER, (uint16_t) i, (uint16_t) aDim.ndim);
         }
 
         // Only write images when needed
@@ -517,7 +518,7 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
             if (castMode != CW_CAST)
                 mdaBase->computeDoubleMinMaxRange(min0, max0, i*datasize_n, datasize_n);
 
-            for (uint32 y = 0; y < aDim.ydim; y++)
+            for (uint32_t y = 0; y < aDim.ydim; y++)
             {
                 if (castMode == CW_CAST)
                     getPageFromT(i*datasize_n + y*aDim.xdim, (char *)tif_buf, wDType, (size_t) aDim.xdim);
