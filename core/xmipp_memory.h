@@ -53,7 +53,7 @@ template <class T> void free_Tvector(T* &v, int nl, int nh)
 {
     if (v != NULL)
     {
-        free((char*)(v));
+        free((char*)(v + nl));
         v = NULL;
     }
 }
