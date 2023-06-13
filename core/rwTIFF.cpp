@@ -495,7 +495,7 @@ int ImageBase::writeTIFF(size_t select_img, bool isStack, int mode, String bitDe
         TIFFSetField(tif, TIFFTAG_YRESOLUTION,    dhMain.yTiffRes);
         TIFFSetField(tif, TIFFTAG_PHOTOMETRIC,    PHOTOMETRIC_MINISBLACK);
         TIFFSetField(tif, TIFFTAG_COMPRESSION,    COMPRESSION_NONE);
-        TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,   (uint32_t) dhMain.imageLength);
+        TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP,   dhMain.imageLength);
         TIFFSetField(tif, TIFFTAG_PLANARCONFIG,   PLANARCONFIG_CONTIG);
         TIFFSetField(tif, TIFFTAG_SOFTWARE,       "Xmipp 3.0");
 
