@@ -133,10 +133,10 @@ template <class T> void free_Tvolume(T *** &m, int nsl, int nsh,
     {
         for (int k = nsh;k >= nsl;k--)
         {
-            for (int i = nrh;i >= nrl;i--) free((char*)(m[k][i] + ncl));
-            free((char*)(m[k] + nrl));
+            for (int i = nrh;i >= nrl;i--) free((char*)(m[k][i]));
+            free((char*)(m[k]));
         }
-        free((char*)(m + nsl));
+        free((char*)(m));
         m = NULL;
     }
 }
