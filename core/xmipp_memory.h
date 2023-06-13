@@ -88,8 +88,8 @@ template <class T> void free_Tmatrix(T ** &m, int nrl, int nrh,
 {
     if (m != NULL)
     {
-        for (int i = nrh;i >= nrl;i--) free((char*)(m[i] + ncl));
-        free((char*)(m + nrl));
+        for (int i = nrh;i >= nrl;i--) free((char*)(m[i]));
+        free((char*)(m));
         m = NULL;
     }
 }
