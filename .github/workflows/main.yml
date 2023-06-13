@@ -64,7 +64,9 @@ jobs:
           linux-local-args: '[ "--toolkit" ]'
 
       - name: Install dependencies
-        run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
   
       - name: Compile Xmipp
         run: ./xmipp noAsk
