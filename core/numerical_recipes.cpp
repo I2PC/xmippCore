@@ -9008,6 +9008,7 @@ free_dv(v)
 double *v;
 #endif
 {
+    v += 1;
     free((char *)(v));
 }
 
@@ -9024,6 +9025,7 @@ free_iv(v)
 int *v;
 #endif
 {
+    v += 1;
     free((char *)(v));
 }
 
@@ -9046,7 +9048,9 @@ int rows;
     if (!rows)
         rows = 1;
     for (i = 1; i <= rows; i++)
+        m[i] += 1;
         free((char *)(m[i]));
+    m += 1;
     free((char *)(m));
 }
 
