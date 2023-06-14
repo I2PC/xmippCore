@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include "numerical_recipes.h"
 
 
@@ -680,8 +681,8 @@ void mnbrak(double *ax, double *bx, double *cx,
             void *prm, int ncom, double *pcom, double *xicom)
 {
     double ulim, u, r, q, fu, dum;
-    double *xt=NULL;
-    ask_Tvector(xt, 1, ncom);
+    std::vector<double> buffer(ncom);
+    auto *xt= buffer.data()-1;
 
     F1DIM(*ax,*fa);
     F1DIM(*bx,*fb);
@@ -708,14 +709,12 @@ void mnbrak(double *ax, double *bx, double *cx,
                 *bx = u;
                 *fa = (*fb);
                 *fb = fu;
-                free_Tvector(xt, 1, ncom);
                 return;
             }
             else if (fu > *fb)
             {
                 *cx = u;
                 *fc = fu;
-                free_Tvector(xt, 1, ncom);
                 return;
             }
             u = (*cx) + GOLD * (*cx - *bx);
@@ -745,7 +744,6 @@ void mnbrak(double *ax, double *bx, double *cx,
         SHFT(*ax, *bx, *cx, u)
         SHFT(*fa, *fb, *fc, fu)
     }
-    free_Tvector(xt, 1, ncom);
 }
 
 #undef GOLD
@@ -763,8 +761,8 @@ double brent(double ax, double bx, double cx, double(*func)(double *,void*),
     int iter;
     double a, b, d, etemp, fu, fv, fw, fx, p, q, r, tol1, tol2, u, v, w, x, xm;
     double e = 0.0;
-    double *xt=NULL;
-    ask_Tvector(xt, 1, ncom);
+    std::vector<double> buffer(ncom);
+    auto *xt= buffer.data()-1;
 
     a = (ax < cx ? ax : cx);
     b = (ax > cx ? ax : cx);
@@ -778,7 +776,6 @@ double brent(double ax, double bx, double cx, double(*func)(double *,void*),
         if (fabs(x - xm) <= (tol2 - 0.5*(b - a)))
         {
             *xmin = x;
-            free_Tvector(xt, 1, ncom);
             return fx;
         }
         if (fabs(e) > tol1)
@@ -839,7 +836,6 @@ double brent(double ax, double bx, double cx, double(*func)(double *,void*),
     }
     nrerror("Too many iterations in brent");
     *xmin = x;
-    free_Tvector(xt, 1, ncom);
     return fx;
 }
 #undef ITMAX
@@ -856,10 +852,9 @@ void linmin(double *p, double *xi, int n, double &fret,
     double xx, xmin, fx, fb, fa, bx, ax;
 
     int ncom = n;
-    double *pcom=NULL;
-    double *xicom=NULL;
-    ask_Tvector(pcom, 1, n);
-    ask_Tvector(xicom, 1, n);
+    std::vector<double> buffer(2*n);
+    auto *pcom= buffer.data()-1;
+    auto *xicom= pcom + n;
     for (j = 1;j <= n;j++)
     {
         pcom[j] = p[j];
@@ -875,8 +870,6 @@ void linmin(double *p, double *xi, int n, double &fret,
         xi[j] *= xmin;
         p[j] += xi[j];
     }
-    free_Tvector(xicom, 1, n);
-    free_Tvector(pcom, 1, n);
 }
 #undef TOL
 
@@ -887,12 +880,12 @@ void powell(double *p, double *xi, int n, double ftol, int &iter,
 {
     int i, ibig, j;
     double t, fptt, fp, del;
-    double *pt, *ptt, *xit;
+    std::vector<double> buffer(3*n);
+    auto *pt= buffer.data()-1;
+    auto *ptt= pt + n;
+    auto *xit= ptt + n;
     bool   different_from_0;
 
-    ask_Tvector(pt, 1, n);
-    ask_Tvector(ptt, 1, n);
-    ask_Tvector(xit, 1, n);
     fret = (*func)(p,prm);
     for (j = 1;j <= n;j++)
         pt[j] = p[j];
@@ -949,13 +942,7 @@ void powell(double *p, double *xi, int n, double ftol, int &iter,
                 /* ------------- */
             }
         }
-        if (2.0*fabs(fp - fret) <= ftol*(fabs(fp) + fabs(fret)) || n==1)
-        {
-            free_Tvector(xit, 1, n);
-            free_Tvector(ptt, 1, n);
-            free_Tvector(pt, 1, n);
-            return;
-        }
+        if (2.0*fabs(fp - fret) <= ftol*(fabs(fp) + fabs(fret)) || n==1) return;
         if (iter == ITMAX)
             nrerror("Too many iterations in routine POWELL");
         for (j = 1;j <= n;j++)
@@ -1519,7 +1506,6 @@ double Pythag(double a, double b)
 #define SVDMAXITER 1000
 void svdcmp(double *U, int Lines, int Columns, double *W, double *V)
 {
-    double *rv1 = (double *)NULL;
     double Norm, Scale;
     double c, f, g, h, s;
     double x, y, z;
@@ -1527,7 +1513,8 @@ void svdcmp(double *U, int Lines, int Columns, double *W, double *V)
     bool    Flag;
     int     MaxIterations = SVDMAXITER;
 
-    ask_Tvector(rv1, 0, Columns*Columns - 1);
+    std::vector<double> buffer(Columns*Columns);
+    auto *rv1= buffer.data();
     g = Scale = Norm = 0.0;
     for (i = 0L; (i < Columns); i++)
     {
@@ -1743,11 +1730,7 @@ void svdcmp(double *U, int Lines, int Columns, double *W, double *V)
                 }
                 break;
             }
-            if (its == MaxIterations)
-            {
-                free_Tvector(rv1, 0, Columns*Columns - 1);
-                return;
-            }
+            if (its == MaxIterations) return;
             x = W[l];
             nm = k - 1L;
             y = W[nm];
@@ -1803,15 +1786,15 @@ void svdcmp(double *U, int Lines, int Columns, double *W, double *V)
             W[k] = x;
         }
     }
-    free_Tvector(rv1, 0, Columns*Columns - 1);
 }
 
 void svbksb(double *u, double *w, double *v, int m, int n, double *b, double *x)
 {
     int jj, j, i;
-    double s, *tmp;
+    double s;
 
-    ask_Tvector(tmp, 1, n);
+    std::vector<double> buffer(n);
+    auto *tmp= buffer.data()-1;
     for (j = 1;j <= n;j++)
     {
         s = 0.0;
@@ -1830,7 +1813,6 @@ void svbksb(double *u, double *w, double *v, int m, int n, double *b, double *x)
             s += v[j*n+jj] * tmp[jj];
         x[j] = s;
     }
-    free_Tvector(tmp, 1, n);
 }
 
 // CFSQP -------------------------------------------------------------------
@@ -9090,11 +9072,11 @@ void wtn(double a[], unsigned long nn[], int ndim, int isign,
 {
     unsigned long i1, i2, i3, k, n, nnew, nprev = 1, nt, ntot = 1;
     int idim;
-    double *wksp;
 
     for (idim = 1;idim <= ndim;idim++)
         ntot *= nn[idim];
-    ask_Tvector(wksp, 1, ntot);
+    std::vector<double> buffer(ntot);
+    auto *wksp= buffer.data()-1;
     for (idim = 1;idim <= ndim;idim++)
     {
         n = nn[idim];
@@ -9125,7 +9107,6 @@ void wtn(double a[], unsigned long nn[], int ndim, int isign,
         }
         nprev = nnew;
     }
-    free_Tvector(wksp, 1, ntot);
 }
 
 typedef struct
@@ -9202,16 +9183,16 @@ void pwtset(int n)
 
 void pwt(double a[], unsigned long n, int isign)
 {
-    double ai, ai1, *wksp;
+    double ai, ai1;
     unsigned long i, ii, jf, jr, k, n1, ni, nj, nh, nmod;
 
     if (n < 4)
         return;
-    ask_Tvector(wksp, 1, n);
+    std::vector<double> buffer(n, 0.0);
+    auto *wksp= buffer.data()-1;
     nmod = wfilt.ncof * n;
     n1 = n - 1;
     nh = n >> 1;
-    memset(wksp+1,0,n*sizeof(double));
     if (isign >= 0)
     {
         for (ii = 1, i = 1;i <= n;i += 2, ii++)
@@ -9272,7 +9253,6 @@ void pwt(double a[], unsigned long n, int isign)
         }
     }
     memcpy(&a[1],&wksp[1],n*sizeof(double));
-    free_Tvector(wksp, 1, n);
 }
 
 /* Gamma function ---------------------------------------------------------- */
@@ -9418,10 +9398,10 @@ void polint(double *xa, double *ya, int n, double x, double &y, double &dy)
 {
     int i, m, ns = 1;
     double den, dif, dift, ho, hp, w;
-    double *c, *d;
     dif = fabs(x - xa[1]);
-    ask_Tvector(c, 1, n);
-    ask_Tvector(d, 1, n);
+    std::vector<double> buffer(2*n);
+    auto *c= buffer.data()-1;
+    auto *d= c + n;
     for (i = 1;i <= n;i++)
     {
         if ((dift = fabs(x - xa[i])) < dif)
@@ -9450,6 +9430,4 @@ void polint(double *xa, double *ya, int n, double x, double &y, double &dy)
         }
         y += (dy = (2 * ns < (n - m) ? c[ns+1] : d[ns--]));
     }
-    free_Tvector(d, 1, n);
-    free_Tvector(c, 1, n);
 }

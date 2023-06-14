@@ -33,31 +33,6 @@
 ///@defgroup MemoryManaging Memory management for numerical recipes
 /// @ingroup DataLibrary
 //@{
-/** Ask memory for any type vector.
-    The valid values range from v[nl] to v[nh]. If no memory is available
-    an exception is thrown. NULL is returned if nh is not greater than nl*/
-template <class T> void ask_Tvector(T* &v, int nl, int nh)
-{
-    if (nh - nl + 1 >= 1)
-    {
-        v = (T *)malloc((unsigned)(nh - nl + 1) * sizeof(T));
-        if (!v) REPORT_ERROR(ERR_MEM_NOTENOUGH, "allocation failure in vector()");
-        v -= nl;
-    }
-    else v = NULL;
-}
-
-/** Free memory associated to any type vector.
-    After freeing v=NULL*/
-template <class T> void free_Tvector(T* &v, int nl, int nh)
-{
-    if (v != NULL)
-    {
-        free((char*)(v + nl));
-        v = NULL;
-    }
-}
-
 /** Ask memory for any type matrix.
     The valid values range from v[nrl][ncl] to v[nrh][nch].
     If no memory is available an exception is thrown. NULL is returned if any
