@@ -64,8 +64,7 @@ template <class T> void free_Tmatrix(T ** &m, int nrl, int nrh,
     if (m != NULL)
     {
         for (int i = nrh;i >= nrl;i--) {
-            m[i] += nrl;
-            free((char*)(m[i]));
+            free((char*)(m[i] + nrl));
         }
         free((char*)(m));
         m = NULL;
@@ -112,14 +111,11 @@ template <class T> void free_Tvolume(T *** &m, int nsl, int nsh,
         for (int k = nsh;k >= nsl;k--)
         {
             for (int i = nrh;i >= nrl;i--) {
-                m[k][i] += ncl;
-                free((char*)(m[k][i]));
+                free((char*)(m[k][i] + ncl));
             }
-            m[k] += nrl;
-            free((char*)(m[k]));
+            free((char*)(m[k] + nrl));
         }
-        m += nsl;
-        free((char*)(m));
+        free((char*)(m + nsl));
         m = NULL;
     }
 }
@@ -153,4 +149,3 @@ int freeMemory(void* ptr, size_t memsize);
 
 //@}
 #endif
-
