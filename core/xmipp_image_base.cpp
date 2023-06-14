@@ -870,7 +870,7 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
         err = readINF(select_img,false);
     else if (ext_name.contains("raw"))//RAW without INF file
         err = readRAW(select_img,false);
-    else if (ext_name.contains("tif"))//TIFF
+    else if (ext_name.contains("tif") || ext_name.contains("gain"))//TIFF
         err = readTIFF(select_img,false);
     else if (ext_name.contains("spe"))//SPE
         err = readSPE(select_img,false);
