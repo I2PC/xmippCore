@@ -9,11 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: Compile XmippCore
-        run: |
-          cp ${BUILD_DIR}/xmipp.conf ./
-          build-wrapper-linux-x86-64 --out-dir bw-outputs /usr/bin/env python3 $(which scons) . -j4
-
       - name: SonarCloud Scan
         run: |
           sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN
