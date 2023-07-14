@@ -417,3 +417,4 @@ template class Image<unsigned short>;
 template class Image<unsigned char>;
 template class Image<unsigned long>;
 template class Image<long>;
+template class Image<half_float::half>;

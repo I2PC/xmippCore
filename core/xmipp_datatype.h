@@ -37,25 +37,26 @@
  */
 typedef enum
 {
-    DT_Default = -1,           // For writing purposes
-    DT_Unknown = 0,       // Undefined data type
-    DT_UChar = 1,              // Unsigned character or byte type
-    DT_SChar = 2,              // Signed character (for CCP4)
-    DT_UShort = 3,             // Unsigned integer (2-byte)
-    DT_Short = 4,              // Signed integer (2-byte)
-    DT_UInt = 5,               // Unsigned integer (4-byte)
-    DT_Int = 6,                // Signed integer (4-byte)
-    DT_ULong = 7,               // Unsigned integer (4 or 8 byte, depending on system)
-    DT_Long = 8,               //  Signed integer (4 or 8 byte, depending on system)
-    DT_Float = 9,              // Floating point (4-byte)
-    DT_Double = 10,             // DT_Double precision floating point (8-byte)
+    DT_Default = -1,     // For writing purposes
+    DT_Unknown = 0,      // Undefined data type
+    DT_UChar = 1,        // Unsigned character or byte type
+    DT_SChar = 2,        // Signed character (for CCP4)
+    DT_UShort = 3,       // Unsigned integer (2-byte)
+    DT_Short = 4,        // Signed integer (2-byte)
+    DT_UInt = 5,         // Unsigned integer (4-byte)
+    DT_Int = 6,          // Signed integer (4-byte)
+    DT_ULong = 7,        // Unsigned integer (4 or 8 byte, depending on system)
+    DT_Long = 8,         //  Signed integer (4 or 8 byte, depending on system)
+    DT_Float = 9,        // Floating point (4-byte)
+    DT_Double = 10,      // DT_Double precision floating point (8-byte)
     DT_CShort = 11,      // Complex two-byte integer (4-byte)
     DT_CInt = 12,        // Complex integer (8-byte)
     DT_CFloat = 13,      // Complex floating point (8-byte)
     DT_CDouble = 14,     // Complex floating point (16-byte)
-    DT_Bool = 15,              // Boolean (1-byte?)
-    DT_UHalfByte = 16,        // For 4-bit format (e.g. mrc 4bit file)
-    DT_LastEntry = 17          // This must be the last entry
+    DT_Bool = 15,        // Boolean (1-byte?)
+    DT_UHalfByte = 16,   // For 4-bit format (e.g. mrc 4bit file)
+    DT_HalfFloat = 17,   // Half precision floating point (2-byte)
+    DT_LastEntry = 18    // This must be the last entry
 } DataType;
 
 

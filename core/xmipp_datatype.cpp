@@ -26,6 +26,7 @@
 #include <complex>
 #include "xmipp_datatype.h"
 #include "xmipp_error.h"
+#include "utils/half.hpp"
 
 
 // Get size of datatype
@@ -73,6 +74,9 @@ size_t gettypesize(DataType type)
     case DT_Bool:
         size = sizeof(bool);
         break;
+    case DT_HalfFloat:
+        size = sizeof(half_float::half);
+        break;
     default:
         size = 0;
     }
@@ -115,6 +119,8 @@ DataType str2Datatype(const std::string & str)
         datatype = DT_CDouble;
     else if (str=="bool")
         datatype = DT_Bool;
+    else if (str=="half")
+        datatype = DT_HalfFloat;
     else
         REPORT_ERROR(ERR_TYPE_INCORRECT, "datatypeString2int; unknown datatype");
 
@@ -156,6 +162,8 @@ std::string datatype2Str(DataType datatype)
         return "cdouble";
     case DT_Bool:
         return "bool";
+    case DT_HalfFloat:
+        return "half";
     default:
         return "unknown type";
     }
@@ -167,55 +175,40 @@ std::string datatype2StrLong(DataType datatype)
     {
     case DT_UHalfByte:
         return "Unsigned 4 bit type (UHalfInt8)";
-        break;
     case DT_UChar:
         return "Unsigned character or byte type (UInt8)";
-        break;
     case DT_SChar:
         return "Signed character (Int8)";
-        break;
     case DT_UShort:
         return "Unsigned short integer (UInt16)";
-        break;
     case DT_Short:
         return "Signed short integer (Int16)";
-        break;
     case DT_UInt:
         return "Unsigned integer (UInt32)";
-        break;
     case DT_Int:
         return "Signed integer (Int32)";
-        break;
     case DT_Long:
         return "Signed integer (4 or 8 byte, depending on system)";
-        break;
     case DT_Float:
         return "Floating point (4-byte)";
-        break;
     case DT_Double:
         return "Double precision floating point (8-byte)";
-        break;
     case DT_CShort:
         return "Complex two-byte integer (4-byte)";
-        break;
     case DT_CInt:
         return "Complex integer (8-byte)";
-        break;
     case DT_CFloat:
         return "Complex floating point (8-byte)";
-        break;
     case DT_CDouble:
         return "Complex floating point (16-byte)";
-        break;
     case DT_Bool:
         return "Boolean (1-byte?)";
-        break;
+    case DT_HalfFloat:
+        return "Half precision floating point (2-byte)";
     case DT_Unknown:
         return "Unknown data type";
-        break;
     default:
         return "Undefined data type";
-        break;
     }
 }
 

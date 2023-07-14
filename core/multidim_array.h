@@ -163,6 +163,21 @@ public:
         *this = V;
     }
 
+    /** Move constructor
+     *
+     * The created volume is a perfect copy of the input array but with a
+     * different memory assignment.
+     *
+     * @code
+     * MultidimArray< double > V2(V1);
+     * @endcode
+     */
+    MultidimArray(MultidimArray<T>&& V) noexcept
+    {
+        coreInit();
+        swap(V);
+    }
+
     /** Copy constructor from a Matrix1D.
      * The Size constructor creates an array with memory associated,
      * and fills it with zeros.
@@ -211,7 +226,7 @@ public:
     /** Core init.
      * Initialize everything to 0
      */
-    void coreInit()
+    void coreInit() noexcept
     {
         xdim = yxdim = zyxdim = nzyxdim = 0;
         ydim = zdim = ndim = 0;
@@ -221,6 +236,25 @@ public:
         destroyData = true;
         mmapOn = false;
         mFd = NULL;
+    }
+
+    void swap(MultidimArray<T>& other) noexcept
+    {
+        std::swap(xdim, other.xdim);
+        std::swap(ydim, other.ydim);
+        std::swap(zdim, other.zdim);
+        std::swap(ndim, other.ndim);
+        std::swap(yxdim, other.yxdim);
+        std::swap(zyxdim, other.zyxdim);
+        std::swap(nzyxdim, other.nzyxdim);
+        std::swap(xinit, other.xinit);
+        std::swap(yinit, other.yinit);
+        std::swap(zinit, other.zinit);
+        std::swap(data, other.data);
+        std::swap(nzyxdimAlloc, other.nzyxdimAlloc);
+        std::swap(destroyData, other.destroyData);
+        std::swap(mmapOn, other.mmapOn);
+        std::swap(mFd, other.mFd);
     }
 
     /** Core allocate with dimensions.
@@ -312,7 +346,7 @@ public:
     /** Core deallocate.
      * Free all data.
      */
-    void coreDeallocate()
+    void coreDeallocate() noexcept
     {
         if (data != NULL && destroyData)
         {
@@ -3598,6 +3632,27 @@ public:
             if (data == NULL || !sameShape(op1))
                 resizeNoCopy(op1);
             memcpy(data,op1.data,MULTIDIM_SIZE(op1)*sizeof(T));
+        }
+        return *this;
+    }
+
+    /** Move assignment.
+     *
+     * You can build as complex assignment expressions as you like. Multiple
+     * assignment is allowed.
+     *
+     * @code
+     * v1 = v2 + v3;
+     * v1 = v2 = v3;
+     * @endcode
+     */
+    MultidimArray<T>& operator=(MultidimArray<T>&& other) noexcept
+    {
+        if (&other != this)
+        {
+            coreDeallocate();
+            coreInit();
+            swap(other);
         }
         return *this;
     }

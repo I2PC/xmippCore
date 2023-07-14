@@ -17,7 +17,7 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     # Disabling shallow clone is recommended for improving relevancy of reporting
@@ -43,28 +43,20 @@ jobs:
       - name: Fetching Xmipp
         run: ./scripts/ci_build
       
-      - name: Prepare Sonar scanner
-        run: |
-          wget -nv https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.0.2311-linux.zip
-          unzip -q sonar-scanner-cli-4.6.0.2311-linux.zip
-          echo "${PWD}/sonar-scanner-4.6.0.2311-linux/bin/" >> $GITHUB_PATH
-          wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-          unzip -q build-wrapper-linux-x86.zip          
-          echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
-        working-directory: ${{ env.BUILD_DIR }}
-      
       - name: Install ccache
         uses: hendrikmuhs/ccache-action@v1.0.3
-        
+          
       - name: Install CUDA
-        uses: Jimver/cuda-toolkit@v0.2.6
-        with: 
-          cuda: 10.2.89
-          method: network
-          sub-packages: '["nvcc", "cufft-dev", "cudart-dev", "nvml-dev"]'
+        uses: Jimver/cuda-toolkit@v0.2.8
+        id: cuda-toolkit
+        with:
+          cuda: '11.7.0'
+          linux-local-args: '[ "--toolkit" ]'
 
       - name: Install dependencies
-        run: sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
   
       - name: Compile Xmipp
         run: ./xmipp noAsk
@@ -78,11 +70,5 @@ jobs:
       - name: Compile XmippCore
         run: |
           cp ${BUILD_DIR}/xmipp.conf ./
-          build-wrapper-linux-x86-64 --out-dir bw-outputs /usr/bin/env python3 $(which scons) . -j4
+          python3 $(which scons) . -j4
 
-      - name: SonarCloud Scan
-        run: |
-          sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

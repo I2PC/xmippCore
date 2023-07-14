@@ -32,6 +32,7 @@
 #include "xmipp_memory.h"
 #include "xmipp_macros.h"
 #include <algorithm>
+#include <vector>
 
 //@defgroup NumericalRecipes Functions from the Numerical Recipes
 //@ingroup DataLibrary
@@ -170,9 +171,9 @@ void ludcmp(T *a, int n, int *indx, T *d)
 {
     int i, imax=0, j, k;
     T big, dum, sum, temp;
-    T *vv;
 
-    ask_Tvector(vv, 1, n);
+    std::vector<T> buffer(n);
+    auto *vv= buffer.data()-1;
     *d = (T)1.0;
     for (i = 1;i <= n;i++)
     {
@@ -227,7 +228,6 @@ void ludcmp(T *a, int n, int *indx, T *d)
                 a[i*n+j] *= dum;
         }
     }
-    free_Tvector(vv, 1, n);
 }
 #undef TINY
 
@@ -266,14 +266,14 @@ template <class T>
 void gaussj(T *a, int n, T *b, int m)
 {
     T temp;
-    int *indxc, *indxr, *ipiv;
     int i, icol=0, irow=0, j, k, l, ll;
     T big, dum;
     double pivinv;
 
-    ask_Tvector(indxc, 1, n);
-    ask_Tvector(indxr, 1, n);
-    ask_Tvector(ipiv, 1, n);
+    std::vector<int> buffer(3*n);
+    auto *indxc= buffer.data()-1;
+    auto *indxr= indxc + n;
+    auto *ipiv= indxr + n;
     for (j = 1;j <= n;j++)
         ipiv[j] = 0;
     for (i = 1;i <= n;i++)
@@ -330,9 +330,6 @@ void gaussj(T *a, int n, T *b, int m)
             for (k = 1;k <= n;k++)
                 SWAP(a[k*n+indxr[l]], a[k*n+indxc[l]], temp);
     }
-    free_Tvector(ipiv, 1, n);
-    free_Tvector(indxr, 1, n);
-    free_Tvector(indxc, 1, n);
 }
 
 // Cholesky factorization
