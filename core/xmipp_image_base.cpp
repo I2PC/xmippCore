@@ -837,6 +837,9 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
 #endif
 #undef DEBUG
 
+    // Defining default axis order (will be overwritten by data types that need it)
+    axisOrder = defaultAxisOrder;
+
     //Just clear the header before reading
     MDMainHeader.clear();
     //Set the file pointer at beginning

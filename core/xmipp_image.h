@@ -175,6 +175,48 @@ public:
                 || typeid(T) == typeid(std::complex<float>));
     }
 
+    /**
+     * Trasposes the given MultidimArray with the given order
+    */
+   void
+   transposeInPlace(MultidimArray<T> &multidimArray, const std::array<int,4> &order)
+   {
+        printf("ORDER: %d %d %d %d\n", order[0], order[1], order[2], order[3]);
+        // Creating new multidim array of the same size than the original
+        const std::array<size_t,4> sizes = {
+            NSIZE(multidimArray),
+            ZSIZE(multidimArray),
+            YSIZE(multidimArray),
+            XSIZE(multidimArray)
+        };
+        MultidimArray<T> result(
+            sizes[order[0]],
+            sizes[order[1]],
+            sizes[order[2]],
+            sizes[order[3]]
+        );
+        result.setXmippOrigin();
+
+        // Performing transposition in a loop for every dimension
+        for (size_t n = 0; n < NSIZE(multidimArray); n++) {
+            for (size_t z = 0; z < ZSIZE(multidimArray); z++) {
+                for (size_t y = 0; y < YSIZE(multidimArray); y++) {
+                    for (size_t x = 0; x < XSIZE(multidimArray); x++) {
+                        // Defining array to access with the axis orders
+                        const std::array<size_t,4> indices = {n, z, y, x};
+
+                        // Transposing element
+                        DIRECT_NZYX_ELEM(result, indices[order[0]], indices[order[1]], indices[order[2]], indices[order[3]]) =
+                            DIRECT_NZYX_ELEM(multidimArray, n, z, y, x);
+                    }
+                }
+            }
+        }
+
+        // Remapping pointers from original multidim array to transposed one
+        multidimArray = std::move(result);
+   }
+
     /** Cast a page of data from type dataType to type Tdest
      *    input pointer  char *
      */
@@ -1084,12 +1126,15 @@ private:
         selectImgOffset = offset + IMG_INDEX(select_img) * (pagesize + pad);
 
         // Flag to know that data is not going to be mapped although mmapOn is true
-        if (mmapOnRead && (!checkMmapT(datatype) || swap > 0))
+        if (mmapOnRead && (!checkMmapT(datatype) || swap > 0 || axisOrder != defaultAxisOrder))
         {
             String warnMessage;
             if (swap > 0)
                 reportWarning("Image::readData: File endianness is swapped and not "
                               "compatible with mmap. Loading into memory.");
+            else if (axisOrder != defaultAxisOrder)
+                reportWarning("Image::readData: Axis order is not standard 0,1,2,3, which makes it "
+                                "incompatible with memory mapping. Loading into memory.");
             else
                 reportWarning(
                         "Image::readData: File datatype and image declaration not "
@@ -1132,7 +1177,7 @@ private:
 #endif
 #undef DEBUG
 
-        if (checkMmapT(datatype) && !swap) {
+        if (checkMmapT(datatype) && !swap && axisOrder == defaultAxisOrder) {
             // printf( "type is same, reading without cast\n" );
 
             size_t slice_elements = ZYXSIZE(data);
@@ -1195,6 +1240,10 @@ private:
                     if (fseek(fimg, pad, SEEK_CUR) == -1)
                         REPORT_ERROR(ERR_IO_SIZE,
                                      "readData: can not seek the file pointer");
+            }
+            // Transposing multidim array
+            if (axisOrder != defaultAxisOrder) {
+                transposeInPlace(data, axisOrder);
             }
             //if ( pad > 0 )
             //    freeMemory(padpage, pad*sizeof(char));

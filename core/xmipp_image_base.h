@@ -27,6 +27,7 @@
 #define CORE_IMAGE_BASE_H_
 
 #include <memory>
+#include <array>
 
 #include "xmipp_image_macros.h"
 #include "xmipp_datatype.h"
@@ -256,6 +257,7 @@ protected:
     size_t              offset;      // Data offset
     int                 swap;        // Perform byte swapping upon reading
     int                 swapWrite;   // Perform byte swapping upon writing
+    std::array<int,4>   axisOrder;   // Order of the axis (tipically 0,1,2,3)
     TransformType       transform;   // Transform type
     size_t              replaceNsize;// Stack size in the replace case
     bool                _exists;     // does target file exists?  // equal 0 if not exists or not a stack
@@ -265,6 +267,8 @@ protected:
     size_t              mappedSize;  // Size of the mapped file
     size_t              mappedOffset;// Offset for the mapped file
     size_t          virtualOffset;// MDA Offset when movePointerTo is used
+
+    static constexpr std::array<int,4> defaultAxisOrder = {0,1,2,3}; // Default axis order 
 
 public:
 
