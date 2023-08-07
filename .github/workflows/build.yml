@@ -17,13 +17,13 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     # Disabling shallow clone is recommended for improving relevancy of reporting
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -31,7 +31,7 @@ jobs:
       # Since no such cache exists, it will try to bring newest restore-key one
       # i.e. the one from latest build. See https://docs.github.com/en/actions/guides/caching-dependencies-to-speed-up-workflows#matching-a-cache-key
       - name: Fetch cache
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v3
         with:
           path: sonarCache
           key: ${{ runner.os }}-sonarCache-${{ github.sha }}
@@ -44,10 +44,10 @@ jobs:
         run: ./scripts/ci_build
       
       - name: Install ccache
-        uses: hendrikmuhs/ccache-action@v1.0.3
+        uses: hendrikmuhs/ccache-action@v1.2
           
       - name: Install CUDA
-        uses: Jimver/cuda-toolkit@v0.2.8
+        uses: Jimver/cuda-toolkit@v0.2.10
         id: cuda-toolkit
         with:
           cuda: '11.7.0'
