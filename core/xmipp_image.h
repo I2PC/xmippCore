@@ -181,7 +181,6 @@ public:
    void
    transposeInPlace(MultidimArray<T> &multidimArray, const std::array<int,4> &order)
    {
-        printf("ORDER: %d %d %d %d\n", order[0], order[1], order[2], order[3]);
         // Creating new multidim array of the same size than the original
         const std::array<size_t,4> sizes = {
             NSIZE(multidimArray),
@@ -195,7 +194,6 @@ public:
             sizes[order[2]],
             sizes[order[3]]
         );
-        result.setXmippOrigin();
 
         // Performing transposition in a loop for every dimension
         for (size_t n = 0; n < NSIZE(multidimArray); n++) {
