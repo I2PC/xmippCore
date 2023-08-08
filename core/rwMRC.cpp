@@ -517,9 +517,18 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
     //header->b = 0;
     //header->c = 0;
 
-    header->a = header->mx = header->nx = Xdim;
-    header->b = header->my = header->ny = Ydim;
-    header->c = header->mz = header->nz = Zdim;
+    header->mx = header->nx = Xdim;
+    header->my = header->ny = Ydim;
+    header->mz = header->nz = Zdim;
+
+    // Obtaining sampling rate for each dimension and calculating cube size
+    double sampling;
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_X, sampling, 1.0);
+    header->a = (float)(Xdim * sampling);
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Y, sampling, 1.0);
+    header->b = (float)(Ydim * sampling);
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Z, sampling, 1.0);
+    header->c = (float)(Zdim * sampling);
 
     if ( transform == CentHerm )
         header->nx = Xdim/2 + 1;        // If a transform, physical storage is nx/2 + 1

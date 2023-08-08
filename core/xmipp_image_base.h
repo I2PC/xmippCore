@@ -267,10 +267,8 @@ protected:
     size_t              mappedSize;     // Size of the mapped file
     size_t              mappedOffset;   // Offset for the mapped file
     size_t              virtualOffset;  // MDA Offset when movePointerTo is used
-    float               pixelSize;      // Image pixel size
 
     static constexpr std::array<int,4> defaultAxisOrder = {0,1,2,3};    // Default axis order
-    static constexpr float defaultPixelSize = 1.0;                      // Default pixel size
 
 public:
 
