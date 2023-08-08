@@ -244,31 +244,33 @@ public:
     MDRowVec            MDMainHeader;           // data for the file
 
 protected:
-    FileName            filename;    // File name
-    FileName            tempFilename; // Temporary filename
-    FileName            dataFName;   // Data File name without flags
-    FILE*               fimg;        // Image File handler
-    FILE*               fhed;        // Image File header handler
-    TIFF*               tif;         // TIFF Image file hander
-    hid_t    fhdf5;       // HDF5 File handler
-    ImageFHandler*      hFile;       // Image File handler information structure
-    ArrayDim            aDimFile;   // Image header file information structure (original info from file)
-    DataMode            dataMode;    // Flag to force select what will be read/write from image files
-    size_t              offset;      // Data offset
-    int                 swap;        // Perform byte swapping upon reading
-    int                 swapWrite;   // Perform byte swapping upon writing
-    std::array<int,4>   axisOrder;   // Order of the axis (tipically 0,1,2,3)
-    TransformType       transform;   // Transform type
-    size_t              replaceNsize;// Stack size in the replace case
-    bool                _exists;     // does target file exists?  // equal 0 if not exists or not a stack
-    bool                mmapOnRead;  // Mapping when reading from file
-    bool                mmapOnWrite; // Mapping when writing to file
-    int                 mFd;         // Handle the file in reading method and mmap
-    size_t              mappedSize;  // Size of the mapped file
-    size_t              mappedOffset;// Offset for the mapped file
-    size_t          virtualOffset;// MDA Offset when movePointerTo is used
+    FileName            filename;       // File name
+    FileName            tempFilename;   // Temporary filename
+    FileName            dataFName;      // Data File name without flags
+    FILE*               fimg;           // Image File handler
+    FILE*               fhed;           // Image File header handler
+    TIFF*               tif;            // TIFF Image file hander
+    hid_t               fhdf5;          // HDF5 File handler
+    ImageFHandler*      hFile;          // Image File handler information structure
+    ArrayDim            aDimFile;       // Image header file information structure (original info from file)
+    DataMode            dataMode;       // Flag to force select what will be read/write from image files
+    size_t              offset;         // Data offset
+    int                 swap;           // Perform byte swapping upon reading
+    int                 swapWrite;      // Perform byte swapping upon writing
+    std::array<int,4>   axisOrder;      // Order of the axis (tipically 0,1,2,3)
+    TransformType       transform;      // Transform type
+    size_t              replaceNsize;   // Stack size in the replace case
+    bool                _exists;        // does target file exists?  // equal 0 if not exists or not a stack
+    bool                mmapOnRead;     // Mapping when reading from file
+    bool                mmapOnWrite;    // Mapping when writing to file
+    int                 mFd;            // Handle the file in reading method and mmap
+    size_t              mappedSize;     // Size of the mapped file
+    size_t              mappedOffset;   // Offset for the mapped file
+    size_t              virtualOffset;  // MDA Offset when movePointerTo is used
+    float               pixelSize;      // Image pixel size
 
-    static constexpr std::array<int,4> defaultAxisOrder = {0,1,2,3}; // Default axis order 
+    static constexpr std::array<int,4> defaultAxisOrder = {0,1,2,3};    // Default axis order
+    static constexpr float defaultPixelSize = 1.0;                      // Default pixel size
 
 public:
 
