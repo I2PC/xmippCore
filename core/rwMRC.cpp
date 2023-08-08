@@ -92,16 +92,16 @@ struct MRCheadold
 */
 struct MRChead
 {             // file header for MRC data
-    int nx;              //  0   0       image size
-    int ny;              //  1   4
-    int nz;              //  2   8
-    int mode;            //  3           0=char,1=short,2=float,6=uint16
-    int nxStart;         //  4           unit cell offset
-    int nyStart;         //  5
-    int nzStart;         //  6
-    int mx;              //  7           unit cell size in voxels
-    int my;              //  8
-    int mz;              //  9    1=Image or images stack, if volume mz=nz.
+    int32_t nx;              //  0   0       image size
+    int32_t ny;              //  1   4
+    int32_t nz;              //  2   8
+    int32_t mode;            //  3           0=char,1=short,2=float,6=uint16
+    int32_t nxStart;         //  4           unit cell offset
+    int32_t nyStart;         //  5
+    int32_t nzStart;         //  6
+    int32_t mx;              //  7           unit cell size in voxels
+    int32_t my;              //  8
+    int32_t mz;              //  9    1=Image or images stack, if volume mz=nz.
                          //              If ispg=401 then nz=number of volumes in stack * volume z dimension
                          //              mz=volume zdim
     float a;             // 10   40      cell dimensions in A
@@ -110,14 +110,14 @@ struct MRChead
     float alpha;         // 13           cell angles in degrees
     float beta;          // 14
     float gamma;         // 15
-    int mapc;            // 16           column axis
-    int mapr;            // 17           row axis
-    int maps;            // 18           section axis
+    int32_t mapc;            // 16           column axis
+    int32_t mapr;            // 17           row axis
+    int32_t maps;            // 18           section axis
     float amin;          // 19           minimum density value
     float amax;          // 20   80      maximum density value
     float amean;         // 21           average density value
-    int ispg;            // 22           space group number   0=Image/stack,1=Volume,401=volumes stack
-    int nsymbt;          // 23           bytes used for sym. ops. table
+    int32_t ispg;            // 22           space group number   0=Image/stack,1=Volume,401=volumes stack
+    int32_t nsymbt;          // 23           bytes used for sym. ops. table
     float extra[25];     // 24           user-defined info
     float xOrigin;       // 49           phase origin in pixels FIXME: is in pixels or [L] units?
     float yOrigin;       // 50
@@ -125,7 +125,7 @@ struct MRChead
     char map[4];         // 52       identifier for map file ("MAP ")
     char machst[4];      // 53           machine stamp
     float arms;          // 54       RMS deviation
-    int nlabl;           // 55           number of labels used
+    int32_t nlabl;           // 55           number of labels used
     char labels[800];    // 56-255       10 80-character labels
 } ;
 
@@ -165,6 +165,12 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     _xDim = header->nx;
     _yDim = header->ny;
     _zDim = header->nz;
+
+    // Reading and storing axis order
+    axisOrder[0] = 0;
+    axisOrder[1] = header->mapc;
+    axisOrder[2] = header->mapr;
+    axisOrder[3] = header->maps;
 
     bool isVolStk = (header->ispg > 400);
 
@@ -511,9 +517,18 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
     //header->b = 0;
     //header->c = 0;
 
-    header->a = header->mx = header->nx = Xdim;
-    header->b = header->my = header->ny = Ydim;
-    header->c = header->mz = header->nz = Zdim;
+    header->mx = header->nx = Xdim;
+    header->my = header->ny = Ydim;
+    header->mz = header->nz = Zdim;
+
+    // Obtaining sampling rate for each dimension and calculating cube size
+    double sampling;
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_X, sampling, 1.0);
+    header->a = (float)(Xdim * sampling);
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Y, sampling, 1.0);
+    header->b = (float)(Ydim * sampling);
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Z, sampling, 1.0);
+    header->c = (float)(Zdim * sampling);
 
     if ( transform == CentHerm )
         header->nx = Xdim/2 + 1;        // If a transform, physical storage is nx/2 + 1
