@@ -472,6 +472,6 @@ public:
     */
 void createEmptyFile(const FileName &_filename, int Xdim, int Ydim, int Zdim = 1,
                      size_t select_img = APPEND_IMAGE, bool isStack = false,
-                     int mode = WRITE_OVERWRITE, int _swapWrite = 0);
+                     int mode = WRITE_OVERWRITE, int _swapWrite = 0, const MDRowVec *md = nullptr);
 
 #endif /* IMAGE_GENERIC_H_ */
