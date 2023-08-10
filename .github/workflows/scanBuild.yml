@@ -19,9 +19,6 @@ jobs:
           unzip -q sonar-scanner-cli.zip -d sonar-scanner-cli
           mv sonar-scanner-cli/*/* sonar-scanner-cli/
           echo "${PWD}/sonar-scanner-cli/bin/" >> $GITHUB_PATH
-          wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-          unzip -q build-wrapper-linux-x86.zip          
-          echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
       # Run the SonarCloud Scan
       - name: SonarCloud Scan
         env:
