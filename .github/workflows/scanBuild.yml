@@ -9,7 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      # Prepare the enviroment for Sonar scanner
       - name: Prepare Sonar scanner
+        working-directory: ${{ env.BUILD_DIR }}
         env:
           SONAR-VERSION: 5.0.1.3006
         run: |
@@ -20,10 +22,10 @@ jobs:
           wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip          
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
-        working-directory: ${{ env.BUILD_DIR }}
+      # Run the SonarCloud Scan
       - name: SonarCloud Scan
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=i2pc -Dsonar.login=$SONAR_TOKEN -Dsonar.projectKey=XmippCore
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
