@@ -13,9 +13,9 @@ jobs:
         env:
           SONAR-VERSION: 5.0.1.3006
         run: |
-          wget -nv https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR-VERSION }}-linux.zip
-          unzip -q sonar-scanner-cli-${{ env.SONAR-VERSION }}-linux.zip
-          echo "${PWD}/sonar-scanner-${{ env.SONAR-VERSION }}-linux/bin/" >> $GITHUB_PATH
+          wget -nv -O sonar-scanner-cli.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR-VERSION }}-linux.zip
+          unzip -q sonar-scanner-cli.zip -d sonar-scanner-cli
+          echo "${PWD}/sonar-scanner-cli/bin/" >> $GITHUB_PATH
           wget -nv https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -q build-wrapper-linux-x86.zip          
           echo "${PWD}/build-wrapper-linux-x86" >> $GITHUB_PATH
