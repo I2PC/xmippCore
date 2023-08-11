@@ -273,11 +273,15 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     MDMainHeader.setValue(MDL_STDDEV,(double)header->arms);
     MDMainHeader.setValue(MDL_DATATYPE,(int)datatype);
 
-    if ( header->mx && header->a!=0)//ux
+    double sampling;
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_X, sampling, 1.0);
+    if ( header->mx && header->a!=0 && sampling == 1.0)//ux
         MDMainHeader.setValue(MDL_SAMPLINGRATE_X,(double)header->a/header->mx);
-    if ( header->my && header->b!=0)//yx
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Y, sampling, 1.0);
+    if ( header->my && header->b!=0 && sampling == 1.0)//yx
         MDMainHeader.setValue(MDL_SAMPLINGRATE_Y,(double)header->b/header->my);
-    if ( header->mz && header->c!=0)//zx
+    MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_Z, sampling, 1.0);
+    if ( header->mz && header->c!=0 && sampling == 1.0)//zx
         MDMainHeader.setValue(MDL_SAMPLINGRATE_Z,(double)header->c/header->mz);
 
     if (dataMode==HEADER || (dataMode == _HEADER_ALL && _nDim > 1)) // Stop reading if not necessary
@@ -504,24 +508,19 @@ int ImageBase::writeMRC(size_t select_img, bool isStack, int mode, const String 
     size_t Xdim, Ydim, Zdim, Ndim;
     getDimensions(Xdim, Ydim, Zdim, Ndim);
 
-    /* header->a,b,c info is related to sampling rate, so it is
+    /**
+     * header->a,b,c info is related to sampling rate, so it is
      * only written when writing header, so it is initialized to
-     * zero to avoid a mistaken value.
+     * number of voxels to avoid a mistaken value.
      * If sampling is provided a, b and c are overwritten bellow
-     *
-     * */
-    //a,b,c used to be zero till we decide if we want to update it
-    //but chimera crushed if this is set to zero so by default
-    //we assume sampling= 1A/px
-    //header->a = 0;
-    //header->b = 0;
-    //header->c = 0;
+     **/
 
     header->mx = header->nx = Xdim;
     header->my = header->ny = Ydim;
     header->mz = header->nz = Zdim;
 
     // Obtaining sampling rate for each dimension and calculating cube size
+    // By default sampling rate is 1.0 if no real value was found
     double sampling;
     MDMainHeader.getValueOrDefault(MDL_SAMPLINGRATE_X, sampling, 1.0);
     header->a = (float)(Xdim * sampling);
