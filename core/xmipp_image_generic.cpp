@@ -615,7 +615,7 @@ void ImageGeneric::divide(const double value)
 }
 
 void createEmptyFile(const FileName &filename, int xdim, int ydim, int Zdim,
-                     size_t select_img, bool isStack, int mode, int _swapWrite)
+                     size_t select_img, bool isStack, int mode, int _swapWrite, const MDRowVec *md)
 {
     ImageGeneric image;
     size_t found = filename.find_first_of("%");
@@ -628,6 +628,10 @@ void createEmptyFile(const FileName &filename, int xdim, int ydim, int Zdim,
         strType = filename.substr(found+1).c_str();
         image.setDatatype(str2Datatype(strType));
     }
+
+    // Use given metadata if present
+    if (md)
+        image.image->MDMainHeader = *md;
 
     image.mapFile2Write(xdim, ydim, Zdim, filename, false, select_img, isStack, mode, _swapWrite);
 }
