@@ -409,7 +409,7 @@ public:
     const T& getValue(const MDLabel label, size_t id) const {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
-            throw ObjectDoesNotExist();
+            throw ObjectDoesNotExist(label, id);
         return mdValueOut.getValue2(T());
     }
 
@@ -417,7 +417,7 @@ public:
     T& getValue(const MDLabel label, size_t id) {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
-            throw ObjectDoesNotExist();
+            throw ObjectDoesNotExist(label, id);
         return mdValueOut.getValue2(T());
     }
 
