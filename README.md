@@ -22,3 +22,4 @@ cd -
 ./xmipp compile N xmippCore:  # Compile only xmippCore
 ./xmipp install [dir]         # Install at dir (by default, ./build)
 ```
+
