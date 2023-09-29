@@ -32,6 +32,7 @@
 #define CORE_IMAGE_H
 
 #include <typeinfo>
+#include <set>
 #include "multidim_array.h"
 #include "xmipp_image_base.h"
 #include "xmipp_memory.h"
@@ -1091,6 +1092,19 @@ private:
         ImageBase::setDimensions(aDim);
     }
 
+    static bool isValidAxisOrder(const std::array<int, 4>& order)
+    {
+        std::set<int> uniqueValues;
+        
+        for (int value : order) {
+            // Check if the value is not in the range [0, 3] or is not unique.
+            if (value < 0 || value > 3 || !uniqueValues.insert(value).second)
+                return false;
+        }
+
+        return true;
+    }
+
     /** Read the raw data
      */
     void
@@ -1122,6 +1136,12 @@ private:
         size_t haveread_n = 0;
 
         selectImgOffset = offset + IMG_INDEX(select_img) * (pagesize + pad);
+
+        if(!isValidAxisOrder(axisOrder))
+        {
+            reportWarning("Image::readData: Invalid axis ordering. Defaulting to 0,1,2,3 ");
+            axisOrder = {0, 1, 2, 3};
+        }
 
         // Flag to know that data is not going to be mapped although mmapOn is true
         if (mmapOnRead && (!checkMmapT(datatype) || swap > 0 || axisOrder != defaultAxisOrder))
