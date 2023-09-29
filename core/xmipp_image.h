@@ -1094,8 +1094,15 @@ private:
 
     static bool isValidAxisOrder(const std::array<int, 4>& order)
     {
-        std::set<int> uniqueValues(order.cbegin(), order.cend());
-        return uniqueValues.size() == order.size();
+        std::set<int> uniqueValues;
+        
+        for (int value : order) {
+            // Check if the value is not in the range [0, 3] or is not unique.
+            if (value < 0 || value > 3 || !uniqueValues.insert(value).second)
+                return false;
+        }
+
+        return true;
     }
 
     /** Read the raw data
