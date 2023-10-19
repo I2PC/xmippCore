@@ -1188,7 +1188,7 @@ void SymList::computeDistance(MetaData &md,
 double SymList::computeDistance(double rot1, double tilt1, double psi1,
                                 double &rot2, double &tilt2, double &psi2,
                                 bool projdir_mode, bool check_mirrors,
-                                bool object_rotation)
+                                bool object_rotation, bool write_mirrors )
 {
     Matrix2D<double> E1, E2;
     Euler_angles2matrix(rot1, tilt1, psi1, E1, false);
@@ -1229,15 +1229,16 @@ double SymList::computeDistance(double rot1, double tilt1, double psi1,
 
         if (check_mirrors)
         {
-        	Euler_mirrorY(rot2p, tilt2p, psi2p, rot2p, tilt2p, psi2p);
+            double rot2pm, tilt2pm, psi2pm;
+        	Euler_mirrorY(rot2p, tilt2p, psi2p, rot2pm, tilt2pm, psi2pm);
             double ang_dist_mirror = Euler_distanceBetweenAngleSets_fast(E1,
-                                     rot2p, tilt2p, psi2p,projdir_mode, E2);
+                                     rot2pm, tilt2pm, psi2pm,projdir_mode, E2);
 
             if (ang_dist_mirror < best_ang_dist)
             {
-                best_rot2 = rot2p;
-                best_tilt2 = tilt2p;
-                best_psi2 = psi2p;
+                best_rot2 = write_mirrors ? rot2pm : rot2p;
+                best_tilt2 = write_mirrors ? tilt2pm : tilt2p;
+                best_psi2 = write_mirrors ? psi2pm : psi2p;
                 best_ang_dist = ang_dist_mirror;
             }
 
