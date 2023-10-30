@@ -261,6 +261,29 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'], patte
 
     env.Alias(name, lastTarget)
 
+    # Compilation database for libraries and shared libraries
+    env['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
+    env.SetOption('warn', 'no-duplicate-environment')
+    env.Tool('compilation_db')
+    xmipp_path = os.path.dirname(os.path.dirname(os.getcwd()))
+    cdb = env.CompilationDatabase(os.path.join(xmipp_path, 'compile_commands.json'))
+    Alias('cdb', cdb)
+    BUILD_TARGETS.append('cdb')
+    program = env2.Program(
+        target=targetName,
+        #source=lastTarget,
+        source=sources,
+        CPPPATH=_incs,
+        LIBPATH=_libpath,
+        LIBS=_libs,
+        SHLIBPREFIX=prefix,
+        SHLIBSUFFIX=suffix,
+        CXXFLAGS=env['CXXFLAGS']+env['INCDIRFLAGS'],
+        LINKFLAGS=env['LINKFLAGS']+env['LIBDIRFLAGS'],
+        **mpiArgs
+    )
+    env.Depends(program, deps)
+
     return lastTarget
 
 def symLink(env, target, source):
