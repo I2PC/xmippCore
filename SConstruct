@@ -264,6 +264,7 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'], patte
     # Compilation database for libraries and shared libraries
     env2['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
     env2.SetOption('warn', 'no-duplicate-environment')
+    env2.SetOption('implicit_cache', 1)
     env2.Tool('compilation_db')
     xmipp_path = os.path.dirname(os.path.dirname(os.getcwd()))
     cdb = env2.CompilationDatabase(os.path.join(xmipp_path, 'compile_commands_2.json'))
