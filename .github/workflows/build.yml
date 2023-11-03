@@ -49,12 +49,12 @@ jobs:
       - name: Fetching Xmipp
         run: ./scripts/ci_build
           
-#      - name: Compile Xmipp
-#        run: ./xmipp all br=${{ steps.extract_branch.outputs.branch }} noAsk
-#        working-directory: ${{ env.BUILD_DIR }}
-#        env:
-#          CIBuild: 1
-#          BUILD_TESTS: True
+      - name: Compile Xmipp
+        run: ./xmipp config #all br=${{ steps.extract_branch.outputs.branch }} noAsk
+        working-directory: ${{ env.BUILD_DIR }}
+        env:
+          CIBuild: 1
+          BUILD_TESTS: True
 
       # If we got here, Xmipp can be build with this xmippCore
       # Build only the core to be able to run the static code analysis
