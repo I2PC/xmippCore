@@ -44,7 +44,7 @@ jobs:
         run: ./scripts/ci_build
           
       - name: Compile Xmipp
-        run: ./xmipp all br=${GITHUB_REF##*/} noAsk
+        run: ./xmipp all br= echo "${GITHUB_REF##*/}" noAsk
         working-directory: ${{ env.BUILD_DIR }}
         env:
           CIBuild: 1
