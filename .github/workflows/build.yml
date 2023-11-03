@@ -16,6 +16,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     # Disabling shallow clone is recommended for improving relevancy of reporting
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -44,7 +50,7 @@ jobs:
         run: ./scripts/ci_build
           
       - name: Compile Xmipp
-        run: ./xmipp all br= echo "${GITHUB_REF##*/}" noAsk
+        run: ./xmipp all br= ${{ steps.extract_branch.outputs.branch }} noAsk
         working-directory: ${{ env.BUILD_DIR }}
         env:
           CIBuild: 1
