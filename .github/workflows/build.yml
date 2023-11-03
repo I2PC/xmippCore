@@ -50,7 +50,7 @@ jobs:
         run: ./scripts/ci_build
           
       - name: Compile Xmipp
-        run: ./xmipp all br= ${{ steps.extract_branch.outputs.branch }} noAsk
+        run: ./xmipp all br=${{ steps.extract_branch.outputs.branch }} noAsk
         working-directory: ${{ env.BUILD_DIR }}
         env:
           CIBuild: 1
