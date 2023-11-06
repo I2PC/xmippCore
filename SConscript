@@ -116,7 +116,7 @@ def getHdf5Name(libdirs):
 addLib('XmippCore',
        patterns=['*.cpp','*.c','bilib/*.cc','alglib/*.cpp', 'utils/*.cpp'],
        dirs=['core'] * 5, # one relative path for each pattern
-       libs=['fftw3', 'fftw3_threads',
+       libs=['fftw3', 'fftw3_threads', 'fftw3f',
              getHdf5Name(env['EXTERNAL_LIBDIRS']),'hdf5_cpp',
              'tiff',
              'jpeg',
