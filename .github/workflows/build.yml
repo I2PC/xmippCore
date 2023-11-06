@@ -16,6 +16,12 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     # Disabling shallow clone is recommended for improving relevancy of reporting
     steps:
+#      - name: Extract branch name
+#        shell: bash
+#        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+#        id: extract_branch
+
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -28,12 +34,12 @@ jobs:
       - uses: hendrikmuhs/ccache-action@v1.2
 
       # Installing CUDA
-      - uses: Jimver/cuda-toolkit@v0.2.11
-        id: cuda-toolkit
-        with:
-          cuda: '11.8.0'
-          method: network
-          sub-packages: '["nvcc", "toolkit"]'
+#      - uses: Jimver/cuda-toolkit@v0.2.11
+#        id: cuda-toolkit
+#        with:
+#          cuda: '11.8.0'
+#          method: network
+#          sub-packages: '["nvcc", "toolkit"]'
           
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
@@ -43,8 +49,8 @@ jobs:
       - name: Fetching Xmipp
         run: ./scripts/ci_build
           
-      - name: Compile Xmipp
-        run: ./xmipp noAsk
+      - name: Getting xmipp.conf
+        run: ./xmipp config #all br=${{ steps.extract_branch.outputs.branch }} noAsk
         working-directory: ${{ env.BUILD_DIR }}
         env:
           CIBuild: 1
