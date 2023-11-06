@@ -136,7 +136,7 @@ addLib('xmippCore.so',
        dirs=['bindings'],
        patterns=['python/*.cpp'],
        incs=python_incdirs,
-       libs=[PYTHON_LIB, 'XmippCore', 'fftw3f'],
+       libs=[PYTHON_LIB, 'XmippCore', 'fftw3'],
        prefix='', target='xmippCore')
 
 
