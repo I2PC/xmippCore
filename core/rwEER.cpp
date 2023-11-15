@@ -42,30 +42,16 @@
  * author citations must be preserved.
  ***************************************************************************/
 
-//#include <cstdio>
-//#include <cstdlib>
-//#include <iostream>
 #include <algorithm>
+#include <string>
 #include <tiffio.h>
 #include <vector>
-//#include <omp.h>
 
 #include "multidim_array.h"
 #include "xmipp_error.h"
 #include "xmipp_filename.h"
 #include "xmipp_image_base.h"
-//#include "rwEER.h"
-// Original libraries included from Relion repository. Keeping them here commented for now
-// while the library is being fully integrated & tested so traceability is easier
-//#include <src/time.h>
-//#include <src/metadata_table.h>
-//#include <src/image.h>
-
-// .h includes
-//#include "xmipp_image.h"
-// Original libraries included from Relion repository. Keeping them here commented for now
-// while the library is being fully integrated & tested so traceability is easier
-//#include <src/image.h>
+#include "metadata_vec.h"
 
 #ifdef TIMING
 	#define RCTIC(label) (EERtimer.tic(label))
@@ -659,15 +645,8 @@ const uint16_t EERRenderer::TIFF_COMPRESSION_EER7bit = 65001;
 
 TIFFErrorHandler EERRenderer::prevTIFFWarningHandler = NULL;
 
-template <typename T1, typename T2>
-void renderFrame(EERRenderer &renderer, MultidimArray<T2> &data, size_t select_img, int xDim, int yDim) {
-	MultidimArray<T1> buffer;
-	buffer.resizeNoCopy(yDim, xDim);
-	renderer.renderFrames(select_img, select_img, buffer);
-	typeCast(buffer, data);
-}
-
 int ImageBase::readEER(size_t select_img) {
+	int upsampling = 1;
 	StringVector info;
 	DataType datatype;
 	size_t found = filename.find_first_of("#");
@@ -696,7 +675,7 @@ int ImageBase::readEER(size_t select_img) {
 
 	_zDim = _nDim = 1;
 	setDimensions(_xDim, _yDim, _zDim, _nDim);
-	data.coreAllocateReuse();
+	mdaBase->coreAllocateReuse();
 
   if(info[2] == "uint8")
 		datatype = DT_UChar;
@@ -716,14 +695,21 @@ int ImageBase::readEER(size_t select_img) {
 		return 0;
 
 	EERRenderer renderer;
-	renderer.read(fn_movie, eer_upsampling);
+	renderer.read(filename, upsampling);
 
 	const int nframes = renderer.getNFrames();
 	if (select_img > nframes) {
-		REPORT_ERROR(ERR_PARAM_INCORRECT, (String) "Incorrect frame number selected (" + itoa(select_img) + "). Number of frames is " + itoa(nframes) + ".");
+		REPORT_ERROR(ERR_PARAM_INCORRECT, (String) "Incorrect frame number selected (" + std::to_string(select_img) + "). Number of frames is " + std::to_string(nframes) + ".");
 	}
 
-	renderFrame(renderer, data, select_img, _xDim, _yDim);
+	MultidimArray<int> buffer(_yDim, _xDim);
+	mdaBase->resizeNoCopy(1, 1, _yDim, _xDim);
+	renderer.renderFrames(select_img, select_img, buffer);
+	getPageFromT(
+		0UL, reinterpret_cast<char*>(MULTIDIM_ARRAY(buffer)),
+		DT_Int,
+		MULTIDIM_SIZE(buffer)*sizeof(int)
+	);
 
 	return 0;
 }

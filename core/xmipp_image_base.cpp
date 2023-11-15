@@ -881,6 +881,8 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
         err = readJPEG(select_img);
     else if (ext_name.contains("hdf") || ext_name.contains("h5"))//SPE
         err = readHDF5(select_img);
+    else if (ext_name.contains("eer"))//EER
+        err = readEER(select_img);
     else
         err = readSPIDER(select_img);
 
