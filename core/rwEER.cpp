@@ -392,16 +392,12 @@ class EERRenderer {
 
 		lazyReadFrames();
 
-		if (frame_start <= 0 || frame_start > getNFrames() ||
-				frame_end < frame_start || frame_end > getNFrames())
+		if (frame_start < 0 || frame_start >= getNFrames() ||
+				frame_end < frame_start || frame_end >= getNFrames())
 		{
 			std::cerr << "EERRenderer::renderFrames(frame_start = " << frame_start << ", frame_end = " << frame_end << "),  NFrames = " << getNFrames() << std::endl;
 			REPORT_ERROR(ERR_PARAM_INCORRECT, "Invalid frame range was requested.");
 		}
-
-		// Make this 0-indexed
-		frame_start--;
-		frame_end--;
 
 		long long total_n_electron = 0;
 
@@ -683,7 +679,7 @@ int ImageBase::readEER(size_t select_img) {
 		datatype = DT_UShort;
 	else
 		REPORT_ERROR(ERR_PARAM_INCORRECT, "Incorrect output data type. Valid types are: uint8, uint16.");
-
+	
 	MDMainHeader.setValue(MDL_SAMPLINGRATE_X,(double) -1);
 	MDMainHeader.setValue(MDL_SAMPLINGRATE_Y,(double) -1);
 	MDMainHeader.setValue(MDL_DATATYPE,(int)datatype);
@@ -705,10 +701,10 @@ int ImageBase::readEER(size_t select_img) {
 	MultidimArray<int> buffer(_yDim, _xDim);
 	mdaBase->resizeNoCopy(1, 1, _yDim, _xDim);
 	renderer.renderFrames(select_img, select_img, buffer);
-	getPageFromT(
+	setPage2T(
 		0UL, reinterpret_cast<char*>(MULTIDIM_ARRAY(buffer)),
 		DT_Int,
-		MULTIDIM_SIZE(buffer)*sizeof(int)
+		MULTIDIM_SIZE(buffer)
 	);
 
 	return 0;
