@@ -691,7 +691,7 @@ int ImageBase::readEER(size_t select_img) {
 		return 0;
 
 	EERRenderer renderer;
-	renderer.read(filename, upsampling);
+	renderer.read(hFile->fileName, upsampling);
 
 	const int nframes = renderer.getNFrames();
 	if (select_img > nframes) {
