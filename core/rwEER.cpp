@@ -700,7 +700,7 @@ int ImageBase::readEER(size_t select_img) {
 
 	MultidimArray<int> buffer(_yDim, _xDim);
 	mdaBase->resizeNoCopy(1, 1, _yDim, _xDim);
-	renderer.renderFrames(select_img, select_img, buffer);
+	renderer.renderFrames(select_img-1, select_img-1, buffer);
 	setPage2T(
 		0UL, reinterpret_cast<char*>(MULTIDIM_ARRAY(buffer)),
 		DT_Int,
