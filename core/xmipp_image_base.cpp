@@ -837,6 +837,9 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
 #endif
 #undef DEBUG
 
+    // Defining default axis order (will be overwritten by data types that need it)
+    axisOrder = defaultAxisOrder;
+
     //Just clear the header before reading
     MDMainHeader.clear();
     //Set the file pointer at beginning
@@ -944,7 +947,6 @@ int ImageBase::_readBatch(const FileName &name, ImageFHandler* hFile, size_t sta
 void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select_img,
                        bool isStack, int mode, CastWriteMode castMode)
 {
-
     // Temporary Error to find old select_img == -1
     if (select_img == (size_t) -1)
         REPORT_ERROR(ERR_DEBUG_TEST, "To select all images use ALL_IMAGES macro, or FIRST_IMAGE macro.");

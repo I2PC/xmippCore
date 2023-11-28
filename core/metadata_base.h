@@ -406,23 +406,15 @@ public:
      * @endcode
      */
     template<class T>
-    const T& getValue(const MDLabel label, size_t id) const {
+    T getValue(const MDLabel label, size_t id) const {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
-            throw ObjectDoesNotExist();
+            throw ObjectDoesNotExist(label, id);
         return mdValueOut.getValue2(T());
     }
 
     template<class T>
-    T& getValue(const MDLabel label, size_t id) {
-        MDObject mdValueOut(label);
-        if (!getValue(mdValueOut, id))
-            throw ObjectDoesNotExist();
-        return mdValueOut.getValue2(T());
-    }
-
-    template<class T>
-    bool getValue(const MDLabel label, T &valueOut, size_t id) const { // FIXME: deprecated
+    bool getValue(const MDLabel label, T &valueOut, size_t id) const {
         MDObject mdValueOut(label);
         if (!getValue(mdValueOut, id))
             return false;

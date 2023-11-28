@@ -312,7 +312,8 @@ public:
      */
     double computeDistance(double rot1, double tilt1,
                            double psi1, double &rot2, double &tilt2, double &psi2,
-                           bool projdir_mode, bool check_mirrors, bool object_rotation=false);
+                           bool projdir_mode, bool check_mirrors, bool object_rotation=false,
+                           bool write_mirrors = true);
     /** auxiliary function that calls
      *  double computeDistance(double rot1, double tilt1,
                            double psi1, double &rot2, double &tilt2, double &psi2,
