@@ -579,9 +579,15 @@ int ImageBase::readEER(size_t select_img) {
 			REPORT_ERROR(ERR_ARG_MISSING, (String) "Cannot open file " + filename +
 										". Not enough header arguments.");
 
+	const int step = std::atoi(info[0].c_str());
+	if (step < 1)
+	{
+		REPORT_ERROR(ERR_PARAM_INCORRECT, "Incorrect frame step value (must be greater than zero)");
+	}
+
 	int _xDim,_yDim,_zDim;
 	size_t _nDim;
-  if (info[1] == "4K")
+  	if (info[1] == "4K")
 	{
 		_xDim = _yDim = 4096;
 	} 
@@ -617,13 +623,15 @@ int ImageBase::readEER(size_t select_img) {
 	EERRenderer renderer;
 	renderer.read(hFile->fileName, upsampling);
 
-	const int nframes = renderer.getNFrames();
+	const int nframes = renderer.getNFrames() / step;
 	if (select_img > nframes) {
 		REPORT_ERROR(ERR_PARAM_INCORRECT, (String) "Incorrect frame number selected (" + std::to_string(select_img) + "). Number of frames is " + std::to_string(nframes) + ".");
 	}
 
 	MultidimArray<int> buffer(_yDim, _xDim);
-	renderer.renderFrames(select_img-1, select_img-1, buffer);
+	const auto first = (select_img-1)*step;
+	const auto last = first + step - 1;
+	renderer.renderFrames(first, last, buffer);
 	setPage2T(
 		0UL, reinterpret_cast<char*>(MULTIDIM_ARRAY(buffer)),
 		DT_Int,
