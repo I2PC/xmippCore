@@ -609,4 +609,3 @@ extern double	xPlus
 /**/DEBUG_WRITE_LEAVING(xPlus, "Done")
 	return(x);
 } /* end xPlus */
-
