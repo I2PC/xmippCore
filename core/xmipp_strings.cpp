@@ -132,8 +132,6 @@ float textToFloat(const char* str)
     if (ok)
         return retval;
     REPORT_ERROR(ERR_VALUE_INCORRECT, "Conversion to float error");
-
-    return 0;
 }
 
 int textToInteger(const char* str)
@@ -147,8 +145,6 @@ int textToInteger(const char* str)
     if (ok)
         return retval;
     REPORT_ERROR(ERR_VALUE_INCORRECT, "Conversion to int error");
-
-    return 0;
 }
 
 size_t textToSizeT(const char * str)
@@ -162,8 +158,6 @@ size_t textToSizeT(const char * str)
     if (ok)
         return retval;
     REPORT_ERROR(ERR_VALUE_INCORRECT, "Conversion to size_t error");
-
-    return 0;
 }
 
 long long textToLongLong(const char* str)
@@ -177,8 +171,6 @@ long long textToLongLong(const char* str)
     if (ok)
         return retval;
     REPORT_ERROR(ERR_VALUE_INCORRECT, "Conversion to long long int error");
-
-    return 0;
 }
 
 int bestPrecision(float F, int _width)
