@@ -428,7 +428,6 @@ std::string getParameter(FILE *fh, const char *param, int skip, const char *opti
             return option;
     else
         return removeSpaces(retval);
-    return "";
 }
 
 // Check "parameter" from file =============================================
