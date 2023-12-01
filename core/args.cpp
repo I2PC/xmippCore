@@ -220,8 +220,10 @@ Matrix1D<double> getVectorParameter(FILE *fh, const char *param, int dim)
     char *copy = NULL;
     Matrix1D<double> retval;
     if (!generateCommandLine(fh, param, argcp, argvp, copy))
+    {
         if (dim != -1)
             REPORT_ERROR(ERR_ARG_MISSING, param);
+    }
     else
     {
         retval = getVectorParameter(argcp, (const char **)argvp, ((std::string)"-" + param).c_str(), dim);
