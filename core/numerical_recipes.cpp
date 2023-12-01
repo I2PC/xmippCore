@@ -5399,8 +5399,6 @@ void(* obj)(), (* constr)(), (* gradob)(), (* gradcn)();
             continue;
         if (d0nm > dbar)
             Ck = DMAX1(0.5e0 * Ck, Cbar);
-        if (d0nm <= dbar && glob_log.dlfeas)
-            Ck = Ck;
         if (d0nm <= dbar && !glob_log.dlfeas &&
             !glob_log.rhol_is1)
             Ck = 10.e0 * Ck;
