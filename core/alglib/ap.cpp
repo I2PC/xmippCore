@@ -18,7 +18,6 @@ http://www.fsf.org/licensing/licenses
 *************************************************************************/
 #include "stdafx.h"
 #include "ap.h"
-#include <atomic>
 #include <limits>
 #include <locale.h>
 using namespace std;
