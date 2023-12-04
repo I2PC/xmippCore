@@ -2726,15 +2726,15 @@ void ae_spin_wait(ae_int_t cnt)
      * these strange operations with ae_never_change_it are necessary to
      * prevent compiler optimization of the loop.
      */
-    std::atomic<int> i(0);
+    volatile ae_int_t i;
     
     /* very unlikely because no one will wait for such amount of cycles */
-    if(cnt > 0x12345678)
-        ae_never_change_it = cnt % 10;
+    if( cnt>0x12345678 )
+        ae_never_change_it = cnt%10;
     
     /* spin wait, test condition which will never be true */
-    for(i = 0; i < cnt; i++)
-        if(ae_never_change_it > 0)
+    for(i=0; i<cnt; i++)
+        if( ae_never_change_it>0 )
             ae_never_change_it--;
 }
 
