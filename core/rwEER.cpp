@@ -579,10 +579,13 @@ int ImageBase::readEER(size_t select_img) {
 			REPORT_ERROR(ERR_ARG_MISSING, (String) "Cannot open file " + filename +
 										". Not enough header arguments.");
 
-	const int step = std::atoi(info[0].c_str());
-	if (step < 1)
+	const int fractioning = std::atoi(info[0].c_str());
+	if (fractioning < 1)
 	{
-		REPORT_ERROR(ERR_PARAM_INCORRECT, "Incorrect frame step value (must be greater than zero)");
+		REPORT_ERROR(ERR_PARAM_INCORRECT, "Incorrect fractioning value (must be greater than zero)");
+	}
+	if (select_img > fractioning) {
+		REPORT_ERROR(ERR_PARAM_INCORRECT, (String) "Incorrect frame number selected (" + std::to_string(select_img) + "). Number of frames is " + std::to_string(fractioning) + ".");
 	}
 
 	int _xDim,_yDim,_zDim;
@@ -623,12 +626,8 @@ int ImageBase::readEER(size_t select_img) {
 	EERRenderer renderer;
 	renderer.read(hFile->fileName, upsampling);
 
-	const int nframes = renderer.getNFrames() / step;
-	if (select_img > nframes) {
-		REPORT_ERROR(ERR_PARAM_INCORRECT, (String) "Incorrect frame number selected (" + std::to_string(select_img) + "). Number of frames is " + std::to_string(nframes) + ".");
-	}
-
 	MultidimArray<int> buffer(_yDim, _xDim);
+	const auto step = renderer.getNFrames() / fractioning;
 	const auto first = (select_img-1)*step;
 	const auto last = first + step - 1;
 	renderer.renderFrames(first, last, buffer);
