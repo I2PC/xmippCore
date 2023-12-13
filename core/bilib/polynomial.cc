@@ -413,12 +413,12 @@ extern int		PolynomialRealRoots
 					*Status = ERROR;
 					WRITE_ERROR(PolynomialRealRoots,
 						"Unexpected error (wrong number of cubic roots)")
-/**/				DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+					DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 					return(*Status);
 			}
 			if (t < p) {
 				*RealRootNumber = 0L;
-/**/			DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+				DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 				return(*Status);
 			}
 			if ((t == p) || (fabs(q) <= Tolerance)) {
@@ -434,34 +434,30 @@ extern int		PolynomialRealRoots
 				}
 				switch (*RealRootNumber) {
 					case 0L:
-/**/					DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-						return(*Status);
+						break;
 					case 2L:
 						if ((RealRoot[0] < 0.0) && (RealRoot[1] < 0.0)) {
 							*RealRootNumber = 0L;
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-							return(*Status);
+						break;
 						}
 						if ((RealRoot[0] < 0.0) && (0.0 <= RealRoot[1])) {
 							RealRoot[0] = -sqrt(RealRoot[1]) - s;
 							RealRoot[1] = sqrt(RealRoot[1]) - s;
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-							return(*Status);
+						break;
 						}
 						*RealRootNumber = 4L;
 						RealRoot[3] = sqrt(RealRoot[1]) - s;
 						RealRoot[2] = sqrt(RealRoot[0]) - s;
 						RealRoot[1] = -sqrt(RealRoot[0]) - s;
 						RealRoot[0] = -RealRoot[3] - 2.0 * s;
-/**/					DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-						return(*Status);
+						break;
 					default:
 						*Status = ERROR;
 						WRITE_ERROR(PolynomialRealRoots,
 							"Unexpected error (wrong number of degenerate quadratic roots)")
-/**/					DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-						return(*Status);
 				}
+				DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+				return(*Status);
 			}
 			r = sqrt(t - p);
 			QuadraticResolvent[0] = 0.5 * (t - q / r);
@@ -472,7 +468,7 @@ extern int		PolynomialRealRoots
 			if (*Status == ERROR) {
 				WRITE_ERROR(PolynomialRealRoots,
 					"Unable to solve the first quadratic resolvent of a quartic equation")
-/**/			DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+					DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 				return(*Status);
 			}
 			switch (*RealRootNumber) {
@@ -488,12 +484,12 @@ extern int		PolynomialRealRoots
 					}
 					switch (*RealRootNumber) {
 						case 0L:
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+							DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 							return(*Status);
 						case 2L:
 							RealRoot[0] -= s;
 							RealRoot[1] -= s;
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+							DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 							return(*Status);
 						default:
 							*Status = ERROR;
@@ -516,7 +512,7 @@ extern int		PolynomialRealRoots
 						case 0L:
 							RealRoot[0] -= s;
 							RealRoot[1] -= s;
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+							DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 							return(*Status);
 						case 2L:
 							*RealRootNumber = 4L;
@@ -532,27 +528,17 @@ extern int		PolynomialRealRoots
 								RealRoot[1] = RealRoot[3];
 								RealRoot[3] = r;
 							}
-							if (RealRoot[1] < RealRoot[2]) {
-/**/							DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-								return(*Status);
-							}
-							else {
+							if (RealRoot[1] >= RealRoot[2]) {
 								r = RealRoot[1];
 								RealRoot[1] = RealRoot[2];
 								RealRoot[2] = r;
-								if (RealRoot[2] < RealRoot[3]) {
-/**/								DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-									return(*Status);
-								}
-								else {
+								if (RealRoot[2] >= RealRoot[3]) {
 									r = RealRoot[2];
 									RealRoot[2] = RealRoot[3];
 									RealRoot[3] = r;
-/**/								DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
-									return(*Status);
 								}
 							}
-/**/						DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
+							DEBUG_WRITE_LEAVING(PolynomialRealRoots, "Done")
 							return(*Status);
 						default:
 							*Status = ERROR;
@@ -623,4 +609,3 @@ extern double	xPlus
 /**/DEBUG_WRITE_LEAVING(xPlus, "Done")
 	return(x);
 } /* end xPlus */
-

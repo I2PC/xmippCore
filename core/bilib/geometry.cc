@@ -1726,9 +1726,7 @@ extern int		TestCoplanarVector
 		|| ((Tolerance < Y[0]) && (Tolerance < Y[1]) && (Y[2] <= Tolerance))) {
 		*Coplanar = 1;
 	}
-	else if (((Tolerance < Y[0]) && (Tolerance < Y[1]) && (Tolerance < Y[2]))
-		|| ((Tolerance < Y[0]) && (Tolerance < Y[1]) && (Tolerance < Y[2]))
-		|| ((Tolerance < Y[0]) && (Tolerance < Y[1]) && (Tolerance < Y[2]))) {
+	else if ((Tolerance < Y[0]) && (Tolerance < Y[1]) && (Tolerance < Y[2])) {
 		*Coplanar = 0;
 	}
 	else {
