@@ -1,6 +1,7 @@
 /***************************************************************************
  *
- * Authors: Martin Salinas Anton (martin.salinas@cnb.csic.es)
+ * Authors: Oier Lauzirika Zarrabeitia (olauzirika@cnb.csic.es)
+ * 			Martin Salinas Anton (martin.salinas@cnb.csic.es)
  *
  * Unidad de Bioinformatica of Centro Nacional de Biotecnologia , CSIC
  *
