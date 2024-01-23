@@ -873,7 +873,7 @@ char * getCurrentTimeString()
 
 void TextualListener::OnInitOperation(unsigned long _est_it)
 {
-    progress_bar(-(_est_it));
+    progress_bar(-static_cast<long>(_est_it));
 }
 
 // Show a bar with the progress in time ....................................

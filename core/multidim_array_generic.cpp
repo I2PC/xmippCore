@@ -125,10 +125,8 @@ void MultidimArrayGeneric::setDatatype(DataType imgType)
         break;
     case DT_Unknown:
         REPORT_ERROR(ERR_IMG_UNKNOWN,"");
-        break;
     default:
         REPORT_ERROR(ERR_NOT_IMPLEMENTED, "Datatype not implemented.");
-        break;
     }
 }
 
