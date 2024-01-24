@@ -211,6 +211,14 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'], patte
     env2['ENV']['PATH'] = env['ENV']['PATH']
     env2['CXX'] = env['CXX']
 
+    env2['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
+    env2.SetOption('warn', 'no-duplicate-environment')
+    env2.Tool('compilation_db')
+    xmipp_path = os.path.dirname(os.path.dirname(os.getcwd()))
+    cdb = env2.CompilationDatabase(os.path.join(xmipp_path, 'compile_commands_2.json'))
+    Alias('cdb', cdb)
+    BUILD_TARGETS.append('cdb')
+
     mpiArgs = {}
     if mpi:
         _libpath.append(env['MPI_LIBDIR'])
@@ -260,29 +268,6 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'], patte
         env.Depends(sources, dep)
 
     env.Alias(name, lastTarget)
-
-    # Compilation database for libraries and shared libraries
-    env2['STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME'] = 1
-    env2.SetOption('warn', 'no-duplicate-environment')
-    env2.Tool('compilation_db')
-    xmipp_path = os.path.dirname(os.path.dirname(os.getcwd()))
-    cdb = env2.CompilationDatabase(os.path.join(xmipp_path, 'compile_commands_2.json'))
-    Alias('cdb', cdb)
-    BUILD_TARGETS.append('cdb')
-    program = env2.Program(
-        target=targetName,
-        #source=lastTarget,
-        source=sources,
-        CPPPATH=_incs,
-        LIBPATH=_libpath,
-        LIBS=_libs,
-        SHLIBPREFIX=prefix,
-        SHLIBSUFFIX=suffix,
-        CXXFLAGS=env['CXXFLAGS']+env['INCDIRFLAGS'],
-        LINKFLAGS=env['LINKFLAGS']+env['LIBDIRFLAGS'],
-        **mpiArgs
-    )
-    env.Depends(program, deps)
 
     return lastTarget
 
