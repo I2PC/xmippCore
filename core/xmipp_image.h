@@ -189,11 +189,24 @@ public:
             YSIZE(multidimArray),
             XSIZE(multidimArray)
         };
+
+        // Find the inverse order
+        std::array<size_t,4> inverse_order;
+        for (size_t i = 0; i < transposed_sizes.size(); ++i)
+        {
+            size_t j = 0;
+            while(j < order.size() && order[j] != i) ++j; // Find inverse mapping
+            if (j >= order.size())
+                REPORT_ERROR(ERR_LOGIC_ERROR, "Invalid axis mapping");
+            
+            inverse_order[i] = j;
+        }
+
         MultidimArray<T> result(
-            sizes[order[0]],
-            sizes[order[1]],
-            sizes[order[2]],
-            sizes[order[3]]
+            sizes[inverse_order[0]],
+            sizes[inverse_order[1]],
+            sizes[inverse_order[2]],
+            sizes[inverse_order[3]]
         );
 
         // Performing transposition in a loop for every dimension
@@ -203,10 +216,13 @@ public:
                     for (size_t x = 0; x < XSIZE(multidimArray); x++) {
                         // Defining array to access with the axis orders
                         const std::array<size_t,4> indices = {n, z, y, x};
+                        const auto l = indices[inverse_order[0]];
+                        const auto k = indices[inverse_order[1]];
+                        const auto i = indices[inverse_order[2]];
+                        const auto j = indices[inverse_order[3]];
 
                         // Transposing element
-                        DIRECT_NZYX_ELEM(result, indices[order[0]], indices[order[1]], indices[order[2]], indices[order[3]]) =
-                            DIRECT_NZYX_ELEM(multidimArray, n, z, y, x);
+                        DIRECT_NZYX_ELEM(result, l, k, i, j) = DIRECT_NZYX_ELEM(multidimArray, n, z, y, x);
                     }
                 }
             }
