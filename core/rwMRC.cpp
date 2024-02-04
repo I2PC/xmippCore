@@ -168,9 +168,9 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
 
     // Reading and storing axis order
     axisOrder[0] = 0;
-    axisOrder[1] = header->mapc;
-    axisOrder[2] = header->mapr;
-    axisOrder[3] = header->maps;
+    axisOrder[1] = 4 - header->maps;
+    axisOrder[2] = 4 - header->mapr;
+    axisOrder[3] = 4 - header->mapc;
 
     bool isVolStk = (header->ispg > 400);
 

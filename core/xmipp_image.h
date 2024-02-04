@@ -192,7 +192,7 @@ public:
 
         // Find the inverse order
         std::array<size_t,4> inverse_order;
-        for (size_t i = 0; i < transposed_sizes.size(); ++i)
+        for (size_t i = 0; i < inverse_order.size(); ++i)
         {
             size_t j = 0;
             while(j < order.size() && order[j] != i) ++j; // Find inverse mapping
