@@ -37,13 +37,10 @@ PYTHON_LIB = os.environ.get("PYTHON_LIB")
 
 Import('env')
 
-
 AddOption('--no-opencv', dest='opencv', action='store_false', default=True,
-          help='Avoid compilation of opencv programs')
+					help='Avoid compilation of opencv programs')
 AddOption('--no-scipy', dest='scipy', action='store_false', default=True,
-          help='Avoid compilation with scipy support')
-
-
+					help='Avoid compilation with scipy support')
 
 # Define some variables used by Scons. Note that some of
 # the variables will be passed by Scipion in the environment (env).
@@ -72,32 +69,32 @@ XMIPP_BUNDLE = Dir('..').abspath
 # Create a shortcut and customized function
 # to add the Xmipp CPP libraries
 def addLib(name, **kwargs):
-    # Install all libraries in scipion/software/lib
-    # COSS kwargs['installDir'] = '#software/lib'
-    # Add always the xmipp path as -I for include and also xmipp/libraries
-    incs = kwargs.get('incs', [])
-    kwargs['incs'] = incs
+		# Install all libraries in scipion/software/lib
+		# COSS kwargs['installDir'] = '#software/lib'
+		# Add always the xmipp path as -I for include and also xmipp/libraries
+		incs = kwargs.get('incs', [])
+		kwargs['incs'] = incs
 
-    deps = kwargs.get('deps', [])
-    kwargs['deps'] = deps
+		deps = kwargs.get('deps', [])
+		kwargs['deps'] = deps
 
-    # Add libraries in libs as deps if not present
-    libs = kwargs.get('libs', [])
-    for lib in libs:
-        deps.append(lib)
+		# Add libraries in libs as deps if not present
+		libs = kwargs.get('libs', [])
+		for lib in libs:
+				deps.append(lib)
 
-    # If pattern not provided use *.cpp as default
-    patterns = kwargs.get('patterns', '*.cpp')
-    kwargs['patterns'] = patterns
-    lib = env.AddCppLibrary(name, **kwargs)
-    	
-    env.Alias('xmipp-libs', lib)
+		# If pattern not provided use *.cpp as default
+		patterns = kwargs.get('patterns', '*.cpp')
+		kwargs['patterns'] = patterns
+		lib = env.AddCppLibrary(name, **kwargs)
 
-    return lib
+		env.Alias('xmipp-libs', lib)
+
+		return lib
 
 
 # Gtest
-#addLib('XmippGtest',
+# addLib('XmippGtest',
 #       dirs=['external'],
 #       patterns=['gtest/*.cc'],
 #       default=gtest,
@@ -105,40 +102,44 @@ def addLib(name, **kwargs):
 #       )
 
 def getHdf5Name(libdirs):
-    for dir in libdirs:
-        if os.path.exists(os.path.join(dir.strip(),"libhdf5.so")):
-            return "hdf5"
-        elif os.path.exists(os.path.join(dir.strip(),"libhdf5_serial.so")):
-            return "hdf5_serial"
-    return "hdf5"
+		for dir in libdirs:
+				if os.path.exists(os.path.join(dir.strip(), "libhdf5.so")):
+						return "hdf5"
+				elif os.path.exists(os.path.join(dir.strip(), "libhdf5_serial.so")):
+						return "hdf5_serial"
+		return "hdf5"
+
 
 # Data
 addLib('XmippCore',
-       patterns=['*.cpp','*.c','bilib/*.cc','alglib/*.cpp', 'utils/*.cpp'],
-       dirs=['core'] * 5, # one relative path for each pattern
-       libs=['fftw3', 'fftw3_threads',
-             getHdf5Name(env['EXTERNAL_LIBDIRS']),'hdf5_cpp',
-             'tiff',
-             'jpeg',
-             'sqlite3',
-             'pthread'])
+			 patterns=['*.cpp', '*.c', 'bilib/*.cc', 'alglib/*.cpp', 'utils/*.cpp'],
+			 dirs=['core'] * 5,  # one relative path for each pattern
+			 libs=['fftw3', 'fftw3_threads',
+						 getHdf5Name(env['EXTERNAL_LIBDIRS']), 'hdf5_cpp',
+						 'tiff',
+						 'jpeg',
+						 'sqlite3',
+						 'pthread'])
+
 
 # Python binding
 def remove_prefix(text, prefix):
-    return text[text.startswith(prefix) and len(prefix):]
+		return text[text.startswith(prefix) and len(prefix):]
+
+
 env['PYTHONINCFLAGS'] = os.environ.get('PYTHONINCFLAGS', '').split()
-if len(env["PYTHONINCFLAGS"])>0:
-    python_incdirs = [remove_prefix(os.path.expandvars(x),"-I") for x in env["PYTHONINCFLAGS"]]
+if len(env["PYTHONINCFLAGS"]) > 0:
+		python_incdirs = [remove_prefix(os.path.expandvars(x), "-I") for x in
+											env["PYTHONINCFLAGS"]]
 else:
-    python_incdirs = []
+		python_incdirs = []
 
 addLib('xmippCore.so',
-       dirs=['bindings'],
-       patterns=['python/*.cpp'],
-       incs=python_incdirs,
-       libs=[PYTHON_LIB, 'XmippCore'],
-       prefix='', target='xmippCore')
-
+			 dirs=['bindings'],
+			 patterns=['python/*.cpp'],
+			 incs=python_incdirs,
+			 libs=[PYTHON_LIB, 'XmippCore'],
+			 prefix='', target='xmippCore')
 
 #  ***********************************************************************
 #  *                      Xmipp Scripts                                  *
