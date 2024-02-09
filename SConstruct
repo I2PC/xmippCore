@@ -273,7 +273,6 @@ def addCppLibrary(env, name, dirs=[], tars=[], untarTargets=['configure'],
 
 		return lastTarget
 
-
 def symLink(env, target, source):
 		# As the link will be in bin/ directory we need to move up
 		sources = source

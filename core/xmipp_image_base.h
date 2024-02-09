@@ -813,6 +813,7 @@ protected:
 #include "rwEM.h"
 #include "rwPIF.h"
 #include "rwHDF5.h"
+#include "rwEER.h"
 
     /// ----------------------------------------------------------
 

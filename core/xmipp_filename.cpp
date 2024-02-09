@@ -397,12 +397,17 @@ String FileName::getFileFormat() const
 {
     size_t first;
     FileName result;
-    if (find(NUM) != npos)
-        return "raw";
-    else if ((first = rfind(COLON)) != npos)
+    if ((first = rfind(COLON)) != npos)
         result = substr(first + 1);
     else if ((first = rfind(".")) != npos)
+    {
+        // Get everything from the '.' to the end of the filename
+        // If there is a '#', only keep whatever is between the '.' and the '#'
         result = substr(first + 1);
+        result = result.substr(0, result.find(NUM));
+    }
+    else if (find(NUM) != npos)
+        return "raw";
     return result.toLowercase();
 }
 
