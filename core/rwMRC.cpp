@@ -286,6 +286,7 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
 
     if (dataMode==HEADER || (dataMode == _HEADER_ALL && _nDim > 1)) // Stop reading if not necessary
     {
+        readData(NULL, 0, DT_Unknown, 0); // To consider axis ordering. Will not read actual data
         return errCode;
     }
 
@@ -323,6 +324,12 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
             else if(header->nzStart !=0 && MDMainHeader.getValue(MDL_SAMPLINGRATE_Z,aux))
                 MD[i]->setValue(MDL_ORIGIN_Z, -header->nzStart/aux);
         }
+    }
+
+    if ( dataMode < DATA )   // Don't read the individual header and the data if not necessary
+    {
+        readData(NULL, 0, DT_Unknown, 0); // To consider axis ordering. Will not read actual data
+        return errCode;
     }
 
     // Lets read the data
