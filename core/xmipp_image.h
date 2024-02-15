@@ -1163,6 +1163,7 @@ private:
 #undef DEBUG
 
         if (dataMode < DATA)
+        {
             if (axisOrder != defaultAxisOrder) {
                 std::array<size_t, 4> sizes;
                 getDimensions(sizes[3], sizes[2], sizes[1], sizes[0]);
@@ -1170,6 +1171,7 @@ private:
                 setDimensions(sizes[3], sizes[2], sizes[1], sizes[0]);
             } 
             return;
+        }
 
         if (datatype == DT_UHalfByte){
             //REPORT_ERROR(ERR_MMAP, "Image Class::readData not supported for  "
