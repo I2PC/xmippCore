@@ -325,10 +325,6 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
         }
     }
 
-    if ( dataMode < DATA )   // Don't read the individual header and the data if not necessary
-        return errCode;
-
-
     // Lets read the data
 
     // 4-bits mode: Here is the magic to expand the compressed images
