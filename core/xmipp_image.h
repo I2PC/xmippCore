@@ -176,12 +176,53 @@ public:
                 || typeid(T) == typeid(std::complex<float>));
     }
 
+
+    /**
+     * Obtain the inverse axis mapping
+    */
+    void
+    getInverseAxisOrder(const std::array<int,4> &order, 
+                        std::array<int,4> &result )
+    {
+        for (size_t i = 0; i < result.size(); ++i)
+        {
+            size_t j = 0;
+            while(j < order.size() && order[j] != i) ++j; // Find inverse mapping
+            if (j >= order.size())
+                REPORT_ERROR(ERR_LOGIC_ERROR, "Invalid axis mapping");
+            
+            result[i] = j;
+        }
+    }
+
+    /**
+     * Trasposes the given size array according to inverseOrder
+    */
+    void
+    transposeAxisSizes(const std::array<size_t,4> &sizes, 
+                       const std::array<int,4> &order,
+                       std::array<size_t,4> &result )
+    {
+        std::array<int, 4> inverseOrder;
+        getInverseAxisOrder(order, inverseOrder);
+
+        result = {
+            sizes[inverseOrder[0]],
+            sizes[inverseOrder[1]],
+            sizes[inverseOrder[2]],
+            sizes[inverseOrder[3]]
+        };
+    }
+
     /**
      * Trasposes the given MultidimArray with the given order
     */
    void
    transposeInPlace(MultidimArray<T> &multidimArray, const std::array<int,4> &order)
    {
+        std::array<int, 4> inverseOrder;
+        getInverseAxisOrder(order, inverseOrder);
+
         // Creating new multidim array of the same size than the original
         const std::array<size_t,4> sizes = {
             NSIZE(multidimArray),
@@ -189,11 +230,12 @@ public:
             YSIZE(multidimArray),
             XSIZE(multidimArray)
         };
+
         MultidimArray<T> result(
-            sizes[order[0]],
-            sizes[order[1]],
-            sizes[order[2]],
-            sizes[order[3]]
+            sizes[inverseOrder[0]],
+            sizes[inverseOrder[1]],
+            sizes[inverseOrder[2]],
+            sizes[inverseOrder[3]]
         );
 
         // Performing transposition in a loop for every dimension
@@ -203,10 +245,13 @@ public:
                     for (size_t x = 0; x < XSIZE(multidimArray); x++) {
                         // Defining array to access with the axis orders
                         const std::array<size_t,4> indices = {n, z, y, x};
+                        const auto l = indices[inverseOrder[0]];
+                        const auto k = indices[inverseOrder[1]];
+                        const auto i = indices[inverseOrder[2]];
+                        const auto j = indices[inverseOrder[3]];
 
                         // Transposing element
-                        DIRECT_NZYX_ELEM(result, indices[order[0]], indices[order[1]], indices[order[2]], indices[order[3]]) =
-                            DIRECT_NZYX_ELEM(multidimArray, n, z, y, x);
+                        DIRECT_NZYX_ELEM(result, l, k, i, j) = DIRECT_NZYX_ELEM(multidimArray, n, z, y, x);
                     }
                 }
             }
@@ -1118,7 +1163,15 @@ private:
 #undef DEBUG
 
         if (dataMode < DATA)
+        {
+            if (axisOrder != defaultAxisOrder) {
+                std::array<size_t, 4> sizes;
+                getDimensions(sizes[3], sizes[2], sizes[1], sizes[0]);
+                transposeAxisSizes(sizes, axisOrder, sizes);
+                setDimensions(sizes[3], sizes[2], sizes[1], sizes[0]);
+            } 
             return;
+        }
 
         if (datatype == DT_UHalfByte){
             //REPORT_ERROR(ERR_MMAP, "Image Class::readData not supported for  "
@@ -1262,6 +1315,7 @@ private:
             // Transposing multidim array
             if (axisOrder != defaultAxisOrder) {
                 transposeInPlace(data, axisOrder);
+                data.getDimensions(aDimFile);
             }
             //if ( pad > 0 )
             //    freeMemory(padpage, pad*sizeof(char));
