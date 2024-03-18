@@ -1162,6 +1162,13 @@ private:
 #endif
 #undef DEBUG
 
+
+        if(!isValidAxisOrder(axisOrder))
+        {
+            reportWarning("Image::readData: Invalid axis ordering. Defaulting to 0,1,2,3 ");
+            axisOrder = defaultAxisOrder;
+        }
+
         if (dataMode < DATA)
         {
             if (axisOrder != defaultAxisOrder) {
@@ -1189,12 +1196,6 @@ private:
         size_t haveread_n = 0;
 
         selectImgOffset = offset + IMG_INDEX(select_img) * (pagesize + pad);
-
-        if(!isValidAxisOrder(axisOrder))
-        {
-            reportWarning("Image::readData: Invalid axis ordering. Defaulting to 0,1,2,3 ");
-            axisOrder = {0, 1, 2, 3};
-        }
 
         // Flag to know that data is not going to be mapped although mmapOn is true
         if (mmapOnRead && (!checkMmapT(datatype) || swap > 0 || axisOrder != defaultAxisOrder))
