@@ -33,6 +33,7 @@ include(GNUInstallDirs)
 
 # Find dependencies
 find_package(HDF5 1.10 REQUIRED)
+find_package(TIFF REQUIRED)
 
 # Register all source and header files
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/core/*.c)
@@ -60,6 +61,7 @@ target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
 		HDF5::HDF5
+		TIFF::TIFF
 )
 
 # Install library's binary files and headers
