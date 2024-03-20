@@ -24,24 +24,36 @@ cmake_minimum_required(VERSION 3.16)
 
 # Define the project
 project(
-  xmipp-core
+  xmippCore
 	VERSION 3.23.11
 	LANGUAGES C CXX
 )
 
 include(GNUInstallDirs)
 
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+
 # Find dependencies
 find_package(Python COMPONENTS Development NumPy REQUIRED)
-find_package(HDF5 1.10 REQUIRED)
+find_package(HDF5 1.10 COMPONENTS C CXX REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
+find_package(FFTW REQUIRED)
 
 # Register all source and header files
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/core/*.c)
-file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include/*.h ${PROJECT_SOURCE_DIR}/include/*.hpp)
+file(GLOB_RECURSE 
+	SOURCES 
+		${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp 
+		${CMAKE_CURRENT_SOURCE_DIR}/core/*.cc
+		${CMAKE_CURRENT_SOURCE_DIR}/core/*.c
+)
+file(GLOB_RECURSE 
+	HEADERS 
+		${PROJECT_SOURCE_DIR}/include/*.h 
+		${PROJECT_SOURCE_DIR}/include/*.hpp
+)
 
 # Create the shared library
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
@@ -53,8 +65,7 @@ set_target_properties(
 target_include_directories(
 	${PROJECT_NAME} 
 	PUBLIC 
-	  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+		${CMAKE_CURRENT_SOURCE_DIR}
 )
 target_precompile_headers(
 	${PROJECT_NAME} 
@@ -70,6 +81,7 @@ target_link_libraries(
 		SQLite::SQLite3
 		JPEG::JPEG
 		Threads::Threads
+		FFTW::DoubleThreads
 )
 
 # Install library's binary files and headers
