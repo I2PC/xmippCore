@@ -32,8 +32,12 @@ project(
 include(GNUInstallDirs)
 
 # Find dependencies
+find_package(Python COMPONENTS Development NumPy REQUIRED)
 find_package(HDF5 1.10 REQUIRED)
 find_package(TIFF REQUIRED)
+find_package(JPEG REQUIRED)
+find_package(SQLite3 REQUIRED)
+find_package(Threads REQUIRED)
 
 # Register all source and header files
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/core/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/core/*.c)
@@ -54,14 +58,18 @@ target_include_directories(
 )
 target_precompile_headers(
 	${PROJECT_NAME} 
-	PRIVATE
-	${HEADERS}
+	PUBLIC ${HEADERS}
 )
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
+		Python::Module
+		Python::NumPy
 		HDF5::HDF5
 		TIFF::TIFF
+		SQLite::SQLite3
+		JPEG::JPEG
+		Threads::Threads
 )
 
 # Install library's binary files and headers
