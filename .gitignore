@@ -56,3 +56,5 @@ gmon.out
 
 # VS Code
 .vscode
+
+build/
