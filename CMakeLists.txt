@@ -74,7 +74,7 @@ target_precompile_headers(
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
-		Python::Module
+		Python::Python
 		Python::NumPy
 		HDF5::HDF5
 		TIFF::TIFF
@@ -82,6 +82,7 @@ target_link_libraries(
 		JPEG::JPEG
 		Threads::Threads
 		FFTW::DoubleThreads
+		FFTW::FloatThreads
 )
 
 # Install library's binary files and headers
