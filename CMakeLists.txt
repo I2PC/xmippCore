@@ -34,7 +34,6 @@ include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
-find_package(Python COMPONENTS Development NumPy REQUIRED)
 find_package(HDF5 1.10 COMPONENTS C CXX REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(JPEG REQUIRED)
@@ -60,7 +59,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(
 	${PROJECT_NAME} PROPERTIES 
 	SOVERSION ${PROJECT_VERSION}
-	CXX_STANDARD 20
+	CXX_STANDARD 17
 )
 target_include_directories(
 	${PROJECT_NAME} 
@@ -74,8 +73,6 @@ target_precompile_headers(
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
-		Python::Python
-		Python::NumPy
 		HDF5::HDF5
 		TIFF::TIFF
 		SQLite::SQLite3
