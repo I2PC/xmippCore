@@ -78,6 +78,8 @@ target_link_libraries(
 		SQLite::SQLite3
 		JPEG::JPEG
 		Threads::Threads
+		FFTW::Double
+		FFTW::Float
 		FFTW::DoubleThreads
 		FFTW::FloatThreads
 )
