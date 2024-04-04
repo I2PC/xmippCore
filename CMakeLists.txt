@@ -34,7 +34,7 @@ include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
-find_package(HDF5 1.10 COMPONENTS C CXX REQUIRED)
+find_package(HDF5 1.10 COMPONENTS C REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(SQLite3 REQUIRED)
@@ -64,6 +64,7 @@ target_include_directories(
 	${PROJECT_NAME} 
 	PUBLIC 
 		${CMAKE_CURRENT_SOURCE_DIR}
+		${HDF5_INCLUDE_DIRS}
 )
 target_precompile_headers(
 	${PROJECT_NAME} 
@@ -72,7 +73,6 @@ target_precompile_headers(
 target_link_libraries(
 	${PROJECT_NAME}
 	PUBLIC
-		HDF5::HDF5
 		TIFF::TIFF
 		SQLite::SQLite3
 		JPEG::JPEG
@@ -81,6 +81,7 @@ target_link_libraries(
 		FFTW::Float
 		FFTW::DoubleThreads
 		FFTW::FloatThreads
+		${HDF5_LIBRARIES}
 )
 
 # Install library's binary files and headers
