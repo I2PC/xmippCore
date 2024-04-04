@@ -34,7 +34,7 @@ include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
-find_package(HDF5 1.10 COMPONENTS C REQUIRED)
+find_package(HDF5 1.8 COMPONENTS C CXX REQUIRED)
 find_package(TIFF REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(SQLite3 REQUIRED)
