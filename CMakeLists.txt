@@ -58,7 +58,6 @@ file(GLOB_RECURSE
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 set_target_properties(
 	${PROJECT_NAME} PROPERTIES 
-	SOVERSION ${PROJECT_VERSION}
 	CXX_STANDARD 17
 )
 target_include_directories(
