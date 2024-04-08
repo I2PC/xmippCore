@@ -41,6 +41,12 @@ find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(FFTW REQUIRED)
 
+# Save versions for debug
+string(APPEND XMIPP_VERSIONS "HDF5=${HDF5_VERSION}\n")
+string(APPEND XMIPP_VERSIONS "JPEG=${JPEG_VERSION}\n")
+string(APPEND XMIPP_VERSIONS "SQLite3=${SQLite3_VERSION}\n")
+set(XMIPP_VERSIONS ${XMIPP_VERSIONS} PARENT_SCOPE)
+
 # Register all source and header files
 file(GLOB_RECURSE 
 	SOURCES 
