@@ -25,6 +25,7 @@ if __name__ == "__main__":
 			'\'number\' only shows the version number.\n'
 			'\'name\' only shows the release name.\n'
 			'\'full\' shows the full release name, including number and name.')
+	parser.add_argument("-k", "--keep-format", action="store_true")
 	args = parser.parse_args()
 
 	# Change directory to current file
@@ -32,11 +33,11 @@ if __name__ == "__main__":
 
 	# Get release full name
 	relaseLine = __getReleaseName("../CHANGELOG.md", "##")
-	fullName = relaseLine.replace("## Release ", "").replace(" ", "")
+	fullName = relaseLine.replace("## Release ", "")
 
 	# Print name deppending on argument provided
-	resultName = fullName
+	resultName = fullName if args.keep_format else fullName.replace(" ", "")
 	if args.type != 'full':
 		parts = fullName.split("-")
-		resultName = parts[0] if args.type == 'number' else parts[1]
+		resultName = parts[0].strip() if args.type == 'number' else parts[1].strip()
 	print(resultName)
