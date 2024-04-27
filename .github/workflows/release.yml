@@ -13,9 +13,9 @@ jobs:
 
     - name: Retrieve tag name, release name & changelog
       run: |
-        echo "TAG_NAME=$(./scripts/version.py)" >> $GITHUB_OUTPUT
+        echo "TAG_NAME=$(python ./scripts/version.py)" >> $GITHUB_OUTPUT
         awk '/## Release/{if (p) exit; p=1} p' CHANGELOG.md | tail -n +2 > latest_changelog.md
-        echo "RELEASE_NAME=$(./scripts/version.py --keep-format)" >> $GITHUB_OUTPUT
+        echo "RELEASE_NAME=$(python ./scripts/version.py --keep-format)" >> $GITHUB_OUTPUT
       id: variables
       
     - name: Generate tag
