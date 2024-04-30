@@ -469,6 +469,7 @@ private:
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_CONF_2_5_PERC, LABEL_DOUBLE, "localAlignmnentConf25Perc");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_CONF_97_5_PERC, LABEL_DOUBLE, "localAlignmnentConf955Perc");
         MDL::addLabel(MDL_LOCAL_ALIGNMENT_CONTROL_POINTS, LABEL_VECTOR_SIZET, "localAlignmentControlPoints");
+        MDL::addLabel(MDL_LOCAL_AVERAGE, LABEL_DOUBLE, "localAverage");
         MDL::addLabel(MDL_MACRO_CMD, LABEL_STRING, "macroCmd");
         MDL::addLabel(MDL_MACRO_CMD_ARGS, LABEL_STRING, "macroCmdArgs");
         MDL::addLabel(MDL_MAGNIFICATION, LABEL_DOUBLE, "magnification");
