@@ -40,5 +40,6 @@ jobs:
       # Build only the core to be able to run the static code analysis
       - name: Compile XmippCore
         run: |
-          cp ${BUILD_DIR}/xmipp.conf ./
-          python3 $(which scons) . -j4
+          cmake -S . -B build/ -DXMIPP_VERSIONS_FILE=build/versions.txt
+          cmake --build build/ -j 4
+
