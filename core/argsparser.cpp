@@ -623,7 +623,7 @@ bool ParamDef::parse()
                 pOpt->name = pOpt->token.lexeme;
                 pOpt->parseArgumentList();
                 pOpt->parseCommentList(pOpt->comments);
-                pOpt->parseParamList(TOK_REQUIRES, prog, pOpt->requires, false);
+                pOpt->parseParamList(TOK_REQUIRES, prog, pOpt->requirements, false);
                 pArg->subParams.push_back(pOpt);
             }
 
@@ -634,7 +634,7 @@ bool ParamDef::parse()
     parseParamList(TOK_ALIAS, prog, aliases, true);
 
     //REQUIRES section
-    parseParamList(TOK_REQUIRES, prog, requires, false);
+    parseParamList(TOK_REQUIRES, prog, requirements, false);
 
     return true;
 }
@@ -700,12 +700,12 @@ bool ParamDef::checkRequires(std::stringstream & errors, ProgramDef * prog)
 {
     ParamDef * param;
     bool correct = true;
-    for (size_t i = 0; i < requires.size(); ++i)
+    for (size_t i = 0; i < requirements.size(); ++i)
     {
-        param = prog->findParam(requires[i]);
+        param = prog->findParam(requirements[i]);
         if (param->counter < 1)
         {
-            errors << "Parameter " << name << " requires " << requires[i] << std::endl;
+            errors << "Parameter " << name << " requirements " << requirements[i] << std::endl;
             correct = false;
         }
     }
@@ -725,7 +725,7 @@ void ParamDef::check(std::stringstream & errors)
 
     if (counter == 1)
     {
-        //Check requires restrictions
+        //Check requirements restrictions
         checkRequires(errors, prog);
 
         //Check the number of arguments

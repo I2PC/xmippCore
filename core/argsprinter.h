@@ -53,7 +53,7 @@ class ConsolePrinter: public Printer
 {
 protected:
   std::ostream * pOut;
-  void printRequiresList(StringVector requires);
+  void printRequiresList(StringVector requirements);
 public:
   bool color;
   /**Constructor */
@@ -88,7 +88,7 @@ class WikiPrinter: public Printer
 {
 protected:
   std::ostream * pOut;
-  void printRequiresList(StringVector requires);
+  void printRequiresList(StringVector requirements);
 public:
   /**Constructor */
   WikiPrinter(std::ostream &out=std::cout);

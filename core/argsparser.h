@@ -202,7 +202,7 @@ public:
 
     CommentList comments;
     StringVector aliases;
-    StringVector requires;
+    StringVector requirements;
 
     //Empty constructor
     ParamDef(ArgLexer *lexer, ASTNode * parent);

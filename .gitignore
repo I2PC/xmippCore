@@ -26,6 +26,7 @@
 
 #### Python
 *.pyc
+__pycache__
 
 #### Eclipse and so on
 .project
@@ -33,9 +34,6 @@
 .pydevproject
 .classpath
 .idea
-
-# Scons auxiliary files
-.sconsign.dblite
 
 # Other
 gmon.out
@@ -56,3 +54,5 @@ gmon.out
 
 # VS Code
 .vscode
+
+build/
