@@ -273,6 +273,7 @@ enum MDLabel
     MDL_LOCAL_ALIGNMENT_CONF_2_5_PERC, ///< A shift amount at confidence level of 2.5%
     MDL_LOCAL_ALIGNMENT_CONF_97_5_PERC, ///< A shift amount at confidence level of 95.5%
     MDL_LOCAL_ALIGNMENT_CONTROL_POINTS, ///< Three values representing number of control points used for local alignment (X, Y, N)
+    MDL_LOCAL_AVERAGE, ///< average value in the micrograph (double)
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
