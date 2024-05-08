@@ -26,16 +26,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetching Xmipp
-        run: python ./scripts/ci_build
-          
-      - name: Getting xmipp.conf
-        run: ./xmipp config #all br=${{ steps.extract_branch.outputs.branch }} noAsk
-        working-directory: ${{ env.BUILD_DIR }}
-        env:
-          CIBuild: 1
-          BUILD_TESTS: True
-
       # If we got here, Xmipp can be build with this xmippCore
       # Build only the core to be able to run the static code analysis
       - name: Compile XmippCore
