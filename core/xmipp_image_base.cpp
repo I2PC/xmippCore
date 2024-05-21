@@ -777,6 +777,7 @@ bool isMRCStack(const FileName &ext_name)
 {
 	return ext_name.contains("mrcs") || ext_name.contains("st") ||
 	       ext_name.contains("preali") || ext_name.contains("ali") ||
+		   ext_name.contains("fixed") ||
 		   isDynamicMRC("XMIPP_MRC_STACK_EXTENSIONS",ext_name);
 }
 
