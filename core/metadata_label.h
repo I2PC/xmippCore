@@ -273,6 +273,7 @@ enum MDLabel
     MDL_LOCAL_ALIGNMENT_CONF_2_5_PERC, ///< A shift amount at confidence level of 2.5%
     MDL_LOCAL_ALIGNMENT_CONF_97_5_PERC, ///< A shift amount at confidence level of 95.5%
     MDL_LOCAL_ALIGNMENT_CONTROL_POINTS, ///< Three values representing number of control points used for local alignment (X, Y, N)
+    MDL_LOCAL_AVERAGE, ///< average value in the micrograph (double)
     MDL_MAGNIFICATION, /// Magnification of microscope
     MDL_MAPTOPOLOGY, ///< Map topology (KerDenSOM, ...)
     MDL_MASK, ///< Name of a mask associated to image
@@ -450,12 +451,14 @@ enum MDLabel
     MDL_SPH_TSNE_COEFF2D, ///tsne coefficients in 2D
     MDL_STDDEV, ///<stdandard deviation value (double)
     MDL_STAR_COMMENT, ///< A comment for this object /*** NOTE THIS IS A SPECIAL CASE AND SO IS TREATED ***/
+	MDL_SUBTOMOID, ///<Subtomogram id (size_t)
     MDL_SUBTRACTION_R2, ///< R2 coefficient of subtracted particle 
     MDL_SUBTRACTION_BETA0, ///< Beta 0 coefficient of adjusted model for subtract particle 
     MDL_SUBTRACTION_BETA1, ///< Beta 1 coefficient of adjusted model for subtract particle 
     MDL_SUM, ///< Sum of elements of a given type (double) [this is a genereic type do not use to transfer information to another program]
     MDL_SUMWEIGHT, ///< Sum of all weights in ML model
     MDL_SYMNO, ///< Symmetry number for a projection (used in ART)
+	MDL_TILTPARTICLEID, ///<Tilt particle id (size_t)
     MDL_TOMOGRAM_VOLUME, ///< Name for the reconstructed tomogram volume (std::string)
     MDL_TOMOGRAMMD, ///< Name for a Metadata file (std::string)
     MDL_TRANSFORM_MATRIX, ///< transformation matrix in numpy string format or space separated (std::string)

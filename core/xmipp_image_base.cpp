@@ -777,6 +777,7 @@ bool isMRCStack(const FileName &ext_name)
 {
 	return ext_name.contains("mrcs") || ext_name.contains("st") ||
 	       ext_name.contains("preali") || ext_name.contains("ali") ||
+		   ext_name.contains("fixed") ||
 		   isDynamicMRC("XMIPP_MRC_STACK_EXTENSIONS",ext_name);
 }
 
@@ -855,6 +856,8 @@ int ImageBase::_read(const FileName &name, ImageFHandler* hFile, DataMode datamo
         err = readMRC(select_img,true);
     else if (isMRCImageOrVolume(ext_name)) //mrc
         err = readMRC(select_img,false);
+    else if (ext_name.contains("eer"))//EER
+        err = readEER(select_img);
     else if (ext_name.contains("img") || ext_name.contains("hed"))//
         err = readIMAGIC(select_img);//imagic is always an stack
     else if (ext_name.contains("ser"))//TIA

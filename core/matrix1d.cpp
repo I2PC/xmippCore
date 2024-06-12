@@ -449,13 +449,26 @@ Matrix1D<T> Matrix1D<T>::operator-() const
     size_t iBlockMax = vdim / 4;
     for (size_t i = 0; i < iBlockMax; i++)
     {
-        (*ptr1++) = -(*ptr2++);
-        (*ptr1++) = -(*ptr2++);
-        (*ptr1++) = -(*ptr2++);
-        (*ptr1++) = -(*ptr2++);
+        if constexpr (std::is_signed_v<T> || std::is_floating_point_v<T>) {
+            (*ptr1++) = -(*ptr2++);
+            (*ptr1++) = -(*ptr2++);
+            (*ptr1++) = -(*ptr2++);
+            (*ptr1++) = -(*ptr2++);
+        } else {
+            REPORT_ERROR(
+            ERR_TYPE_INCORRECT,
+            static_cast<std::string>("Can not use unitary minus on unsigned datatypes"));
+        }
+        
     }
     for (size_t i = iBlockMax * 4; i < vdim; ++i)
-        (*ptr1++) = -(*ptr2++);
+        if constexpr (std::is_signed_v<T> || std::is_floating_point_v<T>) {
+            (*ptr1++) = -(*ptr2++);
+        } else {
+            REPORT_ERROR(
+            ERR_TYPE_INCORRECT,
+            static_cast<std::string>("Can not use unitary minus on unsigned datatypes"));
+        }
     return tmp;
 }
 
@@ -735,9 +748,15 @@ void Matrix1D<T>::numericalDerivative(Matrix1D<double> &result) const
     const double i12 = 1.0 / 12.0;
     result.initZeros(*this);
     for (int i = 2; i <= vdim - 2; i++)
-        result(i) = i12
+        if constexpr (std::is_signed_v<T> || std::is_floating_point_v<T>) {
+            result(i) = i12
                     * (-(*this)(i + 2) + 8 * (*this)(i + 1) - 8 * (*this)(i - 1)
                        + (*this)(i + 2));
+        } else {
+            REPORT_ERROR(
+            ERR_TYPE_INCORRECT,
+            static_cast<std::string>("Can not use unitary minus on unsigned datatypes"));
+        }
 }
 
 template<typename T>

@@ -220,15 +220,14 @@ Matrix1D<double> getVectorParameter(FILE *fh, const char *param, int dim)
     char *copy = NULL;
     Matrix1D<double> retval;
     if (!generateCommandLine(fh, param, argcp, argvp, copy))
-        if (dim == -1)
-            return retval;
-        else
+    {
+        if (dim != -1)
             REPORT_ERROR(ERR_ARG_MISSING, param);
+    }
     else
     {
         retval = getVectorParameter(argcp, (const char **)argvp, ((std::string)"-" + param).c_str(), dim);
         delete[] copy;
-        return retval;
     }
     return retval;
 }
@@ -429,7 +428,6 @@ std::string getParameter(FILE *fh, const char *param, int skip, const char *opti
             return option;
     else
         return removeSpaces(retval);
-    return "";
 }
 
 // Check "parameter" from file =============================================

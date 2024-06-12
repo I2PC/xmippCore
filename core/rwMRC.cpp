@@ -168,9 +168,9 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
 
     // Reading and storing axis order
     axisOrder[0] = 0;
-    axisOrder[1] = header->mapc;
-    axisOrder[2] = header->mapr;
-    axisOrder[3] = header->maps;
+    axisOrder[1] = 4 - header->maps;
+    axisOrder[2] = 4 - header->mapr;
+    axisOrder[3] = 4 - header->mapc;
 
     bool isVolStk = (header->ispg > 400);
 
@@ -286,6 +286,7 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
 
     if (dataMode==HEADER || (dataMode == _HEADER_ALL && _nDim > 1)) // Stop reading if not necessary
     {
+        readData(NULL, 0, DT_Unknown, 0); // To consider axis ordering. Will not read actual data
         return errCode;
     }
 
@@ -326,8 +327,10 @@ int ImageBase::readMRC(size_t start_img, size_t batch_size, bool isStack /* = fa
     }
 
     if ( dataMode < DATA )   // Don't read the individual header and the data if not necessary
+    {
+        readData(NULL, 0, DT_Unknown, 0); // To consider axis ordering. Will not read actual data
         return errCode;
-
+    }
 
     // Lets read the data
 
