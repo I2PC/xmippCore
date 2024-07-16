@@ -71,7 +71,9 @@ namespace memoryUtils
     inline T* page_aligned_alloc(size_t elems, bool initToZero) {
         size_t bytes = elems * sizeof(T);
         auto p = (T*)page_aligned_alloc(bytes);
-        madvise(p, bytes, MADV_HUGEPAGE);
+        #ifdef MADV_HUGEPAGE
+            madvise(p, bytes, MADV_HUGEPAGE); // Not available in all platforms
+        #endif
         if (initToZero) {
             memset(p, 0, bytes);
         }
