@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 3.16)
 # Define the project
 project(
   XmippCore
-	VERSION 3.23.11
+	VERSION 3.24.06
 	LANGUAGES C CXX
 )
 
