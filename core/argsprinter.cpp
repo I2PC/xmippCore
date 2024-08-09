@@ -100,13 +100,13 @@ void ConsolePrinter::printSection(const SectionDef &section, int v)
     }
 }
 
-void ConsolePrinter::printRequiresList(StringVector requires)
+void ConsolePrinter::printRequiresList(StringVector requirements)
 {
-    if (!requires.empty())
+    if (!requirements.empty())
     {
-        *pOut << " ( requires ";
-        for (size_t i = 0; i < requires.size(); ++i)
-            *pOut << requires[i] << " ";
+        *pOut << " ( requirements ";
+        for (size_t i = 0; i < requirements.size(); ++i)
+            *pOut << requirements[i] << " ";
         *pOut << ")";
     }
 }
@@ -138,7 +138,7 @@ void ConsolePrinter::printParam(const ParamDef &param, int v)
         if (!param.notOptional)
             *pOut << "]";
 
-        printRequiresList(param.requires);
+        printRequiresList(param.requirements);
         *pOut << std::endl;
         printCommentList(param.comments, v);
 
@@ -156,7 +156,7 @@ void ConsolePrinter::printParam(const ParamDef &param, int v)
                         *pOut << " ";
                         printArgument(*(arg.subParams[j]->arguments[k]));
                     }
-                    printRequiresList(arg.subParams[j]->requires);
+                    printRequiresList(arg.subParams[j]->requirements);
                     *pOut << std::endl;
                     printCommentList(arg.subParams[j]->comments, v);
 
@@ -386,13 +386,13 @@ void WikiPrinter::printSection(const SectionDef &section, int v)
     }
 }
 
-void WikiPrinter::printRequiresList(StringVector requires)
+void WikiPrinter::printRequiresList(StringVector requirements)
 {
-    if (!requires.empty())
+    if (!requirements.empty())
     {
-        *pOut << " ( requires ";
-        for (size_t i = 0; i < requires.size(); ++i)
-            *pOut << requires[i] << " ";
+        *pOut << " ( requirements ";
+        for (size_t i = 0; i < requirements.size(); ++i)
+            *pOut << requirements[i] << " ";
         *pOut << ")";
     }
 }
@@ -421,7 +421,7 @@ void WikiPrinter::printParam(const ParamDef &param, int v)
             printArgument(*param.arguments[i], v);
         }
         *pOut << " %ENDCOLOR%=";
-        printRequiresList(param.requires);
+        printRequiresList(param.requirements);
         *pOut <<": " ;
         printCommentList(param.comments, v);
 
@@ -443,7 +443,7 @@ void WikiPrinter::printParam(const ParamDef &param, int v)
                         printArgument(*(arg.subParams[j]->arguments[k]), v);
                     }
                     *pOut << " %ENDCOLOR%" << std::endl;
-                    printRequiresList(arg.subParams[j]->requires);
+                    printRequiresList(arg.subParams[j]->requirements);
                     //                    *pOut << std::endl;
                     printCommentList(arg.subParams[j]->comments, v);
 
