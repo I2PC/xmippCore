@@ -80,6 +80,9 @@ enum MDLabel
     MDL_CL2D_SIMILARITY, ///< Average cross-correlation for the image (double)
     MDL_CLASS_COUNT, ///< Number of images assigned to the same class as this image
     MDL_CLASS_PERCENTAGE, ///< Percentage of images assigned to the same class as this image
+
+    MDL_CLASS_PROBABILITY, ///< Image's probability of beloging to a certain binary class
+
     MDL_CLASSIFICATION_DATA, ///< Data vector for classification (vector double)
     MDL_CLASSIFICATION_DATA_SIZE, ///< Size of data vectors for classification (int)
     MDL_CLASSIFICATION_DPR_05, ///< Differential Phase Residual evaluated at FRC=0.5

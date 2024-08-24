@@ -192,6 +192,9 @@ private:
         MDL::addLabel(MDL_CLASS_COUNT, LABEL_SIZET, "classCount");
         MDL::addLabelAlias(MDL_CLASS_COUNT, "class_count"); //3.0
         MDL::addLabel(MDL_CLASS_PERCENTAGE, LABEL_DOUBLE, "classPercentage");
+
+        MDL::addLabel(MDL_CLASS_PROBABILITY, LABEL_DOUBLE, "classProbability");
+        
         MDL::addLabel(MDL_CLASSIFICATION_DATA, LABEL_VECTOR_DOUBLE, "classificationData");
         MDL::addLabelAlias(MDL_CLASSIFICATION_DATA, "ClassificationData");
         MDL::addLabel(MDL_CLASSIFICATION_DATA_SIZE, LABEL_SIZET, "classificationDatasize");
