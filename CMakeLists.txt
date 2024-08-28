@@ -35,13 +35,24 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
 find_package(HDF5 1.8 COMPONENTS C CXX REQUIRED)
-file(APPEND ${XMIPP_VERSIONS_FILE} "HDF5=${HDF5_VERSION}\n")
+if(XMIPP_VERSIONS_FILE)
+	file(APPEND ${XMIPP_VERSIONS_FILE} "HDF5=${HDF5_VERSION}\n")
+endif()
+
 find_package(TIFF REQUIRED)
+
 find_package(JPEG REQUIRED)
-file(APPEND ${XMIPP_VERSIONS_FILE} "JPEG=${JPEG_VERSION}\n")
+if(XMIPP_VERSIONS_FILE)
+	file(APPEND ${XMIPP_VERSIONS_FILE} "JPEG=${JPEG_VERSION}\n")
+endif()
+
 find_package(SQLite3 REQUIRED)
-file(APPEND ${XMIPP_VERSIONS_FILE} "SQLite3=${SQLite3_VERSION}\n")
+if(XMIPP_VERSIONS_FILE)
+	file(APPEND ${XMIPP_VERSIONS_FILE} "SQLite3=${SQLite3_VERSION}\n")
+endif()
+
 find_package(Threads REQUIRED)
+
 find_package(FFTW REQUIRED)
 
 # Register all source and header files
