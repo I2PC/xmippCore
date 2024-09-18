@@ -635,7 +635,7 @@ int ImageBase::readEER(size_t select_img) {
 		// Render single frame
 		if (select_img > fractioning)
 		{
-			REPORT_ERROR(ERR_LOGIC_ERROR, "Requested frame greater than the fractioning);
+			REPORT_ERROR(ERR_LOGIC_ERROR, "Requested frame greater than the fractioning");
 		}
 		else
 		{
