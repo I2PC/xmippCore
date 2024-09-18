@@ -627,11 +627,38 @@ int ImageBase::readEER(size_t select_img) {
 	EERRenderer renderer;
 	renderer.read(hFile->fileName, upsampling);
 
-	MultidimArray<int> buffer(_yDim, _xDim);
-	const auto step = renderer.getNFrames() / fractioning;
-	const auto first = (select_img-1)*step;
-	const auto last = first + step - 1;
-	renderer.renderFrames(first, last, buffer);
+	MultidimArray<int> buffer;
+	const auto nEerFrames = renderer.getNFrames();
+	const auto step = nEerFrames / fractioning;
+	if (select_img > 0)
+	{
+		// Render single frame
+		if (select_img > fractioning)
+		{
+			REPORT_ERROR(ERR_LOGIC_ERROR, "Requested frame greater than the fractioning);
+		}
+		else
+		{
+			
+			buffer.resizeNoCopy(_yDim, _xDim);
+			const auto first = (select_img-1)*step;
+			const auto last = first + step - 1;
+			renderer.renderFrames(first, last, buffer);
+		}
+	}
+	else
+	{
+		buffer.resizeNoCopy(fractioning, 1, _yDim, _xDim);
+		MultidimArray<int> frameAlias;
+		for(size_t i = 0; i < fractioning; ++i)
+		{
+			frameAlias.aliasImageInStack(buffer, i);
+			const auto first = i*step;
+			const auto last = first + step - 1;
+			renderer.renderFrames(first, last, buffer);
+		}
+	}
+	
 	setPage2T(
 		0UL, reinterpret_cast<char*>(MULTIDIM_ARRAY(buffer)),
 		DT_Int,
