@@ -625,7 +625,7 @@ int ImageBase::readEER(size_t select_img) {
 		return 0;
 
 	EERRenderer renderer;
-	renderer.read(hFile->fileName, upsampling);
+	renderer.read(dataFName, upsampling);
 
 	MultidimArray<int> buffer;
 	const auto nEerFrames = renderer.getNFrames();
