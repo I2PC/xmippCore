@@ -573,7 +573,6 @@ int ImageBase::readEER(size_t select_img) {
 	size_t found = filename.find_first_of("#");
 	FileName infolist = filename.substr(found + 1);
 	filename = filename.substr(0, found);
-	infolist.toLowercase();
 	splitString(infolist, ",", info, false);
 
 	if (info.size() < 3)
@@ -603,11 +602,12 @@ int ImageBase::readEER(size_t select_img) {
 		REPORT_ERROR(ERR_PARAM_INCORRECT, "Incorrect output size. Valid sizes are: 4K, 8K.");
 	}
 
-	_zDim = _nDim = 1;
+	_zDim = 1;
+	_nDim = select_img > 0 ? 1 : fractioning;
 	setDimensions(_xDim, _yDim, _zDim, _nDim);
 	mdaBase->coreAllocateReuse();
 
-  if(info[2] == "uint8")
+  	if(info[2] == "uint8")
 		datatype = DT_UChar;
 	else if (info[2] == "uint16")
 		datatype = DT_UShort;
@@ -648,6 +648,7 @@ int ImageBase::readEER(size_t select_img) {
 	}
 	else
 	{
+		// Render the whole movie
 		buffer.resizeNoCopy(fractioning, 1, _yDim, _xDim);
 		MultidimArray<int> frameAlias;
 		for(size_t i = 0; i < fractioning; ++i)
