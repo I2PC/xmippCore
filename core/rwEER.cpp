@@ -655,7 +655,7 @@ int ImageBase::readEER(size_t select_img) {
 			frameAlias.aliasImageInStack(buffer, i);
 			const auto first = i*step;
 			const auto last = first + step - 1;
-			renderer.renderFrames(first, last, buffer);
+			renderer.renderFrames(first, last, frameAlias);
 		}
 	}
 	
