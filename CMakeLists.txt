@@ -97,6 +97,12 @@ target_link_libraries(
 		FFTW::FloatThreads
 		${HDF5_LIBRARIES}
 )
+target_link_options(
+	${PROJECT_NAME} 
+	PUBLIC 
+		-static-libgcc 
+		-static-libstdc++
+)
 
 # Install library's binary files and headers
 install(
