@@ -676,6 +676,7 @@ private:
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
         MDL::addLabel(MDL_SUBTOMOID, LABEL_SIZET, "subtomogramId");
         MDL::addLabel(MDL_SUBTRACTION_R2, LABEL_DOUBLE, "R2subtraction");
+        MDL::addLabel(MDL_SUBTRACTION_B, LABEL_DOUBLE, "Bsubtraction");
         MDL::addLabel(MDL_SUBTRACTION_BETA0, LABEL_DOUBLE, "B0subtraction");
         MDL::addLabel(MDL_SUBTRACTION_BETA1, LABEL_DOUBLE, "B1subtraction");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
