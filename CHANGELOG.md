@@ -1,4 +1,4 @@
-## Release 3.24.12 - P
+## Release 3.24.12 - Poseidon
    - Details about the changes on xmipp repository
 
 ## Release 3.24.06 - Oceanus
