@@ -34,7 +34,14 @@ include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
-find_package(HDF5 1.8 COMPONENTS C CXX REQUIRED)
+if (XMIPP_HDF5_CONFIG_MODE)
+	find_package(HDF5 C CXX REQUIRED CONFIG)
+	if (${HDF5_VERSION} VERSION_LESS 1.8)
+		message(FATAL_ERROR "HDF5 1.8 or greater is required")
+	endif()
+else()
+	find_package(HDF5 1.8 COMPONENTS C CXX REQUIRED)
+endif()
 if(XMIPP_VERSIONS_FILE)
 	file(APPEND ${XMIPP_VERSIONS_FILE} "HDF5=${HDF5_VERSION}\n")
 endif()
@@ -95,7 +102,7 @@ target_link_libraries(
 		FFTW::Float
 		FFTW::DoubleThreads
 		FFTW::FloatThreads
-		${HDF5_LIBRARIES}
+		HDF5::HDF5
 )
 
 # Install library's binary files and headers
