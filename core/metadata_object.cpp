@@ -462,7 +462,19 @@ bool MDObject::fromStream(std::istream &is, bool fromString)
             data.longintValue = (size_t) d;
             break;
         case LABEL_DOUBLE:
-            is >> data.doubleValue;
+            {
+                std::string tmp;
+                is >> tmp;
+
+                char* end = nullptr;
+                data.doubleValue = std::strtod(tmp.c_str(), &end);
+                
+                if (end != tmp.c_str() + tmp.size())
+                {
+                    // Set failure flag
+                    is.setstate(std::ios::failbit);
+                }
+            }
             break;
         case LABEL_STRING:
             {
