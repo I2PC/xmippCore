@@ -1,6 +1,6 @@
 ## Release 3.25.06.0 - Rhea
    - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
-   - 
+     
 - ## Release 3.24.12.0 - Poseidon
    - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
