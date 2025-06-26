@@ -55,8 +55,6 @@ find_package(Threads REQUIRED)
 
 find_package(FFTW REQUIRED)
 
-find_library(LIBSTDCXX_LIBRARY stdc++)
-
 # Register all source and header files
 file(GLOB_RECURSE 
 	SOURCES 
@@ -99,16 +97,6 @@ target_link_libraries(
 		FFTW::FloatThreads
 		${HDF5_LIBRARIES}
 )
-
-if(LIBSTDCXX_LIBRARY)
-	message("Linking to libstdc++ at ${LIBSTDCXX_LIBRARY}")
-	target_link_libraries(
-        	${PROJECT_NAME}
-        	PUBLIC
-			${LIBSTDCXX_LIBRARY}
-	)
-
-endif()
 
 # Install library's binary files and headers
 install(

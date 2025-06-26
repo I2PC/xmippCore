@@ -24,6 +24,15 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         custom_tag: ${{ steps.variables.outputs.TAG_NAME }}
+    
+    - name: Update major version tag
+      run: |
+        VERSION=${{ steps.variables.outputs.TAG_NAME }}
+        MAJOR=${VERSION%%.*}
+        git config --global user.name 'GitHub Actions'
+        git config --global user.email 'action@github.com'
+        git tag -fa "${MAJOR}" -m 'Update major version tag with $VERSION'
+        git push origin "${MAJOR}" --force
         
     - name: Create a GitHub release
       uses: ncipollo/release-action@main
