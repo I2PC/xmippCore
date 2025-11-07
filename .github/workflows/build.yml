@@ -4,7 +4,7 @@ name: Build XmippCore
 # Specify when the Action should be triggered: when a pull request is opened against the 'devel' or 'master' branch
 on:
   pull_request:
-    branches: [ devel, master ]
+  workflow_dispatch:
 
 jobs:
   build:
