@@ -1,4 +1,4 @@
-## Release 4.00.0
+## Release 4.0.0
    - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
 ## Release 3.25.06.0 - Rhea
