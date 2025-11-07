@@ -1,6 +1,5 @@
 name: Release new version
 on:
-  push:
   workflow_dispatch:
 
 jobs:
