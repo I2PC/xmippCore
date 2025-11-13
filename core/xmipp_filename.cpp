@@ -257,9 +257,9 @@ bool FileName::hasImageExtension() const
 {
     String ext = getFileFormat();
     return (ext=="img" || ext=="hed" || ext=="inf" || ext=="raw" || ext=="mrc" ||
-            ext=="map" || ext=="spi" || ext=="xmp" || ext=="tif" || ext=="dm3" ||
-            ext=="spe" || ext=="em"  || ext=="pif" || ext=="ser" || ext=="stk" ||
-            ext=="mrcs"|| ext=="jpg" || ext=="dm4");
+            ext=="map" || ext=="spi" || ext=="xmp" || ext=="tif" || ext=="gain" ||
+            ext=="dm3" || ext=="spe" || ext=="em"  || ext=="pif" || ext=="ser" || 
+            ext=="stk" || ext=="mrcs"|| ext=="jpg" || ext=="dm4");
 }
 
 // Has image extension .....................................................

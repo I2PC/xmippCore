@@ -820,7 +820,10 @@ void MetaDataVec::split(size_t parts, std::vector<MetaDataVec> &results, const M
         REPORT_ERROR(ERR_MD, "MetaDataDb::split: Couldn't split a metadata in more parts than its size");
 
     MetaDataVec sorted;
-    sorted.sort(*this, sortLabel);
+    if (sortLabel == MDL_UNDEFINED)
+        sorted = *this;
+    else
+        sorted.sort(*this, sortLabel);
 
     results.clear();
     results.resize(parts);

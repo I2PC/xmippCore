@@ -674,14 +674,18 @@ private:
         MDL::addLabel(MDL_SPH_TSNE_COEFF2D, LABEL_VECTOR_DOUBLE, "sphTsne2D");
         MDL::addLabel(MDL_STDDEV, LABEL_DOUBLE, "stddev");
         MDL::addLabel(MDL_STAR_COMMENT, LABEL_STRING, "starComment");
+        MDL::addLabel(MDL_SUBTOMOID, LABEL_SIZET, "subtomogramId");
         MDL::addLabel(MDL_SUBTRACTION_R2, LABEL_DOUBLE, "R2subtraction");
+        MDL::addLabel(MDL_SUBTRACTION_B, LABEL_DOUBLE, "Bsubtraction");
         MDL::addLabel(MDL_SUBTRACTION_BETA0, LABEL_DOUBLE, "B0subtraction");
         MDL::addLabel(MDL_SUBTRACTION_BETA1, LABEL_DOUBLE, "B1subtraction");
         MDL::addLabel(MDL_SUM, LABEL_DOUBLE, "sum");
         MDL::addLabel(MDL_SUMWEIGHT, LABEL_DOUBLE, "sumWeight");
         MDL::addLabel(MDL_SYMNO, LABEL_INT, "symNo");
 
-        MDL::addLabel(MDL_TOMOGRAM_VOLUME, LABEL_STRING, "tomogramVolume", TAGLABEL_IMAGE);
+
+		MDL::addLabel(MDL_TILTPARTICLEID, LABEL_SIZET, "tiltParticleId");
+		MDL::addLabel(MDL_TOMOGRAM_VOLUME, LABEL_STRING, "tomogramVolume", TAGLABEL_IMAGE);
         MDL::addLabel(MDL_TOMOGRAMMD, LABEL_STRING, "tomogramMetadata", TAGLABEL_METADATA);
         MDL::addLabel(MDL_TSID, LABEL_STRING, "tiltSeriesId");
 

@@ -1,10 +1,14 @@
-## devel
+## Release 4.0.0
+   - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
-## ms_fix_pixelsize
-11/August/2023: Fixed pixel size not being properly stored
+## Release 3.25.06.0 - Rhea
+   - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
+     
+## Release 3.24.12.0 - Poseidon
+   - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
-## ms_transpose_MRC
-11/August/2023: MRC files with axis order other than default is now supported
+## Release 3.24.06 - Oceanus
+   - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
-## co_MRCFileFormat
-22/July/2021: .ali, .preali, .rec added to the set of MRC file
+## Release 3.23.11 - Nereus
+   - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)

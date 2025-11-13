@@ -617,7 +617,7 @@ ImageFHandler* ImageBase::openFile(const FileName &name, int mode) const
 
     }
 
-    if (ext_name.contains("tif"))
+    if (ext_name.contains("tif") || ext_name.contains("gain"))
     {
         TIFFSetWarningHandler(NULL); // Switch off warning messages
         if ((hFile->tif = TIFFOpen(fileName.c_str(), wmChar.c_str())) == NULL)
@@ -731,7 +731,7 @@ void ImageBase::closeFile(ImageFHandler* hFile) const
 
     }
 
-    if (ext_name.contains("tif"))
+    if (ext_name.contains("tif") || ext_name.contains("gain"))
     {
         TIFFClose(tif);
         /* Since when creating a TIFF file without adding an image the file is 8 bytes
@@ -1080,7 +1080,7 @@ void ImageBase::_write(const FileName &name, ImageFHandler* hFile, size_t select
         writeTIA(select_img,false,mode);
     else if (ext_name.contains("raw") || ext_name.contains("inf"))
         writeINF(select_img,false,mode,imParam,castMode);
-    else if (ext_name.contains("tif"))
+    else if (ext_name.contains("tif") || ext_name.contains("gain"))
         writeTIFF(select_img,isStack,mode,imParam,castMode);
     else if (ext_name.contains("spe"))
         writeSPE(select_img,isStack,mode);

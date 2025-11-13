@@ -4,61 +4,32 @@ name: Build XmippCore
 # Specify when the Action should be triggered: when a pull request is opened against the 'devel' or 'master' branch
 on:
   pull_request:
-    branches: [ devel, master ]
+  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-22.04
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    # Disabling shallow clone is recommended for improving relevancy of reporting
     steps:
-#      - name: Extract branch name
-#        shell: bash
-#        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-#        id: extract_branch
-
-
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y scons libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip libopencv-dev
+          sudo apt-get install -y libfftw3-dev libopenmpi-dev openmpi-bin libhdf5-dev python3-numpy python3-dev libtiff5-dev unzip
 
       - name: Export CI variables
         run: echo "BUILD_DIR=CIBuild" >> $GITHUB_ENV
 
       # Using CCache to speed C/C++ compilation
-      - uses: hendrikmuhs/ccache-action@v1.2
-
-      # Installing CUDA
-#      - uses: Jimver/cuda-toolkit@v0.2.11
-#        id: cuda-toolkit
-#        with:
-#          cuda: '11.8.0'
-#          method: network
-#          sub-packages: '["nvcc", "toolkit"]'
+      - uses: hendrikmuhs/ccache-action@main
           
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@main
         with:
           fetch-depth: 0
-
-      - name: Fetching Xmipp
-        run: ./scripts/ci_build
-          
-      - name: Getting xmipp.conf
-        run: ./xmipp config #all br=${{ steps.extract_branch.outputs.branch }} noAsk
-        working-directory: ${{ env.BUILD_DIR }}
-        env:
-          CIBuild: 1
-          BUILD_TESTS: True
 
       # If we got here, Xmipp can be build with this xmippCore
       # Build only the core to be able to run the static code analysis
       - name: Compile XmippCore
         run: |
-          cp ${BUILD_DIR}/xmipp.conf ./
-          python3 $(which scons) . -j4
+          cmake -S . -B build/ -DXMIPP_VERSIONS_FILE=build/versions.txt
+          cmake --build build/ -j 4
+

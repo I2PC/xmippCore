@@ -1,6 +1,6 @@
 # xmippCore
 
-[![CI](https://github.com/I2PC/xmippCore/actions/workflows/main.yml/badge.svg)](https://github.com/I2PC/xmippCore/actions/workflows/main.yml)
+[![CI](https://github.com/I2PC/xmippCore/actions/workflows/build.yml/badge.svg)](https://github.com/I2PC/xmippCore/actions/workflows/build.yml)
 
 
 **>>> To install Xmipp, please visit [this](https://github.com/I2PC/xmipp#xmipp) <<<**
