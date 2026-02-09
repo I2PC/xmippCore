@@ -35,6 +35,11 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
 # Find dependencies
 find_package(HDF5 1.8 COMPONENTS C CXX REQUIRED)
+if (HDF5_VERSION VERSION_GREATER "1.12.2")
+    message(FATAL_ERROR
+        "HDF5 ${HDF5_VERSION} found, but is required <= 1.12.2")
+endif()
+
 if(XMIPP_VERSIONS_FILE)
 	file(APPEND ${XMIPP_VERSIONS_FILE} "HDF5=${HDF5_VERSION}\n")
 endif()
