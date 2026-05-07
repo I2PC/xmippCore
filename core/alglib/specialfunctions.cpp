@@ -1,10 +1,11 @@
 /*************************************************************************
+ALGLIB 4.07.0 (source code generated 2025-12-29)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation (www.fsf.org); either version 2 of the
+the Free Software Foundation (www.fsf.org); either version 2 of the 
 License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -16,17 +17,20 @@ A copy of the GNU General Public License is available at
 http://www.fsf.org/licensing/licenses
 >>> END OF LICENSE >>>
 *************************************************************************/
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include "stdafx.h"
 #include "specialfunctions.h"
 
 // disable some irrelevant warnings
-#if (AE_COMPILER==AE_MSVC)
+#if (AE_COMPILER==AE_MSVC) && !defined(AE_ALL_WARNINGS)
 #pragma warning(disable:4100)
 #pragma warning(disable:4127)
+#pragma warning(disable:4611)
 #pragma warning(disable:4702)
 #pragma warning(disable:4996)
 #endif
-using namespace std;
 
 /////////////////////////////////////////////////////////////////////////
 //
@@ -37,6 +41,7 @@ namespace alglib
 {
 
 
+#if defined(AE_COMPILE_GAMMAFUNC) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 Gamma function
 
@@ -57,20 +62,26 @@ Cephes Math Library Release 2.8:  June, 2000
 Original copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
 Translated to AlgoPascal by Bochkanov Sergey (2005, 2006, 2007).
 *************************************************************************/
-double gammafunction(const double x)
+double gammafunction(const double x, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::gammafunction(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::gammafunction(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
@@ -105,22 +116,30 @@ Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1989, 1992, 2000 by Stephen L. Moshier
 Translated to AlgoPascal by Bochkanov Sergey (2005, 2006, 2007).
 *************************************************************************/
-double lngamma(const double x, double &sgngam)
+double lngamma(const double x, double &sgngam, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::lngamma(x, &sgngam, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::lngamma(x, &sgngam, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
+#endif
 
+#if defined(AE_COMPILE_NORMALDISTR) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 Error function
 
@@ -147,20 +166,26 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double errorfunction(const double x)
+double errorfunction(const double x, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::errorfunction(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::errorfunction(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
@@ -190,24 +215,89 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double errorfunctionc(const double x)
+double errorfunctionc(const double x, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::errorfunctionc(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::errorfunctionc(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
-Normal distribution function
+Same as normalcdf(), obsolete name.
+*************************************************************************/
+double normaldistribution(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::normaldistribution(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Normal distribution PDF
+
+Returns Gaussian probability density function:
+
+               1
+   f(x)  = --------- * exp(-x^2/2)
+           sqrt(2pi)
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
+*************************************************************************/
+double normalpdf(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::normalpdf(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Normal distribution CDF
 
 Returns the area under the Gaussian probability density
 function, integrated from minus infinity to x:
@@ -236,20 +326,26 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double normaldistribution(const double x)
+double normalcdf(const double x, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::normaldistribution(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::normalcdf(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
@@ -258,24 +354,55 @@ Inverse of the error function
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double inverf(const double e)
+double inverf(const double e, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::inverf(e, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::inverf(e, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
-Inverse of Normal distribution function
+Same as invnormalcdf(), deprecated name
+*************************************************************************/
+double invnormaldistribution(const double y0, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invnormaldistribution(y0, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse of Normal CDF
 
 Returns the argument, x, for which the area under the
 Gaussian probability density function (integrated from
@@ -299,682 +426,127 @@ arithmetic   domain        # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double invnormaldistribution(const double y0)
+double invnormalcdf(const double y0, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::invnormaldistribution(y0, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invnormalcdf(y0, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
-Incomplete gamma integral
+Bivariate normal PDF
 
-The function is defined by
+Returns probability density function of the bivariate  Gaussian  with
+correlation parameter equal to Rho:
 
-                          x
-                           -
-                  1       | |  -t  a-1
- igam(a,x)  =   -----     |   e   t   dt.
-                 -      | |
-                | (a)    -
-                          0
+                         1              (    x^2 - 2*rho*x*y + y^2  )
+    f(x,y,rho) = ----------------- * exp( - ----------------------- )
+                 2pi*sqrt(1-rho^2)      (        2*(1-rho^2)        )
 
 
-In this implementation both arguments must be positive.
-The integral is evaluated by either a power series or
-continued fraction expansion, depending on the relative
-values of a and x.
+with -1<rho<+1 and arbitrary x, y.
 
-ACCURACY:
+This function won't fail as long as Rho is in (-1,+1) range.
 
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30       200000       3.6e-14     2.9e-15
-   IEEE      0,100      300000       9.9e-14     1.5e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
 *************************************************************************/
-double incompletegamma(const double a, const double x)
+double bivariatenormalpdf(const double x, const double y, const double rho, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::incompletegamma(a, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::bivariatenormalpdf(x, y, rho, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
-Complemented incomplete gamma integral
+Bivariate normal CDF
 
-The function is defined by
-
-
- igamc(a,x)   =   1 - igam(a,x)
-
-                           inf.
-                             -
-                    1       | |  -t  a-1
-              =   -----     |   e   t   dt.
-                   -      | |
-                  | (a)    -
-                            x
+Returns the area under the bivariate Gaussian  PDF  with  correlation
+parameter equal to Rho, integrated from minus infinity to (x,y):
 
 
-In this implementation both arguments must be positive.
-The integral is evaluated by either a power series or
-continued fraction expansion, depending on the relative
-values of a and x.
+                                          x      y
+                                          -      -
+                            1            | |    | |
+    bvn(x,y,rho) = -------------------   |      |   f(u,v,rho)*du*dv
+                    2pi*sqrt(1-rho^2)  | |    | |
+                                        -      -
+                                       -INF   -INF
 
-ACCURACY:
 
-Tested at random a, x.
-               a         x                      Relative error:
-arithmetic   domain   domain     # trials      peak         rms
-   IEEE     0.5,100   0,100      200000       1.9e-14     1.7e-15
-   IEEE     0.01,0.5  0,100      200000       1.4e-13     1.6e-15
+where
 
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
+                      (    u^2 - 2*rho*u*v + v^2  )
+    f(u,v,rho)   = exp( - ----------------------- )
+                      (        2*(1-rho^2)        )
+
+
+with -1<rho<+1 and arbitrary x, y.
+
+This subroutine uses high-precision approximation scheme proposed  by
+Alan Genz in "Numerical  Computation  of  Rectangular  Bivariate  and
+Trivariate Normal and  t  probabilities",  which  computes  CDF  with
+absolute error roughly equal to 1e-14.
+
+This function won't fail as long as Rho is in (-1,+1) range.
+
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
 *************************************************************************/
-double incompletegammac(const double a, const double x)
+double bivariatenormalcdf(const double x, const double y, const double rho, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::incompletegammac(a, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::bivariatenormalcdf(x, y, rho, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
+#endif
 
-/*************************************************************************
-Inverse of complemented incomplete gamma integral
-
-Given p, the function finds x such that
-
- igamc( a, x ) = p.
-
-Starting with the approximate value
-
-        3
- x = a t
-
- where
-
- t = 1 - d - ndtri(p) sqrt(d)
-
-and
-
- d = 1/9a,
-
-the routine performs up to 10 Newton iterations to find the
-root of igamc(a,x) - p = 0.
-
-ACCURACY:
-
-Tested at random a, p in the intervals indicated.
-
-               a        p                      Relative error:
-arithmetic   domain   domain     # trials      peak         rms
-   IEEE     0.5,100   0,0.5       100000       1.0e-14     1.7e-15
-   IEEE     0.01,0.5  0,0.5       100000       9.0e-14     3.4e-15
-   IEEE    0.5,10000  0,0.5        20000       2.3e-13     3.8e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invincompletegammac(const double a, const double y0)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::invincompletegammac(a, y0, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Airy function
-
-Solution of the differential equation
-
-y"(x) = xy.
-
-The function returns the two independent solutions Ai, Bi
-and their first derivatives Ai'(x), Bi'(x).
-
-Evaluation is by power series summation for small x,
-by rational minimax approximations for large x.
-
-
-
-ACCURACY:
-Error criterion is absolute when function <= 1, relative
-when function > 1, except * denotes relative error criterion.
-For large negative x, the absolute error increases as x^1.5.
-For large positive x, the relative error increases as x^1.5.
-
-Arithmetic  domain   function  # trials      peak         rms
-IEEE        -10, 0     Ai        10000       1.6e-15     2.7e-16
-IEEE          0, 10    Ai        10000       2.3e-14*    1.8e-15*
-IEEE        -10, 0     Ai'       10000       4.6e-15     7.6e-16
-IEEE          0, 10    Ai'       10000       1.8e-14*    1.5e-15*
-IEEE        -10, 10    Bi        30000       4.2e-15     5.3e-16
-IEEE        -10, 10    Bi'       30000       4.9e-15     7.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-void airy(const double x, double &ai, double &aip, double &bi, double &bip)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::airy(x, &ai, &aip, &bi, &bip, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of order zero
-
-Returns Bessel function of order zero of the argument.
-
-The domain is divided into the intervals [0, 5] and
-(5, infinity). In the first interval the following rational
-approximation is used:
-
-
-       2         2
-(w - r  ) (w - r  ) P (w) / Q (w)
-      1         2    3       8
-
-           2
-where w = x  and the two r's are zeros of the function.
-
-In the second interval, the Hankel asymptotic expansion
-is employed with two rational functions of degree 6/6
-and 7/7.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       60000       4.2e-16     1.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselj0(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselj0(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of order one
-
-Returns Bessel function of order one of the argument.
-
-The domain is divided into the intervals [0, 8] and
-(8, infinity). In the first interval a 24 term Chebyshev
-expansion is used. In the second, the asymptotic
-trigonometric representation is employed using two
-rational functions of degree 5/5.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain      # trials      peak         rms
-   IEEE      0, 30       30000       2.6e-16     1.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselj1(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselj1(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of integer order
-
-Returns Bessel function of order n, where n is a
-(possibly negative) integer.
-
-The ratio of jn(x) to j0(x) is computed by backward
-recurrence.  First the ratio jn/jn-1 is found by a
-continued fraction expansion.  Then the recurrence
-relating successive orders is applied until j0 or j1 is
-reached.
-
-If n = 0 or 1 the routine for j0 or j1 is called
-directly.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   range      # trials      peak         rms
-   IEEE      0, 30        5000       4.4e-16     7.9e-17
-
-
-Not suitable for large n or x. Use jv() (fractional order) instead.
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseljn(const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besseljn(n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of the second kind, order zero
-
-Returns Bessel function of the second kind, of order
-zero, of the argument.
-
-The domain is divided into the intervals [0, 5] and
-(5, infinity). In the first interval a rational approximation
-R(x) is employed to compute
-  y0(x)  = R(x)  +   2 * log(x) * j0(x) / PI.
-Thus a call to j0() is required.
-
-In the second interval, the Hankel asymptotic expansion
-is employed with two rational functions of degree 6/6
-and 7/7.
-
-
-
-ACCURACY:
-
- Absolute error, when y0(x) < 1; else relative error:
-
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.3e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double bessely0(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::bessely0(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of second kind of order one
-
-Returns Bessel function of the second kind of order one
-of the argument.
-
-The domain is divided into the intervals [0, 8] and
-(8, infinity). In the first interval a 25 term Chebyshev
-expansion is used, and a call to j1() is required.
-In the second, the asymptotic trigonometric representation
-is employed using two rational functions of degree 5/5.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain      # trials      peak         rms
-   IEEE      0, 30       30000       1.0e-15     1.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double bessely1(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::bessely1(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Bessel function of second kind of integer order
-
-Returns Bessel function of order n, where n is a
-(possibly negative) integer.
-
-The function is evaluated by forward recurrence on
-n, starting with values computed by the routines
-y0() and y1().
-
-If n = 0 or 1 the routine for y0 or y1 is called
-directly.
-
-ACCURACY:
-                     Absolute error, except relative
-                     when y > 1:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       3.4e-15     4.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselyn(const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselyn(n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Modified Bessel function of order zero
-
-Returns modified Bessel function of order zero of the
-argument.
-
-The function is defined as i0(x) = j0( ix ).
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        30000       5.8e-16     1.4e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseli0(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besseli0(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Modified Bessel function of order one
-
-Returns modified Bessel function of order one of the
-argument.
-
-The function is defined as i1(x) = -i j1( ix ).
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.9e-15     2.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseli1(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besseli1(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Modified Bessel function, second kind, order zero
-
-Returns modified Bessel function of the second kind
-of order zero of the argument.
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-Tested at 2000 random points between 0 and 8.  Peak absolute
-error (relative when K0 > 1) was 1.46e-14; rms, 4.26e-15.
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.2e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselk0(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselk0(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Modified Bessel function, second kind, order one
-
-Computes the modified Bessel function of the second kind
-of order one of the argument.
-
-The range is partitioned into the two intervals [0,2] and
-(2, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.2e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselk1(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselk1(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Modified Bessel function, second kind, integer order
-
-Returns modified Bessel function of the second kind
-of order n of the argument.
-
-The range is partitioned into the two intervals [0,9.55] and
-(9.55, infinity).  An ascending power series is used in the
-low range, and an asymptotic expansion in the high range.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        90000       1.8e-8      3.0e-10
-
-Error is high only near the crossover point x = 9.55
-between the two expansions used.
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1988, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselkn(const ae_int_t nn, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::besselkn(nn, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Beta function
-
-
-                  -     -
-                 | (a) | (b)
-beta( a, b )  =  -----------.
-                    -
-                   | (a+b)
-
-For large arguments the logarithm of the function is
-evaluated using lgam(), then exponentiated.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,30       30000       8.1e-14     1.1e-14
-
-Cephes Math Library Release 2.0:  April, 1987
-Copyright 1984, 1987 by Stephen L. Moshier
-*************************************************************************/
-double beta(const double a, const double b)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::beta(a, b, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
+#if defined(AE_COMPILE_IBETAF) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 Incomplete beta integral
 
@@ -1016,24 +588,30 @@ were excluded from these statistics.
 Cephes Math Library, Release 2.8:  June, 2000
 Copyright 1984, 1995, 2000 by Stephen L. Moshier
 *************************************************************************/
-double incompletebeta(const double a, const double b, const double x)
+double incompletebeta(const double a, const double b, const double x, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::incompletebeta(a, b, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::incompletebeta(a, b, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
-Inverse of incomplete beta integral
+Inverse of imcomplete beta integral
 
 Given y, the function finds x such that
 
@@ -1060,1451 +638,30 @@ With a = .5, b constrained to half-integer or integer values:
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1996, 2000 by Stephen L. Moshier
 *************************************************************************/
-double invincompletebeta(const double a, const double b, const double y)
+double invincompletebeta(const double a, const double b, const double y, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::invincompletebeta(a, b, y, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invincompletebeta(a, b, y, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
+#endif
 
-/*************************************************************************
-Binomial distribution
-
-Returns the sum of the terms 0 through k of the Binomial
-probability density:
-
-  k
-  --  ( n )   j      n-j
-  >   (   )  p  (1-p)
-  --  ( j )
- j=0
-
-The terms are not summed directly; instead the incomplete
-beta integral is employed, according to the formula
-
-y = bdtr( k, n, p ) = incbet( n-k, k+1, 1-p ).
-
-The arguments must be positive, with p ranging from 0 to 1.
-
-ACCURACY:
-
-Tested at random points (a,b,p), with p between 0 and 1.
-
-              a,b                     Relative error:
-arithmetic  domain     # trials      peak         rms
- For p between 0.001 and 1:
-   IEEE     0,100       100000      4.3e-15     2.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double binomialdistribution(const ae_int_t k, const ae_int_t n, const double p)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::binomialdistribution(k, n, p, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complemented binomial distribution
-
-Returns the sum of the terms k+1 through n of the Binomial
-probability density:
-
-  n
-  --  ( n )   j      n-j
-  >   (   )  p  (1-p)
-  --  ( j )
- j=k+1
-
-The terms are not summed directly; instead the incomplete
-beta integral is employed, according to the formula
-
-y = bdtrc( k, n, p ) = incbet( k+1, n-k, p ).
-
-The arguments must be positive, with p ranging from 0 to 1.
-
-ACCURACY:
-
-Tested at random points (a,b,p).
-
-              a,b                     Relative error:
-arithmetic  domain     # trials      peak         rms
- For p between 0.001 and 1:
-   IEEE     0,100       100000      6.7e-15     8.2e-16
- For p between 0 and .001:
-   IEEE     0,100       100000      1.5e-13     2.7e-15
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double binomialcdistribution(const ae_int_t k, const ae_int_t n, const double p)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::binomialcdistribution(k, n, p, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Inverse binomial distribution
-
-Finds the event probability p such that the sum of the
-terms 0 through k of the Binomial probability density
-is equal to the given cumulative probability y.
-
-This is accomplished using the inverse beta integral
-function and the relation
-
-1 - p = incbi( n-k, k+1, y ).
-
-ACCURACY:
-
-Tested at random points (a,b,p).
-
-              a,b                     Relative error:
-arithmetic  domain     # trials      peak         rms
- For p between 0.001 and 1:
-   IEEE     0,100       100000      2.3e-14     6.4e-16
-   IEEE     0,10000     100000      6.6e-12     1.2e-13
- For p between 10^-6 and 0.001:
-   IEEE     0,100       100000      2.0e-12     1.3e-14
-   IEEE     0,10000     100000      1.5e-12     3.2e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invbinomialdistribution(const ae_int_t k, const ae_int_t n, const double y)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::invbinomialdistribution(k, n, y, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Calculation of the value of the Chebyshev polynomials of the
-first and second kinds.
-
-Parameters:
-    r   -   polynomial kind, either 1 or 2.
-    n   -   degree, n>=0
-    x   -   argument, -1 <= x <= 1
-
-Result:
-    the value of the Chebyshev polynomial at x
-*************************************************************************/
-double chebyshevcalculate(const ae_int_t r, const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::chebyshevcalculate(r, n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Summation of Chebyshev polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
-or
-    c[0]*U0(x) + c[1]*U1(x) + ... + c[N]*UN(x)
-depending on the R.
-
-Parameters:
-    r   -   polynomial kind, either 1 or 2.
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Chebyshev polynomial at x
-*************************************************************************/
-double chebyshevsum(const real_1d_array &c, const ae_int_t r, const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::chebyshevsum(const_cast<alglib_impl::ae_vector*>(c.c_ptr()), r, n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Representation of Tn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void chebyshevcoefficients(const ae_int_t n, real_1d_array &c)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::chebyshevcoefficients(n, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Conversion of a series of Chebyshev polynomials to a power series.
-
-Represents A[0]*T0(x) + A[1]*T1(x) + ... + A[N]*Tn(x) as
-B[0] + B[1]*X + ... + B[N]*X^N.
-
-Input parameters:
-    A   -   Chebyshev series coefficients
-    N   -   degree, N>=0
-
-Output parameters
-    B   -   power series coefficients
-*************************************************************************/
-void fromchebyshev(const real_1d_array &a, const ae_int_t n, real_1d_array &b)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::fromchebyshev(const_cast<alglib_impl::ae_vector*>(a.c_ptr()), n, const_cast<alglib_impl::ae_vector*>(b.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Chi-square distribution
-
-Returns the area under the left hand tail (from 0 to x)
-of the Chi square probability density function with
-v degrees of freedom.
-
-
-                                  x
-                                   -
-                       1          | |  v/2-1  -t/2
- P( x | v )   =   -----------     |   t      e     dt
-                   v/2  -       | |
-                  2    | (v/2)   -
-                                  0
-
-where x is the Chi-square variable.
-
-The incomplete gamma integral is used, according to the
-formula
-
-y = chdtr( v, x ) = igam( v/2.0, x/2.0 ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double chisquaredistribution(const double v, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::chisquaredistribution(v, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complemented Chi-square distribution
-
-Returns the area under the right hand tail (from x to
-infinity) of the Chi square probability density function
-with v degrees of freedom:
-
-                                 inf.
-                                   -
-                       1          | |  v/2-1  -t/2
- P( x | v )   =   -----------     |   t      e     dt
-                   v/2  -       | |
-                  2    | (v/2)   -
-                                  x
-
-where x is the Chi-square variable.
-
-The incomplete gamma integral is used, according to the
-formula
-
-y = chdtr( v, x ) = igamc( v/2.0, x/2.0 ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double chisquarecdistribution(const double v, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::chisquarecdistribution(v, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Inverse of complemented Chi-square distribution
-
-Finds the Chi-square argument x such that the integral
-from x to infinity of the Chi-square density is equal
-to the given cumulative probability y.
-
-This is accomplished using the inverse gamma integral
-function and the relation
-
-   x/2 = igami( df/2, y );
-
-ACCURACY:
-
-See inverse incomplete gamma function
-
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invchisquaredistribution(const double v, const double y)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::invchisquaredistribution(v, y, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Dawson's Integral
-
-Approximates the integral
-
-                            x
-                            -
-                     2     | |        2
- dawsn(x)  =  exp( -x  )   |    exp( t  ) dt
-                         | |
-                          -
-                          0
-
-Three different rational approximations are employed, for
-the intervals 0 to 3.25; 3.25 to 6.25; and 6.25 up.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,10        10000       6.9e-16     1.0e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double dawsonintegral(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::dawsonintegral(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complete elliptic integral of the first kind
-
-Approximates the integral
-
-
-
-           pi/2
-            -
-           | |
-           |           dt
-K(m)  =    |    ------------------
-           |                   2
-         | |    sqrt( 1 - m sin t )
-          -
-           0
-
-using the approximation
-
-    P(x)  -  log x Q(x).
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,1        30000       2.5e-16     6.8e-17
-
-Cephes Math Library, Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double ellipticintegralk(const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::ellipticintegralk(m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complete elliptic integral of the first kind
-
-Approximates the integral
-
-
-
-           pi/2
-            -
-           | |
-           |           dt
-K(m)  =    |    ------------------
-           |                   2
-         | |    sqrt( 1 - m sin t )
-          -
-           0
-
-where m = 1 - m1, using the approximation
-
-    P(x)  -  log x Q(x).
-
-The argument m1 is used rather than m so that the logarithmic
-singularity at m = 1 will be shifted to the origin; this
-preserves maximum accuracy.
-
-K(0) = pi/2.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,1        30000       2.5e-16     6.8e-17
-
-¿Î„ÓËÚÏ ‚ÁˇÚ ËÁ ·Ë·ÎËÓÚÂÍË Cephes
-*************************************************************************/
-double ellipticintegralkhighprecision(const double m1)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::ellipticintegralkhighprecision(m1, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Incomplete elliptic integral of the first kind F(phi|m)
-
-Approximates the integral
-
-
-
-               phi
-                -
-               | |
-               |           dt
-F(phi_\m)  =    |    ------------------
-               |                   2
-             | |    sqrt( 1 - m sin t )
-              -
-               0
-
-of amplitude phi and modulus m, using the arithmetic -
-geometric mean algorithm.
-
-
-
-
-ACCURACY:
-
-Tested at random points with m in [0, 1] and phi as indicated.
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE     -10,10       200000      7.4e-16     1.0e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double incompleteellipticintegralk(const double phi, const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::incompleteellipticintegralk(phi, m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complete elliptic integral of the second kind
-
-Approximates the integral
-
-
-           pi/2
-            -
-           | |                 2
-E(m)  =    |    sqrt( 1 - m sin t ) dt
-         | |
-          -
-           0
-
-using the approximation
-
-     P(x)  -  x log x Q(x).
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0, 1       10000       2.1e-16     7.3e-17
-
-Cephes Math Library, Release 2.8: June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double ellipticintegrale(const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::ellipticintegrale(m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Incomplete elliptic integral of the second kind
-
-Approximates the integral
-
-
-               phi
-                -
-               | |
-               |                   2
-E(phi_\m)  =    |    sqrt( 1 - m sin t ) dt
-               |
-             | |
-              -
-               0
-
-of amplitude phi and modulus m, using the arithmetic -
-geometric mean algorithm.
-
-ACCURACY:
-
-Tested at random arguments with phi in [-10, 10] and m in
-[0, 1].
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE     -10,10      150000       3.3e-15     1.4e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1993, 2000 by Stephen L. Moshier
-*************************************************************************/
-double incompleteellipticintegrale(const double phi, const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::incompleteellipticintegrale(phi, m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Exponential integral Ei(x)
-
-              x
-               -     t
-              | |   e
-   Ei(x) =   -|-   ---  dt .
-            | |     t
-             -
-            -inf
-
-Not defined for x <= 0.
-See also expn.c.
-
-
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,100       50000      8.6e-16     1.3e-16
-
-Cephes Math Library Release 2.8:  May, 1999
-Copyright 1999 by Stephen L. Moshier
-*************************************************************************/
-double exponentialintegralei(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::exponentialintegralei(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Exponential integral En(x)
-
-Evaluates the exponential integral
-
-                inf.
-                  -
-                 | |   -xt
-                 |    e
-     E (x)  =    |    ----  dt.
-      n          |      n
-               | |     t
-                -
-                 1
-
-
-Both n and x must be nonnegative.
-
-The routine employs either a power series, a continued
-fraction, or an asymptotic formula depending on the
-relative values of n and x.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       10000       1.7e-15     3.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 2000 by Stephen L. Moshier
-*************************************************************************/
-double exponentialintegralen(const double x, const ae_int_t n)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::exponentialintegralen(x, n, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-F distribution
-
-Returns the area from zero to x under the F density
-function (also known as Snedcor's density or the
-variance ratio density).  This is the density
-of x = (u1/df1)/(u2/df2), where u1 and u2 are random
-variables having Chi square distributions with df1
-and df2 degrees of freedom, respectively.
-The incomplete beta integral is used, according to the
-formula
-
-P(x) = incbet( df1/2, df2/2, (df1*x/(df2 + df1*x) ).
-
-
-The arguments a and b are greater than zero, and x is
-nonnegative.
-
-ACCURACY:
-
-Tested at random points (a,b,x).
-
-               x     a,b                     Relative error:
-arithmetic  domain  domain     # trials      peak         rms
-   IEEE      0,1    0,100       100000      9.8e-15     1.7e-15
-   IEEE      1,5    0,100       100000      6.5e-15     3.5e-16
-   IEEE      0,1    1,10000     100000      2.2e-11     3.3e-12
-   IEEE      1,5    1,10000     100000      1.1e-11     1.7e-13
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double fdistribution(const ae_int_t a, const ae_int_t b, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::fdistribution(a, b, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complemented F distribution
-
-Returns the area from x to infinity under the F density
-function (also known as Snedcor's density or the
-variance ratio density).
-
-
-                     inf.
-                      -
-             1       | |  a-1      b-1
-1-P(x)  =  ------    |   t    (1-t)    dt
-           B(a,b)  | |
-                    -
-                     x
-
-
-The incomplete beta integral is used, according to the
-formula
-
-P(x) = incbet( df2/2, df1/2, (df2/(df2 + df1*x) ).
-
-
-ACCURACY:
-
-Tested at random points (a,b,x) in the indicated intervals.
-               x     a,b                     Relative error:
-arithmetic  domain  domain     # trials      peak         rms
-   IEEE      0,1    1,100       100000      3.7e-14     5.9e-16
-   IEEE      1,5    1,100       100000      8.0e-15     1.6e-15
-   IEEE      0,1    1,10000     100000      1.8e-11     3.5e-13
-   IEEE      1,5    1,10000     100000      2.0e-11     3.0e-12
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double fcdistribution(const ae_int_t a, const ae_int_t b, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::fcdistribution(a, b, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Inverse of complemented F distribution
-
-Finds the F density argument x such that the integral
-from x to infinity of the F density is equal to the
-given probability p.
-
-This is accomplished using the inverse beta integral
-function and the relations
-
-     z = incbi( df2/2, df1/2, p )
-     x = df2 (1-z) / (df1 z).
-
-Note: the following relations hold for the inverse of
-the uncomplemented F distribution:
-
-     z = incbi( df1/2, df2/2, p )
-     x = df2 z / (df1 (1-z)).
-
-ACCURACY:
-
-Tested at random points (a,b,p).
-
-             a,b                     Relative error:
-arithmetic  domain     # trials      peak         rms
- For p between .001 and 1:
-   IEEE     1,100       100000      8.3e-15     4.7e-16
-   IEEE     1,10000     100000      2.1e-11     1.4e-13
- For p between 10^-6 and 10^-3:
-   IEEE     1,100        50000      1.3e-12     8.4e-15
-   IEEE     1,10000      50000      3.0e-12     4.8e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invfdistribution(const ae_int_t a, const ae_int_t b, const double y)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::invfdistribution(a, b, y, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Fresnel integral
-
-Evaluates the Fresnel integrals
-
-          x
-          -
-         | |
-C(x) =   |   cos(pi/2 t**2) dt,
-       | |
-        -
-         0
-
-          x
-          -
-         | |
-S(x) =   |   sin(pi/2 t**2) dt.
-       | |
-        -
-         0
-
-
-The integrals are evaluated by a power series for x < 1.
-For x >= 1 auxiliary functions f(x) and g(x) are employed
-such that
-
-C(x) = 0.5 + f(x) sin( pi/2 x**2 ) - g(x) cos( pi/2 x**2 )
-S(x) = 0.5 - f(x) cos( pi/2 x**2 ) - g(x) sin( pi/2 x**2 )
-
-
-
-ACCURACY:
-
- Relative error.
-
-Arithmetic  function   domain     # trials      peak         rms
-  IEEE       S(x)      0, 10       10000       2.0e-15     3.2e-16
-  IEEE       C(x)      0, 10       10000       1.8e-15     3.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-void fresnelintegral(const double x, double &c, double &s)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::fresnelintegral(x, &c, &s, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Calculation of the value of the Hermite polynomial.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Hermite polynomial Hn at x
-*************************************************************************/
-double hermitecalculate(const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::hermitecalculate(n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Summation of Hermite polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Hermite polynomial at x
-*************************************************************************/
-double hermitesum(const real_1d_array &c, const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::hermitesum(const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Representation of Hn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void hermitecoefficients(const ae_int_t n, real_1d_array &c)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::hermitecoefficients(n, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Jacobian Elliptic Functions
-
-Evaluates the Jacobian elliptic functions sn(u|m), cn(u|m),
-and dn(u|m) of parameter m between 0 and 1, and real
-argument u.
-
-These functions are periodic, with quarter-period on the
-real axis equal to the complete elliptic integral
-ellpk(1.0-m).
-
-Relation to incomplete elliptic integral:
-If u = ellik(phi,m), then sn(u|m) = sin(phi),
-and cn(u|m) = cos(phi).  Phi is called the amplitude of u.
-
-Computation is by means of the arithmetic-geometric mean
-algorithm, except when m is within 1e-9 of 0 or 1.  In the
-latter case with m close to 1, the approximation applies
-only for phi < pi/2.
-
-ACCURACY:
-
-Tested at random points with u between 0 and 10, m between
-0 and 1.
-
-           Absolute error (* = relative error):
-arithmetic   function   # trials      peak         rms
-   IEEE      phi         10000       9.2e-16*    1.4e-16*
-   IEEE      sn          50000       4.1e-15     4.6e-16
-   IEEE      cn          40000       3.6e-15     4.4e-16
-   IEEE      dn          10000       1.3e-12     1.8e-14
-
- Peak error observed in consistency check using addition
-theorem for sn(u+v) was 4e-16 (absolute).  Also tested by
-the above relation to the incomplete elliptic integral.
-Accuracy deteriorates when u is large.
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-void jacobianellipticfunctions(const double u, const double m, double &sn, double &cn, double &dn, double &ph)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::jacobianellipticfunctions(u, m, &sn, &cn, &dn, &ph, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Calculation of the value of the Laguerre polynomial.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Laguerre polynomial Ln at x
-*************************************************************************/
-double laguerrecalculate(const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::laguerrecalculate(n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Summation of Laguerre polynomials using Clenshawís recurrence formula.
-
-This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Laguerre polynomial at x
-*************************************************************************/
-double laguerresum(const real_1d_array &c, const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::laguerresum(const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Representation of Ln as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void laguerrecoefficients(const ae_int_t n, real_1d_array &c)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::laguerrecoefficients(n, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Calculation of the value of the Legendre polynomial Pn.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Legendre polynomial Pn at x
-*************************************************************************/
-double legendrecalculate(const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::legendrecalculate(n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Summation of Legendre polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Legendre polynomial at x
-*************************************************************************/
-double legendresum(const real_1d_array &c, const ae_int_t n, const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::legendresum(const_cast<alglib_impl::ae_vector*>(c.c_ptr()), n, x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Representation of Pn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void legendrecoefficients(const ae_int_t n, real_1d_array &c)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        alglib_impl::legendrecoefficients(n, const_cast<alglib_impl::ae_vector*>(c.c_ptr()), &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return;
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Poisson distribution
-
-Returns the sum of the first k+1 terms of the Poisson
-distribution:
-
-  k         j
-  --   -m  m
-  >   e    --
-  --       j!
- j=0
-
-The terms are not summed directly; instead the incomplete
-gamma integral is employed, according to the relation
-
-y = pdtr( k, m ) = igamc( k+1, m ).
-
-The arguments must both be positive.
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double poissondistribution(const ae_int_t k, const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::poissondistribution(k, m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Complemented Poisson distribution
-
-Returns the sum of the terms k+1 to infinity of the Poisson
-distribution:
-
- inf.       j
-  --   -m  m
-  >   e    --
-  --       j!
- j=k+1
-
-The terms are not summed directly; instead the incomplete
-gamma integral is employed, according to the formula
-
-y = pdtrc( k, m ) = igam( k+1, m ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double poissoncdistribution(const ae_int_t k, const double m)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::poissoncdistribution(k, m, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Inverse Poisson distribution
-
-Finds the Poisson variable x such that the integral
-from 0 to x of the Poisson density is equal to the
-given probability y.
-
-This is accomplished using the inverse gamma integral
-function and the relation
-
-   m = igami( k+1, y ).
-
-ACCURACY:
-
-See inverse incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invpoissondistribution(const ae_int_t k, const double y)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::invpoissondistribution(k, y, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
-/*************************************************************************
-Psi (digamma) function
-
-             d      -
-  psi(x)  =  -- ln | (x)
-             dx
-
-is the logarithmic derivative of the gamma function.
-For integer x,
-                  n-1
-                   -
-psi(n) = -EUL  +   >  1/k.
-                   -
-                  k=1
-
-This formula is used for 0 < n <= 10.  If x is negative, it
-is transformed to a positive argument by the reflection
-formula  psi(1-x) = psi(x) + pi cot(pi x).
-For general positive x, the argument is made greater than 10
-using the recurrence  psi(x+1) = psi(x) + 1/x.
-Then the following asymptotic expansion is applied:
-
-                          inf.   B
-                           -      2k
-psi(x) = log(x) - 1/2x -   >   -------
-                           -        2k
-                          k=1   2k x
-
-where the B2k are Bernoulli numbers.
-
-ACCURACY:
-   Relative error (except absolute when |psi| < 1):
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        30000       1.3e-15     1.4e-16
-   IEEE      -30,0       40000       1.5e-15     2.2e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1992, 2000 by Stephen L. Moshier
-*************************************************************************/
-double psi(const double x)
-{
-    alglib_impl::ae_state _alglib_env_state;
-    alglib_impl::ae_state_init(&_alglib_env_state);
-    try
-    {
-        double result = alglib_impl::psi(x, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
-    }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
-}
-
+#if defined(AE_COMPILE_STUDENTTDISTR) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 Student's t distribution
 
@@ -2546,20 +703,26 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
 *************************************************************************/
-double studenttdistribution(const ae_int_t k, const double t)
+double studenttdistribution(const ae_int_t k, const double t, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::studenttdistribution(k, t, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::studenttdistribution(k, t, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
 /*************************************************************************
@@ -2579,22 +742,845 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
 *************************************************************************/
-double invstudenttdistribution(const ae_int_t k, const double p)
+double invstudenttdistribution(const ae_int_t k, const double p, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        double result = alglib_impl::invstudenttdistribution(k, p, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
-        return *(reinterpret_cast<double*>(&result));
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invstudenttdistribution(k, p, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_FDISTR) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+F distribution
+
+Returns the area from zero to x under the F density
+function (also known as Snedcor's density or the
+variance ratio density).  This is the density
+of x = (u1/df1)/(u2/df2), where u1 and u2 are random
+variables having Chi square distributions with df1
+and df2 degrees of freedom, respectively.
+The incomplete beta integral is used, according to the
+formula
+
+P(x) = incbet( df1/2, df2/2, (df1*x/(df2 + df1*x) ).
+
+
+The arguments a and b are greater than zero, and x is
+nonnegative.
+
+ACCURACY:
+
+Tested at random points (a,b,x).
+
+               x     a,b                     Relative error:
+arithmetic  domain  domain     # trials      peak         rms
+   IEEE      0,1    0,100       100000      9.8e-15     1.7e-15
+   IEEE      1,5    0,100       100000      6.5e-15     3.5e-16
+   IEEE      0,1    1,10000     100000      2.2e-11     3.3e-12
+   IEEE      1,5    1,10000     100000      1.1e-11     1.7e-13
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double fdistribution(const ae_int_t a, const ae_int_t b, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
     {
-        throw ap_error(_alglib_env_state.error_msg);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
     }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::fdistribution(a, b, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
 }
 
+/*************************************************************************
+Complemented F distribution
+
+Returns the area from x to infinity under the F density
+function (also known as Snedcor's density or the
+variance ratio density).
+
+
+                     inf.
+                      -
+             1       | |  a-1      b-1
+1-P(x)  =  ------    |   t    (1-t)    dt
+           B(a,b)  | |
+                    -
+                     x
+
+
+The incomplete beta integral is used, according to the
+formula
+
+P(x) = incbet( df2/2, df1/2, (df2/(df2 + df1*x) ).
+
+
+ACCURACY:
+
+Tested at random points (a,b,x) in the indicated intervals.
+               x     a,b                     Relative error:
+arithmetic  domain  domain     # trials      peak         rms
+   IEEE      0,1    1,100       100000      3.7e-14     5.9e-16
+   IEEE      1,5    1,100       100000      8.0e-15     1.6e-15
+   IEEE      0,1    1,10000     100000      1.8e-11     3.5e-13
+   IEEE      1,5    1,10000     100000      2.0e-11     3.0e-12
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double fcdistribution(const ae_int_t a, const ae_int_t b, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::fcdistribution(a, b, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse of complemented F distribution
+
+Finds the F density argument x such that the integral
+from x to infinity of the F density is equal to the
+given probability p.
+
+This is accomplished using the inverse beta integral
+function and the relations
+
+     z = incbi( df2/2, df1/2, p )
+     x = df2 (1-z) / (df1 z).
+
+Note: the following relations hold for the inverse of
+the uncomplemented F distribution:
+
+     z = incbi( df1/2, df2/2, p )
+     x = df2 z / (df1 (1-z)).
+
+ACCURACY:
+
+Tested at random points (a,b,p).
+
+             a,b                     Relative error:
+arithmetic  domain     # trials      peak         rms
+ For p between .001 and 1:
+   IEEE     1,100       100000      8.3e-15     4.7e-16
+   IEEE     1,10000     100000      2.1e-11     1.4e-13
+ For p between 10^-6 and 10^-3:
+   IEEE     1,100        50000      1.3e-12     8.4e-15
+   IEEE     1,10000      50000      3.0e-12     4.8e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invfdistribution(const ae_int_t a, const ae_int_t b, const double y, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invfdistribution(a, b, y, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_IGAMMAF) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Incomplete gamma integral
+
+The function is defined by
+
+                          x
+                           -
+                  1       | |  -t  a-1
+ igam(a,x)  =   -----     |   e   t   dt.
+                 -      | |
+                | (a)    -
+                          0
+
+
+In this implementation both arguments must be positive.
+The integral is evaluated by either a power series or
+continued fraction expansion, depending on the relative
+values of a and x.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30       200000       3.6e-14     2.9e-15
+   IEEE      0,100      300000       9.9e-14     1.5e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompletegamma(const double a, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::incompletegamma(a, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complemented incomplete gamma integral
+
+The function is defined by
+
+
+ igamc(a,x)   =   1 - igam(a,x)
+
+                           inf.
+                             -
+                    1       | |  -t  a-1
+              =   -----     |   e   t   dt.
+                   -      | |
+                  | (a)    -
+                            x
+
+
+In this implementation both arguments must be positive.
+The integral is evaluated by either a power series or
+continued fraction expansion, depending on the relative
+values of a and x.
+
+ACCURACY:
+
+Tested at random a, x.
+               a         x                      Relative error:
+arithmetic   domain   domain     # trials      peak         rms
+   IEEE     0.5,100   0,100      200000       1.9e-14     1.7e-15
+   IEEE     0.01,0.5  0,100      200000       1.4e-13     1.6e-15
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompletegammac(const double a, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::incompletegammac(a, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse of complemented imcomplete gamma integral
+
+Given p, the function finds x such that
+
+ igamc( a, x ) = p.
+
+Starting with the approximate value
+
+        3
+ x = a t
+
+ where
+
+ t = 1 - d - ndtri(p) sqrt(d)
+
+and
+
+ d = 1/9a,
+
+the routine performs up to 10 Newton iterations to find the
+root of igamc(a,x) - p = 0.
+
+ACCURACY:
+
+Tested at random a, p in the intervals indicated.
+
+               a        p                      Relative error:
+arithmetic   domain   domain     # trials      peak         rms
+   IEEE     0.5,100   0,0.5       100000       1.0e-14     1.7e-15
+   IEEE     0.01,0.5  0,0.5       100000       9.0e-14     3.4e-15
+   IEEE    0.5,10000  0,0.5        20000       2.3e-13     3.8e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invincompletegammac(const double a, const double y0, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invincompletegammac(a, y0, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_CHISQUAREDISTR) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Chi-square distribution
+
+Returns the area under the left hand tail (from 0 to x)
+of the Chi square probability density function with
+v degrees of freedom.
+
+
+                                  x
+                                   -
+                       1          | |  v/2-1  -t/2
+ P( x | v )   =   -----------     |   t      e     dt
+                   v/2  -       | |
+                  2    | (v/2)   -
+                                  0
+
+where x is the Chi-square variable.
+
+The incomplete gamma integral is used, according to the
+formula
+
+y = chdtr( v, x ) = igam( v/2.0, x/2.0 ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double chisquaredistribution(const double v, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::chisquaredistribution(v, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complemented Chi-square distribution
+
+Returns the area under the right hand tail (from x to
+infinity) of the Chi square probability density function
+with v degrees of freedom:
+
+                                 inf.
+                                   -
+                       1          | |  v/2-1  -t/2
+ P( x | v )   =   -----------     |   t      e     dt
+                   v/2  -       | |
+                  2    | (v/2)   -
+                                  x
+
+where x is the Chi-square variable.
+
+The incomplete gamma integral is used, according to the
+formula
+
+y = chdtr( v, x ) = igamc( v/2.0, x/2.0 ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double chisquarecdistribution(const double v, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::chisquarecdistribution(v, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse of complemented Chi-square distribution
+
+Finds the Chi-square argument x such that the integral
+from x to infinity of the Chi-square density is equal
+to the given cumulative probability y.
+
+This is accomplished using the inverse gamma integral
+function and the relation
+
+   x/2 = igami( df/2, y );
+
+ACCURACY:
+
+See inverse incomplete gamma function
+
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invchisquaredistribution(const double v, const double y, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invchisquaredistribution(v, y, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_BINOMIALDISTR) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Binomial distribution
+
+Returns the sum of the terms 0 through k of the Binomial
+probability density:
+
+  k
+  --  ( n )   j      n-j
+  >   (   )  p  (1-p)
+  --  ( j )
+ j=0
+
+The terms are not summed directly; instead the incomplete
+beta integral is employed, according to the formula
+
+y = bdtr( k, n, p ) = incbet( n-k, k+1, 1-p ).
+
+The arguments must be positive, with p ranging from 0 to 1.
+
+ACCURACY:
+
+Tested at random points (a,b,p), with p between 0 and 1.
+
+              a,b                     Relative error:
+arithmetic  domain     # trials      peak         rms
+ For p between 0.001 and 1:
+   IEEE     0,100       100000      4.3e-15     2.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double binomialdistribution(const ae_int_t k, const ae_int_t n, const double p, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::binomialdistribution(k, n, p, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complemented binomial distribution
+
+Returns the sum of the terms k+1 through n of the Binomial
+probability density:
+
+  n
+  --  ( n )   j      n-j
+  >   (   )  p  (1-p)
+  --  ( j )
+ j=k+1
+
+The terms are not summed directly; instead the incomplete
+beta integral is employed, according to the formula
+
+y = bdtrc( k, n, p ) = incbet( k+1, n-k, p ).
+
+The arguments must be positive, with p ranging from 0 to 1.
+
+ACCURACY:
+
+Tested at random points (a,b,p).
+
+              a,b                     Relative error:
+arithmetic  domain     # trials      peak         rms
+ For p between 0.001 and 1:
+   IEEE     0,100       100000      6.7e-15     8.2e-16
+ For p between 0 and .001:
+   IEEE     0,100       100000      1.5e-13     2.7e-15
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double binomialcdistribution(const ae_int_t k, const ae_int_t n, const double p, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::binomialcdistribution(k, n, p, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse binomial distribution
+
+Finds the event probability p such that the sum of the
+terms 0 through k of the Binomial probability density
+is equal to the given cumulative probability y.
+
+This is accomplished using the inverse beta integral
+function and the relation
+
+1 - p = incbi( n-k, k+1, y ).
+
+ACCURACY:
+
+Tested at random points (a,b,p).
+
+              a,b                     Relative error:
+arithmetic  domain     # trials      peak         rms
+ For p between 0.001 and 1:
+   IEEE     0,100       100000      2.3e-14     6.4e-16
+   IEEE     0,10000     100000      6.6e-12     1.2e-13
+ For p between 10^-6 and 0.001:
+   IEEE     0,100       100000      2.0e-12     1.3e-14
+   IEEE     0,10000     100000      1.5e-12     3.2e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invbinomialdistribution(const ae_int_t k, const ae_int_t n, const double y, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invbinomialdistribution(k, n, y, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_EXPINTEGRALS) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Exponential integral Ei(x)
+
+              x
+               -     t
+              | |   e
+   Ei(x) =   -|-   ---  dt .
+            | |     t
+             -
+            -inf
+
+Not defined for x <= 0.
+See also expn.c.
+
+
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,100       50000      8.6e-16     1.3e-16
+
+Cephes Math Library Release 2.8:  May, 1999
+Copyright 1999 by Stephen L. Moshier
+*************************************************************************/
+double exponentialintegralei(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::exponentialintegralei(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Exponential integral En(x)
+
+Evaluates the exponential integral
+
+                inf.
+                  -
+                 | |   -xt
+                 |    e
+     E (x)  =    |    ----  dt.
+      n          |      n
+               | |     t
+                -
+                 1
+
+
+Both n and x must be nonnegative.
+
+The routine employs either a power series, a continued
+fraction, or an asymptotic formula depending on the
+relative values of n and x.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       10000       1.7e-15     3.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 2000 by Stephen L. Moshier
+*************************************************************************/
+double exponentialintegralen(const double x, const ae_int_t n, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::exponentialintegralen(x, n, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_JACOBIANELLIPTIC) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Jacobian Elliptic Functions
+
+Evaluates the Jacobian elliptic functions sn(u|m), cn(u|m),
+and dn(u|m) of parameter m between 0 and 1, and real
+argument u.
+
+These functions are periodic, with quarter-period on the
+real axis equal to the complete elliptic integral
+ellpk(1.0-m).
+
+Relation to incomplete elliptic integral:
+If u = ellik(phi,m), then sn(u|m) = sin(phi),
+and cn(u|m) = cos(phi).  Phi is called the amplitude of u.
+
+Computation is by means of the arithmetic-geometric mean
+algorithm, except when m is within 1e-9 of 0 or 1.  In the
+latter case with m close to 1, the approximation applies
+only for phi < pi/2.
+
+ACCURACY:
+
+Tested at random points with u between 0 and 10, m between
+0 and 1.
+
+           Absolute error (* = relative error):
+arithmetic   function   # trials      peak         rms
+   IEEE      phi         10000       9.2e-16*    1.4e-16*
+   IEEE      sn          50000       4.1e-15     4.6e-16
+   IEEE      cn          40000       3.6e-15     4.4e-16
+   IEEE      dn          10000       1.3e-12     1.8e-14
+
+ Peak error observed in consistency check using addition
+theorem for sn(u+v) was 4e-16 (absolute).  Also tested by
+the above relation to the incomplete elliptic integral.
+Accuracy deteriorates when u is large.
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+void jacobianellipticfunctions(const double u, const double m, double &sn, double &cn, double &dn, double &ph, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::jacobianellipticfunctions(u, m, &sn, &cn, &dn, &ph, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_TRIGINTEGRALS) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 Sine and cosine integrals
 
@@ -2634,20 +1620,26 @@ arithmetic   function   # trials      peak         rms
 Cephes Math Library Release 2.1:  January, 1989
 Copyright 1984, 1987, 1989 by Stephen L. Moshier
 *************************************************************************/
-void sinecosineintegrals(const double x, double &si, double &ci)
+void sinecosineintegrals(const double x, double &si, double &ci, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        alglib_impl::sinecosineintegrals(x, &si, &ci, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
         return;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::sinecosineintegrals(x, &si, &ci, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
 }
 
 /*************************************************************************
@@ -2690,21 +1682,1651 @@ arithmetic   function  # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 2000 by Stephen L. Moshier
 *************************************************************************/
-void hyperbolicsinecosineintegrals(const double x, double &shi, double &chi)
+void hyperbolicsinecosineintegrals(const double x, double &shi, double &chi, const xparams _xparams)
 {
+    jmp_buf _break_jump;
     alglib_impl::ae_state _alglib_env_state;
     alglib_impl::ae_state_init(&_alglib_env_state);
-    try
+    if( setjmp(_break_jump) )
     {
-        alglib_impl::hyperbolicsinecosineintegrals(x, &shi, &chi, &_alglib_env_state);
-        alglib_impl::ae_state_clear(&_alglib_env_state);
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
         return;
+#endif
     }
-    catch(alglib_impl::ae_error_type)
-    {
-        throw ap_error(_alglib_env_state.error_msg);
-    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::hyperbolicsinecosineintegrals(x, &shi, &chi, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
 }
+#endif
+
+#if defined(AE_COMPILE_CHEBYSHEV) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Calculation of the value of the Chebyshev polynomials of the
+first and second kinds.
+
+Parameters:
+    r   -   polynomial kind, either 1 or 2.
+    n   -   degree, n>=0
+    x   -   argument, -1 <= x <= 1
+
+Result:
+    the value of the Chebyshev polynomial at x
+*************************************************************************/
+double chebyshevcalculate(const ae_int_t r, const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::chebyshevcalculate(r, n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Summation of Chebyshev polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
+or
+    c[0]*U0(x) + c[1]*U1(x) + ... + c[N]*UN(x)
+depending on the R.
+
+Parameters:
+    r   -   polynomial kind, either 1 or 2.
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Chebyshev polynomial at x
+*************************************************************************/
+double chebyshevsum(const real_1d_array &c, const ae_int_t r, const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::chebyshevsum(c.c_ptr(), r, n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Representation of Tn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void chebyshevcoefficients(const ae_int_t n, real_1d_array &c, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::chebyshevcoefficients(n, c.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+
+/*************************************************************************
+Conversion of a series of Chebyshev polynomials to a power series.
+
+Represents A[0]*T0(x) + A[1]*T1(x) + ... + A[N]*Tn(x) as
+B[0] + B[1]*X + ... + B[N]*X^N.
+
+Input parameters:
+    A   -   Chebyshev series coefficients
+    N   -   degree, N>=0
+
+Output parameters
+    B   -   power series coefficients
+*************************************************************************/
+void fromchebyshev(const real_1d_array &a, const ae_int_t n, real_1d_array &b, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::fromchebyshev(a.c_ptr(), n, b.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_POISSONDISTR) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Poisson distribution
+
+Returns the sum of the first k+1 terms of the Poisson
+distribution:
+
+  k         j
+  --   -m  m
+  >   e    --
+  --       j!
+ j=0
+
+The terms are not summed directly; instead the incomplete
+gamma integral is employed, according to the relation
+
+y = pdtr( k, m ) = igamc( k+1, m ).
+
+The arguments must both be positive.
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double poissondistribution(const ae_int_t k, const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::poissondistribution(k, m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complemented Poisson distribution
+
+Returns the sum of the terms k+1 to infinity of the Poisson
+distribution:
+
+ inf.       j
+  --   -m  m
+  >   e    --
+  --       j!
+ j=k+1
+
+The terms are not summed directly; instead the incomplete
+gamma integral is employed, according to the formula
+
+y = pdtrc( k, m ) = igam( k+1, m ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double poissoncdistribution(const ae_int_t k, const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::poissoncdistribution(k, m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Inverse Poisson distribution
+
+Finds the Poisson variable x such that the integral
+from 0 to x of the Poisson density is equal to the
+given probability y.
+
+This is accomplished using the inverse gamma integral
+function and the relation
+
+   m = igami( k+1, y ).
+
+ACCURACY:
+
+See inverse incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invpoissondistribution(const ae_int_t k, const double y, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::invpoissondistribution(k, y, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_BETAF) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Beta function
+
+
+                  -     -
+                 | (a) | (b)
+beta( a, b )  =  -----------.
+                    -
+                   | (a+b)
+
+For large arguments the logarithm of the function is
+evaluated using lgam(), then exponentiated.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,30       30000       8.1e-14     1.1e-14
+
+Cephes Math Library Release 2.0:  April, 1987
+Copyright 1984, 1987 by Stephen L. Moshier
+*************************************************************************/
+double beta(const double a, const double b, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::beta(a, b, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_FRESNEL) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Fresnel integral
+
+Evaluates the Fresnel integrals
+
+          x
+          -
+         | |
+C(x) =   |   cos(pi/2 t**2) dt,
+       | |
+        -
+         0
+
+          x
+          -
+         | |
+S(x) =   |   sin(pi/2 t**2) dt.
+       | |
+        -
+         0
+
+
+The integrals are evaluated by a power series for x < 1.
+For x >= 1 auxiliary functions f(x) and g(x) are employed
+such that
+
+C(x) = 0.5 + f(x) sin( pi/2 x**2 ) - g(x) cos( pi/2 x**2 )
+S(x) = 0.5 - f(x) cos( pi/2 x**2 ) - g(x) sin( pi/2 x**2 )
+
+
+
+ACCURACY:
+
+ Relative error.
+
+Arithmetic  function   domain     # trials      peak         rms
+  IEEE       S(x)      0, 10       10000       2.0e-15     3.2e-16
+  IEEE       C(x)      0, 10       10000       1.8e-15     3.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+void fresnelintegral(const double x, double &c, double &s, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::fresnelintegral(x, &c, &s, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_PSIF) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Psi (digamma) function
+
+             d      -
+  psi(x)  =  -- ln | (x)
+             dx
+
+is the logarithmic derivative of the gamma function.
+For integer x,
+                  n-1
+                   -
+psi(n) = -EUL  +   >  1/k.
+                   -
+                  k=1
+
+This formula is used for 0 < n <= 10.  If x is negative, it
+is transformed to a positive argument by the reflection
+formula  psi(1-x) = psi(x) + pi cot(pi x).
+For general positive x, the argument is made greater than 10
+using the recurrence  psi(x+1) = psi(x) + 1/x.
+Then the following asymptotic expansion is applied:
+
+                          inf.   B
+                           -      2k
+psi(x) = log(x) - 1/2x -   >   -------
+                           -        2k
+                          k=1   2k x
+
+where the B2k are Bernoulli numbers.
+
+ACCURACY:
+   Relative error (except absolute when |psi| < 1):
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        30000       1.3e-15     1.4e-16
+   IEEE      -30,0       40000       1.5e-15     2.2e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1992, 2000 by Stephen L. Moshier
+*************************************************************************/
+double psi(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::psi(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_AIRYF) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Airy function
+
+Solution of the differential equation
+
+y"(x) = xy.
+
+The function returns the two independent solutions Ai, Bi
+and their first derivatives Ai'(x), Bi'(x).
+
+Evaluation is by power series summation for small x,
+by rational minimax approximations for large x.
+
+
+
+ACCURACY:
+Error criterion is absolute when function <= 1, relative
+when function > 1, except * denotes relative error criterion.
+For large negative x, the absolute error increases as x^1.5.
+For large positive x, the relative error increases as x^1.5.
+
+Arithmetic  domain   function  # trials      peak         rms
+IEEE        -10, 0     Ai        10000       1.6e-15     2.7e-16
+IEEE          0, 10    Ai        10000       2.3e-14*    1.8e-15*
+IEEE        -10, 0     Ai'       10000       4.6e-15     7.6e-16
+IEEE          0, 10    Ai'       10000       1.8e-14*    1.5e-15*
+IEEE        -10, 10    Bi        30000       4.2e-15     5.3e-16
+IEEE        -10, 10    Bi'       30000       4.9e-15     7.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+void airy(const double x, double &ai, double &aip, double &bi, double &bip, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::airy(x, &ai, &aip, &bi, &bip, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_DAWSON) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Dawson's Integral
+
+Approximates the integral
+
+                            x
+                            -
+                     2     | |        2
+ dawsn(x)  =  exp( -x  )   |    exp( t  ) dt
+                         | |
+                          -
+                          0
+
+Three different rational approximations are employed, for
+the intervals 0 to 3.25; 3.25 to 6.25; and 6.25 up.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,10        10000       6.9e-16     1.0e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double dawsonintegral(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::dawsonintegral(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_HERMITE) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Calculation of the value of the Hermite polynomial.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Hermite polynomial Hn at x
+*************************************************************************/
+double hermitecalculate(const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::hermitecalculate(n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Summation of Hermite polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Hermite polynomial at x
+*************************************************************************/
+double hermitesum(const real_1d_array &c, const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::hermitesum(c.c_ptr(), n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Representation of Hn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void hermitecoefficients(const ae_int_t n, real_1d_array &c, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::hermitecoefficients(n, c.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_LEGENDRE) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Calculation of the value of the Legendre polynomial Pn.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Legendre polynomial Pn at x
+*************************************************************************/
+double legendrecalculate(const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::legendrecalculate(n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Summation of Legendre polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Legendre polynomial at x
+*************************************************************************/
+double legendresum(const real_1d_array &c, const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::legendresum(c.c_ptr(), n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Representation of Pn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void legendrecoefficients(const ae_int_t n, real_1d_array &c, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::legendrecoefficients(n, c.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_BESSEL) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Bessel function of order zero
+
+Returns Bessel function of order zero of the argument.
+
+The domain is divided into the intervals [0, 5] and
+(5, infinity). In the first interval the following rational
+approximation is used:
+
+
+       2         2
+(w - r  ) (w - r  ) P (w) / Q (w)
+      1         2    3       8
+
+           2
+where w = x  and the two r's are zeros of the function.
+
+In the second interval, the Hankel asymptotic expansion
+is employed with two rational functions of degree 6/6
+and 7/7.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       60000       4.2e-16     1.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselj0(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselj0(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Bessel function of order one
+
+Returns Bessel function of order one of the argument.
+
+The domain is divided into the intervals [0, 8] and
+(8, infinity). In the first interval a 24 term Chebyshev
+expansion is used. In the second, the asymptotic
+trigonometric representation is employed using two
+rational functions of degree 5/5.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain      # trials      peak         rms
+   IEEE      0, 30       30000       2.6e-16     1.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselj1(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselj1(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Bessel function of integer order
+
+Returns Bessel function of order n, where n is a
+(possibly negative) integer.
+
+The ratio of jn(x) to j0(x) is computed by backward
+recurrence.  First the ratio jn/jn-1 is found by a
+continued fraction expansion.  Then the recurrence
+relating successive orders is applied until j0 or j1 is
+reached.
+
+If n = 0 or 1 the routine for j0 or j1 is called
+directly.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   range      # trials      peak         rms
+   IEEE      0, 30        5000       4.4e-16     7.9e-17
+
+
+Not suitable for large n or x. Use jv() (fractional order) instead.
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseljn(const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besseljn(n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Bessel function of the second kind, order zero
+
+Returns Bessel function of the second kind, of order
+zero, of the argument.
+
+The domain is divided into the intervals [0, 5] and
+(5, infinity). In the first interval a rational approximation
+R(x) is employed to compute
+  y0(x)  = R(x)  +   2 * log(x) * j0(x) / PI.
+Thus a call to j0() is required.
+
+In the second interval, the Hankel asymptotic expansion
+is employed with two rational functions of degree 6/6
+and 7/7.
+
+
+
+ACCURACY:
+
+ Absolute error, when y0(x) < 1; else relative error:
+
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.3e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double bessely0(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::bessely0(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Bessel function of second kind of order one
+
+Returns Bessel function of the second kind of order one
+of the argument.
+
+The domain is divided into the intervals [0, 8] and
+(8, infinity). In the first interval a 25 term Chebyshev
+expansion is used, and a call to j1() is required.
+In the second, the asymptotic trigonometric representation
+is employed using two rational functions of degree 5/5.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain      # trials      peak         rms
+   IEEE      0, 30       30000       1.0e-15     1.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double bessely1(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::bessely1(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Bessel function of second kind of integer order
+
+Returns Bessel function of order n, where n is a
+(possibly negative) integer.
+
+The function is evaluated by forward recurrence on
+n, starting with values computed by the routines
+y0() and y1().
+
+If n = 0 or 1 the routine for y0 or y1 is called
+directly.
+
+ACCURACY:
+                     Absolute error, except relative
+                     when y > 1:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       3.4e-15     4.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselyn(const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselyn(n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Modified Bessel function of order zero
+
+Returns modified Bessel function of order zero of the
+argument.
+
+The function is defined as i0(x) = j0( ix ).
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        30000       5.8e-16     1.4e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseli0(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besseli0(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Modified Bessel function of order one
+
+Returns modified Bessel function of order one of the
+argument.
+
+The function is defined as i1(x) = -i j1( ix ).
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.9e-15     2.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseli1(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besseli1(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Modified Bessel function, second kind, order zero
+
+Returns modified Bessel function of the second kind
+of order zero of the argument.
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+Tested at 2000 random points between 0 and 8.  Peak absolute
+error (relative when K0 > 1) was 1.46e-14; rms, 4.26e-15.
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.2e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselk0(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselk0(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Modified Bessel function, second kind, order one
+
+Computes the modified Bessel function of the second kind
+of order one of the argument.
+
+The range is partitioned into the two intervals [0,2] and
+(2, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.2e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselk1(const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselk1(x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Modified Bessel function, second kind, integer order
+
+Returns modified Bessel function of the second kind
+of order n of the argument.
+
+The range is partitioned into the two intervals [0,9.55] and
+(9.55, infinity).  An ascending power series is used in the
+low range, and an asymptotic expansion in the high range.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        90000       1.8e-8      3.0e-10
+
+Error is high only near the crossover point x = 9.55
+between the two expansions used.
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1988, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselkn(const ae_int_t nn, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::besselkn(nn, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
+
+#if defined(AE_COMPILE_LAGUERRE) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Calculation of the value of the Laguerre polynomial.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Laguerre polynomial Ln at x
+*************************************************************************/
+double laguerrecalculate(const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::laguerrecalculate(n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Summation of Laguerre polynomials using Clenshaw's recurrence formula.
+
+This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Laguerre polynomial at x
+*************************************************************************/
+double laguerresum(const real_1d_array &c, const ae_int_t n, const double x, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::laguerresum(c.c_ptr(), n, x, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Representation of Ln as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void laguerrecoefficients(const ae_int_t n, real_1d_array &c, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    alglib_impl::laguerrecoefficients(n, c.c_ptr(), &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return;
+}
+#endif
+
+#if defined(AE_COMPILE_ELLIPTIC) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+Complete elliptic integral of the first kind
+
+Approximates the integral
+
+
+
+           pi/2
+            -
+           | |
+           |           dt
+K(m)  =    |    ------------------
+           |                   2
+         | |    sqrt( 1 - m sin t )
+          -
+           0
+
+using the approximation
+
+    P(x)  -  log x Q(x).
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,1        30000       2.5e-16     6.8e-17
+
+Cephes Math Library, Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegralk(const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::ellipticintegralk(m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complete elliptic integral of the first kind
+
+Approximates the integral
+
+
+
+           pi/2
+            -
+           | |
+           |           dt
+K(m)  =    |    ------------------
+           |                   2
+         | |    sqrt( 1 - m sin t )
+          -
+           0
+
+where m = 1 - m1, using the approximation
+
+    P(x)  -  log x Q(x).
+
+The argument m1 is used rather than m so that the logarithmic
+singularity at m = 1 will be shifted to the origin; this
+preserves maximum accuracy.
+
+K(0) = pi/2.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,1        30000       2.5e-16     6.8e-17
+
+Cephes Math Library, Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegralkhighprecision(const double m1, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::ellipticintegralkhighprecision(m1, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Incomplete elliptic integral of the first kind F(phi|m)
+
+Approximates the integral
+
+
+
+               phi
+                -
+               | |
+               |           dt
+F(phi_\m)  =    |    ------------------
+               |                   2
+             | |    sqrt( 1 - m sin t )
+              -
+               0
+
+of amplitude phi and modulus m, using the arithmetic -
+geometric mean algorithm.
+
+
+
+
+ACCURACY:
+
+Tested at random points with m in [0, 1] and phi as indicated.
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE     -10,10       200000      7.4e-16     1.0e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompleteellipticintegralk(const double phi, const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::incompleteellipticintegralk(phi, m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Complete elliptic integral of the second kind
+
+Approximates the integral
+
+
+           pi/2
+            -
+           | |                 2
+E(m)  =    |    sqrt( 1 - m sin t ) dt
+         | |
+          -
+           0
+
+using the approximation
+
+     P(x)  -  x log x Q(x).
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0, 1       10000       2.1e-16     7.3e-17
+
+Cephes Math Library, Release 2.8: June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegrale(const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::ellipticintegrale(m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+
+/*************************************************************************
+Incomplete elliptic integral of the second kind
+
+Approximates the integral
+
+
+               phi
+                -
+               | |
+               |                   2
+E(phi_\m)  =    |    sqrt( 1 - m sin t ) dt
+               |
+             | |
+              -
+               0
+
+of amplitude phi and modulus m, using the arithmetic -
+geometric mean algorithm.
+
+ACCURACY:
+
+Tested at random arguments with phi in [-10, 10] and m in
+[0, 1].
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE     -10,10      150000       3.3e-15     1.4e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1993, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompleteellipticintegrale(const double phi, const double m, const xparams _xparams)
+{
+    jmp_buf _break_jump;
+    alglib_impl::ae_state _alglib_env_state;
+    alglib_impl::ae_state_init(&_alglib_env_state);
+    if( setjmp(_break_jump) )
+    {
+#if !defined(AE_NO_EXCEPTIONS)
+        _ALGLIB_CPP_EXCEPTION(_alglib_env_state.error_msg);
+#else
+        _ALGLIB_SET_ERROR_FLAG(_alglib_env_state.error_msg);
+        return 0;
+#endif
+    }
+    ae_state_set_break_jump(&_alglib_env_state, &_break_jump);
+    if( _xparams.flags!=(alglib_impl::ae_uint64_t)0x0 )
+        ae_state_set_flags(&_alglib_env_state, _xparams.flags);
+    double result = alglib_impl::incompleteellipticintegrale(phi, m, &_alglib_env_state);
+    alglib_impl::ae_state_clear(&_alglib_env_state);
+    return double(result);
+}
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -2714,15 +3336,126 @@ void hyperbolicsinecosineintegrals(const double x, double &shi, double &chi)
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
+#if defined(AE_COMPILE_GAMMAFUNC) || !defined(AE_PARTIAL_BUILD)
 static double gammafunc_gammastirf(double x, ae_state *_state);
 
 
+#endif
+#if defined(AE_COMPILE_NORMALDISTR) || !defined(AE_PARTIAL_BUILD)
+static double normaldistr_bvnintegrate3(double rangea,
+     double rangeb,
+     double x,
+     double y,
+     double gw,
+     double gx,
+     ae_state *_state);
+static double normaldistr_bvnintegrate6(double rangea,
+     double rangeb,
+     double x,
+     double y,
+     double s,
+     double gw,
+     double gx,
+     ae_state *_state);
 
 
+#endif
+#if defined(AE_COMPILE_IBETAF) || !defined(AE_PARTIAL_BUILD)
+static double ibetaf_incompletebetafe(double a,
+     double b,
+     double x,
+     double big,
+     double biginv,
+     ae_state *_state);
+static double ibetaf_incompletebetafe2(double a,
+     double b,
+     double x,
+     double big,
+     double biginv,
+     ae_state *_state);
+static double ibetaf_incompletebetaps(double a,
+     double b,
+     double x,
+     double maxgam,
+     ae_state *_state);
 
 
+#endif
+#if defined(AE_COMPILE_STUDENTTDISTR) || !defined(AE_PARTIAL_BUILD)
 
 
+#endif
+#if defined(AE_COMPILE_FDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_IGAMMAF) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_CHISQUAREDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_BINOMIALDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_EXPINTEGRALS) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_JACOBIANELLIPTIC) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_TRIGINTEGRALS) || !defined(AE_PARTIAL_BUILD)
+static void trigintegrals_chebiterationshichi(double x,
+     double c,
+     double* b0,
+     double* b1,
+     double* b2,
+     ae_state *_state);
+
+
+#endif
+#if defined(AE_COMPILE_CHEBYSHEV) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_POISSONDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_BETAF) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_FRESNEL) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_PSIF) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_AIRYF) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_DAWSON) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_HERMITE) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_LEGENDRE) || !defined(AE_PARTIAL_BUILD)
+
+
+#endif
+#if defined(AE_COMPILE_BESSEL) || !defined(AE_PARTIAL_BUILD)
 static void bessel_besselmfirstcheb(double c,
      double* b0,
      double* b1,
@@ -2755,66 +3488,17 @@ static void bessel_besselasympt1(double x,
      ae_state *_state);
 
 
+#endif
+#if defined(AE_COMPILE_LAGUERRE) || !defined(AE_PARTIAL_BUILD)
 
 
-static double ibetaf_incompletebetafe(double a,
-     double b,
-     double x,
-     double big,
-     double biginv,
-     ae_state *_state);
-static double ibetaf_incompletebetafe2(double a,
-     double b,
-     double x,
-     double big,
-     double biginv,
-     ae_state *_state);
-static double ibetaf_incompletebetaps(double a,
-     double b,
-     double x,
-     double maxgam,
-     ae_state *_state);
+#endif
+#if defined(AE_COMPILE_ELLIPTIC) || !defined(AE_PARTIAL_BUILD)
 
 
+#endif
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static void trigintegrals_chebiterationshichi(double x,
-     double c,
-     double* b0,
-     double* b1,
-     double* b2,
-     ae_state *_state);
-
-
-
+#if defined(AE_COMPILE_GAMMAFUNC) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -2850,22 +3534,22 @@ double gammafunction(double x, ae_state *_state)
     double result;
 
 
-    sgngam = 1;
+    sgngam = (double)(1);
     q = ae_fabs(x, _state);
     if( ae_fp_greater(q,33.0) )
     {
         if( ae_fp_less(x,0.0) )
         {
-            p = ae_ifloor(q, _state);
+            p = (double)(ae_ifloor(q, _state));
             i = ae_round(p, _state);
             if( i%2==0 )
             {
-                sgngam = -1;
+                sgngam = (double)(-1);
             }
             z = q-p;
             if( ae_fp_greater(z,0.5) )
             {
-                p = p+1;
+                p = p+(double)1;
                 z = q-p;
             }
             z = q*ae_sin(ae_pi*z, _state);
@@ -2879,33 +3563,33 @@ double gammafunction(double x, ae_state *_state)
         result = sgngam*z;
         return result;
     }
-    z = 1;
-    while(ae_fp_greater_eq(x,3))
+    z = (double)(1);
+    while(ae_fp_greater_eq(x,(double)(3)))
     {
-        x = x-1;
+        x = x-(double)1;
         z = z*x;
     }
-    while(ae_fp_less(x,0))
+    while(ae_fp_less(x,(double)(0)))
     {
         if( ae_fp_greater(x,-0.000000001) )
         {
-            result = z/((1+0.5772156649015329*x)*x);
+            result = z/(((double)1+0.5772156649015329*x)*x);
             return result;
         }
         z = z/x;
-        x = x+1;
+        x = x+(double)1;
     }
-    while(ae_fp_less(x,2))
+    while(ae_fp_less(x,(double)(2)))
     {
         if( ae_fp_less(x,0.000000001) )
         {
-            result = z/((1+0.5772156649015329*x)*x);
+            result = z/(((double)1+0.5772156649015329*x)*x);
             return result;
         }
         z = z/x;
         x = x+1.0;
     }
-    if( ae_fp_eq(x,2) )
+    if( ae_fp_eq(x,(double)(2)) )
     {
         result = z;
         return result;
@@ -2983,67 +3667,67 @@ double lngamma(double x, double* sgngam, ae_state *_state)
     double tmp;
     double result;
 
-    *sgngam = 0;
+    *sgngam = 0.0;
 
-    *sgngam = 1;
+    *sgngam = (double)(1);
     logpi = 1.14472988584940017414;
     ls2pi = 0.91893853320467274178;
     if( ae_fp_less(x,-34.0) )
     {
         q = -x;
         w = lngamma(q, &tmp, _state);
-        p = ae_ifloor(q, _state);
+        p = (double)(ae_ifloor(q, _state));
         i = ae_round(p, _state);
         if( i%2==0 )
         {
-            *sgngam = -1;
+            *sgngam = (double)(-1);
         }
         else
         {
-            *sgngam = 1;
+            *sgngam = (double)(1);
         }
         z = q-p;
         if( ae_fp_greater(z,0.5) )
         {
-            p = p+1;
+            p = p+(double)1;
             z = p-q;
         }
         z = q*ae_sin(ae_pi*z, _state);
         result = logpi-ae_log(z, _state)-w;
         return result;
     }
-    if( ae_fp_less(x,13) )
+    if( ae_fp_less(x,(double)(13)) )
     {
-        z = 1;
-        p = 0;
+        z = (double)(1);
+        p = (double)(0);
         u = x;
-        while(ae_fp_greater_eq(u,3))
+        while(ae_fp_greater_eq(u,(double)(3)))
         {
-            p = p-1;
+            p = p-(double)1;
             u = x+p;
             z = z*u;
         }
-        while(ae_fp_less(u,2))
+        while(ae_fp_less(u,(double)(2)))
         {
             z = z/u;
-            p = p+1;
+            p = p+(double)1;
             u = x+p;
         }
-        if( ae_fp_less(z,0) )
+        if( ae_fp_less(z,(double)(0)) )
         {
-            *sgngam = -1;
+            *sgngam = (double)(-1);
             z = -z;
         }
         else
         {
-            *sgngam = 1;
+            *sgngam = (double)(1);
         }
-        if( ae_fp_eq(u,2) )
+        if( ae_fp_eq(u,(double)(2)) )
         {
             result = ae_log(z, _state);
             return result;
         }
-        p = p-2;
+        p = p-(double)2;
         x = x+p;
         b = -1378.25152569120859100;
         b = -38801.6315134637840924+x*b;
@@ -3051,7 +3735,7 @@ double lngamma(double x, double* sgngam, ae_state *_state)
         b = -1162370.97492762307383+x*b;
         b = -1721737.00820839662146+x*b;
         b = -853555.664245765465627+x*b;
-        c = 1;
+        c = (double)(1);
         c = -351.815701436523470549+x*c;
         c = -17064.2106651881159223+x*c;
         c = -220528.590553854454839+x*c;
@@ -3063,12 +3747,12 @@ double lngamma(double x, double* sgngam, ae_state *_state)
         return result;
     }
     q = (x-0.5)*ae_log(x, _state)-x+ls2pi;
-    if( ae_fp_greater(x,100000000) )
+    if( ae_fp_greater(x,(double)(100000000)) )
     {
         result = q;
         return result;
     }
-    p = 1/(x*x);
+    p = (double)1/(x*x);
     if( ae_fp_greater_eq(x,1000.0) )
     {
         q = q+((7.9365079365079365079365*0.0001*p-2.7777777777777777777778*0.001)*p+0.0833333333333333333333)/x;
@@ -3099,13 +3783,13 @@ static double gammafunc_gammastirf(double x, ae_state *_state)
     double result;
 
 
-    w = 1/x;
+    w = (double)1/x;
     stir = 7.87311395793093628397E-4;
     stir = -2.29549961613378126380E-4+w*stir;
     stir = -2.68132617805781232825E-3+w*stir;
     stir = 3.47222221605458667310E-3+w*stir;
     stir = 8.33333333333482257126E-2+w*stir;
-    w = 1+w*stir;
+    w = (double)1+w*stir;
     y = ae_exp(x, _state);
     if( ae_fp_greater(x,143.01608) )
     {
@@ -3121,6 +3805,8 @@ static double gammafunc_gammastirf(double x, ae_state *_state)
 }
 
 
+#endif
+#if defined(AE_COMPILE_NORMALDISTR) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -3158,7 +3844,7 @@ double errorfunction(double x, ae_state *_state)
     double result;
 
 
-    s = ae_sign(x, _state);
+    s = (double)(ae_sign(x, _state));
     x = ae_fabs(x, _state);
     if( ae_fp_less(x,0.5) )
     {
@@ -3180,12 +3866,12 @@ double errorfunction(double x, ae_state *_state)
         result = s*1.1283791670955125738961589031*x*p/q;
         return result;
     }
-    if( ae_fp_greater_eq(x,10) )
+    if( ae_fp_greater_eq(x,(double)(10)) )
     {
         result = s;
         return result;
     }
-    result = s*(1-errorfunctionc(x, _state));
+    result = s*((double)1-errorfunctionc(x, _state));
     return result;
 }
 
@@ -3224,9 +3910,9 @@ double errorfunctionc(double x, ae_state *_state)
     double result;
 
 
-    if( ae_fp_less(x,0) )
+    if( ae_fp_less(x,(double)(0)) )
     {
-        result = 2-errorfunctionc(-x, _state);
+        result = (double)2-errorfunctionc(-x, _state);
         return result;
     }
     if( ae_fp_less(x,0.5) )
@@ -3234,9 +3920,9 @@ double errorfunctionc(double x, ae_state *_state)
         result = 1.0-errorfunction(x, _state);
         return result;
     }
-    if( ae_fp_greater_eq(x,10) )
+    if( ae_fp_greater_eq(x,(double)(10)) )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
     p = 0.0;
@@ -3263,7 +3949,43 @@ double errorfunctionc(double x, ae_state *_state)
 
 
 /*************************************************************************
-Normal distribution function
+Same as normalcdf(), obsolete name.
+*************************************************************************/
+double normaldistribution(double x, ae_state *_state)
+{
+    double result;
+
+
+    result = 0.5*(errorfunction(x/1.41421356237309504880, _state)+(double)1);
+    return result;
+}
+
+
+/*************************************************************************
+Normal distribution PDF
+
+Returns Gaussian probability density function:
+
+               1
+   f(x)  = --------- * exp(-x^2/2)
+           sqrt(2pi)
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
+*************************************************************************/
+double normalpdf(double x, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert(ae_isfinite(x, _state), "NormalPDF: X is infinite", _state);
+    result = ae_exp(-x*x/(double)2, _state)/ae_sqrt((double)2*ae_pi, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Normal distribution CDF
 
 Returns the area under the Gaussian probability density
 function, integrated from minus infinity to x:
@@ -3292,12 +4014,12 @@ arithmetic   domain     # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double normaldistribution(double x, ae_state *_state)
+double normalcdf(double x, ae_state *_state)
 {
     double result;
 
 
-    result = 0.5*(errorfunction(x/1.41421356237309504880, _state)+1);
+    result = 0.5*(errorfunction(x/1.41421356237309504880, _state)+(double)1);
     return result;
 }
 
@@ -3313,13 +4035,26 @@ double inverf(double e, ae_state *_state)
     double result;
 
 
-    result = invnormaldistribution(0.5*(e+1), _state)/ae_sqrt(2, _state);
+    result = invnormaldistribution(0.5*(e+(double)1), _state)/ae_sqrt((double)(2), _state);
     return result;
 }
 
 
 /*************************************************************************
-Inverse of Normal distribution function
+Same as invnormalcdf(), deprecated name
+*************************************************************************/
+double invnormaldistribution(double y0, ae_state *_state)
+{
+    double result;
+
+
+    result = invnormalcdf(y0, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Inverse of Normal CDF
 
 Returns the argument, x, for which the area under the
 Gaussian probability density function (integrated from
@@ -3343,7 +4078,7 @@ arithmetic   domain        # trials      peak         rms
 Cephes Math Library Release 2.8:  June, 2000
 Copyright 1984, 1987, 1988, 1992, 2000 by Stephen L. Moshier
 *************************************************************************/
-double invnormaldistribution(double y0, ae_state *_state)
+double invnormalcdf(double y0, ae_state *_state)
 {
     double expm2;
     double s2pi;
@@ -3365,12 +4100,12 @@ double invnormaldistribution(double y0, ae_state *_state)
 
     expm2 = 0.13533528323661269189;
     s2pi = 2.50662827463100050242;
-    if( ae_fp_less_eq(y0,0) )
+    if( ae_fp_less_eq(y0,(double)(0)) )
     {
         result = -ae_maxrealnumber;
         return result;
     }
-    if( ae_fp_greater_eq(y0,1) )
+    if( ae_fp_greater_eq(y0,(double)(1)) )
     {
         result = ae_maxrealnumber;
         return result;
@@ -3391,7 +4126,7 @@ double invnormaldistribution(double y0, ae_state *_state)
         p0 = -56.6762857469070293439+y2*p0;
         p0 = 13.9312609387279679503+y2*p0;
         p0 = -1.23916583867381258016+y2*p0;
-        q0 = 1;
+        q0 = (double)(1);
         q0 = 1.95448858338141759834+y2*q0;
         q0 = 4.67627912898881538453+y2*q0;
         q0 = 86.3602421390890590575+y2*q0;
@@ -3419,7 +4154,7 @@ double invnormaldistribution(double y0, ae_state *_state)
         p1 = -1.40256079171354495875*0.1+z*p1;
         p1 = -3.50424626827848203418*0.01+z*p1;
         p1 = -8.57456785154685413611*0.0001+z*p1;
-        q1 = 1;
+        q1 = (double)(1);
         q1 = 15.7799883256466749731+z*q1;
         q1 = 45.3907635128879210584+z*q1;
         q1 = 41.3172038254672030440+z*q1;
@@ -3441,7 +4176,7 @@ double invnormaldistribution(double y0, ae_state *_state)
         p2 = 3.01581553508235416007*0.0001+z*p2;
         p2 = 2.65806974686737550832*0.000001+z*p2;
         p2 = 6.23974539184983293730*0.000000001+z*p2;
-        q2 = 1;
+        q2 = (double)(1);
         q2 = 6.02427039364742014255+z*q2;
         q2 = 3.67983563856160859403+z*q2;
         q2 = 1.37702099489081330271+z*q2;
@@ -3462,2011 +4197,262 @@ double invnormaldistribution(double y0, ae_state *_state)
 }
 
 
+/*************************************************************************
+Bivariate normal PDF
+
+Returns probability density function of the bivariate  Gaussian  with
+correlation parameter equal to Rho:
+
+                         1              (    x^2 - 2*rho*x*y + y^2  )
+    f(x,y,rho) = ----------------- * exp( - ----------------------- )
+                 2pi*sqrt(1-rho^2)      (        2*(1-rho^2)        )
+
+
+with -1<rho<+1 and arbitrary x, y.
+
+This function won't fail as long as Rho is in (-1,+1) range.
+
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
+*************************************************************************/
+double bivariatenormalpdf(double x,
+     double y,
+     double rho,
+     ae_state *_state)
+{
+    double onerho2;
+    double result;
+
+
+    ae_assert(ae_isfinite(x, _state), "BivariateNormalCDF: X is infinite", _state);
+    ae_assert(ae_isfinite(y, _state), "BivariateNormalCDF: Y is infinite", _state);
+    ae_assert(ae_isfinite(rho, _state), "BivariateNormalCDF: Rho is infinite", _state);
+    ae_assert(ae_fp_less((double)(-1),rho)&&ae_fp_less(rho,(double)(1)), "BivariateNormalCDF: Rho is not in (-1,+1) range", _state);
+    onerho2 = ((double)1-rho)*((double)1+rho);
+    result = ae_exp(-(x*x+y*y-(double)2*rho*x*y)/((double)2*onerho2), _state)/((double)2*ae_pi*ae_sqrt(onerho2, _state));
+    return result;
+}
 
 
 /*************************************************************************
-Incomplete gamma integral
+Bivariate normal CDF
 
-The function is defined by
-
-                          x
-                           -
-                  1       | |  -t  a-1
- igam(a,x)  =   -----     |   e   t   dt.
-                 -      | |
-                | (a)    -
-                          0
+Returns the area under the bivariate Gaussian  PDF  with  correlation
+parameter equal to Rho, integrated from minus infinity to (x,y):
 
 
-In this implementation both arguments must be positive.
-The integral is evaluated by either a power series or
-continued fraction expansion, depending on the relative
-values of a and x.
+                                          x      y
+                                          -      -  
+                            1            | |    | | 
+    bvn(x,y,rho) = -------------------   |      |   f(u,v,rho)*du*dv
+                    2pi*sqrt(1-rho^2)  | |    | |    
+                                        -      -
+                                       -INF   -INF
 
-ACCURACY:
+                                       
+where
 
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30       200000       3.6e-14     2.9e-15
-   IEEE      0,100      300000       9.9e-14     1.5e-14
+                      (    u^2 - 2*rho*u*v + v^2  )
+    f(u,v,rho)   = exp( - ----------------------- )
+                      (        2*(1-rho^2)        )
 
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
+
+with -1<rho<+1 and arbitrary x, y.
+
+This subroutine uses high-precision approximation scheme proposed  by
+Alan Genz in "Numerical  Computation  of  Rectangular  Bivariate  and
+Trivariate Normal and  t  probabilities",  which  computes  CDF  with
+absolute error roughly equal to 1e-14.
+
+This function won't fail as long as Rho is in (-1,+1) range.
+
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
 *************************************************************************/
-double incompletegamma(double a, double x, ae_state *_state)
+double bivariatenormalcdf(double x,
+     double y,
+     double rho,
+     ae_state *_state)
 {
-    double igammaepsilon;
-    double ans;
-    double ax;
-    double c;
+    double rangea;
+    double rangeb;
+    double s;
+    double v;
+    double v0;
+    double v1;
+    double fxys;
+    double ta;
+    double tb;
+    double tc;
+    double result;
+
+
+    ae_assert(ae_isfinite(x, _state), "BivariateNormalCDF: X is infinite", _state);
+    ae_assert(ae_isfinite(y, _state), "BivariateNormalCDF: Y is infinite", _state);
+    ae_assert(ae_isfinite(rho, _state), "BivariateNormalCDF: Rho is infinite", _state);
+    ae_assert(ae_fp_less((double)(-1),rho)&&ae_fp_less(rho,(double)(1)), "BivariateNormalCDF: Rho is not in (-1,+1) range", _state);
+    if( ae_fp_eq(rho,(double)(0)) )
+    {
+        result = normalcdf(x, _state)*normalcdf(y, _state);
+        return result;
+    }
+    if( ae_fp_less_eq(ae_fabs(rho, _state),0.8) )
+    {
+        
+        /*
+         * Rho is small, compute integral using using formula (3) by Alan Genz, integrated
+         * by means of 10-point Gauss-Legendre quadrature
+         */
+        rangea = (double)(0);
+        rangeb = ae_asin(rho, _state);
+        v = (double)(0);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2491470458134028, -0.1252334085114689, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2491470458134028, 0.1252334085114689, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2334925365383548, -0.3678314989981802, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2334925365383548, 0.3678314989981802, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2031674267230659, -0.5873179542866175, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.2031674267230659, 0.5873179542866175, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.1600783285433462, -0.7699026741943047, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.1600783285433462, 0.7699026741943047, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.1069393259953184, -0.9041172563704749, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.1069393259953184, 0.9041172563704749, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.0471753363865118, -0.9815606342467192, _state);
+        v = v+normaldistr_bvnintegrate3(rangea, rangeb, x, y, 0.0471753363865118, 0.9815606342467192, _state);
+        v = v*0.5*(rangeb-rangea)/((double)2*ae_pi);
+        result = normalcdf(x, _state)*normalcdf(y, _state)+v;
+    }
+    else
+    {
+        
+        /*
+         * Rho is large, compute integral using using formula (6) by Alan Genz, integrated
+         * by means of 20-point Gauss-Legendre quadrature.
+         */
+        x = -x;
+        y = -y;
+        s = (double)(ae_sign(rho, _state));
+        if( ae_fp_greater(s,(double)(0)) )
+        {
+            fxys = normalcdf(-ae_maxreal(x, y, _state), _state);
+        }
+        else
+        {
+            fxys = ae_maxreal(0.0, normalcdf(-x, _state)-normalcdf(y, _state), _state);
+        }
+        rangea = (double)(0);
+        rangeb = ae_sqrt(((double)1-rho)*((double)1+rho), _state);
+        
+        /*
+         * Compute first term (analytic integral) from formula (6)
+         */
+        ta = rangeb;
+        tb = ae_fabs(x-s*y, _state);
+        tc = ((double)4-s*x*y)/(double)8;
+        v0 = ta*((double)1-tc*(tb*tb-ta*ta)/(double)3)*ae_exp(-tb*tb/((double)2*ta*ta), _state)-tb*((double)1-tc*tb*tb/(double)3)*ae_sqrt((double)2*ae_pi, _state)*normalcdf(-tb/ta, _state);
+        v0 = v0*ae_exp(-s*x*y/(double)2, _state)/((double)2*ae_pi);
+        
+        /*
+         * Compute second term (numerical integral, 20-point Gauss-Legendre rule) from formula (6)
+         */
+        v1 = (double)(0);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1527533871307258, -0.0765265211334973, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1527533871307258, 0.0765265211334973, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1491729864726037, -0.2277858511416451, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1491729864726037, 0.2277858511416451, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1420961093183820, -0.3737060887154195, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1420961093183820, 0.3737060887154195, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1316886384491766, -0.5108670019508271, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1316886384491766, 0.5108670019508271, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1181945319615184, -0.6360536807265150, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1181945319615184, 0.6360536807265150, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1019301198172404, -0.7463319064601508, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.1019301198172404, 0.7463319064601508, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0832767415767048, -0.8391169718222188, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0832767415767048, 0.8391169718222188, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0626720483341091, -0.9122344282513259, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0626720483341091, 0.9122344282513259, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0406014298003869, -0.9639719272779138, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0406014298003869, 0.9639719272779138, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0176140071391521, -0.9931285991850949, _state);
+        v1 = v1+normaldistr_bvnintegrate6(rangea, rangeb, x, y, s, 0.0176140071391521, 0.9931285991850949, _state);
+        v1 = v1*0.5*(rangeb-rangea)/((double)2*ae_pi);
+        result = fxys-s*(v0+v1);
+    }
+    result = ae_maxreal(result, (double)(0), _state);
+    result = ae_minreal(result, (double)(1), _state);
+    return result;
+}
+
+
+/*************************************************************************
+Internal function which computes integrand of  formula  (3)  by  Alan
+Genz times Gaussian weights (passed by user).
+
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
+*************************************************************************/
+static double normaldistr_bvnintegrate3(double rangea,
+     double rangeb,
+     double x,
+     double y,
+     double gw,
+     double gx,
+     ae_state *_state)
+{
     double r;
-    double tmp;
+    double t2;
+    double dd;
+    double sinr;
+    double cosr;
     double result;
 
 
-    igammaepsilon = 0.000000000000001;
-    if( ae_fp_less_eq(x,0)||ae_fp_less_eq(a,0) )
-    {
-        result = 0;
-        return result;
-    }
-    if( ae_fp_greater(x,1)&&ae_fp_greater(x,a) )
-    {
-        result = 1-incompletegammac(a, x, _state);
-        return result;
-    }
-    ax = a*ae_log(x, _state)-x-lngamma(a, &tmp, _state);
-    if( ae_fp_less(ax,-709.78271289338399) )
-    {
-        result = 0;
-        return result;
-    }
-    ax = ae_exp(ax, _state);
-    r = a;
-    c = 1;
-    ans = 1;
-    do
-    {
-        r = r+1;
-        c = c*x/r;
-        ans = ans+c;
-    }
-    while(ae_fp_greater(c/ans,igammaepsilon));
-    result = ans*ax/a;
+    r = (rangeb-rangea)*0.5*gx+(rangeb+rangea)*0.5;
+    t2 = ae_tan(0.5*r, _state);
+    dd = (double)1/((double)1+t2*t2);
+    sinr = (double)2*t2*dd;
+    cosr = ((double)1-t2*t2)*dd;
+    result = gw*ae_exp(-(x*x+y*y-(double)2*x*y*sinr)/((double)2*cosr*cosr), _state);
     return result;
 }
 
 
 /*************************************************************************
-Complemented incomplete gamma integral
+Internal function which computes integrand of  formula  (6)  by  Alan
+Genz times Gaussian weights (passed by user).
 
-The function is defined by
-
-
- igamc(a,x)   =   1 - igam(a,x)
-
-                           inf.
-                             -
-                    1       | |  -t  a-1
-              =   -----     |   e   t   dt.
-                   -      | |
-                  | (a)    -
-                            x
-
-
-In this implementation both arguments must be positive.
-The integral is evaluated by either a power series or
-continued fraction expansion, depending on the relative
-values of a and x.
-
-ACCURACY:
-
-Tested at random a, x.
-               a         x                      Relative error:
-arithmetic   domain   domain     # trials      peak         rms
-   IEEE     0.5,100   0,100      200000       1.9e-14     1.7e-15
-   IEEE     0.01,0.5  0,100      200000       1.4e-13     1.6e-15
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
+  -- ALGLIB --
+     Copyright 15.11.2019 by Bochkanov Sergey
 *************************************************************************/
-double incompletegammac(double a, double x, ae_state *_state)
+static double normaldistr_bvnintegrate6(double rangea,
+     double rangeb,
+     double x,
+     double y,
+     double s,
+     double gw,
+     double gx,
+     ae_state *_state)
 {
-    double igammaepsilon;
-    double igammabignumber;
-    double igammabignumberinv;
-    double ans;
-    double ax;
-    double c;
-    double yc;
     double r;
-    double t;
-    double y;
-    double z;
-    double pk;
-    double pkm1;
-    double pkm2;
-    double qk;
-    double qkm1;
-    double qkm2;
-    double tmp;
+    double exphsk22x2;
+    double exphsk2;
+    double sqrt1x2;
+    double exphsk1sqrt1x2;
     double result;
 
 
-    igammaepsilon = 0.000000000000001;
-    igammabignumber = 4503599627370496.0;
-    igammabignumberinv = 2.22044604925031308085*0.0000000000000001;
-    if( ae_fp_less_eq(x,0)||ae_fp_less_eq(a,0) )
-    {
-        result = 1;
-        return result;
-    }
-    if( ae_fp_less(x,1)||ae_fp_less(x,a) )
-    {
-        result = 1-incompletegamma(a, x, _state);
-        return result;
-    }
-    ax = a*ae_log(x, _state)-x-lngamma(a, &tmp, _state);
-    if( ae_fp_less(ax,-709.78271289338399) )
-    {
-        result = 0;
-        return result;
-    }
-    ax = ae_exp(ax, _state);
-    y = 1-a;
-    z = x+y+1;
-    c = 0;
-    pkm2 = 1;
-    qkm2 = x;
-    pkm1 = x+1;
-    qkm1 = z*x;
-    ans = pkm1/qkm1;
-    do
-    {
-        c = c+1;
-        y = y+1;
-        z = z+2;
-        yc = y*c;
-        pk = pkm1*z-pkm2*yc;
-        qk = qkm1*z-qkm2*yc;
-        if( ae_fp_neq(qk,0) )
-        {
-            r = pk/qk;
-            t = ae_fabs((ans-r)/r, _state);
-            ans = r;
-        }
-        else
-        {
-            t = 1;
-        }
-        pkm2 = pkm1;
-        pkm1 = pk;
-        qkm2 = qkm1;
-        qkm1 = qk;
-        if( ae_fp_greater(ae_fabs(pk, _state),igammabignumber) )
-        {
-            pkm2 = pkm2*igammabignumberinv;
-            pkm1 = pkm1*igammabignumberinv;
-            qkm2 = qkm2*igammabignumberinv;
-            qkm1 = qkm1*igammabignumberinv;
-        }
-    }
-    while(ae_fp_greater(t,igammaepsilon));
-    result = ans*ax;
+    r = (rangeb-rangea)*0.5*gx+(rangeb+rangea)*0.5;
+    exphsk22x2 = ae_exp(-(x-s*y)*(x-s*y)/((double)2*r*r), _state);
+    exphsk2 = ae_exp(-x*s*y/(double)2, _state);
+    sqrt1x2 = ae_sqrt(((double)1-r)*((double)1+r), _state);
+    exphsk1sqrt1x2 = ae_exp(-x*s*y/((double)1+sqrt1x2), _state);
+    result = gw*exphsk22x2*(exphsk1sqrt1x2/sqrt1x2-exphsk2*((double)1+((double)4-x*y*s)*r*r/(double)8));
     return result;
 }
 
 
-/*************************************************************************
-Inverse of complemented incomplete gamma integral
-
-Given p, the function finds x such that
-
- igamc( a, x ) = p.
-
-Starting with the approximate value
-
-        3
- x = a t
-
- where
-
- t = 1 - d - ndtri(p) sqrt(d)
-
-and
-
- d = 1/9a,
-
-the routine performs up to 10 Newton iterations to find the
-root of igamc(a,x) - p = 0.
-
-ACCURACY:
-
-Tested at random a, p in the intervals indicated.
-
-               a        p                      Relative error:
-arithmetic   domain   domain     # trials      peak         rms
-   IEEE     0.5,100   0,0.5       100000       1.0e-14     1.7e-15
-   IEEE     0.01,0.5  0,0.5       100000       9.0e-14     3.4e-15
-   IEEE    0.5,10000  0,0.5        20000       2.3e-13     3.8e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invincompletegammac(double a, double y0, ae_state *_state)
-{
-    double igammaepsilon;
-    double iinvgammabignumber;
-    double x0;
-    double x1;
-    double x;
-    double yl;
-    double yh;
-    double y;
-    double d;
-    double lgm;
-    double dithresh;
-    ae_int_t i;
-    ae_int_t dir;
-    double tmp;
-    double result;
-
-
-    igammaepsilon = 0.000000000000001;
-    iinvgammabignumber = 4503599627370496.0;
-    x0 = iinvgammabignumber;
-    yl = 0;
-    x1 = 0;
-    yh = 1;
-    dithresh = 5*igammaepsilon;
-    d = 1/(9*a);
-    y = 1-d-invnormaldistribution(y0, _state)*ae_sqrt(d, _state);
-    x = a*y*y*y;
-    lgm = lngamma(a, &tmp, _state);
-    i = 0;
-    while(i<10)
-    {
-        if( ae_fp_greater(x,x0)||ae_fp_less(x,x1) )
-        {
-            d = 0.0625;
-            break;
-        }
-        y = incompletegammac(a, x, _state);
-        if( ae_fp_less(y,yl)||ae_fp_greater(y,yh) )
-        {
-            d = 0.0625;
-            break;
-        }
-        if( ae_fp_less(y,y0) )
-        {
-            x0 = x;
-            yl = y;
-        }
-        else
-        {
-            x1 = x;
-            yh = y;
-        }
-        d = (a-1)*ae_log(x, _state)-x-lgm;
-        if( ae_fp_less(d,-709.78271289338399) )
-        {
-            d = 0.0625;
-            break;
-        }
-        d = -ae_exp(d, _state);
-        d = (y-y0)/d;
-        if( ae_fp_less(ae_fabs(d/x, _state),igammaepsilon) )
-        {
-            result = x;
-            return result;
-        }
-        x = x-d;
-        i = i+1;
-    }
-    if( ae_fp_eq(x0,iinvgammabignumber) )
-    {
-        if( ae_fp_less_eq(x,0) )
-        {
-            x = 1;
-        }
-        while(ae_fp_eq(x0,iinvgammabignumber))
-        {
-            x = (1+d)*x;
-            y = incompletegammac(a, x, _state);
-            if( ae_fp_less(y,y0) )
-            {
-                x0 = x;
-                yl = y;
-                break;
-            }
-            d = d+d;
-        }
-    }
-    d = 0.5;
-    dir = 0;
-    i = 0;
-    while(i<400)
-    {
-        x = x1+d*(x0-x1);
-        y = incompletegammac(a, x, _state);
-        lgm = (x0-x1)/(x1+x0);
-        if( ae_fp_less(ae_fabs(lgm, _state),dithresh) )
-        {
-            break;
-        }
-        lgm = (y-y0)/y0;
-        if( ae_fp_less(ae_fabs(lgm, _state),dithresh) )
-        {
-            break;
-        }
-        if( ae_fp_less_eq(x,0.0) )
-        {
-            break;
-        }
-        if( ae_fp_greater_eq(y,y0) )
-        {
-            x1 = x;
-            yh = y;
-            if( dir<0 )
-            {
-                dir = 0;
-                d = 0.5;
-            }
-            else
-            {
-                if( dir>1 )
-                {
-                    d = 0.5*d+0.5;
-                }
-                else
-                {
-                    d = (y0-yl)/(yh-yl);
-                }
-            }
-            dir = dir+1;
-        }
-        else
-        {
-            x0 = x;
-            yl = y;
-            if( dir>0 )
-            {
-                dir = 0;
-                d = 0.5;
-            }
-            else
-            {
-                if( dir<-1 )
-                {
-                    d = 0.5*d;
-                }
-                else
-                {
-                    d = (y0-yl)/(yh-yl);
-                }
-            }
-            dir = dir-1;
-        }
-        i = i+1;
-    }
-    result = x;
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Airy function
-
-Solution of the differential equation
-
-y"(x) = xy.
-
-The function returns the two independent solutions Ai, Bi
-and their first derivatives Ai'(x), Bi'(x).
-
-Evaluation is by power series summation for small x,
-by rational minimax approximations for large x.
-
-
-
-ACCURACY:
-Error criterion is absolute when function <= 1, relative
-when function > 1, except * denotes relative error criterion.
-For large negative x, the absolute error increases as x^1.5.
-For large positive x, the relative error increases as x^1.5.
-
-Arithmetic  domain   function  # trials      peak         rms
-IEEE        -10, 0     Ai        10000       1.6e-15     2.7e-16
-IEEE          0, 10    Ai        10000       2.3e-14*    1.8e-15*
-IEEE        -10, 0     Ai'       10000       4.6e-15     7.6e-16
-IEEE          0, 10    Ai'       10000       1.8e-14*    1.5e-15*
-IEEE        -10, 10    Bi        30000       4.2e-15     5.3e-16
-IEEE        -10, 10    Bi'       30000       4.9e-15     7.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-void airy(double x,
-     double* ai,
-     double* aip,
-     double* bi,
-     double* bip,
-     ae_state *_state)
-{
-    double z;
-    double zz;
-    double t;
-    double f;
-    double g;
-    double uf;
-    double ug;
-    double k;
-    double zeta;
-    double theta;
-    ae_int_t domflg;
-    double c1;
-    double c2;
-    double sqrt3;
-    double sqpii;
-    double afn;
-    double afd;
-    double agn;
-    double agd;
-    double apfn;
-    double apfd;
-    double apgn;
-    double apgd;
-    double an;
-    double ad;
-    double apn;
-    double apd;
-    double bn16;
-    double bd16;
-    double bppn;
-    double bppd;
-
-    *ai = 0;
-    *aip = 0;
-    *bi = 0;
-    *bip = 0;
-
-    sqpii = 5.64189583547756286948E-1;
-    c1 = 0.35502805388781723926;
-    c2 = 0.258819403792806798405;
-    sqrt3 = 1.732050807568877293527;
-    domflg = 0;
-    if( ae_fp_greater(x,25.77) )
-    {
-        *ai = 0;
-        *aip = 0;
-        *bi = ae_maxrealnumber;
-        *bip = ae_maxrealnumber;
-        return;
-    }
-    if( ae_fp_less(x,-2.09) )
-    {
-        domflg = 15;
-        t = ae_sqrt(-x, _state);
-        zeta = -2.0*x*t/3.0;
-        t = ae_sqrt(t, _state);
-        k = sqpii/t;
-        z = 1.0/zeta;
-        zz = z*z;
-        afn = -1.31696323418331795333E-1;
-        afn = afn*zz-6.26456544431912369773E-1;
-        afn = afn*zz-6.93158036036933542233E-1;
-        afn = afn*zz-2.79779981545119124951E-1;
-        afn = afn*zz-4.91900132609500318020E-2;
-        afn = afn*zz-4.06265923594885404393E-3;
-        afn = afn*zz-1.59276496239262096340E-4;
-        afn = afn*zz-2.77649108155232920844E-6;
-        afn = afn*zz-1.67787698489114633780E-8;
-        afd = 1.00000000000000000000E0;
-        afd = afd*zz+1.33560420706553243746E1;
-        afd = afd*zz+3.26825032795224613948E1;
-        afd = afd*zz+2.67367040941499554804E1;
-        afd = afd*zz+9.18707402907259625840E0;
-        afd = afd*zz+1.47529146771666414581E0;
-        afd = afd*zz+1.15687173795188044134E-1;
-        afd = afd*zz+4.40291641615211203805E-3;
-        afd = afd*zz+7.54720348287414296618E-5;
-        afd = afd*zz+4.51850092970580378464E-7;
-        uf = 1.0+zz*afn/afd;
-        agn = 1.97339932091685679179E-2;
-        agn = agn*zz+3.91103029615688277255E-1;
-        agn = agn*zz+1.06579897599595591108E0;
-        agn = agn*zz+9.39169229816650230044E-1;
-        agn = agn*zz+3.51465656105547619242E-1;
-        agn = agn*zz+6.33888919628925490927E-2;
-        agn = agn*zz+5.85804113048388458567E-3;
-        agn = agn*zz+2.82851600836737019778E-4;
-        agn = agn*zz+6.98793669997260967291E-6;
-        agn = agn*zz+8.11789239554389293311E-8;
-        agn = agn*zz+3.41551784765923618484E-10;
-        agd = 1.00000000000000000000E0;
-        agd = agd*zz+9.30892908077441974853E0;
-        agd = agd*zz+1.98352928718312140417E1;
-        agd = agd*zz+1.55646628932864612953E1;
-        agd = agd*zz+5.47686069422975497931E0;
-        agd = agd*zz+9.54293611618961883998E-1;
-        agd = agd*zz+8.64580826352392193095E-2;
-        agd = agd*zz+4.12656523824222607191E-3;
-        agd = agd*zz+1.01259085116509135510E-4;
-        agd = agd*zz+1.17166733214413521882E-6;
-        agd = agd*zz+4.91834570062930015649E-9;
-        ug = z*agn/agd;
-        theta = zeta+0.25*ae_pi;
-        f = ae_sin(theta, _state);
-        g = ae_cos(theta, _state);
-        *ai = k*(f*uf-g*ug);
-        *bi = k*(g*uf+f*ug);
-        apfn = 1.85365624022535566142E-1;
-        apfn = apfn*zz+8.86712188052584095637E-1;
-        apfn = apfn*zz+9.87391981747398547272E-1;
-        apfn = apfn*zz+4.01241082318003734092E-1;
-        apfn = apfn*zz+7.10304926289631174579E-2;
-        apfn = apfn*zz+5.90618657995661810071E-3;
-        apfn = apfn*zz+2.33051409401776799569E-4;
-        apfn = apfn*zz+4.08718778289035454598E-6;
-        apfn = apfn*zz+2.48379932900442457853E-8;
-        apfd = 1.00000000000000000000E0;
-        apfd = apfd*zz+1.47345854687502542552E1;
-        apfd = apfd*zz+3.75423933435489594466E1;
-        apfd = apfd*zz+3.14657751203046424330E1;
-        apfd = apfd*zz+1.09969125207298778536E1;
-        apfd = apfd*zz+1.78885054766999417817E0;
-        apfd = apfd*zz+1.41733275753662636873E-1;
-        apfd = apfd*zz+5.44066067017226003627E-3;
-        apfd = apfd*zz+9.39421290654511171663E-5;
-        apfd = apfd*zz+5.65978713036027009243E-7;
-        uf = 1.0+zz*apfn/apfd;
-        apgn = -3.55615429033082288335E-2;
-        apgn = apgn*zz-6.37311518129435504426E-1;
-        apgn = apgn*zz-1.70856738884312371053E0;
-        apgn = apgn*zz-1.50221872117316635393E0;
-        apgn = apgn*zz-5.63606665822102676611E-1;
-        apgn = apgn*zz-1.02101031120216891789E-1;
-        apgn = apgn*zz-9.48396695961445269093E-3;
-        apgn = apgn*zz-4.60325307486780994357E-4;
-        apgn = apgn*zz-1.14300836484517375919E-5;
-        apgn = apgn*zz-1.33415518685547420648E-7;
-        apgn = apgn*zz-5.63803833958893494476E-10;
-        apgd = 1.00000000000000000000E0;
-        apgd = apgd*zz+9.85865801696130355144E0;
-        apgd = apgd*zz+2.16401867356585941885E1;
-        apgd = apgd*zz+1.73130776389749389525E1;
-        apgd = apgd*zz+6.17872175280828766327E0;
-        apgd = apgd*zz+1.08848694396321495475E0;
-        apgd = apgd*zz+9.95005543440888479402E-2;
-        apgd = apgd*zz+4.78468199683886610842E-3;
-        apgd = apgd*zz+1.18159633322838625562E-4;
-        apgd = apgd*zz+1.37480673554219441465E-6;
-        apgd = apgd*zz+5.79912514929147598821E-9;
-        ug = z*apgn/apgd;
-        k = sqpii*t;
-        *aip = -k*(g*uf+f*ug);
-        *bip = k*(f*uf-g*ug);
-        return;
-    }
-    if( ae_fp_greater_eq(x,2.09) )
-    {
-        domflg = 5;
-        t = ae_sqrt(x, _state);
-        zeta = 2.0*x*t/3.0;
-        g = ae_exp(zeta, _state);
-        t = ae_sqrt(t, _state);
-        k = 2.0*t*g;
-        z = 1.0/zeta;
-        an = 3.46538101525629032477E-1;
-        an = an*z+1.20075952739645805542E1;
-        an = an*z+7.62796053615234516538E1;
-        an = an*z+1.68089224934630576269E2;
-        an = an*z+1.59756391350164413639E2;
-        an = an*z+7.05360906840444183113E1;
-        an = an*z+1.40264691163389668864E1;
-        an = an*z+9.99999999999999995305E-1;
-        ad = 5.67594532638770212846E-1;
-        ad = ad*z+1.47562562584847203173E1;
-        ad = ad*z+8.45138970141474626562E1;
-        ad = ad*z+1.77318088145400459522E2;
-        ad = ad*z+1.64234692871529701831E2;
-        ad = ad*z+7.14778400825575695274E1;
-        ad = ad*z+1.40959135607834029598E1;
-        ad = ad*z+1.00000000000000000470E0;
-        f = an/ad;
-        *ai = sqpii*f/k;
-        k = -0.5*sqpii*t/g;
-        apn = 6.13759184814035759225E-1;
-        apn = apn*z+1.47454670787755323881E1;
-        apn = apn*z+8.20584123476060982430E1;
-        apn = apn*z+1.71184781360976385540E2;
-        apn = apn*z+1.59317847137141783523E2;
-        apn = apn*z+6.99778599330103016170E1;
-        apn = apn*z+1.39470856980481566958E1;
-        apn = apn*z+1.00000000000000000550E0;
-        apd = 3.34203677749736953049E-1;
-        apd = apd*z+1.11810297306158156705E1;
-        apd = apd*z+7.11727352147859965283E1;
-        apd = apd*z+1.58778084372838313640E2;
-        apd = apd*z+1.53206427475809220834E2;
-        apd = apd*z+6.86752304592780337944E1;
-        apd = apd*z+1.38498634758259442477E1;
-        apd = apd*z+9.99999999999999994502E-1;
-        f = apn/apd;
-        *aip = f*k;
-        if( ae_fp_greater(x,8.3203353) )
-        {
-            bn16 = -2.53240795869364152689E-1;
-            bn16 = bn16*z+5.75285167332467384228E-1;
-            bn16 = bn16*z-3.29907036873225371650E-1;
-            bn16 = bn16*z+6.44404068948199951727E-2;
-            bn16 = bn16*z-3.82519546641336734394E-3;
-            bd16 = 1.00000000000000000000E0;
-            bd16 = bd16*z-7.15685095054035237902E0;
-            bd16 = bd16*z+1.06039580715664694291E1;
-            bd16 = bd16*z-5.23246636471251500874E0;
-            bd16 = bd16*z+9.57395864378383833152E-1;
-            bd16 = bd16*z-5.50828147163549611107E-2;
-            f = z*bn16/bd16;
-            k = sqpii*g;
-            *bi = k*(1.0+f)/t;
-            bppn = 4.65461162774651610328E-1;
-            bppn = bppn*z-1.08992173800493920734E0;
-            bppn = bppn*z+6.38800117371827987759E-1;
-            bppn = bppn*z-1.26844349553102907034E-1;
-            bppn = bppn*z+7.62487844342109852105E-3;
-            bppd = 1.00000000000000000000E0;
-            bppd = bppd*z-8.70622787633159124240E0;
-            bppd = bppd*z+1.38993162704553213172E1;
-            bppd = bppd*z-7.14116144616431159572E0;
-            bppd = bppd*z+1.34008595960680518666E0;
-            bppd = bppd*z-7.84273211323341930448E-2;
-            f = z*bppn/bppd;
-            *bip = k*t*(1.0+f);
-            return;
-        }
-    }
-    f = 1.0;
-    g = x;
-    t = 1.0;
-    uf = 1.0;
-    ug = x;
-    k = 1.0;
-    z = x*x*x;
-    while(ae_fp_greater(t,ae_machineepsilon))
-    {
-        uf = uf*z;
-        k = k+1.0;
-        uf = uf/k;
-        ug = ug*z;
-        k = k+1.0;
-        ug = ug/k;
-        uf = uf/k;
-        f = f+uf;
-        k = k+1.0;
-        ug = ug/k;
-        g = g+ug;
-        t = ae_fabs(uf/f, _state);
-    }
-    uf = c1*f;
-    ug = c2*g;
-    if( domflg%2==0 )
-    {
-        *ai = uf-ug;
-    }
-    if( domflg/2%2==0 )
-    {
-        *bi = sqrt3*(uf+ug);
-    }
-    k = 4.0;
-    uf = x*x/2.0;
-    ug = z/3.0;
-    f = uf;
-    g = 1.0+ug;
-    uf = uf/3.0;
-    t = 1.0;
-    while(ae_fp_greater(t,ae_machineepsilon))
-    {
-        uf = uf*z;
-        ug = ug/k;
-        k = k+1.0;
-        ug = ug*z;
-        uf = uf/k;
-        f = f+uf;
-        k = k+1.0;
-        ug = ug/k;
-        uf = uf/k;
-        g = g+ug;
-        k = k+1.0;
-        t = ae_fabs(ug/g, _state);
-    }
-    uf = c1*f;
-    ug = c2*g;
-    if( domflg/4%2==0 )
-    {
-        *aip = uf-ug;
-    }
-    if( domflg/8%2==0 )
-    {
-        *bip = sqrt3*(uf+ug);
-    }
-}
-
-
-
-
-/*************************************************************************
-Bessel function of order zero
-
-Returns Bessel function of order zero of the argument.
-
-The domain is divided into the intervals [0, 5] and
-(5, infinity). In the first interval the following rational
-approximation is used:
-
-
-       2         2
-(w - r  ) (w - r  ) P (w) / Q (w)
-      1         2    3       8
-
-           2
-where w = x  and the two r's are zeros of the function.
-
-In the second interval, the Hankel asymptotic expansion
-is employed with two rational functions of degree 6/6
-and 7/7.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       60000       4.2e-16     1.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselj0(double x, ae_state *_state)
-{
-    double xsq;
-    double nn;
-    double pzero;
-    double qzero;
-    double p1;
-    double q1;
-    double result;
-
-
-    if( ae_fp_less(x,0) )
-    {
-        x = -x;
-    }
-    if( ae_fp_greater(x,8.0) )
-    {
-        bessel_besselasympt0(x, &pzero, &qzero, _state);
-        nn = x-ae_pi/4;
-        result = ae_sqrt(2/ae_pi/x, _state)*(pzero*ae_cos(nn, _state)-qzero*ae_sin(nn, _state));
-        return result;
-    }
-    xsq = ae_sqr(x, _state);
-    p1 = 26857.86856980014981415848441;
-    p1 = -40504123.71833132706360663322+xsq*p1;
-    p1 = 25071582855.36881945555156435+xsq*p1;
-    p1 = -8085222034853.793871199468171+xsq*p1;
-    p1 = 1434354939140344.111664316553+xsq*p1;
-    p1 = -136762035308817138.6865416609+xsq*p1;
-    p1 = 6382059341072356562.289432465+xsq*p1;
-    p1 = -117915762910761053603.8440800+xsq*p1;
-    p1 = 493378725179413356181.6813446+xsq*p1;
-    q1 = 1.0;
-    q1 = 1363.063652328970604442810507+xsq*q1;
-    q1 = 1114636.098462985378182402543+xsq*q1;
-    q1 = 669998767.2982239671814028660+xsq*q1;
-    q1 = 312304311494.1213172572469442+xsq*q1;
-    q1 = 112775673967979.8507056031594+xsq*q1;
-    q1 = 30246356167094626.98627330784+xsq*q1;
-    q1 = 5428918384092285160.200195092+xsq*q1;
-    q1 = 493378725179413356211.3278438+xsq*q1;
-    result = p1/q1;
-    return result;
-}
-
-
-/*************************************************************************
-Bessel function of order one
-
-Returns Bessel function of order one of the argument.
-
-The domain is divided into the intervals [0, 8] and
-(8, infinity). In the first interval a 24 term Chebyshev
-expansion is used. In the second, the asymptotic
-trigonometric representation is employed using two
-rational functions of degree 5/5.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain      # trials      peak         rms
-   IEEE      0, 30       30000       2.6e-16     1.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselj1(double x, ae_state *_state)
-{
-    double s;
-    double xsq;
-    double nn;
-    double pzero;
-    double qzero;
-    double p1;
-    double q1;
-    double result;
-
-
-    s = ae_sign(x, _state);
-    if( ae_fp_less(x,0) )
-    {
-        x = -x;
-    }
-    if( ae_fp_greater(x,8.0) )
-    {
-        bessel_besselasympt1(x, &pzero, &qzero, _state);
-        nn = x-3*ae_pi/4;
-        result = ae_sqrt(2/ae_pi/x, _state)*(pzero*ae_cos(nn, _state)-qzero*ae_sin(nn, _state));
-        if( ae_fp_less(s,0) )
-        {
-            result = -result;
-        }
-        return result;
-    }
-    xsq = ae_sqr(x, _state);
-    p1 = 2701.122710892323414856790990;
-    p1 = -4695753.530642995859767162166+xsq*p1;
-    p1 = 3413234182.301700539091292655+xsq*p1;
-    p1 = -1322983480332.126453125473247+xsq*p1;
-    p1 = 290879526383477.5409737601689+xsq*p1;
-    p1 = -35888175699101060.50743641413+xsq*p1;
-    p1 = 2316433580634002297.931815435+xsq*p1;
-    p1 = -66721065689249162980.20941484+xsq*p1;
-    p1 = 581199354001606143928.050809+xsq*p1;
-    q1 = 1.0;
-    q1 = 1606.931573481487801970916749+xsq*q1;
-    q1 = 1501793.594998585505921097578+xsq*q1;
-    q1 = 1013863514.358673989967045588+xsq*q1;
-    q1 = 524371026216.7649715406728642+xsq*q1;
-    q1 = 208166122130760.7351240184229+xsq*q1;
-    q1 = 60920613989175217.46105196863+xsq*q1;
-    q1 = 11857707121903209998.37113348+xsq*q1;
-    q1 = 1162398708003212287858.529400+xsq*q1;
-    result = s*x*p1/q1;
-    return result;
-}
-
-
-/*************************************************************************
-Bessel function of integer order
-
-Returns Bessel function of order n, where n is a
-(possibly negative) integer.
-
-The ratio of jn(x) to j0(x) is computed by backward
-recurrence.  First the ratio jn/jn-1 is found by a
-continued fraction expansion.  Then the recurrence
-relating successive orders is applied until j0 or j1 is
-reached.
-
-If n = 0 or 1 the routine for j0 or j1 is called
-directly.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   range      # trials      peak         rms
-   IEEE      0, 30        5000       4.4e-16     7.9e-17
-
-
-Not suitable for large n or x. Use jv() (fractional order) instead.
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseljn(ae_int_t n, double x, ae_state *_state)
-{
-    double pkm2;
-    double pkm1;
-    double pk;
-    double xk;
-    double r;
-    double ans;
-    ae_int_t k;
-    ae_int_t sg;
-    double result;
-
-
-    if( n<0 )
-    {
-        n = -n;
-        if( n%2==0 )
-        {
-            sg = 1;
-        }
-        else
-        {
-            sg = -1;
-        }
-    }
-    else
-    {
-        sg = 1;
-    }
-    if( ae_fp_less(x,0) )
-    {
-        if( n%2!=0 )
-        {
-            sg = -sg;
-        }
-        x = -x;
-    }
-    if( n==0 )
-    {
-        result = sg*besselj0(x, _state);
-        return result;
-    }
-    if( n==1 )
-    {
-        result = sg*besselj1(x, _state);
-        return result;
-    }
-    if( n==2 )
-    {
-        if( ae_fp_eq(x,0) )
-        {
-            result = 0;
-        }
-        else
-        {
-            result = sg*(2.0*besselj1(x, _state)/x-besselj0(x, _state));
-        }
-        return result;
-    }
-    if( ae_fp_less(x,ae_machineepsilon) )
-    {
-        result = 0;
-        return result;
-    }
-    k = 53;
-    pk = 2*(n+k);
-    ans = pk;
-    xk = x*x;
-    do
-    {
-        pk = pk-2.0;
-        ans = pk-xk/ans;
-        k = k-1;
-    }
-    while(k!=0);
-    ans = x/ans;
-    pk = 1.0;
-    pkm1 = 1.0/ans;
-    k = n-1;
-    r = 2*k;
-    do
-    {
-        pkm2 = (pkm1*r-pk*x)/x;
-        pk = pkm1;
-        pkm1 = pkm2;
-        r = r-2.0;
-        k = k-1;
-    }
-    while(k!=0);
-    if( ae_fp_greater(ae_fabs(pk, _state),ae_fabs(pkm1, _state)) )
-    {
-        ans = besselj1(x, _state)/pk;
-    }
-    else
-    {
-        ans = besselj0(x, _state)/pkm1;
-    }
-    result = sg*ans;
-    return result;
-}
-
-
-/*************************************************************************
-Bessel function of the second kind, order zero
-
-Returns Bessel function of the second kind, of order
-zero, of the argument.
-
-The domain is divided into the intervals [0, 5] and
-(5, infinity). In the first interval a rational approximation
-R(x) is employed to compute
-  y0(x)  = R(x)  +   2 * log(x) * j0(x) / PI.
-Thus a call to j0() is required.
-
-In the second interval, the Hankel asymptotic expansion
-is employed with two rational functions of degree 6/6
-and 7/7.
-
-
-
-ACCURACY:
-
- Absolute error, when y0(x) < 1; else relative error:
-
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.3e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double bessely0(double x, ae_state *_state)
-{
-    double nn;
-    double xsq;
-    double pzero;
-    double qzero;
-    double p4;
-    double q4;
-    double result;
-
-
-    if( ae_fp_greater(x,8.0) )
-    {
-        bessel_besselasympt0(x, &pzero, &qzero, _state);
-        nn = x-ae_pi/4;
-        result = ae_sqrt(2/ae_pi/x, _state)*(pzero*ae_sin(nn, _state)+qzero*ae_cos(nn, _state));
-        return result;
-    }
-    xsq = ae_sqr(x, _state);
-    p4 = -41370.35497933148554125235152;
-    p4 = 59152134.65686889654273830069+xsq*p4;
-    p4 = -34363712229.79040378171030138+xsq*p4;
-    p4 = 10255208596863.94284509167421+xsq*p4;
-    p4 = -1648605817185729.473122082537+xsq*p4;
-    p4 = 137562431639934407.8571335453+xsq*p4;
-    p4 = -5247065581112764941.297350814+xsq*p4;
-    p4 = 65874732757195549259.99402049+xsq*p4;
-    p4 = -27502866786291095837.01933175+xsq*p4;
-    q4 = 1.0;
-    q4 = 1282.452772478993804176329391+xsq*q4;
-    q4 = 1001702.641288906265666651753+xsq*q4;
-    q4 = 579512264.0700729537480087915+xsq*q4;
-    q4 = 261306575504.1081249568482092+xsq*q4;
-    q4 = 91620380340751.85262489147968+xsq*q4;
-    q4 = 23928830434997818.57439356652+xsq*q4;
-    q4 = 4192417043410839973.904769661+xsq*q4;
-    q4 = 372645883898616588198.9980+xsq*q4;
-    result = p4/q4+2/ae_pi*besselj0(x, _state)*ae_log(x, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Bessel function of second kind of order one
-
-Returns Bessel function of the second kind of order one
-of the argument.
-
-The domain is divided into the intervals [0, 8] and
-(8, infinity). In the first interval a 25 term Chebyshev
-expansion is used, and a call to j1() is required.
-In the second, the asymptotic trigonometric representation
-is employed using two rational functions of degree 5/5.
-
-ACCURACY:
-
-                     Absolute error:
-arithmetic   domain      # trials      peak         rms
-   IEEE      0, 30       30000       1.0e-15     1.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double bessely1(double x, ae_state *_state)
-{
-    double nn;
-    double xsq;
-    double pzero;
-    double qzero;
-    double p4;
-    double q4;
-    double result;
-
-
-    if( ae_fp_greater(x,8.0) )
-    {
-        bessel_besselasympt1(x, &pzero, &qzero, _state);
-        nn = x-3*ae_pi/4;
-        result = ae_sqrt(2/ae_pi/x, _state)*(pzero*ae_sin(nn, _state)+qzero*ae_cos(nn, _state));
-        return result;
-    }
-    xsq = ae_sqr(x, _state);
-    p4 = -2108847.540133123652824139923;
-    p4 = 3639488548.124002058278999428+xsq*p4;
-    p4 = -2580681702194.450950541426399+xsq*p4;
-    p4 = 956993023992168.3481121552788+xsq*p4;
-    p4 = -196588746272214065.8820322248+xsq*p4;
-    p4 = 21931073399177975921.11427556+xsq*p4;
-    p4 = -1212297555414509577913.561535+xsq*p4;
-    p4 = 26554738314348543268942.48968+xsq*p4;
-    p4 = -99637534243069222259967.44354+xsq*p4;
-    q4 = 1.0;
-    q4 = 1612.361029677000859332072312+xsq*q4;
-    q4 = 1563282.754899580604737366452+xsq*q4;
-    q4 = 1128686837.169442121732366891+xsq*q4;
-    q4 = 646534088126.5275571961681500+xsq*q4;
-    q4 = 297663212564727.6729292742282+xsq*q4;
-    q4 = 108225825940881955.2553850180+xsq*q4;
-    q4 = 29549879358971486742.90758119+xsq*q4;
-    q4 = 5435310377188854170800.653097+xsq*q4;
-    q4 = 508206736694124324531442.4152+xsq*q4;
-    result = x*p4/q4+2/ae_pi*(besselj1(x, _state)*ae_log(x, _state)-1/x);
-    return result;
-}
-
-
-/*************************************************************************
-Bessel function of second kind of integer order
-
-Returns Bessel function of order n, where n is a
-(possibly negative) integer.
-
-The function is evaluated by forward recurrence on
-n, starting with values computed by the routines
-y0() and y1().
-
-If n = 0 or 1 the routine for y0 or y1 is called
-directly.
-
-ACCURACY:
-                     Absolute error, except relative
-                     when y > 1:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       3.4e-15     4.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselyn(ae_int_t n, double x, ae_state *_state)
-{
-    ae_int_t i;
-    double a;
-    double b;
-    double tmp;
-    double s;
-    double result;
-
-
-    s = 1;
-    if( n<0 )
-    {
-        n = -n;
-        if( n%2!=0 )
-        {
-            s = -1;
-        }
-    }
-    if( n==0 )
-    {
-        result = bessely0(x, _state);
-        return result;
-    }
-    if( n==1 )
-    {
-        result = s*bessely1(x, _state);
-        return result;
-    }
-    a = bessely0(x, _state);
-    b = bessely1(x, _state);
-    for(i=1; i<=n-1; i++)
-    {
-        tmp = b;
-        b = 2*i/x*b-a;
-        a = tmp;
-    }
-    result = s*b;
-    return result;
-}
-
-
-/*************************************************************************
-Modified Bessel function of order zero
-
-Returns modified Bessel function of order zero of the
-argument.
-
-The function is defined as i0(x) = j0( ix ).
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        30000       5.8e-16     1.4e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseli0(double x, ae_state *_state)
-{
-    double y;
-    double v;
-    double z;
-    double b0;
-    double b1;
-    double b2;
-    double result;
-
-
-    if( ae_fp_less(x,0) )
-    {
-        x = -x;
-    }
-    if( ae_fp_less_eq(x,8.0) )
-    {
-        y = x/2.0-2.0;
-        bessel_besselmfirstcheb(-4.41534164647933937950E-18, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 3.33079451882223809783E-17, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -2.43127984654795469359E-16, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.71539128555513303061E-15, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -1.16853328779934516808E-14, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 7.67618549860493561688E-14, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -4.85644678311192946090E-13, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 2.95505266312963983461E-12, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -1.72682629144155570723E-11, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 9.67580903537323691224E-11, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -5.18979560163526290666E-10, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 2.65982372468238665035E-9, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -1.30002500998624804212E-8, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 6.04699502254191894932E-8, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -2.67079385394061173391E-7, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.11738753912010371815E-6, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -4.41673835845875056359E-6, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.64484480707288970893E-5, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -5.75419501008210370398E-5, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.88502885095841655729E-4, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -5.76375574538582365885E-4, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.63947561694133579842E-3, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -4.32430999505057594430E-3, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.05464603945949983183E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -2.37374148058994688156E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 4.93052842396707084878E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -9.49010970480476444210E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.71620901522208775349E-1, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -3.04682672343198398683E-1, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 6.76795274409476084995E-1, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        result = ae_exp(x, _state)*v;
-        return result;
-    }
-    z = 32.0/x-2.0;
-    bessel_besselmfirstcheb(-7.23318048787475395456E-18, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -4.83050448594418207126E-18, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 4.46562142029675999901E-17, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 3.46122286769746109310E-17, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -2.82762398051658348494E-16, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -3.42548561967721913462E-16, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 1.77256013305652638360E-15, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 3.81168066935262242075E-15, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -9.55484669882830764870E-15, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -4.15056934728722208663E-14, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 1.54008621752140982691E-14, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 3.85277838274214270114E-13, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 7.18012445138366623367E-13, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -1.79417853150680611778E-12, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -1.32158118404477131188E-11, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, -3.14991652796324136454E-11, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 1.18891471078464383424E-11, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 4.94060238822496958910E-10, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 3.39623202570838634515E-9, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 2.26666899049817806459E-8, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 2.04891858946906374183E-7, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 2.89137052083475648297E-6, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 6.88975834691682398426E-5, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 3.36911647825569408990E-3, &b0, &b1, &b2, _state);
-    bessel_besselmnextcheb(z, 8.04490411014108831608E-1, &b0, &b1, &b2, _state);
-    v = 0.5*(b0-b2);
-    result = ae_exp(x, _state)*v/ae_sqrt(x, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Modified Bessel function of order one
-
-Returns modified Bessel function of order one of the
-argument.
-
-The function is defined as i1(x) = -i j1( ix ).
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.9e-15     2.1e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1985, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besseli1(double x, ae_state *_state)
-{
-    double y;
-    double z;
-    double v;
-    double b0;
-    double b1;
-    double b2;
-    double result;
-
-
-    z = ae_fabs(x, _state);
-    if( ae_fp_less_eq(z,8.0) )
-    {
-        y = z/2.0-2.0;
-        bessel_besselm1firstcheb(2.77791411276104639959E-18, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.11142121435816608115E-17, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.55363195773620046921E-16, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.10559694773538630805E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 7.60068429473540693410E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -5.04218550472791168711E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.22379336594557470981E-13, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.98397439776494371520E-12, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.17361862988909016308E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -6.66348972350202774223E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.62559028155211703701E-10, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.88724975172282928790E-9, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 9.38153738649577178388E-9, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -4.44505912879632808065E-8, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.00329475355213526229E-7, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -8.56872026469545474066E-7, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.47025130813767847674E-6, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.32731636560394358279E-5, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 4.78156510755005422638E-5, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.61760815825896745588E-4, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 5.12285956168575772895E-4, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.51357245063125314899E-3, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 4.15642294431288815669E-3, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.05640848946261981558E-2, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.47264490306265168283E-2, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -5.29459812080949914269E-2, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.02643658689847095384E-1, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.76416518357834055153E-1, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.52587186443633654823E-1, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        z = v*z*ae_exp(z, _state);
-    }
-    else
-    {
-        y = 32.0/z-2.0;
-        bessel_besselm1firstcheb(7.51729631084210481353E-18, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 4.41434832307170791151E-18, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -4.65030536848935832153E-17, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.20952592199342395980E-17, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.96262899764595013876E-16, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.30820231092092828324E-16, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.88035477551078244854E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.81440307243700780478E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.04202769841288027642E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 4.27244001671195135429E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.10154184277266431302E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -4.08355111109219731823E-13, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -7.19855177624590851209E-13, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.03562854414708950722E-12, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.41258074366137813316E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.25260358301548823856E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.89749581235054123450E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -5.58974346219658380687E-10, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.83538038596423702205E-9, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.63146884688951950684E-8, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.51223623787020892529E-7, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.88256480887769039346E-6, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.10588938762623716291E-4, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -9.76109749136146840777E-3, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 7.78576235018280120474E-1, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        z = v*ae_exp(z, _state)/ae_sqrt(z, _state);
-    }
-    if( ae_fp_less(x,0) )
-    {
-        z = -z;
-    }
-    result = z;
-    return result;
-}
-
-
-/*************************************************************************
-Modified Bessel function, second kind, order zero
-
-Returns modified Bessel function of the second kind
-of order zero of the argument.
-
-The range is partitioned into the two intervals [0,8] and
-(8, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-Tested at 2000 random points between 0 and 8.  Peak absolute
-error (relative when K0 > 1) was 1.46e-14; rms, 4.26e-15.
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.2e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselk0(double x, ae_state *_state)
-{
-    double y;
-    double z;
-    double v;
-    double b0;
-    double b1;
-    double b2;
-    double result;
-
-
-    ae_assert(ae_fp_greater(x,0), "Domain error in BesselK0: x<=0", _state);
-    if( ae_fp_less_eq(x,2) )
-    {
-        y = x*x-2.0;
-        bessel_besselmfirstcheb(1.37446543561352307156E-16, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 4.25981614279661018399E-14, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.03496952576338420167E-11, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.90451637722020886025E-9, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 2.53479107902614945675E-7, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 2.28621210311945178607E-5, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 1.26461541144692592338E-3, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 3.59799365153615016266E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, 3.44289899924628486886E-1, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(y, -5.35327393233902768720E-1, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        v = v-ae_log(0.5*x, _state)*besseli0(x, _state);
-    }
-    else
-    {
-        z = 8.0/x-2.0;
-        bessel_besselmfirstcheb(5.30043377268626276149E-18, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.64758043015242134646E-17, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 5.21039150503902756861E-17, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.67823109680541210385E-16, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 5.51205597852431940784E-16, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.84859337734377901440E-15, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 6.34007647740507060557E-15, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -2.22751332699166985548E-14, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 8.03289077536357521100E-14, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -2.98009692317273043925E-13, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 1.14034058820847496303E-12, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -4.51459788337394416547E-12, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 1.85594911495471785253E-11, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -7.95748924447710747776E-11, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 3.57739728140030116597E-10, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.69753450938905987466E-9, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 8.57403401741422608519E-9, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -4.66048989768794782956E-8, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 2.76681363944501510342E-7, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.83175552271911948767E-6, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 1.39498137188764993662E-5, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -1.28495495816278026384E-4, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 1.56988388573005337491E-3, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, -3.14481013119645005427E-2, &b0, &b1, &b2, _state);
-        bessel_besselmnextcheb(z, 2.44030308206595545468E0, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        v = v*ae_exp(-x, _state)/ae_sqrt(x, _state);
-    }
-    result = v;
-    return result;
-}
-
-
-/*************************************************************************
-Modified Bessel function, second kind, order one
-
-Computes the modified Bessel function of the second kind
-of order one of the argument.
-
-The range is partitioned into the two intervals [0,2] and
-(2, infinity).  Chebyshev polynomial expansions are employed
-in each interval.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0, 30       30000       1.2e-15     1.6e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselk1(double x, ae_state *_state)
-{
-    double y;
-    double z;
-    double v;
-    double b0;
-    double b1;
-    double b2;
-    double result;
-
-
-    z = 0.5*x;
-    ae_assert(ae_fp_greater(z,0), "Domain error in K1", _state);
-    if( ae_fp_less_eq(x,2) )
-    {
-        y = x*x-2.0;
-        bessel_besselm1firstcheb(-7.02386347938628759343E-18, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.42744985051936593393E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -6.66690169419932900609E-13, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.41148839263352776110E-10, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.21338763073472585583E-8, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.43340614156596823496E-6, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.73028895751305206302E-4, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -6.97572385963986435018E-3, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.22611180822657148235E-1, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.53155960776544875667E-1, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.52530022733894777053E0, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        result = ae_log(z, _state)*besseli1(x, _state)+v/x;
-    }
-    else
-    {
-        y = 8.0/x-2.0;
-        bessel_besselm1firstcheb(-5.75674448366501715755E-18, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.79405087314755922667E-17, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -5.68946255844285935196E-17, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.83809354436663880070E-16, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -6.05704724837331885336E-16, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.03870316562433424052E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -7.01983709041831346144E-15, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.47715442448130437068E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -8.97670518232499435011E-14, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 3.34841966607842919884E-13, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.28917396095102890680E-12, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 5.13963967348173025100E-12, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.12996783842756842877E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 9.21831518760500529508E-11, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -4.19035475934189648750E-10, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.01504975519703286596E-9, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.03457624656780970260E-8, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 5.74108412545004946722E-8, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -3.50196060308781257119E-7, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.40648494783721712015E-6, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -1.93619797416608296024E-5, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.95215518471351631108E-4, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, -2.85781685962277938680E-3, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 1.03923736576817238437E-1, &b0, &b1, &b2, _state);
-        bessel_besselm1nextcheb(y, 2.72062619048444266945E0, &b0, &b1, &b2, _state);
-        v = 0.5*(b0-b2);
-        result = ae_exp(-x, _state)*v/ae_sqrt(x, _state);
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Modified Bessel function, second kind, integer order
-
-Returns modified Bessel function of the second kind
-of order n of the argument.
-
-The range is partitioned into the two intervals [0,9.55] and
-(9.55, infinity).  An ascending power series is used in the
-low range, and an asymptotic expansion in the high range.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        90000       1.8e-8      3.0e-10
-
-Error is high only near the crossover point x = 9.55
-between the two expansions used.
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1988, 2000 by Stephen L. Moshier
-*************************************************************************/
-double besselkn(ae_int_t nn, double x, ae_state *_state)
-{
-    double k;
-    double kf;
-    double nk1f;
-    double nkf;
-    double zn;
-    double t;
-    double s;
-    double z0;
-    double z;
-    double ans;
-    double fn;
-    double pn;
-    double pk;
-    double zmn;
-    double tlg;
-    double tox;
-    ae_int_t i;
-    ae_int_t n;
-    double eul;
-    double result;
-
-
-    eul = 5.772156649015328606065e-1;
-    if( nn<0 )
-    {
-        n = -nn;
-    }
-    else
-    {
-        n = nn;
-    }
-    ae_assert(n<=31, "Overflow in BesselKN", _state);
-    ae_assert(ae_fp_greater(x,0), "Domain error in BesselKN", _state);
-    if( ae_fp_less_eq(x,9.55) )
-    {
-        ans = 0.0;
-        z0 = 0.25*x*x;
-        fn = 1.0;
-        pn = 0.0;
-        zmn = 1.0;
-        tox = 2.0/x;
-        if( n>0 )
-        {
-            pn = -eul;
-            k = 1.0;
-            for(i=1; i<=n-1; i++)
-            {
-                pn = pn+1.0/k;
-                k = k+1.0;
-                fn = fn*k;
-            }
-            zmn = tox;
-            if( n==1 )
-            {
-                ans = 1.0/x;
-            }
-            else
-            {
-                nk1f = fn/n;
-                kf = 1.0;
-                s = nk1f;
-                z = -z0;
-                zn = 1.0;
-                for(i=1; i<=n-1; i++)
-                {
-                    nk1f = nk1f/(n-i);
-                    kf = kf*i;
-                    zn = zn*z;
-                    t = nk1f*zn/kf;
-                    s = s+t;
-                    ae_assert(ae_fp_greater(ae_maxrealnumber-ae_fabs(t, _state),ae_fabs(s, _state)), "Overflow in BesselKN", _state);
-                    ae_assert(!(ae_fp_greater(tox,1.0)&&ae_fp_less(ae_maxrealnumber/tox,zmn)), "Overflow in BesselKN", _state);
-                    zmn = zmn*tox;
-                }
-                s = s*0.5;
-                t = ae_fabs(s, _state);
-                ae_assert(!(ae_fp_greater(zmn,1.0)&&ae_fp_less(ae_maxrealnumber/zmn,t)), "Overflow in BesselKN", _state);
-                ae_assert(!(ae_fp_greater(t,1.0)&&ae_fp_less(ae_maxrealnumber/t,zmn)), "Overflow in BesselKN", _state);
-                ans = s*zmn;
-            }
-        }
-        tlg = 2.0*ae_log(0.5*x, _state);
-        pk = -eul;
-        if( n==0 )
-        {
-            pn = pk;
-            t = 1.0;
-        }
-        else
-        {
-            pn = pn+1.0/n;
-            t = 1.0/fn;
-        }
-        s = (pk+pn-tlg)*t;
-        k = 1.0;
-        do
-        {
-            t = t*(z0/(k*(k+n)));
-            pk = pk+1.0/k;
-            pn = pn+1.0/(k+n);
-            s = s+(pk+pn-tlg)*t;
-            k = k+1.0;
-        }
-        while(ae_fp_greater(ae_fabs(t/s, _state),ae_machineepsilon));
-        s = 0.5*s/zmn;
-        if( n%2!=0 )
-        {
-            s = -s;
-        }
-        ans = ans+s;
-        result = ans;
-        return result;
-    }
-    if( ae_fp_greater(x,ae_log(ae_maxrealnumber, _state)) )
-    {
-        result = 0;
-        return result;
-    }
-    k = n;
-    pn = 4.0*k*k;
-    pk = 1.0;
-    z0 = 8.0*x;
-    fn = 1.0;
-    t = 1.0;
-    s = t;
-    nkf = ae_maxrealnumber;
-    i = 0;
-    do
-    {
-        z = pn-pk*pk;
-        t = t*z/(fn*z0);
-        nk1f = ae_fabs(t, _state);
-        if( i>=n&&ae_fp_greater(nk1f,nkf) )
-        {
-            break;
-        }
-        nkf = nk1f;
-        s = s+t;
-        fn = fn+1.0;
-        pk = pk+2.0;
-        i = i+1;
-    }
-    while(ae_fp_greater(ae_fabs(t/s, _state),ae_machineepsilon));
-    result = ae_exp(-x, _state)*ae_sqrt(ae_pi/(2.0*x), _state)*s;
-    return result;
-}
-
-
-/*************************************************************************
-Internal subroutine
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-static void bessel_besselmfirstcheb(double c,
-     double* b0,
-     double* b1,
-     double* b2,
-     ae_state *_state)
-{
-
-
-    *b0 = c;
-    *b1 = 0.0;
-    *b2 = 0.0;
-}
-
-
-/*************************************************************************
-Internal subroutine
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-static void bessel_besselmnextcheb(double x,
-     double c,
-     double* b0,
-     double* b1,
-     double* b2,
-     ae_state *_state)
-{
-
-
-    *b2 = *b1;
-    *b1 = *b0;
-    *b0 = x*(*b1)-(*b2)+c;
-}
-
-
-/*************************************************************************
-Internal subroutine
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-static void bessel_besselm1firstcheb(double c,
-     double* b0,
-     double* b1,
-     double* b2,
-     ae_state *_state)
-{
-
-
-    *b0 = c;
-    *b1 = 0.0;
-    *b2 = 0.0;
-}
-
-
-/*************************************************************************
-Internal subroutine
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-static void bessel_besselm1nextcheb(double x,
-     double c,
-     double* b0,
-     double* b1,
-     double* b2,
-     ae_state *_state)
-{
-
-
-    *b2 = *b1;
-    *b1 = *b0;
-    *b0 = x*(*b1)-(*b2)+c;
-}
-
-
-static void bessel_besselasympt0(double x,
-     double* pzero,
-     double* qzero,
-     ae_state *_state)
-{
-    double xsq;
-    double p2;
-    double q2;
-    double p3;
-    double q3;
-
-    *pzero = 0;
-    *qzero = 0;
-
-    xsq = 64.0/(x*x);
-    p2 = 0.0;
-    p2 = 2485.271928957404011288128951+xsq*p2;
-    p2 = 153982.6532623911470917825993+xsq*p2;
-    p2 = 2016135.283049983642487182349+xsq*p2;
-    p2 = 8413041.456550439208464315611+xsq*p2;
-    p2 = 12332384.76817638145232406055+xsq*p2;
-    p2 = 5393485.083869438325262122897+xsq*p2;
-    q2 = 1.0;
-    q2 = 2615.700736920839685159081813+xsq*q2;
-    q2 = 156001.7276940030940592769933+xsq*q2;
-    q2 = 2025066.801570134013891035236+xsq*q2;
-    q2 = 8426449.050629797331554404810+xsq*q2;
-    q2 = 12338310.22786324960844856182+xsq*q2;
-    q2 = 5393485.083869438325560444960+xsq*q2;
-    p3 = -0.0;
-    p3 = -4.887199395841261531199129300+xsq*p3;
-    p3 = -226.2630641933704113967255053+xsq*p3;
-    p3 = -2365.956170779108192723612816+xsq*p3;
-    p3 = -8239.066313485606568803548860+xsq*p3;
-    p3 = -10381.41698748464093880530341+xsq*p3;
-    p3 = -3984.617357595222463506790588+xsq*p3;
-    q3 = 1.0;
-    q3 = 408.7714673983499223402830260+xsq*q3;
-    q3 = 15704.89191515395519392882766+xsq*q3;
-    q3 = 156021.3206679291652539287109+xsq*q3;
-    q3 = 533291.3634216897168722255057+xsq*q3;
-    q3 = 666745.4239319826986004038103+xsq*q3;
-    q3 = 255015.5108860942382983170882+xsq*q3;
-    *pzero = p2/q2;
-    *qzero = 8*p3/q3/x;
-}
-
-
-static void bessel_besselasympt1(double x,
-     double* pzero,
-     double* qzero,
-     ae_state *_state)
-{
-    double xsq;
-    double p2;
-    double q2;
-    double p3;
-    double q3;
-
-    *pzero = 0;
-    *qzero = 0;
-
-    xsq = 64.0/(x*x);
-    p2 = -1611.616644324610116477412898;
-    p2 = -109824.0554345934672737413139+xsq*p2;
-    p2 = -1523529.351181137383255105722+xsq*p2;
-    p2 = -6603373.248364939109255245434+xsq*p2;
-    p2 = -9942246.505077641195658377899+xsq*p2;
-    p2 = -4435757.816794127857114720794+xsq*p2;
-    q2 = 1.0;
-    q2 = -1455.009440190496182453565068+xsq*q2;
-    q2 = -107263.8599110382011903063867+xsq*q2;
-    q2 = -1511809.506634160881644546358+xsq*q2;
-    q2 = -6585339.479723087072826915069+xsq*q2;
-    q2 = -9934124.389934585658967556309+xsq*q2;
-    q2 = -4435757.816794127856828016962+xsq*q2;
-    p3 = 35.26513384663603218592175580;
-    p3 = 1706.375429020768002061283546+xsq*p3;
-    p3 = 18494.26287322386679652009819+xsq*p3;
-    p3 = 66178.83658127083517939992166+xsq*p3;
-    p3 = 85145.16067533570196555001171+xsq*p3;
-    p3 = 33220.91340985722351859704442+xsq*p3;
-    q3 = 1.0;
-    q3 = 863.8367769604990967475517183+xsq*q3;
-    q3 = 37890.22974577220264142952256+xsq*q3;
-    q3 = 400294.4358226697511708610813+xsq*q3;
-    q3 = 1419460.669603720892855755253+xsq*q3;
-    q3 = 1819458.042243997298924553839+xsq*q3;
-    q3 = 708712.8194102874357377502472+xsq*q3;
-    *pzero = p2/q2;
-    *qzero = 8*p3/q3/x;
-}
-
-
-
-
-/*************************************************************************
-Beta function
-
-
-                  -     -
-                 | (a) | (b)
-beta( a, b )  =  -----------.
-                    -
-                   | (a+b)
-
-For large arguments the logarithm of the function is
-evaluated using lgam(), then exponentiated.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,30       30000       8.1e-14     1.1e-14
-
-Cephes Math Library Release 2.0:  April, 1987
-Copyright 1984, 1987 by Stephen L. Moshier
-*************************************************************************/
-double beta(double a, double b, ae_state *_state)
-{
-    double y;
-    double sg;
-    double s;
-    double result;
-
-
-    sg = 1;
-    ae_assert(ae_fp_greater(a,0)||ae_fp_neq(a,ae_ifloor(a, _state)), "Overflow in Beta", _state);
-    ae_assert(ae_fp_greater(b,0)||ae_fp_neq(b,ae_ifloor(b, _state)), "Overflow in Beta", _state);
-    y = a+b;
-    if( ae_fp_greater(ae_fabs(y, _state),171.624376956302725) )
-    {
-        y = lngamma(y, &s, _state);
-        sg = sg*s;
-        y = lngamma(b, &s, _state)-y;
-        sg = sg*s;
-        y = lngamma(a, &s, _state)+y;
-        sg = sg*s;
-        ae_assert(ae_fp_less_eq(y,ae_log(ae_maxrealnumber, _state)), "Overflow in Beta", _state);
-        result = sg*ae_exp(y, _state);
-        return result;
-    }
-    y = gammafunction(y, _state);
-    ae_assert(ae_fp_neq(y,0), "Overflow in Beta", _state);
-    if( ae_fp_greater(a,b) )
-    {
-        y = gammafunction(a, _state)/y;
-        y = y*gammafunction(b, _state);
-    }
-    else
-    {
-        y = gammafunction(b, _state)/y;
-        y = y*gammafunction(a, _state);
-    }
-    result = y;
-    return result;
-}
-
-
+#endif
+#if defined(AE_COMPILE_IBETAF) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -5531,16 +4517,16 @@ double incompletebeta(double a, double b, double x, ae_state *_state)
     maxgam = 171.624376956302725;
     minlog = ae_log(ae_minrealnumber, _state);
     maxlog = ae_log(ae_maxrealnumber, _state);
-    ae_assert(ae_fp_greater(a,0)&&ae_fp_greater(b,0), "Domain error in IncompleteBeta", _state);
-    ae_assert(ae_fp_greater_eq(x,0)&&ae_fp_less_eq(x,1), "Domain error in IncompleteBeta", _state);
-    if( ae_fp_eq(x,0) )
+    ae_assert(ae_fp_greater(a,(double)(0))&&ae_fp_greater(b,(double)(0)), "Domain error in IncompleteBeta", _state);
+    ae_assert(ae_fp_greater_eq(x,(double)(0))&&ae_fp_less_eq(x,(double)(1)), "Domain error in IncompleteBeta", _state);
+    if( ae_fp_eq(x,(double)(0)) )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
-    if( ae_fp_eq(x,1) )
+    if( ae_fp_eq(x,(double)(1)) )
     {
-        result = 1;
+        result = (double)(1);
         return result;
     }
     flag = 0;
@@ -5638,7 +4624,7 @@ double incompletebeta(double a, double b, double x, ae_state *_state)
 
 
 /*************************************************************************
-Inverse of incomplete beta integral
+Inverse of imcomplete beta integral
 
 Given y, the function finds x such that
 
@@ -5698,19 +4684,19 @@ double invincompletebeta(double a, double b, double y, ae_state *_state)
 
 
     i = 0;
-    ae_assert(ae_fp_greater_eq(y,0)&&ae_fp_less_eq(y,1), "Domain error in InvIncompleteBeta", _state);
+    ae_assert(ae_fp_greater_eq(y,(double)(0))&&ae_fp_less_eq(y,(double)(1)), "Domain error in InvIncompleteBeta", _state);
     
     /*
      * special cases
      */
-    if( ae_fp_eq(y,0) )
+    if( ae_fp_eq(y,(double)(0)) )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
     if( ae_fp_eq(y,1.0) )
     {
-        result = 1;
+        result = (double)(1);
         return result;
     }
     
@@ -5718,16 +4704,16 @@ double invincompletebeta(double a, double b, double y, ae_state *_state)
      * these initializations are not really necessary,
      * but without them compiler complains about 'possibly uninitialized variables'.
      */
-    dithresh = 0;
+    dithresh = (double)(0);
     rflg = 0;
-    aaa = 0;
-    bbb = 0;
-    y0 = 0;
-    x = 0;
-    yyy = 0;
-    lgm = 0;
+    aaa = (double)(0);
+    bbb = (double)(0);
+    y0 = (double)(0);
+    x = (double)(0);
+    yyy = (double)(0);
+    lgm = (double)(0);
     dir = 0;
-    di = 0;
+    di = (double)(0);
     
     /*
      * normal initializations
@@ -5794,7 +4780,7 @@ double invincompletebeta(double a, double b, double y, ae_state *_state)
             d = 2.0*d;
             if( ae_fp_less(d,ae_log(ae_minrealnumber, _state)) )
             {
-                x = 0;
+                x = (double)(0);
                 break;
             }
             x = aaa/(aaa+bbb*ae_exp(d, _state));
@@ -6181,11 +5167,11 @@ static double ibetaf_incompletebetafe(double a,
         pkm1 = pk;
         qkm2 = qkm1;
         qkm1 = qk;
-        if( ae_fp_neq(qk,0) )
+        if( ae_fp_neq(qk,(double)(0)) )
         {
             r = pk/qk;
         }
-        if( ae_fp_neq(r,0) )
+        if( ae_fp_neq(r,(double)(0)) )
         {
             t = ae_fabs((ans-r)/r, _state);
             ans = r;
@@ -6299,11 +5285,11 @@ static double ibetaf_incompletebetafe2(double a,
         pkm1 = pk;
         qkm2 = qkm1;
         qkm1 = qk;
-        if( ae_fp_neq(qk,0) )
+        if( ae_fp_neq(qk,(double)(0)) )
         {
             r = pk/qk;
         }
-        if( ae_fp_neq(r,0) )
+        if( ae_fp_neq(r,(double)(0)) )
         {
             t = ae_fabs((ans-r)/r, _state);
             ans = r;
@@ -6412,6 +5398,876 @@ static double ibetaf_incompletebetaps(double a,
 }
 
 
+#endif
+#if defined(AE_COMPILE_STUDENTTDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Student's t distribution
+
+Computes the integral from minus infinity to t of the Student
+t distribution with integer k > 0 degrees of freedom:
+
+                                     t
+                                     -
+                                    | |
+             -                      |         2   -(k+1)/2
+            | ( (k+1)/2 )           |  (     x   )
+      ----------------------        |  ( 1 + --- )        dx
+                    -               |  (      k  )
+      sqrt( k pi ) | ( k/2 )        |
+                                  | |
+                                   -
+                                  -inf.
+
+Relation to incomplete beta integral:
+
+       1 - stdtr(k,t) = 0.5 * incbet( k/2, 1/2, z )
+where
+       z = k/(k + t**2).
+
+For t < -2, this is the method of computation.  For higher t,
+a direct method is derived from integration by parts.
+Since the function is symmetric about t=0, the area under the
+right tail of the density is found by calling the function
+with -t instead of t.
+
+ACCURACY:
+
+Tested at random 1 <= k <= 25.  The "domain" refers to t.
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE     -100,-2      50000       5.9e-15     1.4e-15
+   IEEE     -2,100      500000       2.7e-15     4.9e-17
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double studenttdistribution(ae_int_t k, double t, ae_state *_state)
+{
+    double x;
+    double rk;
+    double z;
+    double f;
+    double tz;
+    double p;
+    double xsqk;
+    ae_int_t j;
+    double result;
+
+
+    ae_assert(k>0, "Domain error in StudentTDistribution", _state);
+    if( ae_fp_eq(t,(double)(0)) )
+    {
+        result = 0.5;
+        return result;
+    }
+    if( ae_fp_less(t,-2.0) )
+    {
+        rk = (double)(k);
+        z = rk/(rk+t*t);
+        result = 0.5*incompletebeta(0.5*rk, 0.5, z, _state);
+        return result;
+    }
+    if( ae_fp_less(t,(double)(0)) )
+    {
+        x = -t;
+    }
+    else
+    {
+        x = t;
+    }
+    rk = (double)(k);
+    z = 1.0+x*x/rk;
+    if( k%2!=0 )
+    {
+        xsqk = x/ae_sqrt(rk, _state);
+        p = ae_atan(xsqk, _state);
+        if( k>1 )
+        {
+            f = 1.0;
+            tz = 1.0;
+            j = 3;
+            while(j<=k-2&&ae_fp_greater(tz/f,ae_machineepsilon))
+            {
+                tz = tz*((double)(j-1)/(z*(double)j));
+                f = f+tz;
+                j = j+2;
+            }
+            p = p+f*xsqk/z;
+        }
+        p = p*2.0/ae_pi;
+    }
+    else
+    {
+        f = 1.0;
+        tz = 1.0;
+        j = 2;
+        while(j<=k-2&&ae_fp_greater(tz/f,ae_machineepsilon))
+        {
+            tz = tz*((double)(j-1)/(z*(double)j));
+            f = f+tz;
+            j = j+2;
+        }
+        p = f*x/ae_sqrt(z*rk, _state);
+    }
+    if( ae_fp_less(t,(double)(0)) )
+    {
+        p = -p;
+    }
+    result = 0.5+0.5*p;
+    return result;
+}
+
+
+/*************************************************************************
+Functional inverse of Student's t distribution
+
+Given probability p, finds the argument t such that stdtr(k,t)
+is equal to p.
+
+ACCURACY:
+
+Tested at random 1 <= k <= 100.  The "domain" refers to p:
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE    .001,.999     25000       5.7e-15     8.0e-16
+   IEEE    10^-6,.001    25000       2.0e-12     2.9e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invstudenttdistribution(ae_int_t k, double p, ae_state *_state)
+{
+    double t;
+    double rk;
+    double z;
+    ae_int_t rflg;
+    double result;
+
+
+    ae_assert((k>0&&ae_fp_greater(p,(double)(0)))&&ae_fp_less(p,(double)(1)), "Domain error in InvStudentTDistribution", _state);
+    rk = (double)(k);
+    if( ae_fp_greater(p,0.25)&&ae_fp_less(p,0.75) )
+    {
+        if( ae_fp_eq(p,0.5) )
+        {
+            result = (double)(0);
+            return result;
+        }
+        z = 1.0-2.0*p;
+        z = invincompletebeta(0.5, 0.5*rk, ae_fabs(z, _state), _state);
+        t = ae_sqrt(rk*z/(1.0-z), _state);
+        if( ae_fp_less(p,0.5) )
+        {
+            t = -t;
+        }
+        result = t;
+        return result;
+    }
+    rflg = -1;
+    if( ae_fp_greater_eq(p,0.5) )
+    {
+        p = 1.0-p;
+        rflg = 1;
+    }
+    z = invincompletebeta(0.5*rk, 0.5, 2.0*p, _state);
+    if( ae_fp_less(ae_maxrealnumber*z,rk) )
+    {
+        result = (double)rflg*ae_maxrealnumber;
+        return result;
+    }
+    t = ae_sqrt(rk/z-rk, _state);
+    result = (double)rflg*t;
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_FDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+F distribution
+
+Returns the area from zero to x under the F density
+function (also known as Snedcor's density or the
+variance ratio density).  This is the density
+of x = (u1/df1)/(u2/df2), where u1 and u2 are random
+variables having Chi square distributions with df1
+and df2 degrees of freedom, respectively.
+The incomplete beta integral is used, according to the
+formula
+
+P(x) = incbet( df1/2, df2/2, (df1*x/(df2 + df1*x) ).
+
+
+The arguments a and b are greater than zero, and x is
+nonnegative.
+
+ACCURACY:
+
+Tested at random points (a,b,x).
+
+               x     a,b                     Relative error:
+arithmetic  domain  domain     # trials      peak         rms
+   IEEE      0,1    0,100       100000      9.8e-15     1.7e-15
+   IEEE      1,5    0,100       100000      6.5e-15     3.5e-16
+   IEEE      0,1    1,10000     100000      2.2e-11     3.3e-12
+   IEEE      1,5    1,10000     100000      1.1e-11     1.7e-13
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double fdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state)
+{
+    double w;
+    double result;
+
+
+    ae_assert((a>=1&&b>=1)&&ae_fp_greater_eq(x,(double)(0)), "Domain error in FDistribution", _state);
+    w = (double)a*x;
+    w = w/((double)b+w);
+    result = incompletebeta(0.5*(double)a, 0.5*(double)b, w, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Complemented F distribution
+
+Returns the area from x to infinity under the F density
+function (also known as Snedcor's density or the
+variance ratio density).
+
+
+                     inf.
+                      -
+             1       | |  a-1      b-1
+1-P(x)  =  ------    |   t    (1-t)    dt
+           B(a,b)  | |
+                    -
+                     x
+
+
+The incomplete beta integral is used, according to the
+formula
+
+P(x) = incbet( df2/2, df1/2, (df2/(df2 + df1*x) ).
+
+
+ACCURACY:
+
+Tested at random points (a,b,x) in the indicated intervals.
+               x     a,b                     Relative error:
+arithmetic  domain  domain     # trials      peak         rms
+   IEEE      0,1    1,100       100000      3.7e-14     5.9e-16
+   IEEE      1,5    1,100       100000      8.0e-15     1.6e-15
+   IEEE      0,1    1,10000     100000      1.8e-11     3.5e-13
+   IEEE      1,5    1,10000     100000      2.0e-11     3.0e-12
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double fcdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state)
+{
+    double w;
+    double result;
+
+
+    ae_assert((a>=1&&b>=1)&&ae_fp_greater_eq(x,(double)(0)), "Domain error in FCDistribution", _state);
+    w = (double)b/((double)b+(double)a*x);
+    result = incompletebeta(0.5*(double)b, 0.5*(double)a, w, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Inverse of complemented F distribution
+
+Finds the F density argument x such that the integral
+from x to infinity of the F density is equal to the
+given probability p.
+
+This is accomplished using the inverse beta integral
+function and the relations
+
+     z = incbi( df2/2, df1/2, p )
+     x = df2 (1-z) / (df1 z).
+
+Note: the following relations hold for the inverse of
+the uncomplemented F distribution:
+
+     z = incbi( df1/2, df2/2, p )
+     x = df2 z / (df1 (1-z)).
+
+ACCURACY:
+
+Tested at random points (a,b,p).
+
+             a,b                     Relative error:
+arithmetic  domain     # trials      peak         rms
+ For p between .001 and 1:
+   IEEE     1,100       100000      8.3e-15     4.7e-16
+   IEEE     1,10000     100000      2.1e-11     1.4e-13
+ For p between 10^-6 and 10^-3:
+   IEEE     1,100        50000      1.3e-12     8.4e-15
+   IEEE     1,10000      50000      3.0e-12     4.8e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invfdistribution(ae_int_t a,
+     ae_int_t b,
+     double y,
+     ae_state *_state)
+{
+    double w;
+    double result;
+
+
+    ae_assert(((a>=1&&b>=1)&&ae_fp_greater(y,(double)(0)))&&ae_fp_less_eq(y,(double)(1)), "Domain error in InvFDistribution", _state);
+    
+    /*
+     * Compute probability for x = 0.5
+     */
+    w = incompletebeta(0.5*(double)b, 0.5*(double)a, 0.5, _state);
+    
+    /*
+     * If that is greater than y, then the solution w < .5
+     * Otherwise, solve at 1-y to remove cancellation in (b - b*w)
+     */
+    if( ae_fp_greater(w,y)||ae_fp_less(y,0.001) )
+    {
+        w = invincompletebeta(0.5*(double)b, 0.5*(double)a, y, _state);
+        result = ((double)b-(double)b*w)/((double)a*w);
+    }
+    else
+    {
+        w = invincompletebeta(0.5*(double)a, 0.5*(double)b, 1.0-y, _state);
+        result = (double)b*w/((double)a*(1.0-w));
+    }
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_IGAMMAF) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Incomplete gamma integral
+
+The function is defined by
+
+                          x
+                           -
+                  1       | |  -t  a-1
+ igam(a,x)  =   -----     |   e   t   dt.
+                 -      | |
+                | (a)    -
+                          0
+
+
+In this implementation both arguments must be positive.
+The integral is evaluated by either a power series or
+continued fraction expansion, depending on the relative
+values of a and x.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30       200000       3.6e-14     2.9e-15
+   IEEE      0,100      300000       9.9e-14     1.5e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompletegamma(double a, double x, ae_state *_state)
+{
+    double igammaepsilon;
+    double ans;
+    double ax;
+    double c;
+    double r;
+    double tmp;
+    double result;
+
+
+    igammaepsilon = 0.000000000000001;
+    if( ae_fp_less_eq(x,(double)(0))||ae_fp_less_eq(a,(double)(0)) )
+    {
+        result = (double)(0);
+        return result;
+    }
+    if( ae_fp_greater(x,(double)(1))&&ae_fp_greater(x,a) )
+    {
+        result = (double)1-incompletegammac(a, x, _state);
+        return result;
+    }
+    ax = a*ae_log(x, _state)-x-lngamma(a, &tmp, _state);
+    if( ae_fp_less(ax,-709.78271289338399) )
+    {
+        result = (double)(0);
+        return result;
+    }
+    ax = ae_exp(ax, _state);
+    r = a;
+    c = (double)(1);
+    ans = (double)(1);
+    do
+    {
+        r = r+(double)1;
+        c = c*x/r;
+        ans = ans+c;
+    }
+    while(ae_fp_greater(c/ans,igammaepsilon));
+    result = ans*ax/a;
+    return result;
+}
+
+
+/*************************************************************************
+Complemented incomplete gamma integral
+
+The function is defined by
+
+
+ igamc(a,x)   =   1 - igam(a,x)
+
+                           inf.
+                             -
+                    1       | |  -t  a-1
+              =   -----     |   e   t   dt.
+                   -      | |
+                  | (a)    -
+                            x
+
+
+In this implementation both arguments must be positive.
+The integral is evaluated by either a power series or
+continued fraction expansion, depending on the relative
+values of a and x.
+
+ACCURACY:
+
+Tested at random a, x.
+               a         x                      Relative error:
+arithmetic   domain   domain     # trials      peak         rms
+   IEEE     0.5,100   0,100      200000       1.9e-14     1.7e-15
+   IEEE     0.01,0.5  0,100      200000       1.4e-13     1.6e-15
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompletegammac(double a, double x, ae_state *_state)
+{
+    double igammaepsilon;
+    double igammabignumber;
+    double igammabignumberinv;
+    double ans;
+    double ax;
+    double c;
+    double yc;
+    double r;
+    double t;
+    double y;
+    double z;
+    double pk;
+    double pkm1;
+    double pkm2;
+    double qk;
+    double qkm1;
+    double qkm2;
+    double tmp;
+    double result;
+
+
+    igammaepsilon = 0.000000000000001;
+    igammabignumber = 4503599627370496.0;
+    igammabignumberinv = 2.22044604925031308085*0.0000000000000001;
+    if( ae_fp_less_eq(x,(double)(0))||ae_fp_less_eq(a,(double)(0)) )
+    {
+        result = (double)(1);
+        return result;
+    }
+    if( ae_fp_less(x,(double)(1))||ae_fp_less(x,a) )
+    {
+        result = (double)1-incompletegamma(a, x, _state);
+        return result;
+    }
+    ax = a*ae_log(x, _state)-x-lngamma(a, &tmp, _state);
+    if( ae_fp_less(ax,-709.78271289338399) )
+    {
+        result = (double)(0);
+        return result;
+    }
+    ax = ae_exp(ax, _state);
+    y = (double)1-a;
+    z = x+y+(double)1;
+    c = (double)(0);
+    pkm2 = (double)(1);
+    qkm2 = x;
+    pkm1 = x+(double)1;
+    qkm1 = z*x;
+    ans = pkm1/qkm1;
+    do
+    {
+        c = c+(double)1;
+        y = y+(double)1;
+        z = z+(double)2;
+        yc = y*c;
+        pk = pkm1*z-pkm2*yc;
+        qk = qkm1*z-qkm2*yc;
+        if( ae_fp_neq(qk,(double)(0)) )
+        {
+            r = pk/qk;
+            t = ae_fabs((ans-r)/r, _state);
+            ans = r;
+        }
+        else
+        {
+            t = (double)(1);
+        }
+        pkm2 = pkm1;
+        pkm1 = pk;
+        qkm2 = qkm1;
+        qkm1 = qk;
+        if( ae_fp_greater(ae_fabs(pk, _state),igammabignumber) )
+        {
+            pkm2 = pkm2*igammabignumberinv;
+            pkm1 = pkm1*igammabignumberinv;
+            qkm2 = qkm2*igammabignumberinv;
+            qkm1 = qkm1*igammabignumberinv;
+        }
+    }
+    while(ae_fp_greater(t,igammaepsilon));
+    result = ans*ax;
+    return result;
+}
+
+
+/*************************************************************************
+Inverse of complemented imcomplete gamma integral
+
+Given p, the function finds x such that
+
+ igamc( a, x ) = p.
+
+Starting with the approximate value
+
+        3
+ x = a t
+
+ where
+
+ t = 1 - d - ndtri(p) sqrt(d)
+
+and
+
+ d = 1/9a,
+
+the routine performs up to 10 Newton iterations to find the
+root of igamc(a,x) - p = 0.
+
+ACCURACY:
+
+Tested at random a, p in the intervals indicated.
+
+               a        p                      Relative error:
+arithmetic   domain   domain     # trials      peak         rms
+   IEEE     0.5,100   0,0.5       100000       1.0e-14     1.7e-15
+   IEEE     0.01,0.5  0,0.5       100000       9.0e-14     3.4e-15
+   IEEE    0.5,10000  0,0.5        20000       2.3e-13     3.8e-14
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invincompletegammac(double a, double y0, ae_state *_state)
+{
+    double igammaepsilon;
+    double iinvgammabignumber;
+    double x0;
+    double x1;
+    double x;
+    double yl;
+    double yh;
+    double y;
+    double d;
+    double lgm;
+    double dithresh;
+    ae_int_t i;
+    ae_int_t dir;
+    double tmp;
+    double result;
+
+
+    igammaepsilon = 0.000000000000001;
+    iinvgammabignumber = 4503599627370496.0;
+    x0 = iinvgammabignumber;
+    yl = (double)(0);
+    x1 = (double)(0);
+    yh = (double)(1);
+    dithresh = (double)5*igammaepsilon;
+    d = (double)1/((double)9*a);
+    y = (double)1-d-invnormaldistribution(y0, _state)*ae_sqrt(d, _state);
+    x = a*y*y*y;
+    lgm = lngamma(a, &tmp, _state);
+    i = 0;
+    while(i<10)
+    {
+        if( ae_fp_greater(x,x0)||ae_fp_less(x,x1) )
+        {
+            d = 0.0625;
+            break;
+        }
+        y = incompletegammac(a, x, _state);
+        if( ae_fp_less(y,yl)||ae_fp_greater(y,yh) )
+        {
+            d = 0.0625;
+            break;
+        }
+        if( ae_fp_less(y,y0) )
+        {
+            x0 = x;
+            yl = y;
+        }
+        else
+        {
+            x1 = x;
+            yh = y;
+        }
+        d = (a-(double)1)*ae_log(x, _state)-x-lgm;
+        if( ae_fp_less(d,-709.78271289338399) )
+        {
+            d = 0.0625;
+            break;
+        }
+        d = -ae_exp(d, _state);
+        d = (y-y0)/d;
+        if( ae_fp_less(ae_fabs(d/x, _state),igammaepsilon) )
+        {
+            result = x;
+            return result;
+        }
+        x = x-d;
+        i = i+1;
+    }
+    if( ae_fp_eq(x0,iinvgammabignumber) )
+    {
+        if( ae_fp_less_eq(x,(double)(0)) )
+        {
+            x = (double)(1);
+        }
+        while(ae_fp_eq(x0,iinvgammabignumber))
+        {
+            x = ((double)1+d)*x;
+            y = incompletegammac(a, x, _state);
+            if( ae_fp_less(y,y0) )
+            {
+                x0 = x;
+                yl = y;
+                break;
+            }
+            d = d+d;
+        }
+    }
+    d = 0.5;
+    dir = 0;
+    i = 0;
+    while(i<400)
+    {
+        x = x1+d*(x0-x1);
+        y = incompletegammac(a, x, _state);
+        lgm = (x0-x1)/(x1+x0);
+        if( ae_fp_less(ae_fabs(lgm, _state),dithresh) )
+        {
+            break;
+        }
+        lgm = (y-y0)/y0;
+        if( ae_fp_less(ae_fabs(lgm, _state),dithresh) )
+        {
+            break;
+        }
+        if( ae_fp_less_eq(x,0.0) )
+        {
+            break;
+        }
+        if( ae_fp_greater_eq(y,y0) )
+        {
+            x1 = x;
+            yh = y;
+            if( dir<0 )
+            {
+                dir = 0;
+                d = 0.5;
+            }
+            else
+            {
+                if( dir>1 )
+                {
+                    d = 0.5*d+0.5;
+                }
+                else
+                {
+                    d = (y0-yl)/(yh-yl);
+                }
+            }
+            dir = dir+1;
+        }
+        else
+        {
+            x0 = x;
+            yl = y;
+            if( dir>0 )
+            {
+                dir = 0;
+                d = 0.5;
+            }
+            else
+            {
+                if( dir<-1 )
+                {
+                    d = 0.5*d;
+                }
+                else
+                {
+                    d = (y0-yl)/(yh-yl);
+                }
+            }
+            dir = dir-1;
+        }
+        i = i+1;
+    }
+    result = x;
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_CHISQUAREDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Chi-square distribution
+
+Returns the area under the left hand tail (from 0 to x)
+of the Chi square probability density function with
+v degrees of freedom.
+
+
+                                  x
+                                   -
+                       1          | |  v/2-1  -t/2
+ P( x | v )   =   -----------     |   t      e     dt
+                   v/2  -       | |
+                  2    | (v/2)   -
+                                  0
+
+where x is the Chi-square variable.
+
+The incomplete gamma integral is used, according to the
+formula
+
+y = chdtr( v, x ) = igam( v/2.0, x/2.0 ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double chisquaredistribution(double v, double x, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert(ae_fp_greater_eq(x,(double)(0))&&ae_fp_greater_eq(v,(double)(1)), "Domain error in ChiSquareDistribution", _state);
+    result = incompletegamma(v/2.0, x/2.0, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Complemented Chi-square distribution
+
+Returns the area under the right hand tail (from x to
+infinity) of the Chi square probability density function
+with v degrees of freedom:
+
+                                 inf.
+                                   -
+                       1          | |  v/2-1  -t/2
+ P( x | v )   =   -----------     |   t      e     dt
+                   v/2  -       | |
+                  2    | (v/2)   -
+                                  x
+
+where x is the Chi-square variable.
+
+The incomplete gamma integral is used, according to the
+formula
+
+y = chdtr( v, x ) = igamc( v/2.0, x/2.0 ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double chisquarecdistribution(double v, double x, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert(ae_fp_greater_eq(x,(double)(0))&&ae_fp_greater_eq(v,(double)(1)), "Domain error in ChiSquareDistributionC", _state);
+    result = incompletegammac(v/2.0, x/2.0, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Inverse of complemented Chi-square distribution
+
+Finds the Chi-square argument x such that the integral
+from x to infinity of the Chi-square density is equal
+to the given cumulative probability y.
+
+This is accomplished using the inverse gamma integral
+function and the relation
+
+   x/2 = igami( df/2, y );
+
+ACCURACY:
+
+See inverse incomplete gamma function
+
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invchisquaredistribution(double v, double y, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert((ae_fp_greater_eq(y,(double)(0))&&ae_fp_less_eq(y,(double)(1)))&&ae_fp_greater_eq(v,(double)(1)), "Domain error in InvChiSquareDistribution", _state);
+    result = (double)2*invincompletegammac(0.5*v, y, _state);
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_BINOMIALDISTR) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -6455,26 +6311,26 @@ double binomialdistribution(ae_int_t k,
     double result;
 
 
-    ae_assert(ae_fp_greater_eq(p,0)&&ae_fp_less_eq(p,1), "Domain error in BinomialDistribution", _state);
+    ae_assert(ae_fp_greater_eq(p,(double)(0))&&ae_fp_less_eq(p,(double)(1)), "Domain error in BinomialDistribution", _state);
     ae_assert(k>=-1&&k<=n, "Domain error in BinomialDistribution", _state);
     if( k==-1 )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
     if( k==n )
     {
-        result = 1;
+        result = (double)(1);
         return result;
     }
-    dn = n-k;
+    dn = (double)(n-k);
     if( k==0 )
     {
         dk = ae_pow(1.0-p, dn, _state);
     }
     else
     {
-        dk = k+1;
+        dk = (double)(k+1);
         dk = incompletebeta(dn, dk, 1.0-p, _state);
     }
     result = dk;
@@ -6525,19 +6381,19 @@ double binomialcdistribution(ae_int_t k,
     double result;
 
 
-    ae_assert(ae_fp_greater_eq(p,0)&&ae_fp_less_eq(p,1), "Domain error in BinomialDistributionC", _state);
+    ae_assert(ae_fp_greater_eq(p,(double)(0))&&ae_fp_less_eq(p,(double)(1)), "Domain error in BinomialDistributionC", _state);
     ae_assert(k>=-1&&k<=n, "Domain error in BinomialDistributionC", _state);
     if( k==-1 )
     {
-        result = 1;
+        result = (double)(1);
         return result;
     }
     if( k==n )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
-    dn = n-k;
+    dn = (double)(n-k);
     if( k==0 )
     {
         if( ae_fp_less(p,0.01) )
@@ -6551,7 +6407,7 @@ double binomialcdistribution(ae_int_t k,
     }
     else
     {
-        dk = k+1;
+        dk = (double)(k+1);
         dk = incompletebeta(dk, dn, p, _state);
     }
     result = dk;
@@ -6599,7 +6455,7 @@ double invbinomialdistribution(ae_int_t k,
 
 
     ae_assert(k>=0&&k<n, "Domain error in InvBinomialDistribution", _state);
-    dn = n-k;
+    dn = (double)(n-k);
     if( k==0 )
     {
         if( ae_fp_greater(y,0.8) )
@@ -6613,7 +6469,7 @@ double invbinomialdistribution(ae_int_t k,
     }
     else
     {
-        dk = k+1;
+        dk = (double)(k+1);
         p = incompletebeta(dn, dk, 0.5, _state);
         if( ae_fp_greater(p,0.5) )
         {
@@ -6629,938 +6485,8 @@ double invbinomialdistribution(ae_int_t k,
 }
 
 
-
-
-/*************************************************************************
-Calculation of the value of the Chebyshev polynomials of the
-first and second kinds.
-
-Parameters:
-    r   -   polynomial kind, either 1 or 2.
-    n   -   degree, n>=0
-    x   -   argument, -1 <= x <= 1
-
-Result:
-    the value of the Chebyshev polynomial at x
-*************************************************************************/
-double chebyshevcalculate(ae_int_t r,
-     ae_int_t n,
-     double x,
-     ae_state *_state)
-{
-    ae_int_t i;
-    double a;
-    double b;
-    double result;
-
-
-    result = 0;
-    
-    /*
-     * Prepare A and B
-     */
-    if( r==1 )
-    {
-        a = 1;
-        b = x;
-    }
-    else
-    {
-        a = 1;
-        b = 2*x;
-    }
-    
-    /*
-     * Special cases: N=0 or N=1
-     */
-    if( n==0 )
-    {
-        result = a;
-        return result;
-    }
-    if( n==1 )
-    {
-        result = b;
-        return result;
-    }
-    
-    /*
-     * General case: N>=2
-     */
-    for(i=2; i<=n; i++)
-    {
-        result = 2*x*b-a;
-        a = b;
-        b = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Summation of Chebyshev polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
-or
-    c[0]*U0(x) + c[1]*U1(x) + ... + c[N]*UN(x)
-depending on the R.
-
-Parameters:
-    r   -   polynomial kind, either 1 or 2.
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Chebyshev polynomial at x
-*************************************************************************/
-double chebyshevsum(/* Real    */ ae_vector* c,
-     ae_int_t r,
-     ae_int_t n,
-     double x,
-     ae_state *_state)
-{
-    double b1;
-    double b2;
-    ae_int_t i;
-    double result;
-
-
-    b1 = 0;
-    b2 = 0;
-    for(i=n; i>=1; i--)
-    {
-        result = 2*x*b1-b2+c->ptr.p_double[i];
-        b2 = b1;
-        b1 = result;
-    }
-    if( r==1 )
-    {
-        result = -b2+x*b1+c->ptr.p_double[0];
-    }
-    else
-    {
-        result = -b2+2*x*b1+c->ptr.p_double[0];
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Representation of Tn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void chebyshevcoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state)
-{
-    ae_int_t i;
-
-    ae_vector_clear(c);
-
-    ae_vector_set_length(c, n+1, _state);
-    for(i=0; i<=n; i++)
-    {
-        c->ptr.p_double[i] = 0;
-    }
-    if( n==0||n==1 )
-    {
-        c->ptr.p_double[n] = 1;
-    }
-    else
-    {
-        c->ptr.p_double[n] = ae_exp((n-1)*ae_log(2, _state), _state);
-        for(i=0; i<=n/2-1; i++)
-        {
-            c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(n-2*i)*(n-2*i-1)/4/(i+1)/(n-i-1);
-        }
-    }
-}
-
-
-/*************************************************************************
-Conversion of a series of Chebyshev polynomials to a power series.
-
-Represents A[0]*T0(x) + A[1]*T1(x) + ... + A[N]*Tn(x) as
-B[0] + B[1]*X + ... + B[N]*X^N.
-
-Input parameters:
-    A   -   Chebyshev series coefficients
-    N   -   degree, N>=0
-    
-Output parameters
-    B   -   power series coefficients
-*************************************************************************/
-void fromchebyshev(/* Real    */ ae_vector* a,
-     ae_int_t n,
-     /* Real    */ ae_vector* b,
-     ae_state *_state)
-{
-    ae_int_t i;
-    ae_int_t k;
-    double e;
-    double d;
-
-    ae_vector_clear(b);
-
-    ae_vector_set_length(b, n+1, _state);
-    for(i=0; i<=n; i++)
-    {
-        b->ptr.p_double[i] = 0;
-    }
-    d = 0;
-    i = 0;
-    do
-    {
-        k = i;
-        do
-        {
-            e = b->ptr.p_double[k];
-            b->ptr.p_double[k] = 0;
-            if( i<=1&&k==i )
-            {
-                b->ptr.p_double[k] = 1;
-            }
-            else
-            {
-                if( i!=0 )
-                {
-                    b->ptr.p_double[k] = 2*d;
-                }
-                if( k>i+1 )
-                {
-                    b->ptr.p_double[k] = b->ptr.p_double[k]-b->ptr.p_double[k-2];
-                }
-            }
-            d = e;
-            k = k+1;
-        }
-        while(k<=n);
-        d = b->ptr.p_double[i];
-        e = 0;
-        k = i;
-        while(k<=n)
-        {
-            e = e+b->ptr.p_double[k]*a->ptr.p_double[k];
-            k = k+2;
-        }
-        b->ptr.p_double[i] = e;
-        i = i+1;
-    }
-    while(i<=n);
-}
-
-
-
-
-/*************************************************************************
-Chi-square distribution
-
-Returns the area under the left hand tail (from 0 to x)
-of the Chi square probability density function with
-v degrees of freedom.
-
-
-                                  x
-                                   -
-                       1          | |  v/2-1  -t/2
- P( x | v )   =   -----------     |   t      e     dt
-                   v/2  -       | |
-                  2    | (v/2)   -
-                                  0
-
-where x is the Chi-square variable.
-
-The incomplete gamma integral is used, according to the
-formula
-
-y = chdtr( v, x ) = igam( v/2.0, x/2.0 ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double chisquaredistribution(double v, double x, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert(ae_fp_greater_eq(x,0)&&ae_fp_greater_eq(v,1), "Domain error in ChiSquareDistribution", _state);
-    result = incompletegamma(v/2.0, x/2.0, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Complemented Chi-square distribution
-
-Returns the area under the right hand tail (from x to
-infinity) of the Chi square probability density function
-with v degrees of freedom:
-
-                                 inf.
-                                   -
-                       1          | |  v/2-1  -t/2
- P( x | v )   =   -----------     |   t      e     dt
-                   v/2  -       | |
-                  2    | (v/2)   -
-                                  x
-
-where x is the Chi-square variable.
-
-The incomplete gamma integral is used, according to the
-formula
-
-y = chdtr( v, x ) = igamc( v/2.0, x/2.0 ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double chisquarecdistribution(double v, double x, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert(ae_fp_greater_eq(x,0)&&ae_fp_greater_eq(v,1), "Domain error in ChiSquareDistributionC", _state);
-    result = incompletegammac(v/2.0, x/2.0, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Inverse of complemented Chi-square distribution
-
-Finds the Chi-square argument x such that the integral
-from x to infinity of the Chi-square density is equal
-to the given cumulative probability y.
-
-This is accomplished using the inverse gamma integral
-function and the relation
-
-   x/2 = igami( df/2, y );
-
-ACCURACY:
-
-See inverse incomplete gamma function
-
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invchisquaredistribution(double v, double y, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert((ae_fp_greater_eq(y,0)&&ae_fp_less_eq(y,1))&&ae_fp_greater_eq(v,1), "Domain error in InvChiSquareDistribution", _state);
-    result = 2*invincompletegammac(0.5*v, y, _state);
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Dawson's Integral
-
-Approximates the integral
-
-                            x
-                            -
-                     2     | |        2
- dawsn(x)  =  exp( -x  )   |    exp( t  ) dt
-                         | |
-                          -
-                          0
-
-Three different rational approximations are employed, for
-the intervals 0 to 3.25; 3.25 to 6.25; and 6.25 up.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,10        10000       6.9e-16     1.0e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double dawsonintegral(double x, ae_state *_state)
-{
-    double x2;
-    double y;
-    ae_int_t sg;
-    double an;
-    double ad;
-    double bn;
-    double bd;
-    double cn;
-    double cd;
-    double result;
-
-
-    sg = 1;
-    if( ae_fp_less(x,0) )
-    {
-        sg = -1;
-        x = -x;
-    }
-    if( ae_fp_less(x,3.25) )
-    {
-        x2 = x*x;
-        an = 1.13681498971755972054E-11;
-        an = an*x2+8.49262267667473811108E-10;
-        an = an*x2+1.94434204175553054283E-8;
-        an = an*x2+9.53151741254484363489E-7;
-        an = an*x2+3.07828309874913200438E-6;
-        an = an*x2+3.52513368520288738649E-4;
-        an = an*x2+(-8.50149846724410912031E-4);
-        an = an*x2+4.22618223005546594270E-2;
-        an = an*x2+(-9.17480371773452345351E-2);
-        an = an*x2+9.99999999999999994612E-1;
-        ad = 2.40372073066762605484E-11;
-        ad = ad*x2+1.48864681368493396752E-9;
-        ad = ad*x2+5.21265281010541664570E-8;
-        ad = ad*x2+1.27258478273186970203E-6;
-        ad = ad*x2+2.32490249820789513991E-5;
-        ad = ad*x2+3.25524741826057911661E-4;
-        ad = ad*x2+3.48805814657162590916E-3;
-        ad = ad*x2+2.79448531198828973716E-2;
-        ad = ad*x2+1.58874241960120565368E-1;
-        ad = ad*x2+5.74918629489320327824E-1;
-        ad = ad*x2+1.00000000000000000539E0;
-        y = x*an/ad;
-        result = sg*y;
-        return result;
-    }
-    x2 = 1.0/(x*x);
-    if( ae_fp_less(x,6.25) )
-    {
-        bn = 5.08955156417900903354E-1;
-        bn = bn*x2-2.44754418142697847934E-1;
-        bn = bn*x2+9.41512335303534411857E-2;
-        bn = bn*x2-2.18711255142039025206E-2;
-        bn = bn*x2+3.66207612329569181322E-3;
-        bn = bn*x2-4.23209114460388756528E-4;
-        bn = bn*x2+3.59641304793896631888E-5;
-        bn = bn*x2-2.14640351719968974225E-6;
-        bn = bn*x2+9.10010780076391431042E-8;
-        bn = bn*x2-2.40274520828250956942E-9;
-        bn = bn*x2+3.59233385440928410398E-11;
-        bd = 1.00000000000000000000E0;
-        bd = bd*x2-6.31839869873368190192E-1;
-        bd = bd*x2+2.36706788228248691528E-1;
-        bd = bd*x2-5.31806367003223277662E-2;
-        bd = bd*x2+8.48041718586295374409E-3;
-        bd = bd*x2-9.47996768486665330168E-4;
-        bd = bd*x2+7.81025592944552338085E-5;
-        bd = bd*x2-4.55875153252442634831E-6;
-        bd = bd*x2+1.89100358111421846170E-7;
-        bd = bd*x2-4.91324691331920606875E-9;
-        bd = bd*x2+7.18466403235734541950E-11;
-        y = 1.0/x+x2*bn/(bd*x);
-        result = sg*0.5*y;
-        return result;
-    }
-    if( ae_fp_greater(x,1.0E9) )
-    {
-        result = sg*0.5/x;
-        return result;
-    }
-    cn = -5.90592860534773254987E-1;
-    cn = cn*x2+6.29235242724368800674E-1;
-    cn = cn*x2-1.72858975380388136411E-1;
-    cn = cn*x2+1.64837047825189632310E-2;
-    cn = cn*x2-4.86827613020462700845E-4;
-    cd = 1.00000000000000000000E0;
-    cd = cd*x2-2.69820057197544900361E0;
-    cd = cd*x2+1.73270799045947845857E0;
-    cd = cd*x2-3.93708582281939493482E-1;
-    cd = cd*x2+3.44278924041233391079E-2;
-    cd = cd*x2-9.73655226040941223894E-4;
-    y = 1.0/x+x2*cn/(cd*x);
-    result = sg*0.5*y;
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Complete elliptic integral of the first kind
-
-Approximates the integral
-
-
-
-           pi/2
-            -
-           | |
-           |           dt
-K(m)  =    |    ------------------
-           |                   2
-         | |    sqrt( 1 - m sin t )
-          -
-           0
-
-using the approximation
-
-    P(x)  -  log x Q(x).
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,1        30000       2.5e-16     6.8e-17
-
-Cephes Math Library, Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double ellipticintegralk(double m, ae_state *_state)
-{
-    double result;
-
-
-    result = ellipticintegralkhighprecision(1.0-m, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Complete elliptic integral of the first kind
-
-Approximates the integral
-
-
-
-           pi/2
-            -
-           | |
-           |           dt
-K(m)  =    |    ------------------
-           |                   2
-         | |    sqrt( 1 - m sin t )
-          -
-           0
-
-where m = 1 - m1, using the approximation
-
-    P(x)  -  log x Q(x).
-
-The argument m1 is used rather than m so that the logarithmic
-singularity at m = 1 will be shifted to the origin; this
-preserves maximum accuracy.
-
-K(0) = pi/2.
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0,1        30000       2.5e-16     6.8e-17
-
-¿Î„ÓËÚÏ ‚ÁˇÚ ËÁ ·Ë·ÎËÓÚÂÍË Cephes
-*************************************************************************/
-double ellipticintegralkhighprecision(double m1, ae_state *_state)
-{
-    double p;
-    double q;
-    double result;
-
-
-    if( ae_fp_less_eq(m1,ae_machineepsilon) )
-    {
-        result = 1.3862943611198906188E0-0.5*ae_log(m1, _state);
-    }
-    else
-    {
-        p = 1.37982864606273237150E-4;
-        p = p*m1+2.28025724005875567385E-3;
-        p = p*m1+7.97404013220415179367E-3;
-        p = p*m1+9.85821379021226008714E-3;
-        p = p*m1+6.87489687449949877925E-3;
-        p = p*m1+6.18901033637687613229E-3;
-        p = p*m1+8.79078273952743772254E-3;
-        p = p*m1+1.49380448916805252718E-2;
-        p = p*m1+3.08851465246711995998E-2;
-        p = p*m1+9.65735902811690126535E-2;
-        p = p*m1+1.38629436111989062502E0;
-        q = 2.94078955048598507511E-5;
-        q = q*m1+9.14184723865917226571E-4;
-        q = q*m1+5.94058303753167793257E-3;
-        q = q*m1+1.54850516649762399335E-2;
-        q = q*m1+2.39089602715924892727E-2;
-        q = q*m1+3.01204715227604046988E-2;
-        q = q*m1+3.73774314173823228969E-2;
-        q = q*m1+4.88280347570998239232E-2;
-        q = q*m1+7.03124996963957469739E-2;
-        q = q*m1+1.24999999999870820058E-1;
-        q = q*m1+4.99999999999999999821E-1;
-        result = p-q*ae_log(m1, _state);
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Incomplete elliptic integral of the first kind F(phi|m)
-
-Approximates the integral
-
-
-
-               phi
-                -
-               | |
-               |           dt
-F(phi_\m)  =    |    ------------------
-               |                   2
-             | |    sqrt( 1 - m sin t )
-              -
-               0
-
-of amplitude phi and modulus m, using the arithmetic -
-geometric mean algorithm.
-
-
-
-
-ACCURACY:
-
-Tested at random points with m in [0, 1] and phi as indicated.
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE     -10,10       200000      7.4e-16     1.0e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 2000 by Stephen L. Moshier
-*************************************************************************/
-double incompleteellipticintegralk(double phi, double m, ae_state *_state)
-{
-    double a;
-    double b;
-    double c;
-    double e;
-    double temp;
-    double pio2;
-    double t;
-    double k;
-    ae_int_t d;
-    ae_int_t md;
-    ae_int_t s;
-    ae_int_t npio2;
-    double result;
-
-
-    pio2 = 1.57079632679489661923;
-    if( ae_fp_eq(m,0) )
-    {
-        result = phi;
-        return result;
-    }
-    a = 1-m;
-    if( ae_fp_eq(a,0) )
-    {
-        result = ae_log(ae_tan(0.5*(pio2+phi), _state), _state);
-        return result;
-    }
-    npio2 = ae_ifloor(phi/pio2, _state);
-    if( npio2%2!=0 )
-    {
-        npio2 = npio2+1;
-    }
-    if( npio2!=0 )
-    {
-        k = ellipticintegralk(1-a, _state);
-        phi = phi-npio2*pio2;
-    }
-    else
-    {
-        k = 0;
-    }
-    if( ae_fp_less(phi,0) )
-    {
-        phi = -phi;
-        s = -1;
-    }
-    else
-    {
-        s = 0;
-    }
-    b = ae_sqrt(a, _state);
-    t = ae_tan(phi, _state);
-    if( ae_fp_greater(ae_fabs(t, _state),10) )
-    {
-        e = 1.0/(b*t);
-        if( ae_fp_less(ae_fabs(e, _state),10) )
-        {
-            e = ae_atan(e, _state);
-            if( npio2==0 )
-            {
-                k = ellipticintegralk(1-a, _state);
-            }
-            temp = k-incompleteellipticintegralk(e, m, _state);
-            if( s<0 )
-            {
-                temp = -temp;
-            }
-            result = temp+npio2*k;
-            return result;
-        }
-    }
-    a = 1.0;
-    c = ae_sqrt(m, _state);
-    d = 1;
-    md = 0;
-    while(ae_fp_greater(ae_fabs(c/a, _state),ae_machineepsilon))
-    {
-        temp = b/a;
-        phi = phi+ae_atan(t*temp, _state)+md*ae_pi;
-        md = ae_trunc((phi+pio2)/ae_pi, _state);
-        t = t*(1.0+temp)/(1.0-temp*t*t);
-        c = 0.5*(a-b);
-        temp = ae_sqrt(a*b, _state);
-        a = 0.5*(a+b);
-        b = temp;
-        d = d+d;
-    }
-    temp = (ae_atan(t, _state)+md*ae_pi)/(d*a);
-    if( s<0 )
-    {
-        temp = -temp;
-    }
-    result = temp+npio2*k;
-    return result;
-}
-
-
-/*************************************************************************
-Complete elliptic integral of the second kind
-
-Approximates the integral
-
-
-           pi/2
-            -
-           | |                 2
-E(m)  =    |    sqrt( 1 - m sin t ) dt
-         | |
-          -
-           0
-
-using the approximation
-
-     P(x)  -  x log x Q(x).
-
-ACCURACY:
-
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE       0, 1       10000       2.1e-16     7.3e-17
-
-Cephes Math Library, Release 2.8: June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-double ellipticintegrale(double m, ae_state *_state)
-{
-    double p;
-    double q;
-    double result;
-
-
-    ae_assert(ae_fp_greater_eq(m,0)&&ae_fp_less_eq(m,1), "Domain error in EllipticIntegralE: m<0 or m>1", _state);
-    m = 1-m;
-    if( ae_fp_eq(m,0) )
-    {
-        result = 1;
-        return result;
-    }
-    p = 1.53552577301013293365E-4;
-    p = p*m+2.50888492163602060990E-3;
-    p = p*m+8.68786816565889628429E-3;
-    p = p*m+1.07350949056076193403E-2;
-    p = p*m+7.77395492516787092951E-3;
-    p = p*m+7.58395289413514708519E-3;
-    p = p*m+1.15688436810574127319E-2;
-    p = p*m+2.18317996015557253103E-2;
-    p = p*m+5.68051945617860553470E-2;
-    p = p*m+4.43147180560990850618E-1;
-    p = p*m+1.00000000000000000299E0;
-    q = 3.27954898576485872656E-5;
-    q = q*m+1.00962792679356715133E-3;
-    q = q*m+6.50609489976927491433E-3;
-    q = q*m+1.68862163993311317300E-2;
-    q = q*m+2.61769742454493659583E-2;
-    q = q*m+3.34833904888224918614E-2;
-    q = q*m+4.27180926518931511717E-2;
-    q = q*m+5.85936634471101055642E-2;
-    q = q*m+9.37499997197644278445E-2;
-    q = q*m+2.49999999999888314361E-1;
-    result = p-q*m*ae_log(m, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Incomplete elliptic integral of the second kind
-
-Approximates the integral
-
-
-               phi
-                -
-               | |
-               |                   2
-E(phi_\m)  =    |    sqrt( 1 - m sin t ) dt
-               |
-             | |
-              -
-               0
-
-of amplitude phi and modulus m, using the arithmetic -
-geometric mean algorithm.
-
-ACCURACY:
-
-Tested at random arguments with phi in [-10, 10] and m in
-[0, 1].
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE     -10,10      150000       3.3e-15     1.4e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1993, 2000 by Stephen L. Moshier
-*************************************************************************/
-double incompleteellipticintegrale(double phi, double m, ae_state *_state)
-{
-    double pio2;
-    double a;
-    double b;
-    double c;
-    double e;
-    double temp;
-    double lphi;
-    double t;
-    double ebig;
-    ae_int_t d;
-    ae_int_t md;
-    ae_int_t npio2;
-    ae_int_t s;
-    double result;
-
-
-    pio2 = 1.57079632679489661923;
-    if( ae_fp_eq(m,0) )
-    {
-        result = phi;
-        return result;
-    }
-    lphi = phi;
-    npio2 = ae_ifloor(lphi/pio2, _state);
-    if( npio2%2!=0 )
-    {
-        npio2 = npio2+1;
-    }
-    lphi = lphi-npio2*pio2;
-    if( ae_fp_less(lphi,0) )
-    {
-        lphi = -lphi;
-        s = -1;
-    }
-    else
-    {
-        s = 1;
-    }
-    a = 1.0-m;
-    ebig = ellipticintegrale(m, _state);
-    if( ae_fp_eq(a,0) )
-    {
-        temp = ae_sin(lphi, _state);
-        if( s<0 )
-        {
-            temp = -temp;
-        }
-        result = temp+npio2*ebig;
-        return result;
-    }
-    t = ae_tan(lphi, _state);
-    b = ae_sqrt(a, _state);
-    
-    /*
-     * Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
-     * for pointing out an instability near odd multiples of pi/2
-     */
-    if( ae_fp_greater(ae_fabs(t, _state),10) )
-    {
-        
-        /*
-         * Transform the amplitude
-         */
-        e = 1.0/(b*t);
-        
-        /*
-         * ... but avoid multiple recursions.
-         */
-        if( ae_fp_less(ae_fabs(e, _state),10) )
-        {
-            e = ae_atan(e, _state);
-            temp = ebig+m*ae_sin(lphi, _state)*ae_sin(e, _state)-incompleteellipticintegrale(e, m, _state);
-            if( s<0 )
-            {
-                temp = -temp;
-            }
-            result = temp+npio2*ebig;
-            return result;
-        }
-    }
-    c = ae_sqrt(m, _state);
-    a = 1.0;
-    d = 1;
-    e = 0.0;
-    md = 0;
-    while(ae_fp_greater(ae_fabs(c/a, _state),ae_machineepsilon))
-    {
-        temp = b/a;
-        lphi = lphi+ae_atan(t*temp, _state)+md*ae_pi;
-        md = ae_trunc((lphi+pio2)/ae_pi, _state);
-        t = t*(1.0+temp)/(1.0-temp*t*t);
-        c = 0.5*(a-b);
-        temp = ae_sqrt(a*b, _state);
-        a = 0.5*(a+b);
-        b = temp;
-        d = d+d;
-        e = e+c*ae_sin(lphi, _state);
-    }
-    temp = ebig/ellipticintegralk(m, _state);
-    temp = temp*((ae_atan(t, _state)+md*ae_pi)/(d*a));
-    temp = temp+e;
-    if( s<0 )
-    {
-        temp = -temp;
-    }
-    result = temp+npio2*ebig;
-    return result;
-}
-
-
+#endif
+#if defined(AE_COMPILE_EXPINTEGRALS) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -7599,12 +6525,12 @@ double exponentialintegralei(double x, ae_state *_state)
 
 
     eul = 0.5772156649015328606065;
-    if( ae_fp_less_eq(x,0) )
+    if( ae_fp_less_eq(x,(double)(0)) )
     {
-        result = 0;
+        result = (double)(0);
         return result;
     }
-    if( ae_fp_less(x,2) )
+    if( ae_fp_less(x,(double)(2)) )
     {
         f1 = -5.350447357812542947283;
         f1 = f1*x+218.5049168816613393830;
@@ -7623,9 +6549,9 @@ double exponentialintegralei(double x, ae_state *_state)
         result = eul+ae_log(x, _state)+x*f;
         return result;
     }
-    if( ae_fp_less(x,4) )
+    if( ae_fp_less(x,(double)(4)) )
     {
-        w = 1/x;
+        w = (double)1/x;
         f1 = 1.981808503259689673238E-2;
         f1 = f1*w-1.271645625984917501326;
         f1 = f1*w-2.088160335681228318920;
@@ -7643,12 +6569,12 @@ double exponentialintegralei(double x, ae_state *_state)
         f2 = f2*w+1.727439612206521482874E-4;
         f2 = f2*w+3.953167195549672482304E-5;
         f = f1/f2;
-        result = ae_exp(x, _state)*w*(1+w*f);
+        result = ae_exp(x, _state)*w*((double)1+w*f);
         return result;
     }
-    if( ae_fp_less(x,8) )
+    if( ae_fp_less(x,(double)(8)) )
     {
-        w = 1/x;
+        w = (double)1/x;
         f1 = -1.373215375871208729803;
         f1 = f1*w-7.084559133740838761406E-1;
         f1 = f1*w+1.580806855547941010501;
@@ -7667,12 +6593,12 @@ double exponentialintegralei(double x, ae_state *_state)
         f2 = f2*w+(-4.729848351866523044863E-6);
         f2 = f2*w+2.665195537390710170105E-6;
         f = f1/f2;
-        result = ae_exp(x, _state)*w*(1+w*f);
+        result = ae_exp(x, _state)*w*((double)1+w*f);
         return result;
     }
-    if( ae_fp_less(x,16) )
+    if( ae_fp_less(x,(double)(16)) )
     {
-        w = 1/x;
+        w = (double)1/x;
         f1 = -2.106934601691916512584;
         f1 = f1*w+1.732733869664688041885;
         f1 = f1*w-2.423619178935841904839E-1;
@@ -7694,12 +6620,12 @@ double exponentialintegralei(double x, ae_state *_state)
         f2 = f2*w+1.394634930353847498145E-8;
         f2 = f2*w+6.150865933977338354138E-10;
         f = f1/f2;
-        result = ae_exp(x, _state)*w*(1+w*f);
+        result = ae_exp(x, _state)*w*((double)1+w*f);
         return result;
     }
-    if( ae_fp_less(x,32) )
+    if( ae_fp_less(x,(double)(32)) )
     {
-        w = 1/x;
+        w = (double)1/x;
         f1 = -2.458119367674020323359E-1;
         f1 = f1*w-1.483382253322077687183E-1;
         f1 = f1*w+7.248291795735551591813E-2;
@@ -7718,12 +6644,12 @@ double exponentialintegralei(double x, ae_state *_state)
         f2 = f2*w+2.728938403476726394024E-6;
         f2 = f2*w-4.239462431819542051337E-8;
         f = f1/f2;
-        result = ae_exp(x, _state)*w*(1+w*f);
+        result = ae_exp(x, _state)*w*((double)1+w*f);
         return result;
     }
-    if( ae_fp_less(x,64) )
+    if( ae_fp_less(x,(double)(64)) )
     {
-        w = 1/x;
+        w = (double)1/x;
         f1 = 1.212561118105456670844E-1;
         f1 = f1*w-5.823133179043894485122E-1;
         f1 = f1*w+2.348887314557016779211E-1;
@@ -7737,10 +6663,10 @@ double exponentialintegralei(double x, ae_state *_state)
         f2 = f2*w+1.560544881127388842819E-3;
         f2 = f2*w-2.523137093603234562648E-5;
         f = f1/f2;
-        result = ae_exp(x, _state)*w*(1+w*f);
+        result = ae_exp(x, _state)*w*((double)1+w*f);
         return result;
     }
-    w = 1/x;
+    w = (double)1/x;
     f1 = -7.657847078286127362028E-1;
     f1 = f1*w+6.886192415566705051750E-1;
     f1 = f1*w-2.132598113545206124553E-1;
@@ -7761,7 +6687,7 @@ double exponentialintegralei(double x, ae_state *_state)
     f2 = f2*w+1.239754287483206878024E-7;
     f2 = f2*w-1.086076102793126632978E-9;
     f = f1/f2;
-    result = ae_exp(x, _state)*w*(1+w*f);
+    result = ae_exp(x, _state)*w*((double)1+w*f);
     return result;
 }
 
@@ -7819,13 +6745,13 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
 
 
     eul = 0.57721566490153286060;
-    big = 1.44115188075855872*ae_pow(10, 17, _state);
-    if( ((n<0||ae_fp_less(x,0))||ae_fp_greater(x,170))||(ae_fp_eq(x,0)&&n<2) )
+    big = 1.44115188075855872*ae_pow((double)(10), (double)(17), _state);
+    if( ((n<0||ae_fp_less(x,(double)(0)))||ae_fp_greater(x,(double)(170)))||(ae_fp_eq(x,(double)(0))&&n<2) )
     {
-        result = -1;
+        result = (double)(-1);
         return result;
     }
-    if( ae_fp_eq(x,0) )
+    if( ae_fp_eq(x,(double)(0)) )
     {
         result = (double)1/(double)(n-1);
         return result;
@@ -7837,16 +6763,16 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
     }
     if( n>5000 )
     {
-        xk = x+n;
-        yk = 1/(xk*xk);
-        t = n;
-        result = yk*t*(6*x*x-8*t*x+t*t);
+        xk = x+(double)n;
+        yk = (double)1/(xk*xk);
+        t = (double)(n);
+        result = yk*t*((double)6*x*x-(double)8*t*x+t*t);
         result = yk*(result+t*(t-2.0*x));
         result = yk*(result+t);
-        result = (result+1)*ae_exp(-x, _state)/xk;
+        result = (result+(double)1)*ae_exp(-x, _state)/xk;
         return result;
     }
-    if( ae_fp_less_eq(x,1) )
+    if( ae_fp_less_eq(x,(double)(1)) )
     {
         psi = -eul-ae_log(x, _state);
         for(i=1; i<=n-1; i++)
@@ -7854,9 +6780,9 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
             psi = psi+(double)1/(double)i;
         }
         z = -x;
-        xk = 0;
-        yk = 1;
-        pk = 1-n;
+        xk = (double)(0);
+        yk = (double)(1);
+        pk = (double)(1-n);
         if( n==1 )
         {
             result = 0.0;
@@ -7867,27 +6793,27 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
         }
         do
         {
-            xk = xk+1;
+            xk = xk+(double)1;
             yk = yk*z/xk;
-            pk = pk+1;
-            if( ae_fp_neq(pk,0) )
+            pk = pk+(double)1;
+            if( ae_fp_neq(pk,(double)(0)) )
             {
                 result = result+yk/pk;
             }
-            if( ae_fp_neq(result,0) )
+            if( ae_fp_neq(result,(double)(0)) )
             {
                 t = ae_fabs(yk/result, _state);
             }
             else
             {
-                t = 1;
+                t = (double)(1);
             }
         }
         while(ae_fp_greater_eq(t,ae_machineepsilon));
-        t = 1;
+        t = (double)(1);
         for(i=1; i<=n-1; i++)
         {
-            t = t*z/i;
+            t = t*z/(double)i;
         }
         result = psi*t-result;
         return result;
@@ -7895,18 +6821,18 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
     else
     {
         k = 1;
-        pkm2 = 1;
+        pkm2 = (double)(1);
         qkm2 = x;
         pkm1 = 1.0;
-        qkm1 = x+n;
+        qkm1 = x+(double)n;
         result = pkm1/qkm1;
         do
         {
             k = k+1;
             if( k%2==1 )
             {
-                yk = 1;
-                xk = n+(double)(k-1)/(double)2;
+                yk = (double)(1);
+                xk = (double)n+(double)(k-1)/(double)2;
             }
             else
             {
@@ -7915,7 +6841,7 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
             }
             pk = pkm1*yk+pkm2*xk;
             qk = qkm1*yk+qkm2*xk;
-            if( ae_fp_neq(qk,0) )
+            if( ae_fp_neq(qk,(double)(0)) )
             {
                 r = pk/qk;
                 t = ae_fabs((result-r)/r, _state);
@@ -7923,7 +6849,7 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
             }
             else
             {
-                t = 1;
+                t = (double)(1);
             }
             pkm2 = pkm1;
             pkm1 = pk;
@@ -7944,465 +6870,8 @@ double exponentialintegralen(double x, ae_int_t n, ae_state *_state)
 }
 
 
-
-
-/*************************************************************************
-F distribution
-
-Returns the area from zero to x under the F density
-function (also known as Snedcor's density or the
-variance ratio density).  This is the density
-of x = (u1/df1)/(u2/df2), where u1 and u2 are random
-variables having Chi square distributions with df1
-and df2 degrees of freedom, respectively.
-The incomplete beta integral is used, according to the
-formula
-
-P(x) = incbet( df1/2, df2/2, (df1*x/(df2 + df1*x) ).
-
-
-The arguments a and b are greater than zero, and x is
-nonnegative.
-
-ACCURACY:
-
-Tested at random points (a,b,x).
-
-               x     a,b                     Relative error:
-arithmetic  domain  domain     # trials      peak         rms
-   IEEE      0,1    0,100       100000      9.8e-15     1.7e-15
-   IEEE      1,5    0,100       100000      6.5e-15     3.5e-16
-   IEEE      0,1    1,10000     100000      2.2e-11     3.3e-12
-   IEEE      1,5    1,10000     100000      1.1e-11     1.7e-13
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double fdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state)
-{
-    double w;
-    double result;
-
-
-    ae_assert((a>=1&&b>=1)&&ae_fp_greater_eq(x,0), "Domain error in FDistribution", _state);
-    w = a*x;
-    w = w/(b+w);
-    result = incompletebeta(0.5*a, 0.5*b, w, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Complemented F distribution
-
-Returns the area from x to infinity under the F density
-function (also known as Snedcor's density or the
-variance ratio density).
-
-
-                     inf.
-                      -
-             1       | |  a-1      b-1
-1-P(x)  =  ------    |   t    (1-t)    dt
-           B(a,b)  | |
-                    -
-                     x
-
-
-The incomplete beta integral is used, according to the
-formula
-
-P(x) = incbet( df2/2, df1/2, (df2/(df2 + df1*x) ).
-
-
-ACCURACY:
-
-Tested at random points (a,b,x) in the indicated intervals.
-               x     a,b                     Relative error:
-arithmetic  domain  domain     # trials      peak         rms
-   IEEE      0,1    1,100       100000      3.7e-14     5.9e-16
-   IEEE      1,5    1,100       100000      8.0e-15     1.6e-15
-   IEEE      0,1    1,10000     100000      1.8e-11     3.5e-13
-   IEEE      1,5    1,10000     100000      2.0e-11     3.0e-12
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double fcdistribution(ae_int_t a, ae_int_t b, double x, ae_state *_state)
-{
-    double w;
-    double result;
-
-
-    ae_assert((a>=1&&b>=1)&&ae_fp_greater_eq(x,0), "Domain error in FCDistribution", _state);
-    w = b/(b+a*x);
-    result = incompletebeta(0.5*b, 0.5*a, w, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Inverse of complemented F distribution
-
-Finds the F density argument x such that the integral
-from x to infinity of the F density is equal to the
-given probability p.
-
-This is accomplished using the inverse beta integral
-function and the relations
-
-     z = incbi( df2/2, df1/2, p )
-     x = df2 (1-z) / (df1 z).
-
-Note: the following relations hold for the inverse of
-the uncomplemented F distribution:
-
-     z = incbi( df1/2, df2/2, p )
-     x = df2 z / (df1 (1-z)).
-
-ACCURACY:
-
-Tested at random points (a,b,p).
-
-             a,b                     Relative error:
-arithmetic  domain     # trials      peak         rms
- For p between .001 and 1:
-   IEEE     1,100       100000      8.3e-15     4.7e-16
-   IEEE     1,10000     100000      2.1e-11     1.4e-13
- For p between 10^-6 and 10^-3:
-   IEEE     1,100        50000      1.3e-12     8.4e-15
-   IEEE     1,10000      50000      3.0e-12     4.8e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invfdistribution(ae_int_t a,
-     ae_int_t b,
-     double y,
-     ae_state *_state)
-{
-    double w;
-    double result;
-
-
-    ae_assert(((a>=1&&b>=1)&&ae_fp_greater(y,0))&&ae_fp_less_eq(y,1), "Domain error in InvFDistribution", _state);
-    
-    /*
-     * Compute probability for x = 0.5
-     */
-    w = incompletebeta(0.5*b, 0.5*a, 0.5, _state);
-    
-    /*
-     * If that is greater than y, then the solution w < .5
-     * Otherwise, solve at 1-y to remove cancellation in (b - b*w)
-     */
-    if( ae_fp_greater(w,y)||ae_fp_less(y,0.001) )
-    {
-        w = invincompletebeta(0.5*b, 0.5*a, y, _state);
-        result = (b-b*w)/(a*w);
-    }
-    else
-    {
-        w = invincompletebeta(0.5*a, 0.5*b, 1.0-y, _state);
-        result = b*w/(a*(1.0-w));
-    }
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Fresnel integral
-
-Evaluates the Fresnel integrals
-
-          x
-          -
-         | |
-C(x) =   |   cos(pi/2 t**2) dt,
-       | |
-        -
-         0
-
-          x
-          -
-         | |
-S(x) =   |   sin(pi/2 t**2) dt.
-       | |
-        -
-         0
-
-
-The integrals are evaluated by a power series for x < 1.
-For x >= 1 auxiliary functions f(x) and g(x) are employed
-such that
-
-C(x) = 0.5 + f(x) sin( pi/2 x**2 ) - g(x) cos( pi/2 x**2 )
-S(x) = 0.5 - f(x) cos( pi/2 x**2 ) - g(x) sin( pi/2 x**2 )
-
-
-
-ACCURACY:
-
- Relative error.
-
-Arithmetic  function   domain     # trials      peak         rms
-  IEEE       S(x)      0, 10       10000       2.0e-15     3.2e-16
-  IEEE       C(x)      0, 10       10000       1.8e-15     3.3e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
-*************************************************************************/
-void fresnelintegral(double x, double* c, double* s, ae_state *_state)
-{
-    double xxa;
-    double f;
-    double g;
-    double cc;
-    double ss;
-    double t;
-    double u;
-    double x2;
-    double sn;
-    double sd;
-    double cn;
-    double cd;
-    double fn;
-    double fd;
-    double gn;
-    double gd;
-    double mpi;
-    double mpio2;
-
-
-    mpi = 3.14159265358979323846;
-    mpio2 = 1.57079632679489661923;
-    xxa = x;
-    x = ae_fabs(xxa, _state);
-    x2 = x*x;
-    if( ae_fp_less(x2,2.5625) )
-    {
-        t = x2*x2;
-        sn = -2.99181919401019853726E3;
-        sn = sn*t+7.08840045257738576863E5;
-        sn = sn*t-6.29741486205862506537E7;
-        sn = sn*t+2.54890880573376359104E9;
-        sn = sn*t-4.42979518059697779103E10;
-        sn = sn*t+3.18016297876567817986E11;
-        sd = 1.00000000000000000000E0;
-        sd = sd*t+2.81376268889994315696E2;
-        sd = sd*t+4.55847810806532581675E4;
-        sd = sd*t+5.17343888770096400730E6;
-        sd = sd*t+4.19320245898111231129E8;
-        sd = sd*t+2.24411795645340920940E10;
-        sd = sd*t+6.07366389490084639049E11;
-        cn = -4.98843114573573548651E-8;
-        cn = cn*t+9.50428062829859605134E-6;
-        cn = cn*t-6.45191435683965050962E-4;
-        cn = cn*t+1.88843319396703850064E-2;
-        cn = cn*t-2.05525900955013891793E-1;
-        cn = cn*t+9.99999999999999998822E-1;
-        cd = 3.99982968972495980367E-12;
-        cd = cd*t+9.15439215774657478799E-10;
-        cd = cd*t+1.25001862479598821474E-7;
-        cd = cd*t+1.22262789024179030997E-5;
-        cd = cd*t+8.68029542941784300606E-4;
-        cd = cd*t+4.12142090722199792936E-2;
-        cd = cd*t+1.00000000000000000118E0;
-        *s = ae_sign(xxa, _state)*x*x2*sn/sd;
-        *c = ae_sign(xxa, _state)*x*cn/cd;
-        return;
-    }
-    if( ae_fp_greater(x,36974.0) )
-    {
-        *c = ae_sign(xxa, _state)*0.5;
-        *s = ae_sign(xxa, _state)*0.5;
-        return;
-    }
-    x2 = x*x;
-    t = mpi*x2;
-    u = 1/(t*t);
-    t = 1/t;
-    fn = 4.21543555043677546506E-1;
-    fn = fn*u+1.43407919780758885261E-1;
-    fn = fn*u+1.15220955073585758835E-2;
-    fn = fn*u+3.45017939782574027900E-4;
-    fn = fn*u+4.63613749287867322088E-6;
-    fn = fn*u+3.05568983790257605827E-8;
-    fn = fn*u+1.02304514164907233465E-10;
-    fn = fn*u+1.72010743268161828879E-13;
-    fn = fn*u+1.34283276233062758925E-16;
-    fn = fn*u+3.76329711269987889006E-20;
-    fd = 1.00000000000000000000E0;
-    fd = fd*u+7.51586398353378947175E-1;
-    fd = fd*u+1.16888925859191382142E-1;
-    fd = fd*u+6.44051526508858611005E-3;
-    fd = fd*u+1.55934409164153020873E-4;
-    fd = fd*u+1.84627567348930545870E-6;
-    fd = fd*u+1.12699224763999035261E-8;
-    fd = fd*u+3.60140029589371370404E-11;
-    fd = fd*u+5.88754533621578410010E-14;
-    fd = fd*u+4.52001434074129701496E-17;
-    fd = fd*u+1.25443237090011264384E-20;
-    gn = 5.04442073643383265887E-1;
-    gn = gn*u+1.97102833525523411709E-1;
-    gn = gn*u+1.87648584092575249293E-2;
-    gn = gn*u+6.84079380915393090172E-4;
-    gn = gn*u+1.15138826111884280931E-5;
-    gn = gn*u+9.82852443688422223854E-8;
-    gn = gn*u+4.45344415861750144738E-10;
-    gn = gn*u+1.08268041139020870318E-12;
-    gn = gn*u+1.37555460633261799868E-15;
-    gn = gn*u+8.36354435630677421531E-19;
-    gn = gn*u+1.86958710162783235106E-22;
-    gd = 1.00000000000000000000E0;
-    gd = gd*u+1.47495759925128324529E0;
-    gd = gd*u+3.37748989120019970451E-1;
-    gd = gd*u+2.53603741420338795122E-2;
-    gd = gd*u+8.14679107184306179049E-4;
-    gd = gd*u+1.27545075667729118702E-5;
-    gd = gd*u+1.04314589657571990585E-7;
-    gd = gd*u+4.60680728146520428211E-10;
-    gd = gd*u+1.10273215066240270757E-12;
-    gd = gd*u+1.38796531259578871258E-15;
-    gd = gd*u+8.39158816283118707363E-19;
-    gd = gd*u+1.86958710162783236342E-22;
-    f = 1-u*fn/fd;
-    g = t*gn/gd;
-    t = mpio2*x2;
-    cc = ae_cos(t, _state);
-    ss = ae_sin(t, _state);
-    t = mpi*x;
-    *c = 0.5+(f*ss-g*cc)/t;
-    *s = 0.5-(f*cc+g*ss)/t;
-    *c = *c*ae_sign(xxa, _state);
-    *s = *s*ae_sign(xxa, _state);
-}
-
-
-
-
-/*************************************************************************
-Calculation of the value of the Hermite polynomial.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Hermite polynomial Hn at x
-*************************************************************************/
-double hermitecalculate(ae_int_t n, double x, ae_state *_state)
-{
-    ae_int_t i;
-    double a;
-    double b;
-    double result;
-
-
-    result = 0;
-    
-    /*
-     * Prepare A and B
-     */
-    a = 1;
-    b = 2*x;
-    
-    /*
-     * Special cases: N=0 or N=1
-     */
-    if( n==0 )
-    {
-        result = a;
-        return result;
-    }
-    if( n==1 )
-    {
-        result = b;
-        return result;
-    }
-    
-    /*
-     * General case: N>=2
-     */
-    for(i=2; i<=n; i++)
-    {
-        result = 2*x*b-2*(i-1)*a;
-        a = b;
-        b = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Summation of Hermite polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Hermite polynomial at x
-*************************************************************************/
-double hermitesum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state)
-{
-    double b1;
-    double b2;
-    ae_int_t i;
-    double result;
-
-
-    b1 = 0;
-    b2 = 0;
-    result = 0;
-    for(i=n; i>=0; i--)
-    {
-        result = 2*(x*b1-(i+1)*b2)+c->ptr.p_double[i];
-        b2 = b1;
-        b1 = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Representation of Hn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void hermitecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state)
-{
-    ae_int_t i;
-
-    ae_vector_clear(c);
-
-    ae_vector_set_length(c, n+1, _state);
-    for(i=0; i<=n; i++)
-    {
-        c->ptr.p_double[i] = 0;
-    }
-    c->ptr.p_double[n] = ae_exp(n*ae_log(2, _state), _state);
-    for(i=0; i<=n/2-1; i++)
-    {
-        c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(n-2*i)*(n-2*i-1)/4/(i+1);
-    }
-}
-
-
+#endif
+#if defined(AE_COMPILE_JACOBIANELLIPTIC) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -8464,14 +6933,16 @@ void jacobianellipticfunctions(double u,
     ae_int_t i;
 
     ae_frame_make(_state, &_frame_block);
-    *sn = 0;
-    *cn = 0;
-    *dn = 0;
-    *ph = 0;
+    memset(&a, 0, sizeof(a));
+    memset(&c, 0, sizeof(c));
+    *sn = 0.0;
+    *cn = 0.0;
+    *dn = 0.0;
+    *ph = 0.0;
     ae_vector_init(&a, 0, DT_REAL, _state, ae_true);
     ae_vector_init(&c, 0, DT_REAL, _state, ae_true);
 
-    ae_assert(ae_fp_greater_eq(m,0)&&ae_fp_less_eq(m,1), "Domain error in JacobianEllipticFunctions: m<0 or m>1", _state);
+    ae_assert(ae_fp_greater_eq(m,(double)(0))&&ae_fp_less_eq(m,(double)(1)), "Domain error in JacobianEllipticFunctions: m<0 or m>1", _state);
     ae_vector_set_length(&a, 8+1, _state);
     ae_vector_set_length(&c, 8+1, _state);
     if( ae_fp_less(m,1.0e-9) )
@@ -8539,642 +7010,8 @@ void jacobianellipticfunctions(double u,
 }
 
 
-
-
-/*************************************************************************
-Calculation of the value of the Laguerre polynomial.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Laguerre polynomial Ln at x
-*************************************************************************/
-double laguerrecalculate(ae_int_t n, double x, ae_state *_state)
-{
-    double a;
-    double b;
-    double i;
-    double result;
-
-
-    result = 1;
-    a = 1;
-    b = 1-x;
-    if( n==1 )
-    {
-        result = b;
-    }
-    i = 2;
-    while(ae_fp_less_eq(i,n))
-    {
-        result = ((2*i-1-x)*b-(i-1)*a)/i;
-        a = b;
-        b = result;
-        i = i+1;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Summation of Laguerre polynomials using Clenshawís recurrence formula.
-
-This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Laguerre polynomial at x
-*************************************************************************/
-double laguerresum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state)
-{
-    double b1;
-    double b2;
-    ae_int_t i;
-    double result;
-
-
-    b1 = 0;
-    b2 = 0;
-    result = 0;
-    for(i=n; i>=0; i--)
-    {
-        result = (2*i+1-x)*b1/(i+1)-(i+1)*b2/(i+2)+c->ptr.p_double[i];
-        b2 = b1;
-        b1 = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Representation of Ln as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void laguerrecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state)
-{
-    ae_int_t i;
-
-    ae_vector_clear(c);
-
-    ae_vector_set_length(c, n+1, _state);
-    c->ptr.p_double[0] = 1;
-    for(i=0; i<=n-1; i++)
-    {
-        c->ptr.p_double[i+1] = -c->ptr.p_double[i]*(n-i)/(i+1)/(i+1);
-    }
-}
-
-
-
-
-/*************************************************************************
-Calculation of the value of the Legendre polynomial Pn.
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Legendre polynomial Pn at x
-*************************************************************************/
-double legendrecalculate(ae_int_t n, double x, ae_state *_state)
-{
-    double a;
-    double b;
-    ae_int_t i;
-    double result;
-
-
-    result = 1;
-    a = 1;
-    b = x;
-    if( n==0 )
-    {
-        result = a;
-        return result;
-    }
-    if( n==1 )
-    {
-        result = b;
-        return result;
-    }
-    for(i=2; i<=n; i++)
-    {
-        result = ((2*i-1)*x*b-(i-1)*a)/i;
-        a = b;
-        b = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Summation of Legendre polynomials using Clenshawís recurrence formula.
-
-This routine calculates
-    c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)
-
-Parameters:
-    n   -   degree, n>=0
-    x   -   argument
-
-Result:
-    the value of the Legendre polynomial at x
-*************************************************************************/
-double legendresum(/* Real    */ ae_vector* c,
-     ae_int_t n,
-     double x,
-     ae_state *_state)
-{
-    double b1;
-    double b2;
-    ae_int_t i;
-    double result;
-
-
-    b1 = 0;
-    b2 = 0;
-    result = 0;
-    for(i=n; i>=0; i--)
-    {
-        result = (2*i+1)*x*b1/(i+1)-(i+1)*b2/(i+2)+c->ptr.p_double[i];
-        b2 = b1;
-        b1 = result;
-    }
-    return result;
-}
-
-
-/*************************************************************************
-Representation of Pn as C[0] + C[1]*X + ... + C[N]*X^N
-
-Input parameters:
-    N   -   polynomial degree, n>=0
-
-Output parameters:
-    C   -   coefficients
-*************************************************************************/
-void legendrecoefficients(ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state)
-{
-    ae_int_t i;
-
-    ae_vector_clear(c);
-
-    ae_vector_set_length(c, n+1, _state);
-    for(i=0; i<=n; i++)
-    {
-        c->ptr.p_double[i] = 0;
-    }
-    c->ptr.p_double[n] = 1;
-    for(i=1; i<=n; i++)
-    {
-        c->ptr.p_double[n] = c->ptr.p_double[n]*(n+i)/2/i;
-    }
-    for(i=0; i<=n/2-1; i++)
-    {
-        c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(n-2*i)*(n-2*i-1)/2/(i+1)/(2*(n-i)-1);
-    }
-}
-
-
-
-
-/*************************************************************************
-Poisson distribution
-
-Returns the sum of the first k+1 terms of the Poisson
-distribution:
-
-  k         j
-  --   -m  m
-  >   e    --
-  --       j!
- j=0
-
-The terms are not summed directly; instead the incomplete
-gamma integral is employed, according to the relation
-
-y = pdtr( k, m ) = igamc( k+1, m ).
-
-The arguments must both be positive.
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double poissondistribution(ae_int_t k, double m, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert(k>=0&&ae_fp_greater(m,0), "Domain error in PoissonDistribution", _state);
-    result = incompletegammac(k+1, m, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Complemented Poisson distribution
-
-Returns the sum of the terms k+1 to infinity of the Poisson
-distribution:
-
- inf.       j
-  --   -m  m
-  >   e    --
-  --       j!
- j=k+1
-
-The terms are not summed directly; instead the incomplete
-gamma integral is employed, according to the formula
-
-y = pdtrc( k, m ) = igam( k+1, m ).
-
-The arguments must both be positive.
-
-ACCURACY:
-
-See incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double poissoncdistribution(ae_int_t k, double m, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert(k>=0&&ae_fp_greater(m,0), "Domain error in PoissonDistributionC", _state);
-    result = incompletegamma(k+1, m, _state);
-    return result;
-}
-
-
-/*************************************************************************
-Inverse Poisson distribution
-
-Finds the Poisson variable x such that the integral
-from 0 to x of the Poisson density is equal to the
-given probability y.
-
-This is accomplished using the inverse gamma integral
-function and the relation
-
-   m = igami( k+1, y ).
-
-ACCURACY:
-
-See inverse incomplete gamma function
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invpoissondistribution(ae_int_t k, double y, ae_state *_state)
-{
-    double result;
-
-
-    ae_assert((k>=0&&ae_fp_greater_eq(y,0))&&ae_fp_less(y,1), "Domain error in InvPoissonDistribution", _state);
-    result = invincompletegammac(k+1, y, _state);
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Psi (digamma) function
-
-             d      -
-  psi(x)  =  -- ln | (x)
-             dx
-
-is the logarithmic derivative of the gamma function.
-For integer x,
-                  n-1
-                   -
-psi(n) = -EUL  +   >  1/k.
-                   -
-                  k=1
-
-This formula is used for 0 < n <= 10.  If x is negative, it
-is transformed to a positive argument by the reflection
-formula  psi(1-x) = psi(x) + pi cot(pi x).
-For general positive x, the argument is made greater than 10
-using the recurrence  psi(x+1) = psi(x) + 1/x.
-Then the following asymptotic expansion is applied:
-
-                          inf.   B
-                           -      2k
-psi(x) = log(x) - 1/2x -   >   -------
-                           -        2k
-                          k=1   2k x
-
-where the B2k are Bernoulli numbers.
-
-ACCURACY:
-   Relative error (except absolute when |psi| < 1):
-arithmetic   domain     # trials      peak         rms
-   IEEE      0,30        30000       1.3e-15     1.4e-16
-   IEEE      -30,0       40000       1.5e-15     2.2e-16
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1992, 2000 by Stephen L. Moshier
-*************************************************************************/
-double psi(double x, ae_state *_state)
-{
-    double p;
-    double q;
-    double nz;
-    double s;
-    double w;
-    double y;
-    double z;
-    double polv;
-    ae_int_t i;
-    ae_int_t n;
-    ae_int_t negative;
-    double result;
-
-
-    negative = 0;
-    nz = 0.0;
-    if( ae_fp_less_eq(x,0) )
-    {
-        negative = 1;
-        q = x;
-        p = ae_ifloor(q, _state);
-        if( ae_fp_eq(p,q) )
-        {
-            ae_assert(ae_false, "Singularity in Psi(x)", _state);
-            result = ae_maxrealnumber;
-            return result;
-        }
-        nz = q-p;
-        if( ae_fp_neq(nz,0.5) )
-        {
-            if( ae_fp_greater(nz,0.5) )
-            {
-                p = p+1.0;
-                nz = q-p;
-            }
-            nz = ae_pi/ae_tan(ae_pi*nz, _state);
-        }
-        else
-        {
-            nz = 0.0;
-        }
-        x = 1.0-x;
-    }
-    if( ae_fp_less_eq(x,10.0)&&ae_fp_eq(x,ae_ifloor(x, _state)) )
-    {
-        y = 0.0;
-        n = ae_ifloor(x, _state);
-        for(i=1; i<=n-1; i++)
-        {
-            w = i;
-            y = y+1.0/w;
-        }
-        y = y-0.57721566490153286061;
-    }
-    else
-    {
-        s = x;
-        w = 0.0;
-        while(ae_fp_less(s,10.0))
-        {
-            w = w+1.0/s;
-            s = s+1.0;
-        }
-        if( ae_fp_less(s,1.0E17) )
-        {
-            z = 1.0/(s*s);
-            polv = 8.33333333333333333333E-2;
-            polv = polv*z-2.10927960927960927961E-2;
-            polv = polv*z+7.57575757575757575758E-3;
-            polv = polv*z-4.16666666666666666667E-3;
-            polv = polv*z+3.96825396825396825397E-3;
-            polv = polv*z-8.33333333333333333333E-3;
-            polv = polv*z+8.33333333333333333333E-2;
-            y = z*polv;
-        }
-        else
-        {
-            y = 0.0;
-        }
-        y = ae_log(s, _state)-0.5/s-y-w;
-    }
-    if( negative!=0 )
-    {
-        y = y-nz;
-    }
-    result = y;
-    return result;
-}
-
-
-
-
-/*************************************************************************
-Student's t distribution
-
-Computes the integral from minus infinity to t of the Student
-t distribution with integer k > 0 degrees of freedom:
-
-                                     t
-                                     -
-                                    | |
-             -                      |         2   -(k+1)/2
-            | ( (k+1)/2 )           |  (     x   )
-      ----------------------        |  ( 1 + --- )        dx
-                    -               |  (      k  )
-      sqrt( k pi ) | ( k/2 )        |
-                                  | |
-                                   -
-                                  -inf.
-
-Relation to incomplete beta integral:
-
-       1 - stdtr(k,t) = 0.5 * incbet( k/2, 1/2, z )
-where
-       z = k/(k + t**2).
-
-For t < -2, this is the method of computation.  For higher t,
-a direct method is derived from integration by parts.
-Since the function is symmetric about t=0, the area under the
-right tail of the density is found by calling the function
-with -t instead of t.
-
-ACCURACY:
-
-Tested at random 1 <= k <= 25.  The "domain" refers to t.
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE     -100,-2      50000       5.9e-15     1.4e-15
-   IEEE     -2,100      500000       2.7e-15     4.9e-17
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double studenttdistribution(ae_int_t k, double t, ae_state *_state)
-{
-    double x;
-    double rk;
-    double z;
-    double f;
-    double tz;
-    double p;
-    double xsqk;
-    ae_int_t j;
-    double result;
-
-
-    ae_assert(k>0, "Domain error in StudentTDistribution", _state);
-    if( ae_fp_eq(t,0) )
-    {
-        result = 0.5;
-        return result;
-    }
-    if( ae_fp_less(t,-2.0) )
-    {
-        rk = k;
-        z = rk/(rk+t*t);
-        result = 0.5*incompletebeta(0.5*rk, 0.5, z, _state);
-        return result;
-    }
-    if( ae_fp_less(t,0) )
-    {
-        x = -t;
-    }
-    else
-    {
-        x = t;
-    }
-    rk = k;
-    z = 1.0+x*x/rk;
-    if( k%2!=0 )
-    {
-        xsqk = x/ae_sqrt(rk, _state);
-        p = ae_atan(xsqk, _state);
-        if( k>1 )
-        {
-            f = 1.0;
-            tz = 1.0;
-            j = 3;
-            while(j<=k-2&&ae_fp_greater(tz/f,ae_machineepsilon))
-            {
-                tz = tz*((j-1)/(z*j));
-                f = f+tz;
-                j = j+2;
-            }
-            p = p+f*xsqk/z;
-        }
-        p = p*2.0/ae_pi;
-    }
-    else
-    {
-        f = 1.0;
-        tz = 1.0;
-        j = 2;
-        while(j<=k-2&&ae_fp_greater(tz/f,ae_machineepsilon))
-        {
-            tz = tz*((j-1)/(z*j));
-            f = f+tz;
-            j = j+2;
-        }
-        p = f*x/ae_sqrt(z*rk, _state);
-    }
-    if( ae_fp_less(t,0) )
-    {
-        p = -p;
-    }
-    result = 0.5+0.5*p;
-    return result;
-}
-
-
-/*************************************************************************
-Functional inverse of Student's t distribution
-
-Given probability p, finds the argument t such that stdtr(k,t)
-is equal to p.
-
-ACCURACY:
-
-Tested at random 1 <= k <= 100.  The "domain" refers to p:
-                     Relative error:
-arithmetic   domain     # trials      peak         rms
-   IEEE    .001,.999     25000       5.7e-15     8.0e-16
-   IEEE    10^-6,.001    25000       2.0e-12     2.9e-14
-
-Cephes Math Library Release 2.8:  June, 2000
-Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
-*************************************************************************/
-double invstudenttdistribution(ae_int_t k, double p, ae_state *_state)
-{
-    double t;
-    double rk;
-    double z;
-    ae_int_t rflg;
-    double result;
-
-
-    ae_assert((k>0&&ae_fp_greater(p,0))&&ae_fp_less(p,1), "Domain error in InvStudentTDistribution", _state);
-    rk = k;
-    if( ae_fp_greater(p,0.25)&&ae_fp_less(p,0.75) )
-    {
-        if( ae_fp_eq(p,0.5) )
-        {
-            result = 0;
-            return result;
-        }
-        z = 1.0-2.0*p;
-        z = invincompletebeta(0.5, 0.5*rk, ae_fabs(z, _state), _state);
-        t = ae_sqrt(rk*z/(1.0-z), _state);
-        if( ae_fp_less(p,0.5) )
-        {
-            t = -t;
-        }
-        result = t;
-        return result;
-    }
-    rflg = -1;
-    if( ae_fp_greater_eq(p,0.5) )
-    {
-        p = 1.0-p;
-        rflg = 1;
-    }
-    z = invincompletebeta(0.5*rk, 0.5, 2.0*p, _state);
-    if( ae_fp_less(ae_maxrealnumber*z,rk) )
-    {
-        result = rflg*ae_maxrealnumber;
-        return result;
-    }
-    t = ae_sqrt(rk/z-rk, _state);
-    result = rflg*t;
-    return result;
-}
-
-
+#endif
+#if defined(AE_COMPILE_TRIGINTEGRALS) || !defined(AE_PARTIAL_BUILD)
 
 
 /*************************************************************************
@@ -9236,10 +7073,10 @@ void sinecosineintegrals(double x,
     double gn;
     double gd;
 
-    *si = 0;
-    *ci = 0;
+    *si = 0.0;
+    *ci = 0.0;
 
-    if( ae_fp_less(x,0) )
+    if( ae_fp_less(x,(double)(0)) )
     {
         sg = -1;
         x = -x;
@@ -9248,9 +7085,9 @@ void sinecosineintegrals(double x,
     {
         sg = 0;
     }
-    if( ae_fp_eq(x,0) )
+    if( ae_fp_eq(x,(double)(0)) )
     {
-        *si = 0;
+        *si = (double)(0);
         *ci = -ae_maxrealnumber;
         return;
     }
@@ -9260,7 +7097,7 @@ void sinecosineintegrals(double x,
         *ci = ae_sin(x, _state)/x;
         return;
     }
-    if( ae_fp_less_eq(x,4) )
+    if( ae_fp_less_eq(x,(double)(4)) )
     {
         z = x*x;
         sn = -8.39167827910303881427E-11;
@@ -9300,7 +7137,7 @@ void sinecosineintegrals(double x,
     s = ae_sin(x, _state);
     c = ae_cos(x, _state);
     z = 1.0/(x*x);
-    if( ae_fp_less(x,8) )
+    if( ae_fp_less(x,(double)(8)) )
     {
         fn = 4.23612862892216586994E0;
         fn = fn*z+5.45937717161812843388E0;
@@ -9442,10 +7279,10 @@ void hyperbolicsinecosineintegrals(double x,
     double b1;
     double b2;
 
-    *shi = 0;
-    *chi = 0;
+    *shi = 0.0;
+    *chi = 0.0;
 
-    if( ae_fp_less(x,0) )
+    if( ae_fp_less(x,(double)(0)) )
     {
         sg = -1;
         x = -x;
@@ -9454,9 +7291,9 @@ void hyperbolicsinecosineintegrals(double x,
     {
         sg = 0;
     }
-    if( ae_fp_eq(x,0) )
+    if( ae_fp_eq(x,(double)(0)) )
     {
-        *shi = 0;
+        *shi = (double)(0);
         *chi = -ae_maxrealnumber;
         return;
     }
@@ -9632,6 +7469,3204 @@ static void trigintegrals_chebiterationshichi(double x,
 }
 
 
+#endif
+#if defined(AE_COMPILE_CHEBYSHEV) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Calculation of the value of the Chebyshev polynomials of the
+first and second kinds.
+
+Parameters:
+    r   -   polynomial kind, either 1 or 2.
+    n   -   degree, n>=0
+    x   -   argument, -1 <= x <= 1
+
+Result:
+    the value of the Chebyshev polynomial at x
+*************************************************************************/
+double chebyshevcalculate(ae_int_t r,
+     ae_int_t n,
+     double x,
+     ae_state *_state)
+{
+    ae_int_t i;
+    double a;
+    double b;
+    double result;
+
+
+    result = (double)(0);
+    
+    /*
+     * Prepare A and B
+     */
+    if( r==1 )
+    {
+        a = (double)(1);
+        b = x;
+    }
+    else
+    {
+        a = (double)(1);
+        b = (double)2*x;
+    }
+    
+    /*
+     * Special cases: N=0 or N=1
+     */
+    if( n==0 )
+    {
+        result = a;
+        return result;
+    }
+    if( n==1 )
+    {
+        result = b;
+        return result;
+    }
+    
+    /*
+     * General case: N>=2
+     */
+    for(i=2; i<=n; i++)
+    {
+        result = (double)2*x*b-a;
+        a = b;
+        b = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Summation of Chebyshev polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*T0(x) + c[1]*T1(x) + ... + c[N]*TN(x)
+or
+    c[0]*U0(x) + c[1]*U1(x) + ... + c[N]*UN(x)
+depending on the R.
+
+Parameters:
+    r   -   polynomial kind, either 1 or 2.
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Chebyshev polynomial at x
+*************************************************************************/
+double chebyshevsum(/* Real    */ const ae_vector* c,
+     ae_int_t r,
+     ae_int_t n,
+     double x,
+     ae_state *_state)
+{
+    double b1;
+    double b2;
+    ae_int_t i;
+    double result;
+
+
+    b1 = (double)(0);
+    b2 = (double)(0);
+    for(i=n; i>=1; i--)
+    {
+        result = (double)2*x*b1-b2+c->ptr.p_double[i];
+        b2 = b1;
+        b1 = result;
+    }
+    if( r==1 )
+    {
+        result = -b2+x*b1+c->ptr.p_double[0];
+    }
+    else
+    {
+        result = -b2+(double)2*x*b1+c->ptr.p_double[0];
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Representation of Tn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void chebyshevcoefficients(ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state)
+{
+    ae_int_t i;
+
+    ae_vector_clear(c);
+
+    ae_vector_set_length(c, n+1, _state);
+    for(i=0; i<=n; i++)
+    {
+        c->ptr.p_double[i] = (double)(0);
+    }
+    if( n==0||n==1 )
+    {
+        c->ptr.p_double[n] = (double)(1);
+    }
+    else
+    {
+        c->ptr.p_double[n] = ae_exp((double)(n-1)*ae_log((double)(2), _state), _state);
+        for(i=0; i<=n/2-1; i++)
+        {
+            c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(double)(n-2*i)*(double)(n-2*i-1)/(double)4/(double)(i+1)/(double)(n-i-1);
+        }
+    }
+}
+
+
+/*************************************************************************
+Conversion of a series of Chebyshev polynomials to a power series.
+
+Represents A[0]*T0(x) + A[1]*T1(x) + ... + A[N]*Tn(x) as
+B[0] + B[1]*X + ... + B[N]*X^N.
+
+Input parameters:
+    A   -   Chebyshev series coefficients
+    N   -   degree, N>=0
+    
+Output parameters
+    B   -   power series coefficients
+*************************************************************************/
+void fromchebyshev(/* Real    */ const ae_vector* a,
+     ae_int_t n,
+     /* Real    */ ae_vector* b,
+     ae_state *_state)
+{
+    ae_int_t i;
+    ae_int_t k;
+    double e;
+    double d;
+
+    ae_vector_clear(b);
+
+    ae_vector_set_length(b, n+1, _state);
+    for(i=0; i<=n; i++)
+    {
+        b->ptr.p_double[i] = (double)(0);
+    }
+    d = (double)(0);
+    i = 0;
+    do
+    {
+        k = i;
+        do
+        {
+            e = b->ptr.p_double[k];
+            b->ptr.p_double[k] = (double)(0);
+            if( i<=1&&k==i )
+            {
+                b->ptr.p_double[k] = (double)(1);
+            }
+            else
+            {
+                if( i!=0 )
+                {
+                    b->ptr.p_double[k] = (double)2*d;
+                }
+                if( k>i+1 )
+                {
+                    b->ptr.p_double[k] = b->ptr.p_double[k]-b->ptr.p_double[k-2];
+                }
+            }
+            d = e;
+            k = k+1;
+        }
+        while(k<=n);
+        d = b->ptr.p_double[i];
+        e = (double)(0);
+        k = i;
+        while(k<=n)
+        {
+            e = e+b->ptr.p_double[k]*a->ptr.p_double[k];
+            k = k+2;
+        }
+        b->ptr.p_double[i] = e;
+        i = i+1;
+    }
+    while(i<=n);
+}
+
+
+#endif
+#if defined(AE_COMPILE_POISSONDISTR) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Poisson distribution
+
+Returns the sum of the first k+1 terms of the Poisson
+distribution:
+
+  k         j
+  --   -m  m
+  >   e    --
+  --       j!
+ j=0
+
+The terms are not summed directly; instead the incomplete
+gamma integral is employed, according to the relation
+
+y = pdtr( k, m ) = igamc( k+1, m ).
+
+The arguments must both be positive.
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double poissondistribution(ae_int_t k, double m, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert(k>=0&&ae_fp_greater(m,(double)(0)), "Domain error in PoissonDistribution", _state);
+    result = incompletegammac((double)(k+1), m, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Complemented Poisson distribution
+
+Returns the sum of the terms k+1 to infinity of the Poisson
+distribution:
+
+ inf.       j
+  --   -m  m
+  >   e    --
+  --       j!
+ j=k+1
+
+The terms are not summed directly; instead the incomplete
+gamma integral is employed, according to the formula
+
+y = pdtrc( k, m ) = igam( k+1, m ).
+
+The arguments must both be positive.
+
+ACCURACY:
+
+See incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double poissoncdistribution(ae_int_t k, double m, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert(k>=0&&ae_fp_greater(m,(double)(0)), "Domain error in PoissonDistributionC", _state);
+    result = incompletegamma((double)(k+1), m, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Inverse Poisson distribution
+
+Finds the Poisson variable x such that the integral
+from 0 to x of the Poisson density is equal to the
+given probability y.
+
+This is accomplished using the inverse gamma integral
+function and the relation
+
+   m = igami( k+1, y ).
+
+ACCURACY:
+
+See inverse incomplete gamma function
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1995, 2000 by Stephen L. Moshier
+*************************************************************************/
+double invpoissondistribution(ae_int_t k, double y, ae_state *_state)
+{
+    double result;
+
+
+    ae_assert((k>=0&&ae_fp_greater_eq(y,(double)(0)))&&ae_fp_less(y,(double)(1)), "Domain error in InvPoissonDistribution", _state);
+    result = invincompletegammac((double)(k+1), y, _state);
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_BETAF) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Beta function
+
+
+                  -     -
+                 | (a) | (b)
+beta( a, b )  =  -----------.
+                    -
+                   | (a+b)
+
+For large arguments the logarithm of the function is
+evaluated using lgam(), then exponentiated.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,30       30000       8.1e-14     1.1e-14
+
+Cephes Math Library Release 2.0:  April, 1987
+Copyright 1984, 1987 by Stephen L. Moshier
+*************************************************************************/
+double beta(double a, double b, ae_state *_state)
+{
+    double y;
+    double sg;
+    double s;
+    double result;
+
+
+    sg = (double)(1);
+    ae_assert(ae_fp_greater(a,(double)(0))||ae_fp_neq(a,(double)(ae_ifloor(a, _state))), "Overflow in Beta", _state);
+    ae_assert(ae_fp_greater(b,(double)(0))||ae_fp_neq(b,(double)(ae_ifloor(b, _state))), "Overflow in Beta", _state);
+    y = a+b;
+    if( ae_fp_greater(ae_fabs(y, _state),171.624376956302725) )
+    {
+        y = lngamma(y, &s, _state);
+        sg = sg*s;
+        y = lngamma(b, &s, _state)-y;
+        sg = sg*s;
+        y = lngamma(a, &s, _state)+y;
+        sg = sg*s;
+        ae_assert(ae_fp_less_eq(y,ae_log(ae_maxrealnumber, _state)), "Overflow in Beta", _state);
+        result = sg*ae_exp(y, _state);
+        return result;
+    }
+    y = gammafunction(y, _state);
+    ae_assert(ae_fp_neq(y,(double)(0)), "Overflow in Beta", _state);
+    if( ae_fp_greater(a,b) )
+    {
+        y = gammafunction(a, _state)/y;
+        y = y*gammafunction(b, _state);
+    }
+    else
+    {
+        y = gammafunction(b, _state)/y;
+        y = y*gammafunction(a, _state);
+    }
+    result = y;
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_FRESNEL) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Fresnel integral
+
+Evaluates the Fresnel integrals
+
+          x
+          -
+         | |
+C(x) =   |   cos(pi/2 t**2) dt,
+       | |
+        -
+         0
+
+          x
+          -
+         | |
+S(x) =   |   sin(pi/2 t**2) dt.
+       | |
+        -
+         0
+
+
+The integrals are evaluated by a power series for x < 1.
+For x >= 1 auxiliary functions f(x) and g(x) are employed
+such that
+
+C(x) = 0.5 + f(x) sin( pi/2 x**2 ) - g(x) cos( pi/2 x**2 )
+S(x) = 0.5 - f(x) cos( pi/2 x**2 ) - g(x) sin( pi/2 x**2 )
+
+
+
+ACCURACY:
+
+ Relative error.
+
+Arithmetic  function   domain     # trials      peak         rms
+  IEEE       S(x)      0, 10       10000       2.0e-15     3.2e-16
+  IEEE       C(x)      0, 10       10000       1.8e-15     3.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+void fresnelintegral(double x, double* c, double* s, ae_state *_state)
+{
+    double xxa;
+    double f;
+    double g;
+    double cc;
+    double ss;
+    double t;
+    double u;
+    double x2;
+    double sn;
+    double sd;
+    double cn;
+    double cd;
+    double fn;
+    double fd;
+    double gn;
+    double gd;
+    double mpi;
+    double mpio2;
+
+
+    mpi = 3.14159265358979323846;
+    mpio2 = 1.57079632679489661923;
+    xxa = x;
+    x = ae_fabs(xxa, _state);
+    x2 = x*x;
+    if( ae_fp_less(x2,2.5625) )
+    {
+        t = x2*x2;
+        sn = -2.99181919401019853726E3;
+        sn = sn*t+7.08840045257738576863E5;
+        sn = sn*t-6.29741486205862506537E7;
+        sn = sn*t+2.54890880573376359104E9;
+        sn = sn*t-4.42979518059697779103E10;
+        sn = sn*t+3.18016297876567817986E11;
+        sd = 1.00000000000000000000E0;
+        sd = sd*t+2.81376268889994315696E2;
+        sd = sd*t+4.55847810806532581675E4;
+        sd = sd*t+5.17343888770096400730E6;
+        sd = sd*t+4.19320245898111231129E8;
+        sd = sd*t+2.24411795645340920940E10;
+        sd = sd*t+6.07366389490084639049E11;
+        cn = -4.98843114573573548651E-8;
+        cn = cn*t+9.50428062829859605134E-6;
+        cn = cn*t-6.45191435683965050962E-4;
+        cn = cn*t+1.88843319396703850064E-2;
+        cn = cn*t-2.05525900955013891793E-1;
+        cn = cn*t+9.99999999999999998822E-1;
+        cd = 3.99982968972495980367E-12;
+        cd = cd*t+9.15439215774657478799E-10;
+        cd = cd*t+1.25001862479598821474E-7;
+        cd = cd*t+1.22262789024179030997E-5;
+        cd = cd*t+8.68029542941784300606E-4;
+        cd = cd*t+4.12142090722199792936E-2;
+        cd = cd*t+1.00000000000000000118E0;
+        *s = (double)ae_sign(xxa, _state)*x*x2*sn/sd;
+        *c = (double)ae_sign(xxa, _state)*x*cn/cd;
+        return;
+    }
+    if( ae_fp_greater(x,36974.0) )
+    {
+        *c = (double)ae_sign(xxa, _state)*0.5;
+        *s = (double)ae_sign(xxa, _state)*0.5;
+        return;
+    }
+    x2 = x*x;
+    t = mpi*x2;
+    u = (double)1/(t*t);
+    t = (double)1/t;
+    fn = 4.21543555043677546506E-1;
+    fn = fn*u+1.43407919780758885261E-1;
+    fn = fn*u+1.15220955073585758835E-2;
+    fn = fn*u+3.45017939782574027900E-4;
+    fn = fn*u+4.63613749287867322088E-6;
+    fn = fn*u+3.05568983790257605827E-8;
+    fn = fn*u+1.02304514164907233465E-10;
+    fn = fn*u+1.72010743268161828879E-13;
+    fn = fn*u+1.34283276233062758925E-16;
+    fn = fn*u+3.76329711269987889006E-20;
+    fd = 1.00000000000000000000E0;
+    fd = fd*u+7.51586398353378947175E-1;
+    fd = fd*u+1.16888925859191382142E-1;
+    fd = fd*u+6.44051526508858611005E-3;
+    fd = fd*u+1.55934409164153020873E-4;
+    fd = fd*u+1.84627567348930545870E-6;
+    fd = fd*u+1.12699224763999035261E-8;
+    fd = fd*u+3.60140029589371370404E-11;
+    fd = fd*u+5.88754533621578410010E-14;
+    fd = fd*u+4.52001434074129701496E-17;
+    fd = fd*u+1.25443237090011264384E-20;
+    gn = 5.04442073643383265887E-1;
+    gn = gn*u+1.97102833525523411709E-1;
+    gn = gn*u+1.87648584092575249293E-2;
+    gn = gn*u+6.84079380915393090172E-4;
+    gn = gn*u+1.15138826111884280931E-5;
+    gn = gn*u+9.82852443688422223854E-8;
+    gn = gn*u+4.45344415861750144738E-10;
+    gn = gn*u+1.08268041139020870318E-12;
+    gn = gn*u+1.37555460633261799868E-15;
+    gn = gn*u+8.36354435630677421531E-19;
+    gn = gn*u+1.86958710162783235106E-22;
+    gd = 1.00000000000000000000E0;
+    gd = gd*u+1.47495759925128324529E0;
+    gd = gd*u+3.37748989120019970451E-1;
+    gd = gd*u+2.53603741420338795122E-2;
+    gd = gd*u+8.14679107184306179049E-4;
+    gd = gd*u+1.27545075667729118702E-5;
+    gd = gd*u+1.04314589657571990585E-7;
+    gd = gd*u+4.60680728146520428211E-10;
+    gd = gd*u+1.10273215066240270757E-12;
+    gd = gd*u+1.38796531259578871258E-15;
+    gd = gd*u+8.39158816283118707363E-19;
+    gd = gd*u+1.86958710162783236342E-22;
+    f = (double)1-u*fn/fd;
+    g = t*gn/gd;
+    t = mpio2*x2;
+    cc = ae_cos(t, _state);
+    ss = ae_sin(t, _state);
+    t = mpi*x;
+    *c = 0.5+(f*ss-g*cc)/t;
+    *s = 0.5-(f*cc+g*ss)/t;
+    *c = *c*(double)ae_sign(xxa, _state);
+    *s = *s*(double)ae_sign(xxa, _state);
+}
+
+
+#endif
+#if defined(AE_COMPILE_PSIF) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Psi (digamma) function
+
+             d      -
+  psi(x)  =  -- ln | (x)
+             dx
+
+is the logarithmic derivative of the gamma function.
+For integer x,
+                  n-1
+                   -
+psi(n) = -EUL  +   >  1/k.
+                   -
+                  k=1
+
+This formula is used for 0 < n <= 10.  If x is negative, it
+is transformed to a positive argument by the reflection
+formula  psi(1-x) = psi(x) + pi cot(pi x).
+For general positive x, the argument is made greater than 10
+using the recurrence  psi(x+1) = psi(x) + 1/x.
+Then the following asymptotic expansion is applied:
+
+                          inf.   B
+                           -      2k
+psi(x) = log(x) - 1/2x -   >   -------
+                           -        2k
+                          k=1   2k x
+
+where the B2k are Bernoulli numbers.
+
+ACCURACY:
+   Relative error (except absolute when |psi| < 1):
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        30000       1.3e-15     1.4e-16
+   IEEE      -30,0       40000       1.5e-15     2.2e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1992, 2000 by Stephen L. Moshier
+*************************************************************************/
+double psi(double x, ae_state *_state)
+{
+    double p;
+    double q;
+    double nz;
+    double s;
+    double w;
+    double y;
+    double z;
+    double polv;
+    ae_int_t i;
+    ae_int_t n;
+    ae_int_t negative;
+    double result;
+
+
+    negative = 0;
+    nz = 0.0;
+    if( ae_fp_less_eq(x,(double)(0)) )
+    {
+        negative = 1;
+        q = x;
+        p = (double)(ae_ifloor(q, _state));
+        if( ae_fp_eq(p,q) )
+        {
+            ae_assert(ae_false, "Singularity in Psi(x)", _state);
+            result = ae_maxrealnumber;
+            return result;
+        }
+        nz = q-p;
+        if( ae_fp_neq(nz,0.5) )
+        {
+            if( ae_fp_greater(nz,0.5) )
+            {
+                p = p+1.0;
+                nz = q-p;
+            }
+            nz = ae_pi/ae_tan(ae_pi*nz, _state);
+        }
+        else
+        {
+            nz = 0.0;
+        }
+        x = 1.0-x;
+    }
+    if( ae_fp_less_eq(x,10.0)&&ae_fp_eq(x,(double)(ae_ifloor(x, _state))) )
+    {
+        y = 0.0;
+        n = ae_ifloor(x, _state);
+        for(i=1; i<=n-1; i++)
+        {
+            w = (double)(i);
+            y = y+1.0/w;
+        }
+        y = y-0.57721566490153286061;
+    }
+    else
+    {
+        s = x;
+        w = 0.0;
+        while(ae_fp_less(s,10.0))
+        {
+            w = w+1.0/s;
+            s = s+1.0;
+        }
+        if( ae_fp_less(s,1.0E17) )
+        {
+            z = 1.0/(s*s);
+            polv = 8.33333333333333333333E-2;
+            polv = polv*z-2.10927960927960927961E-2;
+            polv = polv*z+7.57575757575757575758E-3;
+            polv = polv*z-4.16666666666666666667E-3;
+            polv = polv*z+3.96825396825396825397E-3;
+            polv = polv*z-8.33333333333333333333E-3;
+            polv = polv*z+8.33333333333333333333E-2;
+            y = z*polv;
+        }
+        else
+        {
+            y = 0.0;
+        }
+        y = ae_log(s, _state)-0.5/s-y-w;
+    }
+    if( negative!=0 )
+    {
+        y = y-nz;
+    }
+    result = y;
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_AIRYF) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Airy function
+
+Solution of the differential equation
+
+y"(x) = xy.
+
+The function returns the two independent solutions Ai, Bi
+and their first derivatives Ai'(x), Bi'(x).
+
+Evaluation is by power series summation for small x,
+by rational minimax approximations for large x.
+
+
+
+ACCURACY:
+Error criterion is absolute when function <= 1, relative
+when function > 1, except * denotes relative error criterion.
+For large negative x, the absolute error increases as x^1.5.
+For large positive x, the relative error increases as x^1.5.
+
+Arithmetic  domain   function  # trials      peak         rms
+IEEE        -10, 0     Ai        10000       1.6e-15     2.7e-16
+IEEE          0, 10    Ai        10000       2.3e-14*    1.8e-15*
+IEEE        -10, 0     Ai'       10000       4.6e-15     7.6e-16
+IEEE          0, 10    Ai'       10000       1.8e-14*    1.5e-15*
+IEEE        -10, 10    Bi        30000       4.2e-15     5.3e-16
+IEEE        -10, 10    Bi'       30000       4.9e-15     7.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+void airy(double x,
+     double* ai,
+     double* aip,
+     double* bi,
+     double* bip,
+     ae_state *_state)
+{
+    double z;
+    double zz;
+    double t;
+    double f;
+    double g;
+    double uf;
+    double ug;
+    double k;
+    double zeta;
+    double theta;
+    ae_int_t domflg;
+    double c1;
+    double c2;
+    double sqrt3;
+    double sqpii;
+    double afn;
+    double afd;
+    double agn;
+    double agd;
+    double apfn;
+    double apfd;
+    double apgn;
+    double apgd;
+    double an;
+    double ad;
+    double apn;
+    double apd;
+    double bn16;
+    double bd16;
+    double bppn;
+    double bppd;
+
+    *ai = 0.0;
+    *aip = 0.0;
+    *bi = 0.0;
+    *bip = 0.0;
+
+    sqpii = 5.64189583547756286948E-1;
+    c1 = 0.35502805388781723926;
+    c2 = 0.258819403792806798405;
+    sqrt3 = 1.732050807568877293527;
+    domflg = 0;
+    if( ae_fp_greater(x,25.77) )
+    {
+        *ai = (double)(0);
+        *aip = (double)(0);
+        *bi = ae_maxrealnumber;
+        *bip = ae_maxrealnumber;
+        return;
+    }
+    if( ae_fp_less(x,-2.09) )
+    {
+        domflg = 15;
+        t = ae_sqrt(-x, _state);
+        zeta = -2.0*x*t/3.0;
+        t = ae_sqrt(t, _state);
+        k = sqpii/t;
+        z = 1.0/zeta;
+        zz = z*z;
+        afn = -1.31696323418331795333E-1;
+        afn = afn*zz-6.26456544431912369773E-1;
+        afn = afn*zz-6.93158036036933542233E-1;
+        afn = afn*zz-2.79779981545119124951E-1;
+        afn = afn*zz-4.91900132609500318020E-2;
+        afn = afn*zz-4.06265923594885404393E-3;
+        afn = afn*zz-1.59276496239262096340E-4;
+        afn = afn*zz-2.77649108155232920844E-6;
+        afn = afn*zz-1.67787698489114633780E-8;
+        afd = 1.00000000000000000000E0;
+        afd = afd*zz+1.33560420706553243746E1;
+        afd = afd*zz+3.26825032795224613948E1;
+        afd = afd*zz+2.67367040941499554804E1;
+        afd = afd*zz+9.18707402907259625840E0;
+        afd = afd*zz+1.47529146771666414581E0;
+        afd = afd*zz+1.15687173795188044134E-1;
+        afd = afd*zz+4.40291641615211203805E-3;
+        afd = afd*zz+7.54720348287414296618E-5;
+        afd = afd*zz+4.51850092970580378464E-7;
+        uf = 1.0+zz*afn/afd;
+        agn = 1.97339932091685679179E-2;
+        agn = agn*zz+3.91103029615688277255E-1;
+        agn = agn*zz+1.06579897599595591108E0;
+        agn = agn*zz+9.39169229816650230044E-1;
+        agn = agn*zz+3.51465656105547619242E-1;
+        agn = agn*zz+6.33888919628925490927E-2;
+        agn = agn*zz+5.85804113048388458567E-3;
+        agn = agn*zz+2.82851600836737019778E-4;
+        agn = agn*zz+6.98793669997260967291E-6;
+        agn = agn*zz+8.11789239554389293311E-8;
+        agn = agn*zz+3.41551784765923618484E-10;
+        agd = 1.00000000000000000000E0;
+        agd = agd*zz+9.30892908077441974853E0;
+        agd = agd*zz+1.98352928718312140417E1;
+        agd = agd*zz+1.55646628932864612953E1;
+        agd = agd*zz+5.47686069422975497931E0;
+        agd = agd*zz+9.54293611618961883998E-1;
+        agd = agd*zz+8.64580826352392193095E-2;
+        agd = agd*zz+4.12656523824222607191E-3;
+        agd = agd*zz+1.01259085116509135510E-4;
+        agd = agd*zz+1.17166733214413521882E-6;
+        agd = agd*zz+4.91834570062930015649E-9;
+        ug = z*agn/agd;
+        theta = zeta+0.25*ae_pi;
+        f = ae_sin(theta, _state);
+        g = ae_cos(theta, _state);
+        *ai = k*(f*uf-g*ug);
+        *bi = k*(g*uf+f*ug);
+        apfn = 1.85365624022535566142E-1;
+        apfn = apfn*zz+8.86712188052584095637E-1;
+        apfn = apfn*zz+9.87391981747398547272E-1;
+        apfn = apfn*zz+4.01241082318003734092E-1;
+        apfn = apfn*zz+7.10304926289631174579E-2;
+        apfn = apfn*zz+5.90618657995661810071E-3;
+        apfn = apfn*zz+2.33051409401776799569E-4;
+        apfn = apfn*zz+4.08718778289035454598E-6;
+        apfn = apfn*zz+2.48379932900442457853E-8;
+        apfd = 1.00000000000000000000E0;
+        apfd = apfd*zz+1.47345854687502542552E1;
+        apfd = apfd*zz+3.75423933435489594466E1;
+        apfd = apfd*zz+3.14657751203046424330E1;
+        apfd = apfd*zz+1.09969125207298778536E1;
+        apfd = apfd*zz+1.78885054766999417817E0;
+        apfd = apfd*zz+1.41733275753662636873E-1;
+        apfd = apfd*zz+5.44066067017226003627E-3;
+        apfd = apfd*zz+9.39421290654511171663E-5;
+        apfd = apfd*zz+5.65978713036027009243E-7;
+        uf = 1.0+zz*apfn/apfd;
+        apgn = -3.55615429033082288335E-2;
+        apgn = apgn*zz-6.37311518129435504426E-1;
+        apgn = apgn*zz-1.70856738884312371053E0;
+        apgn = apgn*zz-1.50221872117316635393E0;
+        apgn = apgn*zz-5.63606665822102676611E-1;
+        apgn = apgn*zz-1.02101031120216891789E-1;
+        apgn = apgn*zz-9.48396695961445269093E-3;
+        apgn = apgn*zz-4.60325307486780994357E-4;
+        apgn = apgn*zz-1.14300836484517375919E-5;
+        apgn = apgn*zz-1.33415518685547420648E-7;
+        apgn = apgn*zz-5.63803833958893494476E-10;
+        apgd = 1.00000000000000000000E0;
+        apgd = apgd*zz+9.85865801696130355144E0;
+        apgd = apgd*zz+2.16401867356585941885E1;
+        apgd = apgd*zz+1.73130776389749389525E1;
+        apgd = apgd*zz+6.17872175280828766327E0;
+        apgd = apgd*zz+1.08848694396321495475E0;
+        apgd = apgd*zz+9.95005543440888479402E-2;
+        apgd = apgd*zz+4.78468199683886610842E-3;
+        apgd = apgd*zz+1.18159633322838625562E-4;
+        apgd = apgd*zz+1.37480673554219441465E-6;
+        apgd = apgd*zz+5.79912514929147598821E-9;
+        ug = z*apgn/apgd;
+        k = sqpii*t;
+        *aip = -k*(g*uf+f*ug);
+        *bip = k*(f*uf-g*ug);
+        return;
+    }
+    if( ae_fp_greater_eq(x,2.09) )
+    {
+        domflg = 5;
+        t = ae_sqrt(x, _state);
+        zeta = 2.0*x*t/3.0;
+        g = ae_exp(zeta, _state);
+        t = ae_sqrt(t, _state);
+        k = 2.0*t*g;
+        z = 1.0/zeta;
+        an = 3.46538101525629032477E-1;
+        an = an*z+1.20075952739645805542E1;
+        an = an*z+7.62796053615234516538E1;
+        an = an*z+1.68089224934630576269E2;
+        an = an*z+1.59756391350164413639E2;
+        an = an*z+7.05360906840444183113E1;
+        an = an*z+1.40264691163389668864E1;
+        an = an*z+9.99999999999999995305E-1;
+        ad = 5.67594532638770212846E-1;
+        ad = ad*z+1.47562562584847203173E1;
+        ad = ad*z+8.45138970141474626562E1;
+        ad = ad*z+1.77318088145400459522E2;
+        ad = ad*z+1.64234692871529701831E2;
+        ad = ad*z+7.14778400825575695274E1;
+        ad = ad*z+1.40959135607834029598E1;
+        ad = ad*z+1.00000000000000000470E0;
+        f = an/ad;
+        *ai = sqpii*f/k;
+        k = -0.5*sqpii*t/g;
+        apn = 6.13759184814035759225E-1;
+        apn = apn*z+1.47454670787755323881E1;
+        apn = apn*z+8.20584123476060982430E1;
+        apn = apn*z+1.71184781360976385540E2;
+        apn = apn*z+1.59317847137141783523E2;
+        apn = apn*z+6.99778599330103016170E1;
+        apn = apn*z+1.39470856980481566958E1;
+        apn = apn*z+1.00000000000000000550E0;
+        apd = 3.34203677749736953049E-1;
+        apd = apd*z+1.11810297306158156705E1;
+        apd = apd*z+7.11727352147859965283E1;
+        apd = apd*z+1.58778084372838313640E2;
+        apd = apd*z+1.53206427475809220834E2;
+        apd = apd*z+6.86752304592780337944E1;
+        apd = apd*z+1.38498634758259442477E1;
+        apd = apd*z+9.99999999999999994502E-1;
+        f = apn/apd;
+        *aip = f*k;
+        if( ae_fp_greater(x,8.3203353) )
+        {
+            bn16 = -2.53240795869364152689E-1;
+            bn16 = bn16*z+5.75285167332467384228E-1;
+            bn16 = bn16*z-3.29907036873225371650E-1;
+            bn16 = bn16*z+6.44404068948199951727E-2;
+            bn16 = bn16*z-3.82519546641336734394E-3;
+            bd16 = 1.00000000000000000000E0;
+            bd16 = bd16*z-7.15685095054035237902E0;
+            bd16 = bd16*z+1.06039580715664694291E1;
+            bd16 = bd16*z-5.23246636471251500874E0;
+            bd16 = bd16*z+9.57395864378383833152E-1;
+            bd16 = bd16*z-5.50828147163549611107E-2;
+            f = z*bn16/bd16;
+            k = sqpii*g;
+            *bi = k*(1.0+f)/t;
+            bppn = 4.65461162774651610328E-1;
+            bppn = bppn*z-1.08992173800493920734E0;
+            bppn = bppn*z+6.38800117371827987759E-1;
+            bppn = bppn*z-1.26844349553102907034E-1;
+            bppn = bppn*z+7.62487844342109852105E-3;
+            bppd = 1.00000000000000000000E0;
+            bppd = bppd*z-8.70622787633159124240E0;
+            bppd = bppd*z+1.38993162704553213172E1;
+            bppd = bppd*z-7.14116144616431159572E0;
+            bppd = bppd*z+1.34008595960680518666E0;
+            bppd = bppd*z-7.84273211323341930448E-2;
+            f = z*bppn/bppd;
+            *bip = k*t*(1.0+f);
+            return;
+        }
+    }
+    f = 1.0;
+    g = x;
+    t = 1.0;
+    uf = 1.0;
+    ug = x;
+    k = 1.0;
+    z = x*x*x;
+    while(ae_fp_greater(t,ae_machineepsilon))
+    {
+        uf = uf*z;
+        k = k+1.0;
+        uf = uf/k;
+        ug = ug*z;
+        k = k+1.0;
+        ug = ug/k;
+        uf = uf/k;
+        f = f+uf;
+        k = k+1.0;
+        ug = ug/k;
+        g = g+ug;
+        t = ae_fabs(uf/f, _state);
+    }
+    uf = c1*f;
+    ug = c2*g;
+    if( domflg%2==0 )
+    {
+        *ai = uf-ug;
+    }
+    if( domflg/2%2==0 )
+    {
+        *bi = sqrt3*(uf+ug);
+    }
+    k = 4.0;
+    uf = x*x/2.0;
+    ug = z/3.0;
+    f = uf;
+    g = 1.0+ug;
+    uf = uf/3.0;
+    t = 1.0;
+    while(ae_fp_greater(t,ae_machineepsilon))
+    {
+        uf = uf*z;
+        ug = ug/k;
+        k = k+1.0;
+        ug = ug*z;
+        uf = uf/k;
+        f = f+uf;
+        k = k+1.0;
+        ug = ug/k;
+        uf = uf/k;
+        g = g+ug;
+        k = k+1.0;
+        t = ae_fabs(ug/g, _state);
+    }
+    uf = c1*f;
+    ug = c2*g;
+    if( domflg/4%2==0 )
+    {
+        *aip = uf-ug;
+    }
+    if( domflg/8%2==0 )
+    {
+        *bip = sqrt3*(uf+ug);
+    }
+}
+
+
+#endif
+#if defined(AE_COMPILE_DAWSON) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Dawson's Integral
+
+Approximates the integral
+
+                            x
+                            -
+                     2     | |        2
+ dawsn(x)  =  exp( -x  )   |    exp( t  ) dt
+                         | |
+                          -
+                          0
+
+Three different rational approximations are employed, for
+the intervals 0 to 3.25; 3.25 to 6.25; and 6.25 up.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,10        10000       6.9e-16     1.0e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double dawsonintegral(double x, ae_state *_state)
+{
+    double x2;
+    double y;
+    ae_int_t sg;
+    double an;
+    double ad;
+    double bn;
+    double bd;
+    double cn;
+    double cd;
+    double result;
+
+
+    sg = 1;
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        sg = -1;
+        x = -x;
+    }
+    if( ae_fp_less(x,3.25) )
+    {
+        x2 = x*x;
+        an = 1.13681498971755972054E-11;
+        an = an*x2+8.49262267667473811108E-10;
+        an = an*x2+1.94434204175553054283E-8;
+        an = an*x2+9.53151741254484363489E-7;
+        an = an*x2+3.07828309874913200438E-6;
+        an = an*x2+3.52513368520288738649E-4;
+        an = an*x2+(-8.50149846724410912031E-4);
+        an = an*x2+4.22618223005546594270E-2;
+        an = an*x2+(-9.17480371773452345351E-2);
+        an = an*x2+9.99999999999999994612E-1;
+        ad = 2.40372073066762605484E-11;
+        ad = ad*x2+1.48864681368493396752E-9;
+        ad = ad*x2+5.21265281010541664570E-8;
+        ad = ad*x2+1.27258478273186970203E-6;
+        ad = ad*x2+2.32490249820789513991E-5;
+        ad = ad*x2+3.25524741826057911661E-4;
+        ad = ad*x2+3.48805814657162590916E-3;
+        ad = ad*x2+2.79448531198828973716E-2;
+        ad = ad*x2+1.58874241960120565368E-1;
+        ad = ad*x2+5.74918629489320327824E-1;
+        ad = ad*x2+1.00000000000000000539E0;
+        y = x*an/ad;
+        result = (double)sg*y;
+        return result;
+    }
+    x2 = 1.0/(x*x);
+    if( ae_fp_less(x,6.25) )
+    {
+        bn = 5.08955156417900903354E-1;
+        bn = bn*x2-2.44754418142697847934E-1;
+        bn = bn*x2+9.41512335303534411857E-2;
+        bn = bn*x2-2.18711255142039025206E-2;
+        bn = bn*x2+3.66207612329569181322E-3;
+        bn = bn*x2-4.23209114460388756528E-4;
+        bn = bn*x2+3.59641304793896631888E-5;
+        bn = bn*x2-2.14640351719968974225E-6;
+        bn = bn*x2+9.10010780076391431042E-8;
+        bn = bn*x2-2.40274520828250956942E-9;
+        bn = bn*x2+3.59233385440928410398E-11;
+        bd = 1.00000000000000000000E0;
+        bd = bd*x2-6.31839869873368190192E-1;
+        bd = bd*x2+2.36706788228248691528E-1;
+        bd = bd*x2-5.31806367003223277662E-2;
+        bd = bd*x2+8.48041718586295374409E-3;
+        bd = bd*x2-9.47996768486665330168E-4;
+        bd = bd*x2+7.81025592944552338085E-5;
+        bd = bd*x2-4.55875153252442634831E-6;
+        bd = bd*x2+1.89100358111421846170E-7;
+        bd = bd*x2-4.91324691331920606875E-9;
+        bd = bd*x2+7.18466403235734541950E-11;
+        y = 1.0/x+x2*bn/(bd*x);
+        result = (double)sg*0.5*y;
+        return result;
+    }
+    if( ae_fp_greater(x,1.0E9) )
+    {
+        result = (double)sg*0.5/x;
+        return result;
+    }
+    cn = -5.90592860534773254987E-1;
+    cn = cn*x2+6.29235242724368800674E-1;
+    cn = cn*x2-1.72858975380388136411E-1;
+    cn = cn*x2+1.64837047825189632310E-2;
+    cn = cn*x2-4.86827613020462700845E-4;
+    cd = 1.00000000000000000000E0;
+    cd = cd*x2-2.69820057197544900361E0;
+    cd = cd*x2+1.73270799045947845857E0;
+    cd = cd*x2-3.93708582281939493482E-1;
+    cd = cd*x2+3.44278924041233391079E-2;
+    cd = cd*x2-9.73655226040941223894E-4;
+    y = 1.0/x+x2*cn/(cd*x);
+    result = (double)sg*0.5*y;
+    return result;
+}
+
+
+#endif
+#if defined(AE_COMPILE_HERMITE) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Calculation of the value of the Hermite polynomial.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Hermite polynomial Hn at x
+*************************************************************************/
+double hermitecalculate(ae_int_t n, double x, ae_state *_state)
+{
+    ae_int_t i;
+    double a;
+    double b;
+    double result;
+
+
+    result = (double)(0);
+    
+    /*
+     * Prepare A and B
+     */
+    a = (double)(1);
+    b = (double)2*x;
+    
+    /*
+     * Special cases: N=0 or N=1
+     */
+    if( n==0 )
+    {
+        result = a;
+        return result;
+    }
+    if( n==1 )
+    {
+        result = b;
+        return result;
+    }
+    
+    /*
+     * General case: N>=2
+     */
+    for(i=2; i<=n; i++)
+    {
+        result = (double)2*x*b-(double)(2*(i-1))*a;
+        a = b;
+        b = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Summation of Hermite polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*H0(x) + c[1]*H1(x) + ... + c[N]*HN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Hermite polynomial at x
+*************************************************************************/
+double hermitesum(/* Real    */ const ae_vector* c,
+     ae_int_t n,
+     double x,
+     ae_state *_state)
+{
+    double b1;
+    double b2;
+    ae_int_t i;
+    double result;
+
+
+    b1 = (double)(0);
+    b2 = (double)(0);
+    result = (double)(0);
+    for(i=n; i>=0; i--)
+    {
+        result = (double)2*(x*b1-(double)(i+1)*b2)+c->ptr.p_double[i];
+        b2 = b1;
+        b1 = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Representation of Hn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void hermitecoefficients(ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state)
+{
+    ae_int_t i;
+
+    ae_vector_clear(c);
+
+    ae_vector_set_length(c, n+1, _state);
+    for(i=0; i<=n; i++)
+    {
+        c->ptr.p_double[i] = (double)(0);
+    }
+    c->ptr.p_double[n] = ae_exp((double)n*ae_log((double)(2), _state), _state);
+    for(i=0; i<=n/2-1; i++)
+    {
+        c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(double)(n-2*i)*(double)(n-2*i-1)/(double)4/(double)(i+1);
+    }
+}
+
+
+#endif
+#if defined(AE_COMPILE_LEGENDRE) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Calculation of the value of the Legendre polynomial Pn.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Legendre polynomial Pn at x
+*************************************************************************/
+double legendrecalculate(ae_int_t n, double x, ae_state *_state)
+{
+    double a;
+    double b;
+    ae_int_t i;
+    double result;
+
+
+    result = (double)(1);
+    a = (double)(1);
+    b = x;
+    if( n==0 )
+    {
+        result = a;
+        return result;
+    }
+    if( n==1 )
+    {
+        result = b;
+        return result;
+    }
+    for(i=2; i<=n; i++)
+    {
+        result = ((double)(2*i-1)*x*b-(double)(i-1)*a)/(double)i;
+        a = b;
+        b = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Summation of Legendre polynomials using Clenshaw's recurrence formula.
+
+This routine calculates
+    c[0]*P0(x) + c[1]*P1(x) + ... + c[N]*PN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Legendre polynomial at x
+*************************************************************************/
+double legendresum(/* Real    */ const ae_vector* c,
+     ae_int_t n,
+     double x,
+     ae_state *_state)
+{
+    double b1;
+    double b2;
+    ae_int_t i;
+    double result;
+
+
+    b1 = (double)(0);
+    b2 = (double)(0);
+    result = (double)(0);
+    for(i=n; i>=0; i--)
+    {
+        result = (double)(2*i+1)*x*b1/(double)(i+1)-(double)(i+1)*b2/(double)(i+2)+c->ptr.p_double[i];
+        b2 = b1;
+        b1 = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Representation of Pn as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void legendrecoefficients(ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state)
+{
+    ae_int_t i;
+
+    ae_vector_clear(c);
+
+    ae_vector_set_length(c, n+1, _state);
+    for(i=0; i<=n; i++)
+    {
+        c->ptr.p_double[i] = (double)(0);
+    }
+    c->ptr.p_double[n] = (double)(1);
+    for(i=1; i<=n; i++)
+    {
+        c->ptr.p_double[n] = c->ptr.p_double[n]*(double)(n+i)/(double)2/(double)i;
+    }
+    for(i=0; i<=n/2-1; i++)
+    {
+        c->ptr.p_double[n-2*(i+1)] = -c->ptr.p_double[n-2*i]*(double)(n-2*i)*(double)(n-2*i-1)/(double)2/(double)(i+1)/(double)(2*(n-i)-1);
+    }
+}
+
+
+#endif
+#if defined(AE_COMPILE_BESSEL) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Bessel function of order zero
+
+Returns Bessel function of order zero of the argument.
+
+The domain is divided into the intervals [0, 5] and
+(5, infinity). In the first interval the following rational
+approximation is used:
+
+
+       2         2
+(w - r  ) (w - r  ) P (w) / Q (w)
+      1         2    3       8
+
+           2
+where w = x  and the two r's are zeros of the function.
+
+In the second interval, the Hankel asymptotic expansion
+is employed with two rational functions of degree 6/6
+and 7/7.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       60000       4.2e-16     1.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselj0(double x, ae_state *_state)
+{
+    double xsq;
+    double nn;
+    double pzero;
+    double qzero;
+    double p1;
+    double q1;
+    double result;
+
+
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        x = -x;
+    }
+    if( ae_fp_greater(x,8.0) )
+    {
+        bessel_besselasympt0(x, &pzero, &qzero, _state);
+        nn = x-ae_pi/(double)4;
+        result = ae_sqrt((double)2/ae_pi/x, _state)*(pzero*ae_cos(nn, _state)-qzero*ae_sin(nn, _state));
+        return result;
+    }
+    xsq = ae_sqr(x, _state);
+    p1 = 26857.86856980014981415848441;
+    p1 = -40504123.71833132706360663322+xsq*p1;
+    p1 = 25071582855.36881945555156435+xsq*p1;
+    p1 = -8085222034853.793871199468171+xsq*p1;
+    p1 = 1434354939140344.111664316553+xsq*p1;
+    p1 = -136762035308817138.6865416609+xsq*p1;
+    p1 = 6382059341072356562.289432465+xsq*p1;
+    p1 = -117915762910761053603.8440800+xsq*p1;
+    p1 = 493378725179413356181.6813446+xsq*p1;
+    q1 = 1.0;
+    q1 = 1363.063652328970604442810507+xsq*q1;
+    q1 = 1114636.098462985378182402543+xsq*q1;
+    q1 = 669998767.2982239671814028660+xsq*q1;
+    q1 = 312304311494.1213172572469442+xsq*q1;
+    q1 = 112775673967979.8507056031594+xsq*q1;
+    q1 = 30246356167094626.98627330784+xsq*q1;
+    q1 = 5428918384092285160.200195092+xsq*q1;
+    q1 = 493378725179413356211.3278438+xsq*q1;
+    result = p1/q1;
+    return result;
+}
+
+
+/*************************************************************************
+Bessel function of order one
+
+Returns Bessel function of order one of the argument.
+
+The domain is divided into the intervals [0, 8] and
+(8, infinity). In the first interval a 24 term Chebyshev
+expansion is used. In the second, the asymptotic
+trigonometric representation is employed using two
+rational functions of degree 5/5.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain      # trials      peak         rms
+   IEEE      0, 30       30000       2.6e-16     1.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselj1(double x, ae_state *_state)
+{
+    double s;
+    double xsq;
+    double nn;
+    double pzero;
+    double qzero;
+    double p1;
+    double q1;
+    double result;
+
+
+    s = (double)(ae_sign(x, _state));
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        x = -x;
+    }
+    if( ae_fp_greater(x,8.0) )
+    {
+        bessel_besselasympt1(x, &pzero, &qzero, _state);
+        nn = x-(double)3*ae_pi/(double)4;
+        result = ae_sqrt((double)2/ae_pi/x, _state)*(pzero*ae_cos(nn, _state)-qzero*ae_sin(nn, _state));
+        if( ae_fp_less(s,(double)(0)) )
+        {
+            result = -result;
+        }
+        return result;
+    }
+    xsq = ae_sqr(x, _state);
+    p1 = 2701.122710892323414856790990;
+    p1 = -4695753.530642995859767162166+xsq*p1;
+    p1 = 3413234182.301700539091292655+xsq*p1;
+    p1 = -1322983480332.126453125473247+xsq*p1;
+    p1 = 290879526383477.5409737601689+xsq*p1;
+    p1 = -35888175699101060.50743641413+xsq*p1;
+    p1 = 2316433580634002297.931815435+xsq*p1;
+    p1 = -66721065689249162980.20941484+xsq*p1;
+    p1 = 581199354001606143928.050809+xsq*p1;
+    q1 = 1.0;
+    q1 = 1606.931573481487801970916749+xsq*q1;
+    q1 = 1501793.594998585505921097578+xsq*q1;
+    q1 = 1013863514.358673989967045588+xsq*q1;
+    q1 = 524371026216.7649715406728642+xsq*q1;
+    q1 = 208166122130760.7351240184229+xsq*q1;
+    q1 = 60920613989175217.46105196863+xsq*q1;
+    q1 = 11857707121903209998.37113348+xsq*q1;
+    q1 = 1162398708003212287858.529400+xsq*q1;
+    result = s*x*p1/q1;
+    return result;
+}
+
+
+/*************************************************************************
+Bessel function of integer order
+
+Returns Bessel function of order n, where n is a
+(possibly negative) integer.
+
+The ratio of jn(x) to j0(x) is computed by backward
+recurrence.  First the ratio jn/jn-1 is found by a
+continued fraction expansion.  Then the recurrence
+relating successive orders is applied until j0 or j1 is
+reached.
+
+If n = 0 or 1 the routine for j0 or j1 is called
+directly.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   range      # trials      peak         rms
+   IEEE      0, 30        5000       4.4e-16     7.9e-17
+
+
+Not suitable for large n or x. Use jv() (fractional order) instead.
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseljn(ae_int_t n, double x, ae_state *_state)
+{
+    double pkm2;
+    double pkm1;
+    double pk;
+    double xk;
+    double r;
+    double ans;
+    ae_int_t k;
+    ae_int_t sg;
+    double result;
+
+
+    if( n<0 )
+    {
+        n = -n;
+        if( n%2==0 )
+        {
+            sg = 1;
+        }
+        else
+        {
+            sg = -1;
+        }
+    }
+    else
+    {
+        sg = 1;
+    }
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        if( n%2!=0 )
+        {
+            sg = -sg;
+        }
+        x = -x;
+    }
+    if( n==0 )
+    {
+        result = (double)sg*besselj0(x, _state);
+        return result;
+    }
+    if( n==1 )
+    {
+        result = (double)sg*besselj1(x, _state);
+        return result;
+    }
+    if( n==2 )
+    {
+        if( ae_fp_eq(x,(double)(0)) )
+        {
+            result = (double)(0);
+        }
+        else
+        {
+            result = (double)sg*(2.0*besselj1(x, _state)/x-besselj0(x, _state));
+        }
+        return result;
+    }
+    if( ae_fp_less(x,ae_machineepsilon) )
+    {
+        result = (double)(0);
+        return result;
+    }
+    k = 53;
+    pk = (double)(2*(n+k));
+    ans = pk;
+    xk = x*x;
+    do
+    {
+        pk = pk-2.0;
+        ans = pk-xk/ans;
+        k = k-1;
+    }
+    while(k!=0);
+    ans = x/ans;
+    pk = 1.0;
+    pkm1 = 1.0/ans;
+    k = n-1;
+    r = (double)(2*k);
+    do
+    {
+        pkm2 = (pkm1*r-pk*x)/x;
+        pk = pkm1;
+        pkm1 = pkm2;
+        r = r-2.0;
+        k = k-1;
+    }
+    while(k!=0);
+    if( ae_fp_greater(ae_fabs(pk, _state),ae_fabs(pkm1, _state)) )
+    {
+        ans = besselj1(x, _state)/pk;
+    }
+    else
+    {
+        ans = besselj0(x, _state)/pkm1;
+    }
+    result = (double)sg*ans;
+    return result;
+}
+
+
+/*************************************************************************
+Bessel function of the second kind, order zero
+
+Returns Bessel function of the second kind, of order
+zero, of the argument.
+
+The domain is divided into the intervals [0, 5] and
+(5, infinity). In the first interval a rational approximation
+R(x) is employed to compute
+  y0(x)  = R(x)  +   2 * log(x) * j0(x) / PI.
+Thus a call to j0() is required.
+
+In the second interval, the Hankel asymptotic expansion
+is employed with two rational functions of degree 6/6
+and 7/7.
+
+
+
+ACCURACY:
+
+ Absolute error, when y0(x) < 1; else relative error:
+
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.3e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double bessely0(double x, ae_state *_state)
+{
+    double nn;
+    double xsq;
+    double pzero;
+    double qzero;
+    double p4;
+    double q4;
+    double result;
+
+
+    if( ae_fp_greater(x,8.0) )
+    {
+        bessel_besselasympt0(x, &pzero, &qzero, _state);
+        nn = x-ae_pi/(double)4;
+        result = ae_sqrt((double)2/ae_pi/x, _state)*(pzero*ae_sin(nn, _state)+qzero*ae_cos(nn, _state));
+        return result;
+    }
+    xsq = ae_sqr(x, _state);
+    p4 = -41370.35497933148554125235152;
+    p4 = 59152134.65686889654273830069+xsq*p4;
+    p4 = -34363712229.79040378171030138+xsq*p4;
+    p4 = 10255208596863.94284509167421+xsq*p4;
+    p4 = -1648605817185729.473122082537+xsq*p4;
+    p4 = 137562431639934407.8571335453+xsq*p4;
+    p4 = -5247065581112764941.297350814+xsq*p4;
+    p4 = 65874732757195549259.99402049+xsq*p4;
+    p4 = -27502866786291095837.01933175+xsq*p4;
+    q4 = 1.0;
+    q4 = 1282.452772478993804176329391+xsq*q4;
+    q4 = 1001702.641288906265666651753+xsq*q4;
+    q4 = 579512264.0700729537480087915+xsq*q4;
+    q4 = 261306575504.1081249568482092+xsq*q4;
+    q4 = 91620380340751.85262489147968+xsq*q4;
+    q4 = 23928830434997818.57439356652+xsq*q4;
+    q4 = 4192417043410839973.904769661+xsq*q4;
+    q4 = 372645883898616588198.9980+xsq*q4;
+    result = p4/q4+(double)2/ae_pi*besselj0(x, _state)*ae_log(x, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Bessel function of second kind of order one
+
+Returns Bessel function of the second kind of order one
+of the argument.
+
+The domain is divided into the intervals [0, 8] and
+(8, infinity). In the first interval a 25 term Chebyshev
+expansion is used, and a call to j1() is required.
+In the second, the asymptotic trigonometric representation
+is employed using two rational functions of degree 5/5.
+
+ACCURACY:
+
+                     Absolute error:
+arithmetic   domain      # trials      peak         rms
+   IEEE      0, 30       30000       1.0e-15     1.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double bessely1(double x, ae_state *_state)
+{
+    double nn;
+    double xsq;
+    double pzero;
+    double qzero;
+    double p4;
+    double q4;
+    double result;
+
+
+    if( ae_fp_greater(x,8.0) )
+    {
+        bessel_besselasympt1(x, &pzero, &qzero, _state);
+        nn = x-(double)3*ae_pi/(double)4;
+        result = ae_sqrt((double)2/ae_pi/x, _state)*(pzero*ae_sin(nn, _state)+qzero*ae_cos(nn, _state));
+        return result;
+    }
+    xsq = ae_sqr(x, _state);
+    p4 = -2108847.540133123652824139923;
+    p4 = 3639488548.124002058278999428+xsq*p4;
+    p4 = -2580681702194.450950541426399+xsq*p4;
+    p4 = 956993023992168.3481121552788+xsq*p4;
+    p4 = -196588746272214065.8820322248+xsq*p4;
+    p4 = 21931073399177975921.11427556+xsq*p4;
+    p4 = -1212297555414509577913.561535+xsq*p4;
+    p4 = 26554738314348543268942.48968+xsq*p4;
+    p4 = -99637534243069222259967.44354+xsq*p4;
+    q4 = 1.0;
+    q4 = 1612.361029677000859332072312+xsq*q4;
+    q4 = 1563282.754899580604737366452+xsq*q4;
+    q4 = 1128686837.169442121732366891+xsq*q4;
+    q4 = 646534088126.5275571961681500+xsq*q4;
+    q4 = 297663212564727.6729292742282+xsq*q4;
+    q4 = 108225825940881955.2553850180+xsq*q4;
+    q4 = 29549879358971486742.90758119+xsq*q4;
+    q4 = 5435310377188854170800.653097+xsq*q4;
+    q4 = 508206736694124324531442.4152+xsq*q4;
+    result = x*p4/q4+(double)2/ae_pi*(besselj1(x, _state)*ae_log(x, _state)-(double)1/x);
+    return result;
+}
+
+
+/*************************************************************************
+Bessel function of second kind of integer order
+
+Returns Bessel function of order n, where n is a
+(possibly negative) integer.
+
+The function is evaluated by forward recurrence on
+n, starting with values computed by the routines
+y0() and y1().
+
+If n = 0 or 1 the routine for y0 or y1 is called
+directly.
+
+ACCURACY:
+                     Absolute error, except relative
+                     when y > 1:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       3.4e-15     4.3e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselyn(ae_int_t n, double x, ae_state *_state)
+{
+    ae_int_t i;
+    double a;
+    double b;
+    double tmp;
+    double s;
+    double result;
+
+
+    s = (double)(1);
+    if( n<0 )
+    {
+        n = -n;
+        if( n%2!=0 )
+        {
+            s = (double)(-1);
+        }
+    }
+    if( n==0 )
+    {
+        result = bessely0(x, _state);
+        return result;
+    }
+    if( n==1 )
+    {
+        result = s*bessely1(x, _state);
+        return result;
+    }
+    a = bessely0(x, _state);
+    b = bessely1(x, _state);
+    for(i=1; i<=n-1; i++)
+    {
+        tmp = b;
+        b = (double)(2*i)/x*b-a;
+        a = tmp;
+    }
+    result = s*b;
+    return result;
+}
+
+
+/*************************************************************************
+Modified Bessel function of order zero
+
+Returns modified Bessel function of order zero of the
+argument.
+
+The function is defined as i0(x) = j0( ix ).
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        30000       5.8e-16     1.4e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseli0(double x, ae_state *_state)
+{
+    double y;
+    double v;
+    double z;
+    double b0;
+    double b1;
+    double b2;
+    double result;
+
+
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        x = -x;
+    }
+    if( ae_fp_less_eq(x,8.0) )
+    {
+        y = x/2.0-2.0;
+        bessel_besselmfirstcheb(-4.41534164647933937950E-18, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 3.33079451882223809783E-17, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -2.43127984654795469359E-16, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.71539128555513303061E-15, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -1.16853328779934516808E-14, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 7.67618549860493561688E-14, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -4.85644678311192946090E-13, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 2.95505266312963983461E-12, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -1.72682629144155570723E-11, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 9.67580903537323691224E-11, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -5.18979560163526290666E-10, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 2.65982372468238665035E-9, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -1.30002500998624804212E-8, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 6.04699502254191894932E-8, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -2.67079385394061173391E-7, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.11738753912010371815E-6, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -4.41673835845875056359E-6, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.64484480707288970893E-5, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -5.75419501008210370398E-5, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.88502885095841655729E-4, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -5.76375574538582365885E-4, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.63947561694133579842E-3, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -4.32430999505057594430E-3, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.05464603945949983183E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -2.37374148058994688156E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 4.93052842396707084878E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -9.49010970480476444210E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.71620901522208775349E-1, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -3.04682672343198398683E-1, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 6.76795274409476084995E-1, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        result = ae_exp(x, _state)*v;
+        return result;
+    }
+    z = 32.0/x-2.0;
+    bessel_besselmfirstcheb(-7.23318048787475395456E-18, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -4.83050448594418207126E-18, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 4.46562142029675999901E-17, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 3.46122286769746109310E-17, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -2.82762398051658348494E-16, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -3.42548561967721913462E-16, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 1.77256013305652638360E-15, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 3.81168066935262242075E-15, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -9.55484669882830764870E-15, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -4.15056934728722208663E-14, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 1.54008621752140982691E-14, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 3.85277838274214270114E-13, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 7.18012445138366623367E-13, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -1.79417853150680611778E-12, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -1.32158118404477131188E-11, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, -3.14991652796324136454E-11, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 1.18891471078464383424E-11, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 4.94060238822496958910E-10, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 3.39623202570838634515E-9, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 2.26666899049817806459E-8, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 2.04891858946906374183E-7, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 2.89137052083475648297E-6, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 6.88975834691682398426E-5, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 3.36911647825569408990E-3, &b0, &b1, &b2, _state);
+    bessel_besselmnextcheb(z, 8.04490411014108831608E-1, &b0, &b1, &b2, _state);
+    v = 0.5*(b0-b2);
+    result = ae_exp(x, _state)*v/ae_sqrt(x, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Modified Bessel function of order one
+
+Returns modified Bessel function of order one of the
+argument.
+
+The function is defined as i1(x) = -i j1( ix ).
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.9e-15     2.1e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1985, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besseli1(double x, ae_state *_state)
+{
+    double y;
+    double z;
+    double v;
+    double b0;
+    double b1;
+    double b2;
+    double result;
+
+
+    z = ae_fabs(x, _state);
+    if( ae_fp_less_eq(z,8.0) )
+    {
+        y = z/2.0-2.0;
+        bessel_besselm1firstcheb(2.77791411276104639959E-18, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.11142121435816608115E-17, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.55363195773620046921E-16, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.10559694773538630805E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 7.60068429473540693410E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -5.04218550472791168711E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.22379336594557470981E-13, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.98397439776494371520E-12, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.17361862988909016308E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -6.66348972350202774223E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.62559028155211703701E-10, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.88724975172282928790E-9, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 9.38153738649577178388E-9, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -4.44505912879632808065E-8, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.00329475355213526229E-7, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -8.56872026469545474066E-7, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.47025130813767847674E-6, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.32731636560394358279E-5, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 4.78156510755005422638E-5, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.61760815825896745588E-4, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 5.12285956168575772895E-4, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.51357245063125314899E-3, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 4.15642294431288815669E-3, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.05640848946261981558E-2, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.47264490306265168283E-2, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -5.29459812080949914269E-2, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.02643658689847095384E-1, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.76416518357834055153E-1, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.52587186443633654823E-1, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        z = v*z*ae_exp(z, _state);
+    }
+    else
+    {
+        y = 32.0/z-2.0;
+        bessel_besselm1firstcheb(7.51729631084210481353E-18, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 4.41434832307170791151E-18, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -4.65030536848935832153E-17, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.20952592199342395980E-17, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.96262899764595013876E-16, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.30820231092092828324E-16, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.88035477551078244854E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.81440307243700780478E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.04202769841288027642E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 4.27244001671195135429E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.10154184277266431302E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -4.08355111109219731823E-13, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -7.19855177624590851209E-13, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.03562854414708950722E-12, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.41258074366137813316E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.25260358301548823856E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.89749581235054123450E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -5.58974346219658380687E-10, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.83538038596423702205E-9, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.63146884688951950684E-8, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.51223623787020892529E-7, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.88256480887769039346E-6, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.10588938762623716291E-4, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -9.76109749136146840777E-3, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 7.78576235018280120474E-1, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        z = v*ae_exp(z, _state)/ae_sqrt(z, _state);
+    }
+    if( ae_fp_less(x,(double)(0)) )
+    {
+        z = -z;
+    }
+    result = z;
+    return result;
+}
+
+
+/*************************************************************************
+Modified Bessel function, second kind, order zero
+
+Returns modified Bessel function of the second kind
+of order zero of the argument.
+
+The range is partitioned into the two intervals [0,8] and
+(8, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+Tested at 2000 random points between 0 and 8.  Peak absolute
+error (relative when K0 > 1) was 1.46e-14; rms, 4.26e-15.
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.2e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselk0(double x, ae_state *_state)
+{
+    double y;
+    double z;
+    double v;
+    double b0;
+    double b1;
+    double b2;
+    double result;
+
+
+    ae_assert(ae_fp_greater(x,(double)(0)), "Domain error in BesselK0: x<=0", _state);
+    if( ae_fp_less_eq(x,(double)(2)) )
+    {
+        y = x*x-2.0;
+        bessel_besselmfirstcheb(1.37446543561352307156E-16, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 4.25981614279661018399E-14, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.03496952576338420167E-11, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.90451637722020886025E-9, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 2.53479107902614945675E-7, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 2.28621210311945178607E-5, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 1.26461541144692592338E-3, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 3.59799365153615016266E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, 3.44289899924628486886E-1, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(y, -5.35327393233902768720E-1, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        v = v-ae_log(0.5*x, _state)*besseli0(x, _state);
+    }
+    else
+    {
+        z = 8.0/x-2.0;
+        bessel_besselmfirstcheb(5.30043377268626276149E-18, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.64758043015242134646E-17, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 5.21039150503902756861E-17, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.67823109680541210385E-16, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 5.51205597852431940784E-16, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.84859337734377901440E-15, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 6.34007647740507060557E-15, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -2.22751332699166985548E-14, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 8.03289077536357521100E-14, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -2.98009692317273043925E-13, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 1.14034058820847496303E-12, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -4.51459788337394416547E-12, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 1.85594911495471785253E-11, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -7.95748924447710747776E-11, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 3.57739728140030116597E-10, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.69753450938905987466E-9, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 8.57403401741422608519E-9, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -4.66048989768794782956E-8, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 2.76681363944501510342E-7, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.83175552271911948767E-6, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 1.39498137188764993662E-5, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -1.28495495816278026384E-4, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 1.56988388573005337491E-3, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, -3.14481013119645005427E-2, &b0, &b1, &b2, _state);
+        bessel_besselmnextcheb(z, 2.44030308206595545468E0, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        v = v*ae_exp(-x, _state)/ae_sqrt(x, _state);
+    }
+    result = v;
+    return result;
+}
+
+
+/*************************************************************************
+Modified Bessel function, second kind, order one
+
+Computes the modified Bessel function of the second kind
+of order one of the argument.
+
+The range is partitioned into the two intervals [0,2] and
+(2, infinity).  Chebyshev polynomial expansions are employed
+in each interval.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0, 30       30000       1.2e-15     1.6e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselk1(double x, ae_state *_state)
+{
+    double y;
+    double z;
+    double v;
+    double b0;
+    double b1;
+    double b2;
+    double result;
+
+
+    z = 0.5*x;
+    ae_assert(ae_fp_greater(z,(double)(0)), "Domain error in K1", _state);
+    if( ae_fp_less_eq(x,(double)(2)) )
+    {
+        y = x*x-2.0;
+        bessel_besselm1firstcheb(-7.02386347938628759343E-18, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.42744985051936593393E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -6.66690169419932900609E-13, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.41148839263352776110E-10, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.21338763073472585583E-8, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.43340614156596823496E-6, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.73028895751305206302E-4, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -6.97572385963986435018E-3, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.22611180822657148235E-1, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.53155960776544875667E-1, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.52530022733894777053E0, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        result = ae_log(z, _state)*besseli1(x, _state)+v/x;
+    }
+    else
+    {
+        y = 8.0/x-2.0;
+        bessel_besselm1firstcheb(-5.75674448366501715755E-18, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.79405087314755922667E-17, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -5.68946255844285935196E-17, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.83809354436663880070E-16, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -6.05704724837331885336E-16, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.03870316562433424052E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -7.01983709041831346144E-15, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.47715442448130437068E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -8.97670518232499435011E-14, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 3.34841966607842919884E-13, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.28917396095102890680E-12, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 5.13963967348173025100E-12, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.12996783842756842877E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 9.21831518760500529508E-11, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -4.19035475934189648750E-10, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.01504975519703286596E-9, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.03457624656780970260E-8, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 5.74108412545004946722E-8, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -3.50196060308781257119E-7, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.40648494783721712015E-6, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -1.93619797416608296024E-5, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.95215518471351631108E-4, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, -2.85781685962277938680E-3, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 1.03923736576817238437E-1, &b0, &b1, &b2, _state);
+        bessel_besselm1nextcheb(y, 2.72062619048444266945E0, &b0, &b1, &b2, _state);
+        v = 0.5*(b0-b2);
+        result = ae_exp(-x, _state)*v/ae_sqrt(x, _state);
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Modified Bessel function, second kind, integer order
+
+Returns modified Bessel function of the second kind
+of order n of the argument.
+
+The range is partitioned into the two intervals [0,9.55] and
+(9.55, infinity).  An ascending power series is used in the
+low range, and an asymptotic expansion in the high range.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE      0,30        90000       1.8e-8      3.0e-10
+
+Error is high only near the crossover point x = 9.55
+between the two expansions used.
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1988, 2000 by Stephen L. Moshier
+*************************************************************************/
+double besselkn(ae_int_t nn, double x, ae_state *_state)
+{
+    double k;
+    double kf;
+    double nk1f;
+    double nkf;
+    double zn;
+    double t;
+    double s;
+    double z0;
+    double z;
+    double ans;
+    double fn;
+    double pn;
+    double pk;
+    double zmn;
+    double tlg;
+    double tox;
+    ae_int_t i;
+    ae_int_t n;
+    double eul;
+    double result;
+
+
+    eul = 5.772156649015328606065e-1;
+    if( nn<0 )
+    {
+        n = -nn;
+    }
+    else
+    {
+        n = nn;
+    }
+    ae_assert(n<=31, "Overflow in BesselKN", _state);
+    ae_assert(ae_fp_greater(x,(double)(0)), "Domain error in BesselKN", _state);
+    if( ae_fp_less_eq(x,9.55) )
+    {
+        ans = 0.0;
+        z0 = 0.25*x*x;
+        fn = 1.0;
+        pn = 0.0;
+        zmn = 1.0;
+        tox = 2.0/x;
+        if( n>0 )
+        {
+            pn = -eul;
+            k = 1.0;
+            for(i=1; i<=n-1; i++)
+            {
+                pn = pn+1.0/k;
+                k = k+1.0;
+                fn = fn*k;
+            }
+            zmn = tox;
+            if( n==1 )
+            {
+                ans = 1.0/x;
+            }
+            else
+            {
+                nk1f = fn/(double)n;
+                kf = 1.0;
+                s = nk1f;
+                z = -z0;
+                zn = 1.0;
+                for(i=1; i<=n-1; i++)
+                {
+                    nk1f = nk1f/(double)(n-i);
+                    kf = kf*(double)i;
+                    zn = zn*z;
+                    t = nk1f*zn/kf;
+                    s = s+t;
+                    ae_assert(ae_fp_greater(ae_maxrealnumber-ae_fabs(t, _state),ae_fabs(s, _state)), "Overflow in BesselKN", _state);
+                    ae_assert(!(ae_fp_greater(tox,1.0)&&ae_fp_less(ae_maxrealnumber/tox,zmn)), "Overflow in BesselKN", _state);
+                    zmn = zmn*tox;
+                }
+                s = s*0.5;
+                t = ae_fabs(s, _state);
+                ae_assert(!(ae_fp_greater(zmn,1.0)&&ae_fp_less(ae_maxrealnumber/zmn,t)), "Overflow in BesselKN", _state);
+                ae_assert(!(ae_fp_greater(t,1.0)&&ae_fp_less(ae_maxrealnumber/t,zmn)), "Overflow in BesselKN", _state);
+                ans = s*zmn;
+            }
+        }
+        tlg = 2.0*ae_log(0.5*x, _state);
+        pk = -eul;
+        if( n==0 )
+        {
+            pn = pk;
+            t = 1.0;
+        }
+        else
+        {
+            pn = pn+1.0/(double)n;
+            t = 1.0/fn;
+        }
+        s = (pk+pn-tlg)*t;
+        k = 1.0;
+        do
+        {
+            t = t*(z0/(k*(k+(double)n)));
+            pk = pk+1.0/k;
+            pn = pn+1.0/(k+(double)n);
+            s = s+(pk+pn-tlg)*t;
+            k = k+1.0;
+        }
+        while(ae_fp_greater(ae_fabs(t/s, _state),ae_machineepsilon));
+        s = 0.5*s/zmn;
+        if( n%2!=0 )
+        {
+            s = -s;
+        }
+        ans = ans+s;
+        result = ans;
+        return result;
+    }
+    if( ae_fp_greater(x,ae_log(ae_maxrealnumber, _state)) )
+    {
+        result = (double)(0);
+        return result;
+    }
+    k = (double)(n);
+    pn = 4.0*k*k;
+    pk = 1.0;
+    z0 = 8.0*x;
+    fn = 1.0;
+    t = 1.0;
+    s = t;
+    nkf = ae_maxrealnumber;
+    i = 0;
+    do
+    {
+        z = pn-pk*pk;
+        t = t*z/(fn*z0);
+        nk1f = ae_fabs(t, _state);
+        if( i>=n&&ae_fp_greater(nk1f,nkf) )
+        {
+            break;
+        }
+        nkf = nk1f;
+        s = s+t;
+        fn = fn+1.0;
+        pk = pk+2.0;
+        i = i+1;
+    }
+    while(ae_fp_greater(ae_fabs(t/s, _state),ae_machineepsilon));
+    result = ae_exp(-x, _state)*ae_sqrt(ae_pi/(2.0*x), _state)*s;
+    return result;
+}
+
+
+/*************************************************************************
+Internal subroutine
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+static void bessel_besselmfirstcheb(double c,
+     double* b0,
+     double* b1,
+     double* b2,
+     ae_state *_state)
+{
+
+
+    *b0 = c;
+    *b1 = 0.0;
+    *b2 = 0.0;
+}
+
+
+/*************************************************************************
+Internal subroutine
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+static void bessel_besselmnextcheb(double x,
+     double c,
+     double* b0,
+     double* b1,
+     double* b2,
+     ae_state *_state)
+{
+
+
+    *b2 = *b1;
+    *b1 = *b0;
+    *b0 = x*(*b1)-(*b2)+c;
+}
+
+
+/*************************************************************************
+Internal subroutine
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+static void bessel_besselm1firstcheb(double c,
+     double* b0,
+     double* b1,
+     double* b2,
+     ae_state *_state)
+{
+
+
+    *b0 = c;
+    *b1 = 0.0;
+    *b2 = 0.0;
+}
+
+
+/*************************************************************************
+Internal subroutine
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+static void bessel_besselm1nextcheb(double x,
+     double c,
+     double* b0,
+     double* b1,
+     double* b2,
+     ae_state *_state)
+{
+
+
+    *b2 = *b1;
+    *b1 = *b0;
+    *b0 = x*(*b1)-(*b2)+c;
+}
+
+
+static void bessel_besselasympt0(double x,
+     double* pzero,
+     double* qzero,
+     ae_state *_state)
+{
+    double xsq;
+    double p2;
+    double q2;
+    double p3;
+    double q3;
+
+    *pzero = 0.0;
+    *qzero = 0.0;
+
+    xsq = 64.0/(x*x);
+    p2 = 0.0;
+    p2 = 2485.271928957404011288128951+xsq*p2;
+    p2 = 153982.6532623911470917825993+xsq*p2;
+    p2 = 2016135.283049983642487182349+xsq*p2;
+    p2 = 8413041.456550439208464315611+xsq*p2;
+    p2 = 12332384.76817638145232406055+xsq*p2;
+    p2 = 5393485.083869438325262122897+xsq*p2;
+    q2 = 1.0;
+    q2 = 2615.700736920839685159081813+xsq*q2;
+    q2 = 156001.7276940030940592769933+xsq*q2;
+    q2 = 2025066.801570134013891035236+xsq*q2;
+    q2 = 8426449.050629797331554404810+xsq*q2;
+    q2 = 12338310.22786324960844856182+xsq*q2;
+    q2 = 5393485.083869438325560444960+xsq*q2;
+    p3 = -0.0;
+    p3 = -4.887199395841261531199129300+xsq*p3;
+    p3 = -226.2630641933704113967255053+xsq*p3;
+    p3 = -2365.956170779108192723612816+xsq*p3;
+    p3 = -8239.066313485606568803548860+xsq*p3;
+    p3 = -10381.41698748464093880530341+xsq*p3;
+    p3 = -3984.617357595222463506790588+xsq*p3;
+    q3 = 1.0;
+    q3 = 408.7714673983499223402830260+xsq*q3;
+    q3 = 15704.89191515395519392882766+xsq*q3;
+    q3 = 156021.3206679291652539287109+xsq*q3;
+    q3 = 533291.3634216897168722255057+xsq*q3;
+    q3 = 666745.4239319826986004038103+xsq*q3;
+    q3 = 255015.5108860942382983170882+xsq*q3;
+    *pzero = p2/q2;
+    *qzero = (double)8*p3/q3/x;
+}
+
+
+static void bessel_besselasympt1(double x,
+     double* pzero,
+     double* qzero,
+     ae_state *_state)
+{
+    double xsq;
+    double p2;
+    double q2;
+    double p3;
+    double q3;
+
+    *pzero = 0.0;
+    *qzero = 0.0;
+
+    xsq = 64.0/(x*x);
+    p2 = -1611.616644324610116477412898;
+    p2 = -109824.0554345934672737413139+xsq*p2;
+    p2 = -1523529.351181137383255105722+xsq*p2;
+    p2 = -6603373.248364939109255245434+xsq*p2;
+    p2 = -9942246.505077641195658377899+xsq*p2;
+    p2 = -4435757.816794127857114720794+xsq*p2;
+    q2 = 1.0;
+    q2 = -1455.009440190496182453565068+xsq*q2;
+    q2 = -107263.8599110382011903063867+xsq*q2;
+    q2 = -1511809.506634160881644546358+xsq*q2;
+    q2 = -6585339.479723087072826915069+xsq*q2;
+    q2 = -9934124.389934585658967556309+xsq*q2;
+    q2 = -4435757.816794127856828016962+xsq*q2;
+    p3 = 35.26513384663603218592175580;
+    p3 = 1706.375429020768002061283546+xsq*p3;
+    p3 = 18494.26287322386679652009819+xsq*p3;
+    p3 = 66178.83658127083517939992166+xsq*p3;
+    p3 = 85145.16067533570196555001171+xsq*p3;
+    p3 = 33220.91340985722351859704442+xsq*p3;
+    q3 = 1.0;
+    q3 = 863.8367769604990967475517183+xsq*q3;
+    q3 = 37890.22974577220264142952256+xsq*q3;
+    q3 = 400294.4358226697511708610813+xsq*q3;
+    q3 = 1419460.669603720892855755253+xsq*q3;
+    q3 = 1819458.042243997298924553839+xsq*q3;
+    q3 = 708712.8194102874357377502472+xsq*q3;
+    *pzero = p2/q2;
+    *qzero = (double)8*p3/q3/x;
+}
+
+
+#endif
+#if defined(AE_COMPILE_LAGUERRE) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Calculation of the value of the Laguerre polynomial.
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Laguerre polynomial Ln at x
+*************************************************************************/
+double laguerrecalculate(ae_int_t n, double x, ae_state *_state)
+{
+    double a;
+    double b;
+    double i;
+    double result;
+
+
+    result = (double)(1);
+    a = (double)(1);
+    b = (double)1-x;
+    if( n==1 )
+    {
+        result = b;
+    }
+    i = (double)(2);
+    while(ae_fp_less_eq(i,(double)(n)))
+    {
+        result = (((double)2*i-(double)1-x)*b-(i-(double)1)*a)/i;
+        a = b;
+        b = result;
+        i = i+(double)1;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Summation of Laguerre polynomials using Clenshaw's recurrence formula.
+
+This routine calculates c[0]*L0(x) + c[1]*L1(x) + ... + c[N]*LN(x)
+
+Parameters:
+    n   -   degree, n>=0
+    x   -   argument
+
+Result:
+    the value of the Laguerre polynomial at x
+*************************************************************************/
+double laguerresum(/* Real    */ const ae_vector* c,
+     ae_int_t n,
+     double x,
+     ae_state *_state)
+{
+    double b1;
+    double b2;
+    ae_int_t i;
+    double result;
+
+
+    b1 = (double)(0);
+    b2 = (double)(0);
+    result = (double)(0);
+    for(i=n; i>=0; i--)
+    {
+        result = ((double)(2*i+1)-x)*b1/(double)(i+1)-(double)(i+1)*b2/(double)(i+2)+c->ptr.p_double[i];
+        b2 = b1;
+        b1 = result;
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Representation of Ln as C[0] + C[1]*X + ... + C[N]*X^N
+
+Input parameters:
+    N   -   polynomial degree, n>=0
+
+Output parameters:
+    C   -   coefficients
+*************************************************************************/
+void laguerrecoefficients(ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state)
+{
+    ae_int_t i;
+
+    ae_vector_clear(c);
+
+    ae_vector_set_length(c, n+1, _state);
+    c->ptr.p_double[0] = (double)(1);
+    for(i=0; i<=n-1; i++)
+    {
+        c->ptr.p_double[i+1] = -c->ptr.p_double[i]*(double)(n-i)/(double)(i+1)/(double)(i+1);
+    }
+}
+
+
+#endif
+#if defined(AE_COMPILE_ELLIPTIC) || !defined(AE_PARTIAL_BUILD)
+
+
+/*************************************************************************
+Complete elliptic integral of the first kind
+
+Approximates the integral
+
+
+
+           pi/2
+            -
+           | |
+           |           dt
+K(m)  =    |    ------------------
+           |                   2
+         | |    sqrt( 1 - m sin t )
+          -
+           0
+
+using the approximation
+
+    P(x)  -  log x Q(x).
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,1        30000       2.5e-16     6.8e-17
+
+Cephes Math Library, Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegralk(double m, ae_state *_state)
+{
+    double result;
+
+
+    result = ellipticintegralkhighprecision(1.0-m, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Complete elliptic integral of the first kind
+
+Approximates the integral
+
+
+
+           pi/2
+            -
+           | |
+           |           dt
+K(m)  =    |    ------------------
+           |                   2
+         | |    sqrt( 1 - m sin t )
+          -
+           0
+
+where m = 1 - m1, using the approximation
+
+    P(x)  -  log x Q(x).
+
+The argument m1 is used rather than m so that the logarithmic
+singularity at m = 1 will be shifted to the origin; this
+preserves maximum accuracy.
+
+K(0) = pi/2.
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0,1        30000       2.5e-16     6.8e-17
+
+Cephes Math Library, Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegralkhighprecision(double m1, ae_state *_state)
+{
+    double p;
+    double q;
+    double result;
+
+
+    if( ae_fp_less_eq(m1,ae_machineepsilon) )
+    {
+        result = 1.3862943611198906188E0-0.5*ae_log(m1, _state);
+    }
+    else
+    {
+        p = 1.37982864606273237150E-4;
+        p = p*m1+2.28025724005875567385E-3;
+        p = p*m1+7.97404013220415179367E-3;
+        p = p*m1+9.85821379021226008714E-3;
+        p = p*m1+6.87489687449949877925E-3;
+        p = p*m1+6.18901033637687613229E-3;
+        p = p*m1+8.79078273952743772254E-3;
+        p = p*m1+1.49380448916805252718E-2;
+        p = p*m1+3.08851465246711995998E-2;
+        p = p*m1+9.65735902811690126535E-2;
+        p = p*m1+1.38629436111989062502E0;
+        q = 2.94078955048598507511E-5;
+        q = q*m1+9.14184723865917226571E-4;
+        q = q*m1+5.94058303753167793257E-3;
+        q = q*m1+1.54850516649762399335E-2;
+        q = q*m1+2.39089602715924892727E-2;
+        q = q*m1+3.01204715227604046988E-2;
+        q = q*m1+3.73774314173823228969E-2;
+        q = q*m1+4.88280347570998239232E-2;
+        q = q*m1+7.03124996963957469739E-2;
+        q = q*m1+1.24999999999870820058E-1;
+        q = q*m1+4.99999999999999999821E-1;
+        result = p-q*ae_log(m1, _state);
+    }
+    return result;
+}
+
+
+/*************************************************************************
+Incomplete elliptic integral of the first kind F(phi|m)
+
+Approximates the integral
+
+
+
+               phi
+                -
+               | |
+               |           dt
+F(phi_\m)  =    |    ------------------
+               |                   2
+             | |    sqrt( 1 - m sin t )
+              -
+               0
+
+of amplitude phi and modulus m, using the arithmetic -
+geometric mean algorithm.
+
+
+
+
+ACCURACY:
+
+Tested at random points with m in [0, 1] and phi as indicated.
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE     -10,10       200000      7.4e-16     1.0e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompleteellipticintegralk(double phi, double m, ae_state *_state)
+{
+    double a;
+    double b;
+    double c;
+    double e;
+    double temp;
+    double pio2;
+    double t;
+    double k;
+    ae_int_t d;
+    ae_int_t md;
+    ae_int_t s;
+    ae_int_t npio2;
+    double result;
+
+
+    pio2 = 1.57079632679489661923;
+    if( ae_fp_eq(m,(double)(0)) )
+    {
+        result = phi;
+        return result;
+    }
+    a = (double)1-m;
+    if( ae_fp_eq(a,(double)(0)) )
+    {
+        result = ae_log(ae_tan(0.5*(pio2+phi), _state), _state);
+        return result;
+    }
+    npio2 = ae_ifloor(phi/pio2, _state);
+    if( npio2%2!=0 )
+    {
+        npio2 = npio2+1;
+    }
+    if( npio2!=0 )
+    {
+        k = ellipticintegralk((double)1-a, _state);
+        phi = phi-(double)npio2*pio2;
+    }
+    else
+    {
+        k = (double)(0);
+    }
+    if( ae_fp_less(phi,(double)(0)) )
+    {
+        phi = -phi;
+        s = -1;
+    }
+    else
+    {
+        s = 0;
+    }
+    b = ae_sqrt(a, _state);
+    t = ae_tan(phi, _state);
+    if( ae_fp_greater(ae_fabs(t, _state),(double)(10)) )
+    {
+        e = 1.0/(b*t);
+        if( ae_fp_less(ae_fabs(e, _state),(double)(10)) )
+        {
+            e = ae_atan(e, _state);
+            if( npio2==0 )
+            {
+                k = ellipticintegralk((double)1-a, _state);
+            }
+            temp = k-incompleteellipticintegralk(e, m, _state);
+            if( s<0 )
+            {
+                temp = -temp;
+            }
+            result = temp+(double)npio2*k;
+            return result;
+        }
+    }
+    a = 1.0;
+    c = ae_sqrt(m, _state);
+    d = 1;
+    md = 0;
+    while(ae_fp_greater(ae_fabs(c/a, _state),ae_machineepsilon))
+    {
+        temp = b/a;
+        phi = phi+ae_atan(t*temp, _state)+(double)md*ae_pi;
+        md = ae_trunc((phi+pio2)/ae_pi, _state);
+        t = t*(1.0+temp)/(1.0-temp*t*t);
+        c = 0.5*(a-b);
+        temp = ae_sqrt(a*b, _state);
+        a = 0.5*(a+b);
+        b = temp;
+        d = d+d;
+    }
+    temp = (ae_atan(t, _state)+(double)md*ae_pi)/((double)d*a);
+    if( s<0 )
+    {
+        temp = -temp;
+    }
+    result = temp+(double)npio2*k;
+    return result;
+}
+
+
+/*************************************************************************
+Complete elliptic integral of the second kind
+
+Approximates the integral
+
+
+           pi/2
+            -
+           | |                 2
+E(m)  =    |    sqrt( 1 - m sin t ) dt
+         | |
+          -
+           0
+
+using the approximation
+
+     P(x)  -  x log x Q(x).
+
+ACCURACY:
+
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE       0, 1       10000       2.1e-16     7.3e-17
+
+Cephes Math Library, Release 2.8: June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*************************************************************************/
+double ellipticintegrale(double m, ae_state *_state)
+{
+    double p;
+    double q;
+    double result;
+
+
+    ae_assert(ae_fp_greater_eq(m,(double)(0))&&ae_fp_less_eq(m,(double)(1)), "Domain error in EllipticIntegralE: m<0 or m>1", _state);
+    m = (double)1-m;
+    if( ae_fp_eq(m,(double)(0)) )
+    {
+        result = (double)(1);
+        return result;
+    }
+    p = 1.53552577301013293365E-4;
+    p = p*m+2.50888492163602060990E-3;
+    p = p*m+8.68786816565889628429E-3;
+    p = p*m+1.07350949056076193403E-2;
+    p = p*m+7.77395492516787092951E-3;
+    p = p*m+7.58395289413514708519E-3;
+    p = p*m+1.15688436810574127319E-2;
+    p = p*m+2.18317996015557253103E-2;
+    p = p*m+5.68051945617860553470E-2;
+    p = p*m+4.43147180560990850618E-1;
+    p = p*m+1.00000000000000000299E0;
+    q = 3.27954898576485872656E-5;
+    q = q*m+1.00962792679356715133E-3;
+    q = q*m+6.50609489976927491433E-3;
+    q = q*m+1.68862163993311317300E-2;
+    q = q*m+2.61769742454493659583E-2;
+    q = q*m+3.34833904888224918614E-2;
+    q = q*m+4.27180926518931511717E-2;
+    q = q*m+5.85936634471101055642E-2;
+    q = q*m+9.37499997197644278445E-2;
+    q = q*m+2.49999999999888314361E-1;
+    result = p-q*m*ae_log(m, _state);
+    return result;
+}
+
+
+/*************************************************************************
+Incomplete elliptic integral of the second kind
+
+Approximates the integral
+
+
+               phi
+                -
+               | |
+               |                   2
+E(phi_\m)  =    |    sqrt( 1 - m sin t ) dt
+               |
+             | |
+              -
+               0
+
+of amplitude phi and modulus m, using the arithmetic -
+geometric mean algorithm.
+
+ACCURACY:
+
+Tested at random arguments with phi in [-10, 10] and m in
+[0, 1].
+                     Relative error:
+arithmetic   domain     # trials      peak         rms
+   IEEE     -10,10      150000       3.3e-15     1.4e-16
+
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1993, 2000 by Stephen L. Moshier
+*************************************************************************/
+double incompleteellipticintegrale(double phi, double m, ae_state *_state)
+{
+    double pio2;
+    double a;
+    double b;
+    double c;
+    double e;
+    double temp;
+    double lphi;
+    double t;
+    double ebig;
+    ae_int_t d;
+    ae_int_t md;
+    ae_int_t npio2;
+    ae_int_t s;
+    double result;
+
+
+    pio2 = 1.57079632679489661923;
+    if( ae_fp_eq(m,(double)(0)) )
+    {
+        result = phi;
+        return result;
+    }
+    lphi = phi;
+    npio2 = ae_ifloor(lphi/pio2, _state);
+    if( npio2%2!=0 )
+    {
+        npio2 = npio2+1;
+    }
+    lphi = lphi-(double)npio2*pio2;
+    if( ae_fp_less(lphi,(double)(0)) )
+    {
+        lphi = -lphi;
+        s = -1;
+    }
+    else
+    {
+        s = 1;
+    }
+    a = 1.0-m;
+    ebig = ellipticintegrale(m, _state);
+    if( ae_fp_eq(a,(double)(0)) )
+    {
+        temp = ae_sin(lphi, _state);
+        if( s<0 )
+        {
+            temp = -temp;
+        }
+        result = temp+(double)npio2*ebig;
+        return result;
+    }
+    t = ae_tan(lphi, _state);
+    b = ae_sqrt(a, _state);
+    
+    /*
+     * Thanks to Brian Fitzgerald <fitzgb@mml0.meche.rpi.edu>
+     * for pointing out an instability near odd multiples of pi/2
+     */
+    if( ae_fp_greater(ae_fabs(t, _state),(double)(10)) )
+    {
+        
+        /*
+         * Transform the amplitude
+         */
+        e = 1.0/(b*t);
+        
+        /*
+         * ... but avoid multiple recursions.
+         */
+        if( ae_fp_less(ae_fabs(e, _state),(double)(10)) )
+        {
+            e = ae_atan(e, _state);
+            temp = ebig+m*ae_sin(lphi, _state)*ae_sin(e, _state)-incompleteellipticintegrale(e, m, _state);
+            if( s<0 )
+            {
+                temp = -temp;
+            }
+            result = temp+(double)npio2*ebig;
+            return result;
+        }
+    }
+    c = ae_sqrt(m, _state);
+    a = 1.0;
+    d = 1;
+    e = 0.0;
+    md = 0;
+    while(ae_fp_greater(ae_fabs(c/a, _state),ae_machineepsilon))
+    {
+        temp = b/a;
+        lphi = lphi+ae_atan(t*temp, _state)+(double)md*ae_pi;
+        md = ae_trunc((lphi+pio2)/ae_pi, _state);
+        t = t*(1.0+temp)/(1.0-temp*t*t);
+        c = 0.5*(a-b);
+        temp = ae_sqrt(a*b, _state);
+        a = 0.5*(a+b);
+        b = temp;
+        d = d+d;
+        e = e+c*ae_sin(lphi, _state);
+    }
+    temp = ebig/ellipticintegralk(m, _state);
+    temp = temp*((ae_atan(t, _state)+(double)md*ae_pi)/((double)d*a));
+    temp = temp+e;
+    if( s<0 )
+    {
+        temp = -temp;
+    }
+    result = temp+(double)npio2*ebig;
+    return result;
+}
+
+
+#endif
 
 }
 
