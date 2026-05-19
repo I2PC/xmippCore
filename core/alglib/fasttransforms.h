@@ -1,10 +1,11 @@
 /*************************************************************************
+ALGLIB 4.07.0 (source code generated 2025-12-29)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
-the Free Software Foundation (www.fsf.org); either version 2 of the
+the Free Software Foundation (www.fsf.org); either version 2 of the 
 License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -20,6 +21,7 @@ http://www.fsf.org/licensing/licenses
 #define _fasttransforms_pkg_h
 #include "ap.h"
 #include "alglibinternal.h"
+#include "alglibmisc.h"
 
 /////////////////////////////////////////////////////////////////////////
 //
@@ -28,6 +30,14 @@ http://www.fsf.org/licensing/licenses
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
+#if defined(AE_COMPILE_FFT) || !defined(AE_PARTIAL_BUILD)
+#endif
+#if defined(AE_COMPILE_FHT) || !defined(AE_PARTIAL_BUILD)
+#endif
+#if defined(AE_COMPILE_CONV) || !defined(AE_PARTIAL_BUILD)
+#endif
+#if defined(AE_COMPILE_CORR) || !defined(AE_PARTIAL_BUILD)
+#endif
 
 }
 
@@ -39,7 +49,23 @@ namespace alglib_impl
 namespace alglib
 {
 
+#if defined(AE_COMPILE_FFT) || !defined(AE_PARTIAL_BUILD)
 
+#endif
+
+#if defined(AE_COMPILE_FHT) || !defined(AE_PARTIAL_BUILD)
+
+#endif
+
+#if defined(AE_COMPILE_CONV) || !defined(AE_PARTIAL_BUILD)
+
+#endif
+
+#if defined(AE_COMPILE_CORR) || !defined(AE_PARTIAL_BUILD)
+
+#endif
+
+#if defined(AE_COMPILE_FFT) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 1-dimensional complex FFT.
 
@@ -69,8 +95,8 @@ OUTPUT PARAMETERS
   -- ALGLIB --
      Copyright 29.05.2009 by Bochkanov Sergey
 *************************************************************************/
-void fftc1d(complex_1d_array &a, const ae_int_t n);
-void fftc1d(complex_1d_array &a);
+void fftc1d(complex_1d_array &a, const ae_int_t n, const xparams _xparams = alglib::xdefault);
+void fftc1d(complex_1d_array &a, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -93,8 +119,8 @@ OUTPUT PARAMETERS
   -- ALGLIB --
      Copyright 29.05.2009 by Bochkanov Sergey
 *************************************************************************/
-void fftc1dinv(complex_1d_array &a, const ae_int_t n);
-void fftc1dinv(complex_1d_array &a);
+void fftc1dinv(complex_1d_array &a, const ae_int_t n, const xparams _xparams = alglib::xdefault);
+void fftc1dinv(complex_1d_array &a, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -110,9 +136,12 @@ OUTPUT PARAMETERS
     F   -   DFT of a input array, array[0..N-1]
             F[j] = SUM(A[k]*exp(-2*pi*sqrt(-1)*j*k/N), k = 0..N-1)
 
+NOTE: there is a buffered version  of  this  function, FFTR1DBuf(),  which
+      reuses memory previously allocated for A as much as possible.
+
 NOTE:
     F[] satisfies symmetry property F[k] = conj(F[N-k]),  so just one half
-of  array  is  usually needed. But for convenience subroutine returns full
+of  array  is  usually needed. But for convinience subroutine returns full
 complex array (with frequencies above N/2), so its result may be  used  by
 other FFT-related subroutines.
 
@@ -120,8 +149,20 @@ other FFT-related subroutines.
   -- ALGLIB --
      Copyright 01.06.2009 by Bochkanov Sergey
 *************************************************************************/
-void fftr1d(const real_1d_array &a, const ae_int_t n, complex_1d_array &f);
-void fftr1d(const real_1d_array &a, complex_1d_array &f);
+void fftr1d(const real_1d_array &a, const ae_int_t n, complex_1d_array &f, const xparams _xparams = alglib::xdefault);
+void fftr1d(const real_1d_array &a, complex_1d_array &f, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional real FFT, a buffered function which does not reallocate  F[]
+if its length is enough to store the result  (i.e.  it  reuses  previously
+allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 01.06.2009 by Bochkanov Sergey
+*************************************************************************/
+void fftr1dbuf(const real_1d_array &a, const ae_int_t n, complex_1d_array &f, const xparams _xparams = alglib::xdefault);
+void fftr1dbuf(const real_1d_array &a, complex_1d_array &f, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -135,6 +176,9 @@ INPUT PARAMETERS
 
 OUTPUT PARAMETERS
     A   -   inverse DFT of a input array, array[0..N-1]
+
+NOTE: there is a buffered version of this function, FFTR1DInvBuf(),  which
+      reuses memory previously allocated for A as much as possible.
 
 NOTE:
     F[] should satisfy symmetry property F[k] = conj(F[N-k]), so just  one
@@ -155,13 +199,66 @@ If you call this function using reduced arguments list -  "FFTR1DInv(F,A)"
 - you must pass FULL array with N elements (although higher  N/2 are still
 not used) because array size is used to automatically determine FFT length
 
+  -- ALGLIB --
+     Copyright 01.06.2009 by Bochkanov Sergey
+*************************************************************************/
+void fftr1dinv(const complex_1d_array &f, const ae_int_t n, real_1d_array &a, const xparams _xparams = alglib::xdefault);
+void fftr1dinv(const complex_1d_array &f, real_1d_array &a, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional real inverse FFT, buffered version, which does not reallocate
+A[] if its length is enough to store the result (i.e. it reuses previously
+allocated memory as much as possible).
 
   -- ALGLIB --
      Copyright 01.06.2009 by Bochkanov Sergey
 *************************************************************************/
-void fftr1dinv(const complex_1d_array &f, const ae_int_t n, real_1d_array &a);
-void fftr1dinv(const complex_1d_array &f, real_1d_array &a);
+void fftr1dinvbuf(const complex_1d_array &f, const ae_int_t n, real_1d_array &a, const xparams _xparams = alglib::xdefault);
+void fftr1dinvbuf(const complex_1d_array &f, real_1d_array &a, const xparams _xparams = alglib::xdefault);
+#endif
 
+#if defined(AE_COMPILE_FHT) || !defined(AE_PARTIAL_BUILD)
+/*************************************************************************
+1-dimensional Fast Hartley Transform.
+
+Algorithm has O(N*logN) complexity for any N (composite or prime).
+
+INPUT PARAMETERS
+    A   -   array[0..N-1] - real function to be transformed
+    N   -   problem size
+
+OUTPUT PARAMETERS
+    A   -   FHT of a input array, array[0..N-1],
+            A_out[k] = sum(A_in[j]*(cos(2*pi*j*k/N)+sin(2*pi*j*k/N)), j=0..N-1)
+
+
+  -- ALGLIB --
+     Copyright 04.06.2009 by Bochkanov Sergey
+*************************************************************************/
+void fhtr1d(real_1d_array &a, const ae_int_t n, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional inverse FHT.
+
+Algorithm has O(N*logN) complexity for any N (composite or prime).
+
+INPUT PARAMETERS
+    A   -   array[0..N-1] - complex array to be transformed
+    N   -   problem size
+
+OUTPUT PARAMETERS
+    A   -   inverse FHT of a input array, array[0..N-1]
+
+
+  -- ALGLIB --
+     Copyright 29.05.2009 by Bochkanov Sergey
+*************************************************************************/
+void fhtr1dinv(real_1d_array &a, const ae_int_t n, const xparams _xparams = alglib::xdefault);
+#endif
+
+#if defined(AE_COMPILE_CONV) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 1-dimensional complex convolution.
 
@@ -169,29 +266,43 @@ For given A/B returns conv(A,B) (non-circular). Subroutine can automatically
 choose between three implementations: straightforward O(M*N)  formula  for
 very small N (or M), overlap-add algorithm for  cases  where  max(M,N)  is
 significantly larger than min(M,N), but O(M*N) algorithm is too slow,  and
-general FFT-based formula for cases where two previois algorithms are  too
+general FFT-based formula for cases where two previous algorithms are  too
 slow.
 
 Algorithm has max(M,N)*log(max(M,N)) complexity for any M/N.
 
 INPUT PARAMETERS
-    A   -   array[0..M-1] - complex function to be transformed
+    A   -   array[M] - complex function to be transformed
     M   -   problem size
-    B   -   array[0..N-1] - complex function to be transformed
+    B   -   array[N] - complex function to be transformed
     N   -   problem size
 
 OUTPUT PARAMETERS
-    R   -   convolution: A*B. array[0..N+M-2].
+    R   -   convolution: A*B. array[N+M-1]
 
 NOTE:
     It is assumed that A is zero at T<0, B is zero too.  If  one  or  both
-functions have non-zero values at negative T's, you  can  still  use  this
-subroutine - just shift its result correspondingly.
+    functions have non-zero values at negative T's, you can still use this
+    subroutine - just shift its result correspondingly.
+
+NOTE: there is a buffered version of this  function,  ConvC1DBuf(),  which
+      can reuse space previously allocated in its output parameter R.
 
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convc1d(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r);
+void convc1d(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional complex convolution, buffered version of ConvC1DBuf(), which
+does not reallocate R[] if its length is enough to store the result  (i.e.
+it reuses previously allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convc1dbuf(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -217,10 +328,26 @@ NOTE:
 functions have non-zero values at negative T's, you  can  still  use  this
 subroutine - just shift its result correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvC1DInvBuf(),
+      which can reuse space previously allocated in its output parameter R
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convc1dinv(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r);
+void convc1dinv(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional complex non-circular deconvolution (inverse of ConvC1D()).
+
+A buffered version, which does not reallocate R[] if its length is  enough
+to store the result (i.e. it reuses previously allocated memory as much as
+possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convc1dinvbuf(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -235,23 +362,39 @@ signal,  periodic function, and another - R - is a response,  non-periodic
 function with limited length.
 
 INPUT PARAMETERS
-    S   -   array[0..M-1] - complex periodic signal
+    S   -   array[M] - complex periodic signal
     M   -   problem size
-    B   -   array[0..N-1] - complex non-periodic response
+    B   -   array[N] - complex non-periodic response
     N   -   problem size
 
 OUTPUT PARAMETERS
-    R   -   convolution: A*B. array[0..M-1].
+    R   -   convolution: A*B. array[M].
 
 NOTE:
     It is assumed that B is zero at T<0. If  it  has  non-zero  values  at
 negative T's, you can still use this subroutine - just  shift  its  result
 correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvC1DCircularBuf(),
+      which can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convc1dcircular(const complex_1d_array &s, const ae_int_t m, const complex_1d_array &r, const ae_int_t n, complex_1d_array &c);
+void convc1dcircular(const complex_1d_array &s, const ae_int_t m, const complex_1d_array &r, const ae_int_t n, complex_1d_array &c, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional circular complex convolution.
+
+Buffered version of ConvC1DCircular(), which does not  reallocate  C[]  if
+its length is enough to  store  the  result  (i.e.  it  reuses  previously
+allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convc1dcircularbuf(const complex_1d_array &s, const ae_int_t m, const complex_1d_array &r, const ae_int_t n, complex_1d_array &c, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -277,10 +420,26 @@ NOTE:
 negative T's, you can still use this subroutine - just  shift  its  result
 correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvC1DCircularInvBuf(),
+      which can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convc1dcircularinv(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r);
+void convc1dcircularinv(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional circular complex deconvolution (inverse of ConvC1DCircular()).
+
+Buffered version of ConvC1DCircularInv(), which does not reallocate R[] if
+its length is enough to  store  the  result  (i.e.  it  reuses  previously
+allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convc1dcircularinvbuf(const complex_1d_array &a, const ae_int_t m, const complex_1d_array &b, const ae_int_t n, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -302,10 +461,27 @@ NOTE:
 functions have non-zero values at negative T's, you  can  still  use  this
 subroutine - just shift its result correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvR1DBuf(),
+      which can reuse space previously allocated in its output parameter R.
+
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convr1d(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r);
+void convr1d(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional real convolution.
+
+Buffered version of ConvR1D(), which does not reallocate R[] if its length
+is enough to store the result (i.e. it reuses previously allocated  memory
+as much as possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convr1dbuf(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -331,10 +507,25 @@ NOTE:
 functions have non-zero values at negative T's, you  can  still  use  this
 subroutine - just shift its result correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvR1DInvBuf(),
+      which can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convr1dinv(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r);
+void convr1dinv(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional real deconvolution (inverse of ConvR1D()), buffered version,
+which does not reallocate R[] if its length is enough to store the  result
+(i.e. it reuses previously allocated memory as much as possible).
+
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convr1dinvbuf(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -356,10 +547,24 @@ NOTE:
 negative T's, you can still use this subroutine - just  shift  its  result
 correspondingly.
 
+NOTE: there is a buffered version of this  function,  ConvR1DCurcularBuf(),
+      which can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convr1dcircular(const real_1d_array &s, const ae_int_t m, const real_1d_array &r, const ae_int_t n, real_1d_array &c);
+void convr1dcircular(const real_1d_array &s, const ae_int_t m, const real_1d_array &r, const ae_int_t n, real_1d_array &c, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional circular real convolution, buffered version, which  does not
+reallocate C[] if its length is enough to store the result (i.e. it reuses
+previously allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 30.11.2023 by Bochkanov Sergey
+*************************************************************************/
+void convr1dcircularbuf(const real_1d_array &s, const ae_int_t m, const real_1d_array &r, const ae_int_t n, real_1d_array &c, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -388,8 +593,23 @@ correspondingly.
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void convr1dcircularinv(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r);
+void convr1dcircularinv(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
 
+
+/*************************************************************************
+1-dimensional complex deconvolution, inverse of ConvR1DCircular().
+
+Buffered version, which does not reallocate R[] if its length is enough to
+store the result (i.e. it reuses previously allocated memory  as  much  as
+possible).
+
+  -- ALGLIB --
+     Copyright 21.07.2009 by Bochkanov Sergey
+*************************************************************************/
+void convr1dcircularinvbuf(const real_1d_array &a, const ae_int_t m, const real_1d_array &b, const ae_int_t n, real_1d_array &r, const xparams _xparams = alglib::xdefault);
+#endif
+
+#if defined(AE_COMPILE_CORR) || !defined(AE_PARTIAL_BUILD)
 /*************************************************************************
 1-dimensional complex cross-correlation.
 
@@ -409,7 +629,7 @@ INPUT PARAMETERS
                 signal containing pattern
     N       -   problem size
     Pattern -   array[0..M-1] - complex function to be transformed,
-                pattern to search within signal
+                pattern to 'search' within a signal
     M       -   problem size
 
 OUTPUT PARAMETERS
@@ -423,10 +643,24 @@ NOTE:
     It is assumed that pattern domain is [0..M-1].  If Pattern is non-zero
 on [-K..M-1],  you can still use this subroutine, just shift result by K.
 
+NOTE: there is a buffered version of this  function,  CorrC1DBuf(), which
+     can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void corrc1d(const complex_1d_array &signal, const ae_int_t n, const complex_1d_array &pattern, const ae_int_t m, complex_1d_array &r);
+void corrc1d(const complex_1d_array &signal, const ae_int_t n, const complex_1d_array &pattern, const ae_int_t m, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional complex cross-correlation, a buffered version  of  CorrC1D()
+which does not reallocate R[] if its length is enough to store the  result
+(i.e. it reuses previously allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 21.07.2009 by Bochkanov Sergey
+*************************************************************************/
+void corrc1dbuf(const complex_1d_array &signal, const ae_int_t n, const complex_1d_array &pattern, const ae_int_t m, complex_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -446,17 +680,32 @@ INPUT PARAMETERS
                 periodic signal containing pattern
     N       -   problem size
     Pattern -   array[0..M-1] - complex function to be transformed,
-                non-periodic pattern to search within signal
+                non-periodic pattern to 'search' within a signal
     M       -   problem size
 
 OUTPUT PARAMETERS
     R   -   convolution: A*B. array[0..M-1].
 
+NOTE: there is a buffered version of this  function,  CorrC1DCircular(),
+      which can reuse space previously allocated in its output parameter R.
 
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void corrc1dcircular(const complex_1d_array &signal, const ae_int_t m, const complex_1d_array &pattern, const ae_int_t n, complex_1d_array &c);
+void corrc1dcircular(const complex_1d_array &signal, const ae_int_t m, const complex_1d_array &pattern, const ae_int_t n, complex_1d_array &c, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional circular complex cross-correlation.
+
+A buffered function which does not reallocate C[] if its length is  enough
+to store the result (i.e. it reuses previously allocated memory as much as
+possible).
+
+  -- ALGLIB --
+     Copyright 21.07.2009 by Bochkanov Sergey
+*************************************************************************/
+void corrc1dcircularbuf(const complex_1d_array &signal, const ae_int_t m, const complex_1d_array &pattern, const ae_int_t n, complex_1d_array &c, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -478,7 +727,7 @@ INPUT PARAMETERS
                 signal containing pattern
     N       -   problem size
     Pattern -   array[0..M-1] - real function to be transformed,
-                pattern to search within signal
+                pattern to 'search' withing signal
     M       -   problem size
 
 OUTPUT PARAMETERS
@@ -492,10 +741,24 @@ NOTE:
     It is assumed that pattern domain is [0..M-1].  If Pattern is non-zero
 on [-K..M-1],  you can still use this subroutine, just shift result by K.
 
+NOTE: there is a buffered version of this  function,  CorrR1DBuf(),  which
+      can reuse space previously allocated in its output parameter R.
+
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void corrr1d(const real_1d_array &signal, const ae_int_t n, const real_1d_array &pattern, const ae_int_t m, real_1d_array &r);
+void corrr1d(const real_1d_array &signal, const ae_int_t n, const real_1d_array &pattern, const ae_int_t m, real_1d_array &r, const xparams _xparams = alglib::xdefault);
+
+
+/*************************************************************************
+1-dimensional real cross-correlation, buffered function,  which  does  not
+reallocate R[] if its length is enough to store the result (i.e. it reuses
+previously allocated memory as much as possible).
+
+  -- ALGLIB --
+     Copyright 21.07.2009 by Bochkanov Sergey
+*************************************************************************/
+void corrr1dbuf(const real_1d_array &signal, const ae_int_t n, const real_1d_array &pattern, const ae_int_t m, real_1d_array &r, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
@@ -515,55 +778,31 @@ INPUT PARAMETERS
                 periodic signal containing pattern
     N       -   problem size
     Pattern -   array[0..M-1] - real function to be transformed,
-                non-periodic pattern to search within signal
+                non-periodic pattern to search withing signal
     M       -   problem size
 
 OUTPUT PARAMETERS
     R   -   convolution: A*B. array[0..M-1].
 
+NOTE: there is a buffered version of this  function,  CorrR1DCircularBuf(),
+      which can reuse space previously allocated in its output parameter C.
 
   -- ALGLIB --
      Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void corrr1dcircular(const real_1d_array &signal, const ae_int_t m, const real_1d_array &pattern, const ae_int_t n, real_1d_array &c);
-
-/*************************************************************************
-1-dimensional Fast Hartley Transform.
-
-Algorithm has O(N*logN) complexity for any N (composite or prime).
-
-INPUT PARAMETERS
-    A   -   array[0..N-1] - real function to be transformed
-    N   -   problem size
-
-OUTPUT PARAMETERS
-    A   -   FHT of a input array, array[0..N-1],
-            A_out[k] = sum(A_in[j]*(cos(2*pi*j*k/N)+sin(2*pi*j*k/N)), j=0..N-1)
-
-
-  -- ALGLIB --
-     Copyright 04.06.2009 by Bochkanov Sergey
-*************************************************************************/
-void fhtr1d(real_1d_array &a, const ae_int_t n);
+void corrr1dcircular(const real_1d_array &signal, const ae_int_t m, const real_1d_array &pattern, const ae_int_t n, real_1d_array &c, const xparams _xparams = alglib::xdefault);
 
 
 /*************************************************************************
-1-dimensional inverse FHT.
-
-Algorithm has O(N*logN) complexity for any N (composite or prime).
-
-INPUT PARAMETERS
-    A   -   array[0..N-1] - complex array to be transformed
-    N   -   problem size
-
-OUTPUT PARAMETERS
-    A   -   inverse FHT of a input array, array[0..N-1]
-
+1-dimensional circular real cross-correlation,  buffered  version ,  which
+does not reallocate C[] if its length is enough to store the result  (i.e.
+it reuses previously allocated memory as much as possible).
 
   -- ALGLIB --
-     Copyright 29.05.2009 by Bochkanov Sergey
+     Copyright 21.07.2009 by Bochkanov Sergey
 *************************************************************************/
-void fhtr1dinv(real_1d_array &a, const ae_int_t n);
+void corrr1dcircularbuf(const real_1d_array &signal, const ae_int_t m, const real_1d_array &pattern, const ae_int_t n, real_1d_array &c, const xparams _xparams = alglib::xdefault);
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -573,13 +812,22 @@ void fhtr1dinv(real_1d_array &a, const ae_int_t n);
 /////////////////////////////////////////////////////////////////////////
 namespace alglib_impl
 {
+#if defined(AE_COMPILE_FFT) || !defined(AE_PARTIAL_BUILD)
 void fftc1d(/* Complex */ ae_vector* a, ae_int_t n, ae_state *_state);
 void fftc1dinv(/* Complex */ ae_vector* a, ae_int_t n, ae_state *_state);
-void fftr1d(/* Real    */ ae_vector* a,
+void fftr1d(/* Real    */ const ae_vector* a,
      ae_int_t n,
      /* Complex */ ae_vector* f,
      ae_state *_state);
-void fftr1dinv(/* Complex */ ae_vector* f,
+void fftr1dbuf(/* Real    */ const ae_vector* a,
+     ae_int_t n,
+     /* Complex */ ae_vector* f,
+     ae_state *_state);
+void fftr1dinv(/* Complex */ const ae_vector* f,
+     ae_int_t n,
+     /* Real    */ ae_vector* a,
+     ae_state *_state);
+void fftr1dinvbuf(/* Complex */ const ae_vector* f,
      ae_int_t n,
      /* Real    */ ae_vector* a,
      ae_state *_state);
@@ -593,98 +841,177 @@ void fftr1dinvinternaleven(/* Real    */ ae_vector* a,
      /* Real    */ ae_vector* buf,
      fasttransformplan* plan,
      ae_state *_state);
-void convc1d(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
-void convc1dinv(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
-void convc1dcircular(/* Complex */ ae_vector* s,
-     ae_int_t m,
-     /* Complex */ ae_vector* r,
-     ae_int_t n,
-     /* Complex */ ae_vector* c,
-     ae_state *_state);
-void convc1dcircularinv(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
-void convr1d(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
-void convr1dinv(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
-void convr1dcircular(/* Real    */ ae_vector* s,
-     ae_int_t m,
-     /* Real    */ ae_vector* r,
-     ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
-void convr1dcircularinv(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
-void convc1dx(/* Complex */ ae_vector* a,
-     ae_int_t m,
-     /* Complex */ ae_vector* b,
-     ae_int_t n,
-     ae_bool circular,
-     ae_int_t alg,
-     ae_int_t q,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
-void convr1dx(/* Real    */ ae_vector* a,
-     ae_int_t m,
-     /* Real    */ ae_vector* b,
-     ae_int_t n,
-     ae_bool circular,
-     ae_int_t alg,
-     ae_int_t q,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
-void corrc1d(/* Complex */ ae_vector* signal,
-     ae_int_t n,
-     /* Complex */ ae_vector* pattern,
-     ae_int_t m,
-     /* Complex */ ae_vector* r,
-     ae_state *_state);
-void corrc1dcircular(/* Complex */ ae_vector* signal,
-     ae_int_t m,
-     /* Complex */ ae_vector* pattern,
-     ae_int_t n,
-     /* Complex */ ae_vector* c,
-     ae_state *_state);
-void corrr1d(/* Real    */ ae_vector* signal,
-     ae_int_t n,
-     /* Real    */ ae_vector* pattern,
-     ae_int_t m,
-     /* Real    */ ae_vector* r,
-     ae_state *_state);
-void corrr1dcircular(/* Real    */ ae_vector* signal,
-     ae_int_t m,
-     /* Real    */ ae_vector* pattern,
-     ae_int_t n,
-     /* Real    */ ae_vector* c,
-     ae_state *_state);
+#endif
+#if defined(AE_COMPILE_FHT) || !defined(AE_PARTIAL_BUILD)
 void fhtr1d(/* Real    */ ae_vector* a, ae_int_t n, ae_state *_state);
 void fhtr1dinv(/* Real    */ ae_vector* a, ae_int_t n, ae_state *_state);
+#endif
+#if defined(AE_COMPILE_CONV) || !defined(AE_PARTIAL_BUILD)
+void convc1d(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convc1dbuf(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convc1dinv(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convc1dinvbuf(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convc1dcircular(/* Complex */ const ae_vector* s,
+     ae_int_t m,
+     /* Complex */ const ae_vector* r,
+     ae_int_t n,
+     /* Complex */ ae_vector* c,
+     ae_state *_state);
+void convc1dcircularbuf(/* Complex */ const ae_vector* s,
+     ae_int_t m,
+     /* Complex */ const ae_vector* r,
+     ae_int_t n,
+     /* Complex */ ae_vector* c,
+     ae_state *_state);
+void convc1dcircularinv(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convc1dcircularinvbuf(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convr1d(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convr1dbuf(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convr1dinv(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convr1dinvbuf(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convr1dcircular(/* Real    */ const ae_vector* s,
+     ae_int_t m,
+     /* Real    */ const ae_vector* r,
+     ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state);
+void convr1dcircularbuf(/* Real    */ const ae_vector* s,
+     ae_int_t m,
+     /* Real    */ const ae_vector* r,
+     ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state);
+void convr1dcircularinv(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convr1dcircularinvbuf(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void convc1dx(/* Complex */ const ae_vector* a,
+     ae_int_t m,
+     /* Complex */ const ae_vector* b,
+     ae_int_t n,
+     ae_bool circular,
+     ae_int_t alg,
+     ae_int_t q,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void convr1dx(/* Real    */ const ae_vector* a,
+     ae_int_t m,
+     /* Real    */ const ae_vector* b,
+     ae_int_t n,
+     ae_bool circular,
+     ae_int_t alg,
+     ae_int_t q,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+#endif
+#if defined(AE_COMPILE_CORR) || !defined(AE_PARTIAL_BUILD)
+void corrc1d(/* Complex */ const ae_vector* signal,
+     ae_int_t n,
+     /* Complex */ const ae_vector* pattern,
+     ae_int_t m,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void corrc1dbuf(/* Complex */ const ae_vector* signal,
+     ae_int_t n,
+     /* Complex */ const ae_vector* pattern,
+     ae_int_t m,
+     /* Complex */ ae_vector* r,
+     ae_state *_state);
+void corrc1dcircular(/* Complex */ const ae_vector* signal,
+     ae_int_t m,
+     /* Complex */ const ae_vector* pattern,
+     ae_int_t n,
+     /* Complex */ ae_vector* c,
+     ae_state *_state);
+void corrc1dcircularbuf(/* Complex */ const ae_vector* signal,
+     ae_int_t m,
+     /* Complex */ const ae_vector* pattern,
+     ae_int_t n,
+     /* Complex */ ae_vector* c,
+     ae_state *_state);
+void corrr1d(/* Real    */ const ae_vector* signal,
+     ae_int_t n,
+     /* Real    */ const ae_vector* pattern,
+     ae_int_t m,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void corrr1dbuf(/* Real    */ const ae_vector* signal,
+     ae_int_t n,
+     /* Real    */ const ae_vector* pattern,
+     ae_int_t m,
+     /* Real    */ ae_vector* r,
+     ae_state *_state);
+void corrr1dcircular(/* Real    */ const ae_vector* signal,
+     ae_int_t m,
+     /* Real    */ const ae_vector* pattern,
+     ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state);
+void corrr1dcircularbuf(/* Real    */ const ae_vector* signal,
+     ae_int_t m,
+     /* Real    */ const ae_vector* pattern,
+     ae_int_t n,
+     /* Real    */ ae_vector* c,
+     ae_state *_state);
+#endif
 
 }
 #endif
