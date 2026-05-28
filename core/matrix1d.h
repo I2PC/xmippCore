@@ -375,6 +375,7 @@ public:
             return;
         }
 
+        coreDeallocate();
         vdim = _vdim;
         vdata = new T[vdim];
         memset(vdata, 0, vdim * sizeof(T));

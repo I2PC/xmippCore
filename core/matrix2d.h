@@ -874,7 +874,7 @@ public:
      */
     inline T* adaptForNumericalRecipes2() const
     {
-        return mdata - 1 - mdimx;
+        return mdata - 1 - mdimx; // NOSONAR - intentional 1-based NR pointer arithmetic
     }
 
     /** Load 2D array from numerical recipes result.
