@@ -850,7 +850,7 @@ void Matrix2D<T>::toVector(Matrix1D<T>& op1) const
         if (VEC_XSIZE(op1)!=mdimx)
             op1.resizeNoCopy(mdimx);
 
-        memcpy(&VEC_ELEM(op1,0),&MAT_ELEM(*this,0,0),mdimx*sizeof(double));
+        memcpy(&VEC_ELEM(op1,0),&MAT_ELEM(*this,0,0),mdimx*sizeof(T));
 
         op1.setRow();
     }
@@ -1286,7 +1286,7 @@ T** Matrix2D<T>::adaptForNumericalRecipes() const
        for (int j = 0; j < mdimx; j++)
            m[i+1][j+1] = mdata[i*mdimx + j];
 
-   return m;
+   return m; // NOSONAR - intentional 1-based NR pointer arithmetic
 }
 
 template<typename T>

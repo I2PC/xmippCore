@@ -261,13 +261,16 @@ String integerToString(int I, int _width, char fill_with)
     if (SGN(I) < 0)
         width--;
 
-    if (width == 0)
+    if (width <= 0)
+    {
+        width = 0;
         do
         {
             Iaux /= 10;
             width++;
         }
         while (Iaux != 0);
+    }
 
     // Fill the number with the fill character
     for (int i = 0; i < width; i++)
