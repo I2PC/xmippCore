@@ -107,6 +107,7 @@ int ImageBase::readJPEG(size_t select_img)
     jpeg_finish_decompress( &cinfo );
     jpeg_destroy_decompress( &cinfo );
     delete[] row_pointer[0];
+    delete[] buffer;
 
     return 0;
 }

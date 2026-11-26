@@ -249,12 +249,17 @@ bool MDL::isValidLabel(const String &labelName)
 
 MDLabelType MDL::labelType(const MDLabel label)
 {
+    if (!isValidLabel(label))
+        REPORT_ERROR(ERR_MD_BADLABEL, "Invalid label");
     return data[label]->type;
 }
 
 MDLabelType MDL::labelType(const String &labelName)
 {
-    return data[str2Label(labelName)]->type;
+    MDLabel label = str2Label(labelName);
+    if (!isValidLabel(label))
+        REPORT_ERROR(ERR_MD_BADLABEL, "Invalid label");
+    return data[label]->type;
 }
 
 std::map<String, MDLabel>& MDL::getLabelDict()
