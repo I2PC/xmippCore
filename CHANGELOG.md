@@ -1,3 +1,6 @@
+## Release 4.1.0
+   - Package alglib updated version from 8 years old v3.10 to v4.07
+
 ## Release 4.0.0
    - Details about the changes on [Xmipp repository](https://github.com/I2PC/xmipp/blob/devel/CHANGELOG.md)
 
